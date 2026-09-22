@@ -3,7 +3,9 @@ import {
   capitalEnvironment,
   ensureCapitalSession,
   getMarketSummaries,
+  getMarketSnapshot,
   PUBLIC_SYMBOLS,
+  type CapitalSnapshot,
   type CapitalMarketSummary,
   type PublicSymbol,
 } from "@/lib/capital";
@@ -36,6 +38,7 @@ type MarketQuote = {
   net_change: number | null;
   percentage_change: number | null;
   fresh: boolean;
+  timestamp_error?: string;
   error?: string;
 };
 
@@ -77,27 +80,31 @@ function unavailable(symbol: PublicSymbol): MarketQuote {
 
 function normalizeQuote(
   symbol: PublicSymbol,
-  market: CapitalMarketSummary,
+  response: CapitalSnapshot,
+  batchMarket: CapitalMarketSummary | undefined,
   serverTimeMs: number,
+  timestampError?: string,
 ): MarketQuote | null {
-  const bid = finiteNumber(market.bid);
-  const ask = finiteNumber(market.offer);
+  const snapshot = response.snapshot;
+  if (!snapshot) return null;
+
+  const bid = finiteNumber(snapshot.bid);
+  const ask = finiteNumber(snapshot.offer);
   if (bid === null || ask === null) return null;
 
-  const quoteTime = utcDate(market.updateTimeUTC);
+  const quoteTime = utcDate(batchMarket?.updateTimeUTC);
   const ageSeconds = quoteTime
     ? (serverTimeMs - quoteTime.getTime()) / 1000
     : null;
-  const delaySeconds = finiteNumber(market.delayTime);
+  const delaySeconds = finiteNumber(batchMarket?.delayTime);
 
   return {
-    epic: typeof market.epic === "string" ? market.epic : QUOTE_EPICS[symbol],
+    epic:
+      typeof response.instrument?.epic === "string"
+        ? response.instrument.epic
+        : QUOTE_EPICS[symbol],
     name:
-      typeof market.instrumentName === "string"
-        ? market.instrumentName
-        : typeof market.symbol === "string"
-          ? market.symbol
-          : symbol,
+      typeof response.instrument?.name === "string" ? response.instrument.name : symbol,
     bid,
     ask,
     mid: (bid + ask) / 2,
@@ -105,29 +112,31 @@ function normalizeQuote(
     age_seconds: ageSeconds,
     delay_seconds: delaySeconds,
     streaming_prices_available:
-      typeof market.streamingPricesAvailable === "boolean"
-        ? market.streamingPricesAvailable
+      typeof batchMarket?.streamingPricesAvailable === "boolean"
+        ? batchMarket.streamingPricesAvailable
         : null,
     market_status:
-      typeof market.marketStatus === "string" ? market.marketStatus : null,
-    high: finiteNumber(market.high),
-    low: finiteNumber(market.low),
-    net_change: finiteNumber(market.netChange),
-    percentage_change: finiteNumber(market.percentageChange),
+      typeof snapshot.marketStatus === "string" ? snapshot.marketStatus : null,
+    high: finiteNumber(snapshot.high),
+    low: finiteNumber(snapshot.low),
+    net_change: finiteNumber(snapshot.netChange),
+    percentage_change: finiteNumber(snapshot.percentageChange),
     fresh:
       ageSeconds !== null &&
       ageSeconds >= 0 &&
       ageSeconds <= 300 &&
       delaySeconds === 0,
+    ...(timestampError ? { timestamp_error: timestampError } : {}),
   };
 }
 
-function upstreamUnavailable() {
+function upstreamUnavailable(step: "authentication" | "markets_batch" | "single_market") {
   return json(
     {
       server_time: new Date().toISOString(),
       source: "Capital.com Public API",
       error: "Capital.com upstream unavailable",
+      step,
     },
     502,
   );
@@ -139,29 +148,43 @@ export async function GET() {
     environment = capitalEnvironment();
     await ensureCapitalSession();
   } catch {
-    return upstreamUnavailable();
+    return upstreamUnavailable("authentication");
   }
 
-  let summaries: Record<string, CapitalMarketSummary>;
+  const requests = await Promise.allSettled(
+    PUBLIC_SYMBOLS.map((symbol) => getMarketSnapshot(QUOTE_EPICS[symbol])),
+  );
+
+  let summaries: Record<string, CapitalMarketSummary> = {};
+  let timestampError: string | undefined;
   try {
     summaries = await getMarketSummaries(PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]));
   } catch {
-    return upstreamUnavailable();
+    timestampError = "Capital.com timestamp unavailable";
   }
 
   const serverTime = new Date();
   const markets = {} as Record<PublicSymbol, MarketQuote>;
   let availableCount = 0;
 
-  PUBLIC_SYMBOLS.forEach((symbol) => {
+  PUBLIC_SYMBOLS.forEach((symbol, index) => {
     const epic = QUOTE_EPICS[symbol];
-    const market = summaries[epic];
-    const normalized = market ? normalizeQuote(symbol, market, serverTime.getTime()) : null;
+    const request = requests[index];
+    const normalized =
+      request.status === "fulfilled"
+        ? normalizeQuote(
+            symbol,
+            request.value,
+            summaries[epic],
+            serverTime.getTime(),
+            timestampError,
+          )
+        : null;
     markets[symbol] = normalized ?? unavailable(symbol);
     if (normalized) availableCount += 1;
   });
 
-  if (availableCount === 0) return upstreamUnavailable();
+  if (availableCount === 0) return upstreamUnavailable("single_market");
 
   return json({
     server_time: serverTime.toISOString(),

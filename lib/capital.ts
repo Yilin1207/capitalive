@@ -103,6 +103,24 @@ let nextGetRequestAt = 0;
 
 export class CapitalApiError extends Error {}
 
+type CapitalRequestStep = "authentication" | "markets_batch" | "single_market";
+
+function logCapitalError(
+  step: CapitalRequestStep,
+  details: {
+    status?: number | null;
+    statusText?: string | null;
+    capitalErrorCode?: string | null;
+  },
+) {
+  console.error({
+    step,
+    status: details.status ?? null,
+    statusText: details.statusText ?? null,
+    capitalErrorCode: details.capitalErrorCode ?? null,
+  });
+}
+
 function config(): CapitalConfig {
   const apiKey = process.env.CAPITAL_API_KEY?.trim();
   const identifier = process.env.CAPITAL_IDENTIFIER?.trim();
@@ -162,12 +180,19 @@ async function createSession(settings: CapitalConfig): Promise<CapitalSession> {
       }),
     });
   } catch {
+    logCapitalError("authentication", {});
     throw new CapitalApiError("Capital.com session request failed");
   }
 
   const cst = response.headers.get("CST");
   const securityToken = response.headers.get("X-SECURITY-TOKEN");
   if (!response.ok || !cst || !securityToken) {
+    const code = response.ok ? "missing-session-token" : await errorCode(response);
+    logCapitalError("authentication", {
+      status: response.status,
+      statusText: response.statusText,
+      capitalErrorCode: code,
+    });
     throw new CapitalApiError("Capital.com authentication failed");
   }
 
@@ -239,7 +264,7 @@ async function waitForGetRequestSlot(): Promise<void> {
   await scheduled;
 }
 
-async function capitalGet(path: string): Promise<unknown> {
+async function capitalGet(path: string, step: CapitalRequestStep): Promise<unknown> {
   const settings = config();
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -256,6 +281,7 @@ async function capitalGet(path: string): Promise<unknown> {
         },
       });
     } catch {
+      logCapitalError(step, {});
       throw new CapitalApiError("Capital.com request failed");
     }
 
@@ -264,11 +290,20 @@ async function capitalGet(path: string): Promise<unknown> {
       try {
         return await response.json();
       } catch {
+        logCapitalError(step, {
+          status: response.status,
+          statusText: response.statusText,
+        });
         throw new CapitalApiError("Capital.com returned invalid JSON");
       }
     }
 
     const code = await errorCode(response);
+    logCapitalError(step, {
+      status: response.status,
+      statusText: response.statusText,
+      capitalErrorCode: code,
+    });
     if (attempt === 0 && isAuthenticationError(response.status, code)) {
       invalidateSession(session);
       continue;
@@ -313,7 +348,9 @@ async function discoverMarket(symbol: PublicSymbol): Promise<MarketMapping> {
 
   for (const term of target.searchTerms) {
     const query = new URLSearchParams({ searchTerm: term });
-    const payload = (await capitalGet(`/api/v1/markets?${query}`)) as { markets?: unknown };
+    const payload = (await capitalGet(`/api/v1/markets?${query}`, "single_market")) as {
+      markets?: unknown;
+    };
     if (!Array.isArray(payload.markets)) continue;
 
     const ranked = payload.markets
@@ -373,8 +410,12 @@ export async function resolveAllMarkets(): Promise<Record<PublicSymbol, MarketMa
 
 export async function getMarketSnapshot(epic: string): Promise<CapitalSnapshot> {
   const encodedEpic = encodeURIComponent(epic);
-  const payload = await capitalGet(`/api/v1/markets/${encodedEpic}`);
+  const payload = await capitalGet(`/api/v1/markets/${encodedEpic}`, "single_market");
   if (!payload || typeof payload !== "object") {
+    logCapitalError("single_market", {
+      status: 200,
+      statusText: "Invalid response schema",
+    });
     throw new CapitalApiError("Capital.com market response is invalid");
   }
   return payload as CapitalSnapshot;
@@ -384,8 +425,14 @@ export async function getMarketSummaries(
   epics: readonly string[],
 ): Promise<Record<string, CapitalMarketSummary>> {
   const query = new URLSearchParams({ epics: epics.join(",") });
-  const payload = (await capitalGet(`/api/v1/markets?${query}`)) as { markets?: unknown };
+  const payload = (await capitalGet(`/api/v1/markets?${query}`, "markets_batch")) as {
+    markets?: unknown;
+  };
   if (!Array.isArray(payload.markets)) {
+    logCapitalError("markets_batch", {
+      status: 200,
+      statusText: "Invalid response schema",
+    });
     throw new CapitalApiError("Capital.com markets response is invalid");
   }
 
