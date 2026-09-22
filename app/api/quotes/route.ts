@@ -10,6 +10,10 @@ import {
   type PublicSymbol,
 } from "@/lib/capital";
 import { PUBLIC_NO_STORE_HEADERS } from "@/lib/http";
+import {
+  getStreamingQuotes,
+  type CapitalStreamingQuote,
+} from "@/lib/capital-stream";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -23,6 +27,7 @@ const QUOTE_EPICS: Record<PublicSymbol, string> = {
 };
 
 type MarketQuote = {
+  source_type: "WEBSOCKET" | "REST";
   epic: string | null;
   name: string | null;
   bid: number | null;
@@ -59,6 +64,7 @@ function utcDate(value: unknown): Date | null {
 
 function unavailable(symbol: PublicSymbol): MarketQuote {
   return {
+    source_type: "REST",
     epic: QUOTE_EPICS[symbol],
     name: null,
     bid: null,
@@ -99,6 +105,7 @@ function normalizeQuote(
   const delaySeconds = finiteNumber(batchMarket?.delayTime);
 
   return {
+    source_type: "REST",
     epic:
       typeof response.instrument?.epic === "string"
         ? response.instrument.epic
@@ -130,6 +137,36 @@ function normalizeQuote(
   };
 }
 
+function normalizeStreamingQuote(
+  symbol: PublicSymbol,
+  quote: CapitalStreamingQuote,
+  restQuote: MarketQuote | null,
+  serverTimeMs: number,
+): MarketQuote | null {
+  const quoteDate = new Date(quote.timestamp);
+  if (Number.isNaN(quoteDate.getTime())) return null;
+
+  const ageSeconds = (serverTimeMs - quote.timestamp) / 1000;
+  return {
+    source_type: "WEBSOCKET",
+    epic: quote.epic,
+    name: restQuote?.name ?? symbol,
+    bid: quote.bid,
+    ask: quote.ask,
+    mid: (quote.bid + quote.ask) / 2,
+    quote_time: quoteDate.toISOString(),
+    age_seconds: ageSeconds,
+    delay_seconds: null,
+    streaming_prices_available: true,
+    market_status: restQuote?.market_status ?? null,
+    high: restQuote?.high ?? null,
+    low: restQuote?.low ?? null,
+    net_change: restQuote?.net_change ?? null,
+    percentage_change: restQuote?.percentage_change ?? null,
+    fresh: ageSeconds >= 0 && ageSeconds <= 300,
+  };
+}
+
 function upstreamUnavailable(step: "authentication" | "markets_batch" | "single_market") {
   return json(
     {
@@ -151,17 +188,24 @@ export async function GET() {
     return upstreamUnavailable("authentication");
   }
 
-  const requests = await Promise.allSettled(
-    PUBLIC_SYMBOLS.map((symbol) => getMarketSnapshot(QUOTE_EPICS[symbol])),
-  );
-
-  let summaries: Record<string, CapitalMarketSummary> = {};
-  let timestampError: string | undefined;
-  try {
-    summaries = await getMarketSummaries(PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]));
-  } catch {
-    timestampError = "Capital.com timestamp unavailable";
-  }
+  const epics = PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]);
+  const [requests, streamingQuotes, batchResult] = await Promise.all([
+    Promise.allSettled(
+      PUBLIC_SYMBOLS.map((symbol) => getMarketSnapshot(QUOTE_EPICS[symbol])),
+    ),
+    getStreamingQuotes(epics, 2500),
+    getMarketSummaries(epics)
+      .then((summaries) => ({ summaries, timestampError: undefined }))
+      .catch(
+        (): {
+          summaries: Record<string, CapitalMarketSummary>;
+          timestampError: string;
+        } => ({
+          summaries: {},
+          timestampError: "Capital.com timestamp unavailable",
+        }),
+      ),
+  ]);
 
   const serverTime = new Date();
   const markets = {} as Record<PublicSymbol, MarketQuote>;
@@ -170,18 +214,22 @@ export async function GET() {
   PUBLIC_SYMBOLS.forEach((symbol, index) => {
     const epic = QUOTE_EPICS[symbol];
     const request = requests[index];
-    const normalized =
+    const restQuote =
       request.status === "fulfilled"
         ? normalizeQuote(
             symbol,
             request.value,
-            summaries[epic],
+            batchResult.summaries[epic],
             serverTime.getTime(),
-            timestampError,
+            batchResult.timestampError,
           )
         : null;
-    markets[symbol] = normalized ?? unavailable(symbol);
-    if (normalized) availableCount += 1;
+    const streamingQuote = streamingQuotes[epic];
+    const websocketQuote = streamingQuote
+      ? normalizeStreamingQuote(symbol, streamingQuote, restQuote, serverTime.getTime())
+      : null;
+    markets[symbol] = websocketQuote ?? restQuote ?? unavailable(symbol);
+    if (websocketQuote || restQuote) availableCount += 1;
   });
 
   if (availableCount === 0) return upstreamUnavailable("single_market");

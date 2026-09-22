@@ -1,3 +1,5 @@
+import "server-only";
+
 // THIS PROJECT IS MARKET-DATA ONLY.
 // DO NOT ADD TRADING ENDPOINTS.
 
@@ -16,6 +18,7 @@ type CapitalConfig = {
 type CapitalSession = {
   cst: string;
   securityToken: string;
+  streamEndpoint: string | null;
   createdAt: number;
   lastUsedAt: number;
   scope: string;
@@ -196,12 +199,46 @@ async function createSession(settings: CapitalConfig): Promise<CapitalSession> {
     throw new CapitalApiError("Capital.com authentication failed");
   }
 
+  let streamEndpoint: string | null = null;
+  try {
+    const body = (await response.json()) as {
+      streamEndpoint?: unknown;
+      streamingHost?: unknown;
+    };
+    const endpoint = body.streamEndpoint ?? body.streamingHost;
+    if (typeof endpoint === "string" && endpoint.startsWith("wss://")) {
+      streamEndpoint = endpoint;
+    }
+  } catch {
+    // REST remains fully functional when streaming metadata is unavailable.
+  }
+
   const now = Date.now();
-  return { cst, securityToken, createdAt: now, lastUsedAt: now, scope: settings.scope };
+  return {
+    cst,
+    securityToken,
+    streamEndpoint,
+    createdAt: now,
+    lastUsedAt: now,
+    scope: settings.scope,
+  };
 }
 
 export async function ensureCapitalSession(): Promise<void> {
   await getSession();
+}
+
+export async function getCapitalStreamingSession(): Promise<{
+  cst: string;
+  securityToken: string;
+  streamEndpoint: string | null;
+}> {
+  const session = await getSession();
+  return {
+    cst: session.cst,
+    securityToken: session.securityToken,
+    streamEndpoint: session.streamEndpoint,
+  };
 }
 
 async function getSession(): Promise<CapitalSession> {
