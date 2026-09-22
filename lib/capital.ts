@@ -3,7 +3,15 @@ import "server-only";
 // THIS PROJECT IS MARKET-DATA ONLY.
 // DO NOT ADD TRADING ENDPOINTS.
 
-export const PUBLIC_SYMBOLS = ["NAS100", "JP225", "USDJPY", "EURUSD", "XAUUSD"] as const;
+export const PUBLIC_SYMBOLS = [
+  "NAS100",
+  "JP225",
+  "USDJPY",
+  "EURUSD",
+  "XAUUSD",
+  "GER40",
+  "EU50",
+] as const;
 export type PublicSymbol = (typeof PUBLIC_SYMBOLS)[number];
 export type MarketMapping = { epic: string; name: string };
 
@@ -93,6 +101,16 @@ const TARGETS: Record<PublicSymbol, MarketTarget> = {
     instrumentType: "COMMODITIES",
     searchTerms: ["Gold", "XAUUSD"],
     aliases: ["Gold", "XAUUSD"],
+  },
+  GER40: {
+    instrumentType: "INDICES",
+    searchTerms: ["Germany 40", "GER40", "DAX", "Germany"],
+    aliases: ["Germany 40", "GER40", "DAX", "DAX 40"],
+  },
+  EU50: {
+    instrumentType: "INDICES",
+    searchTerms: ["Europe 50", "EU50", "Euro Stoxx 50", "Euro Stoxx"],
+    aliases: ["Europe 50", "EU50", "Euro Stoxx 50", "Euro Stoxx"],
   },
 };
 

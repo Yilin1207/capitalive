@@ -5,6 +5,7 @@ import {
   getMarketSummaries,
   getMarketSnapshot,
   PUBLIC_SYMBOLS,
+  resolveMarket,
   type CapitalSnapshot,
   type CapitalMarketSummary,
   type PublicSymbol,
@@ -18,13 +19,31 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const QUOTE_EPICS: Record<PublicSymbol, string> = {
+const QUOTE_EPICS: Partial<Record<PublicSymbol, string>> = {
   NAS100: "US100",
   JP225: "J225",
   USDJPY: "USDJPY",
   EURUSD: "EURUSD",
   XAUUSD: "GOLD",
 };
+
+async function resolveQuoteEpics(): Promise<Record<PublicSymbol, string | null>> {
+  const epics = {} as Record<PublicSymbol, string | null>;
+  for (const symbol of PUBLIC_SYMBOLS) {
+    const knownEpic = QUOTE_EPICS[symbol];
+    if (knownEpic) {
+      epics[symbol] = knownEpic;
+      continue;
+    }
+
+    try {
+      epics[symbol] = (await resolveMarket(symbol)).epic;
+    } catch {
+      epics[symbol] = null;
+    }
+  }
+  return epics;
+}
 
 type MarketQuote = {
   source_type: "WEBSOCKET" | "REST";
@@ -62,10 +81,10 @@ function utcDate(value: unknown): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function unavailable(symbol: PublicSymbol): MarketQuote {
+function unavailable(symbol: PublicSymbol, epic: string | null): MarketQuote {
   return {
     source_type: "REST",
-    epic: QUOTE_EPICS[symbol],
+    epic,
     name: null,
     bid: null,
     ask: null,
@@ -86,6 +105,7 @@ function unavailable(symbol: PublicSymbol): MarketQuote {
 
 function normalizeQuote(
   symbol: PublicSymbol,
+  epic: string,
   response: CapitalSnapshot,
   batchMarket: CapitalMarketSummary | undefined,
   serverTimeMs: number,
@@ -109,7 +129,7 @@ function normalizeQuote(
     epic:
       typeof response.instrument?.epic === "string"
         ? response.instrument.epic
-        : QUOTE_EPICS[symbol],
+        : epic,
     name:
       typeof response.instrument?.name === "string" ? response.instrument.name : symbol,
     bid,
@@ -188,10 +208,17 @@ export async function GET() {
     return upstreamUnavailable("authentication");
   }
 
-  const epics = PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]);
+  const quoteEpics = await resolveQuoteEpics();
+  const epics = PUBLIC_SYMBOLS.flatMap((symbol) => {
+    const epic = quoteEpics[symbol];
+    return epic ? [epic] : [];
+  });
   const [requests, streamingQuotes, batchResult] = await Promise.all([
     Promise.allSettled(
-      PUBLIC_SYMBOLS.map((symbol) => getMarketSnapshot(QUOTE_EPICS[symbol])),
+      PUBLIC_SYMBOLS.map((symbol) => {
+        const epic = quoteEpics[symbol];
+        return epic ? getMarketSnapshot(epic) : Promise.reject(new Error("No epic"));
+      }),
     ),
     getStreamingQuotes(epics, 2500),
     getMarketSummaries(epics)
@@ -212,23 +239,24 @@ export async function GET() {
   let availableCount = 0;
 
   PUBLIC_SYMBOLS.forEach((symbol, index) => {
-    const epic = QUOTE_EPICS[symbol];
+    const epic = quoteEpics[symbol];
     const request = requests[index];
     const restQuote =
-      request.status === "fulfilled"
+      epic && request.status === "fulfilled"
         ? normalizeQuote(
             symbol,
+            epic,
             request.value,
             batchResult.summaries[epic],
             serverTime.getTime(),
             batchResult.timestampError,
           )
         : null;
-    const streamingQuote = streamingQuotes[epic];
+    const streamingQuote = epic ? streamingQuotes[epic] : undefined;
     const websocketQuote = streamingQuote
       ? normalizeStreamingQuote(symbol, streamingQuote, restQuote, serverTime.getTime())
       : null;
-    markets[symbol] = websocketQuote ?? restQuote ?? unavailable(symbol);
+    markets[symbol] = websocketQuote ?? restQuote ?? unavailable(symbol, epic);
     if (websocketQuote || restQuote) availableCount += 1;
   });
 
