@@ -5,7 +5,6 @@ import {
   getMarketSummaries,
   getMarketSnapshot,
   PUBLIC_SYMBOLS,
-  resolveMarket,
   type CapitalSnapshot,
   type CapitalMarketSummary,
   type PublicSymbol,
@@ -19,31 +18,15 @@ import {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const QUOTE_EPICS: Partial<Record<PublicSymbol, string>> = {
+const QUOTE_EPICS: Record<PublicSymbol, string> = {
   NAS100: "US100",
   JP225: "J225",
   USDJPY: "USDJPY",
   EURUSD: "EURUSD",
   XAUUSD: "GOLD",
+  GER40: "DE40",
+  EU50: "EU50",
 };
-
-async function resolveQuoteEpics(): Promise<Record<PublicSymbol, string | null>> {
-  const epics = {} as Record<PublicSymbol, string | null>;
-  for (const symbol of PUBLIC_SYMBOLS) {
-    const knownEpic = QUOTE_EPICS[symbol];
-    if (knownEpic) {
-      epics[symbol] = knownEpic;
-      continue;
-    }
-
-    try {
-      epics[symbol] = (await resolveMarket(symbol)).epic;
-    } catch {
-      epics[symbol] = null;
-    }
-  }
-  return epics;
-}
 
 type MarketQuote = {
   source_type: "WEBSOCKET" | "REST";
@@ -208,16 +191,11 @@ export async function GET() {
     return upstreamUnavailable("authentication");
   }
 
-  const quoteEpics = await resolveQuoteEpics();
-  const epics = PUBLIC_SYMBOLS.flatMap((symbol) => {
-    const epic = quoteEpics[symbol];
-    return epic ? [epic] : [];
-  });
+  const epics = PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]);
   const [requests, streamingQuotes, batchResult] = await Promise.all([
     Promise.allSettled(
       PUBLIC_SYMBOLS.map((symbol) => {
-        const epic = quoteEpics[symbol];
-        return epic ? getMarketSnapshot(epic) : Promise.reject(new Error("No epic"));
+        return getMarketSnapshot(QUOTE_EPICS[symbol]);
       }),
     ),
     getStreamingQuotes(epics, 2500),
@@ -239,10 +217,10 @@ export async function GET() {
   let availableCount = 0;
 
   PUBLIC_SYMBOLS.forEach((symbol, index) => {
-    const epic = quoteEpics[symbol];
+    const epic = QUOTE_EPICS[symbol];
     const request = requests[index];
     const restQuote =
-      epic && request.status === "fulfilled"
+      request.status === "fulfilled"
         ? normalizeQuote(
             symbol,
             epic,
@@ -252,7 +230,7 @@ export async function GET() {
             batchResult.timestampError,
           )
         : null;
-    const streamingQuote = epic ? streamingQuotes[epic] : undefined;
+    const streamingQuote = streamingQuotes[epic];
     const websocketQuote = streamingQuote
       ? normalizeStreamingQuote(symbol, streamingQuote, restQuote, serverTime.getTime())
       : null;
