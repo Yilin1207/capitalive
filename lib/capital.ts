@@ -23,6 +23,7 @@ type CapitalSession = {
 
 type SearchMarket = {
   bid?: unknown;
+  delayTime?: unknown;
   epic?: unknown;
   expiry?: unknown;
   high?: unknown;
@@ -33,6 +34,7 @@ type SearchMarket = {
   netChange?: unknown;
   offer?: unknown;
   percentageChange?: unknown;
+  streamingPricesAvailable?: unknown;
   symbol?: unknown;
   updateTimeUTC?: unknown;
 };

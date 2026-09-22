@@ -3,18 +3,22 @@ import {
   capitalEnvironment,
   ensureCapitalSession,
   getMarketSummaries,
-  getMarketSnapshot,
   PUBLIC_SYMBOLS,
-  resolveAllMarkets,
-  type CapitalSnapshot,
   type CapitalMarketSummary,
-  type MarketMapping,
   type PublicSymbol,
 } from "@/lib/capital";
 import { PUBLIC_NO_STORE_HEADERS } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+const QUOTE_EPICS: Record<PublicSymbol, string> = {
+  NAS100: "US100",
+  JP225: "J225",
+  USDJPY: "USDJPY",
+  EURUSD: "EURUSD",
+  XAUUSD: "GOLD",
+};
 
 type MarketQuote = {
   epic: string | null;
@@ -24,6 +28,8 @@ type MarketQuote = {
   mid: number | null;
   quote_time: string | null;
   age_seconds: number | null;
+  delay_seconds: number | null;
+  streaming_prices_available: boolean | null;
   market_status: string | null;
   high: number | null;
   low: number | null;
@@ -48,15 +54,17 @@ function utcDate(value: unknown): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function unavailable(mapping: MarketMapping | null): MarketQuote {
+function unavailable(symbol: PublicSymbol): MarketQuote {
   return {
-    epic: mapping?.epic ?? null,
-    name: mapping?.name ?? null,
+    epic: QUOTE_EPICS[symbol],
+    name: null,
     bid: null,
     ask: null,
     mid: null,
     quote_time: null,
     age_seconds: null,
+    delay_seconds: null,
+    streaming_prices_available: null,
     market_status: null,
     high: null,
     low: null,
@@ -68,40 +76,49 @@ function unavailable(mapping: MarketMapping | null): MarketQuote {
 }
 
 function normalizeQuote(
-  mapping: MarketMapping,
-  response: CapitalSnapshot,
-  summary: CapitalMarketSummary | undefined,
+  symbol: PublicSymbol,
+  market: CapitalMarketSummary,
   serverTimeMs: number,
 ): MarketQuote | null {
-  const snapshot = response.snapshot;
-  if (!snapshot) return null;
-
-  const bid = finiteNumber(snapshot.bid);
-  const ask = finiteNumber(snapshot.offer);
+  const bid = finiteNumber(market.bid);
+  const ask = finiteNumber(market.offer);
   if (bid === null || ask === null) return null;
 
-  const quoteTime = utcDate(snapshot.updateTimeUTC ?? summary?.updateTimeUTC);
+  const quoteTime = utcDate(market.updateTimeUTC);
   const ageSeconds = quoteTime
-    ? Math.round(((serverTimeMs - quoteTime.getTime()) / 1000) * 1000) / 1000
+    ? (serverTimeMs - quoteTime.getTime()) / 1000
     : null;
+  const delaySeconds = finiteNumber(market.delayTime);
 
   return {
-    epic:
-      typeof response.instrument?.epic === "string" ? response.instrument.epic : mapping.epic,
+    epic: typeof market.epic === "string" ? market.epic : QUOTE_EPICS[symbol],
     name:
-      typeof response.instrument?.name === "string" ? response.instrument.name : mapping.name,
+      typeof market.instrumentName === "string"
+        ? market.instrumentName
+        : typeof market.symbol === "string"
+          ? market.symbol
+          : symbol,
     bid,
     ask,
     mid: (bid + ask) / 2,
     quote_time: quoteTime?.toISOString() ?? null,
     age_seconds: ageSeconds,
+    delay_seconds: delaySeconds,
+    streaming_prices_available:
+      typeof market.streamingPricesAvailable === "boolean"
+        ? market.streamingPricesAvailable
+        : null,
     market_status:
-      typeof snapshot.marketStatus === "string" ? snapshot.marketStatus : null,
-    high: finiteNumber(snapshot.high),
-    low: finiteNumber(snapshot.low),
-    net_change: finiteNumber(snapshot.netChange),
-    percentage_change: finiteNumber(snapshot.percentageChange),
-    fresh: ageSeconds !== null && ageSeconds >= 0 && ageSeconds <= 300,
+      typeof market.marketStatus === "string" ? market.marketStatus : null,
+    high: finiteNumber(market.high),
+    low: finiteNumber(market.low),
+    net_change: finiteNumber(market.netChange),
+    percentage_change: finiteNumber(market.percentageChange),
+    fresh:
+      ageSeconds !== null &&
+      ageSeconds >= 0 &&
+      ageSeconds <= 300 &&
+      delaySeconds === 0,
   };
 }
 
@@ -125,39 +142,22 @@ export async function GET() {
     return upstreamUnavailable();
   }
 
-  const mappings = await resolveAllMarkets();
-  const epics = PUBLIC_SYMBOLS.flatMap((symbol) =>
-    mappings[symbol] ? [mappings[symbol].epic] : [],
-  );
-  const [requests, summaries] = await Promise.all([
-    Promise.allSettled(PUBLIC_SYMBOLS.map((symbol) => {
-      const mapping = mappings[symbol];
-      return mapping ? getMarketSnapshot(mapping.epic) : Promise.reject(new Error("No epic"));
-    })),
-    epics.length > 0
-      ? getMarketSummaries(epics).catch(
-          (): Record<string, CapitalMarketSummary> => ({}),
-        )
-      : Promise.resolve<Record<string, CapitalMarketSummary>>({}),
-  ]);
+  let summaries: Record<string, CapitalMarketSummary>;
+  try {
+    summaries = await getMarketSummaries(PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]));
+  } catch {
+    return upstreamUnavailable();
+  }
 
   const serverTime = new Date();
   const markets = {} as Record<PublicSymbol, MarketQuote>;
   let availableCount = 0;
 
-  PUBLIC_SYMBOLS.forEach((symbol, index) => {
-    const mapping = mappings[symbol];
-    const request = requests[index];
-    const normalized =
-      mapping && request.status === "fulfilled"
-        ? normalizeQuote(
-            mapping,
-            request.value,
-            summaries[mapping.epic],
-            serverTime.getTime(),
-          )
-        : null;
-    markets[symbol] = normalized ?? unavailable(mapping);
+  PUBLIC_SYMBOLS.forEach((symbol) => {
+    const epic = QUOTE_EPICS[symbol];
+    const market = summaries[epic];
+    const normalized = market ? normalizeQuote(symbol, market, serverTime.getTime()) : null;
+    markets[symbol] = normalized ?? unavailable(symbol);
     if (normalized) availableCount += 1;
   });
 
