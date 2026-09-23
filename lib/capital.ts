@@ -1,4 +1,11 @@
 import "server-only";
+import { randomUUID } from "node:crypto";
+import {
+  fetchWithTimeoutRetry,
+  isAuthenticationFailure,
+  UpstreamFetchError,
+  type RetryMetrics,
+} from "@/lib/upstream-retry";
 
 // THIS PROJECT IS MARKET-DATA ONLY.
 // DO NOT ADD TRADING ENDPOINTS.
@@ -75,6 +82,8 @@ export type CapitalSnapshot = {
 const DEFAULT_BASE_URL = "https://demo-api-capital.backend-capital.com";
 const SESSION_IDLE_LIMIT_MS = 9 * 60 * 1000;
 const GET_REQUEST_INTERVAL_MS = 110;
+const SESSION_TIMEOUT_MS = 5000;
+const MARKET_TIMEOUT_MS = 2500;
 
 const TARGETS: Record<PublicSymbol, MarketTarget> = {
   NAS100: {
@@ -122,12 +131,40 @@ const marketRequests: Partial<Record<PublicSymbol, Promise<MarketMapping>>> = {}
 let getRequestQueue: Promise<void> = Promise.resolve();
 let nextGetRequestAt = 0;
 
-export class CapitalApiError extends Error {}
-
 type CapitalRequestStep = "authentication" | "markets_batch" | "single_market";
+
+export type CapitalErrorCode =
+  | "CAPITAL_AUTH"
+  | "CAPITAL_CONFIG"
+  | "CAPITAL_INVALID_RESPONSE"
+  | "CAPITAL_RATE_LIMIT"
+  | "CAPITAL_TIMEOUT"
+  | "CAPITAL_UPSTREAM";
+
+export type CapitalRequestContext = RetryMetrics & {
+  requestId: string;
+  sessionRefreshHappened: boolean;
+};
+
+export function createCapitalRequestContext(requestId = randomUUID()): CapitalRequestContext {
+  return { requestId, retryCount: 0, sessionRefreshHappened: false };
+}
+
+export class CapitalApiError extends Error {
+  constructor(
+    public readonly code: CapitalErrorCode,
+    message: string,
+    public readonly step: CapitalRequestStep,
+    public readonly status: number | null = null,
+  ) {
+    super(message);
+    this.name = "CapitalApiError";
+  }
+}
 
 function logCapitalError(
   step: CapitalRequestStep,
+  context: CapitalRequestContext,
   details: {
     status?: number | null;
     statusText?: string | null;
@@ -135,10 +172,13 @@ function logCapitalError(
   },
 ) {
   console.error({
+    requestId: context.requestId,
     step,
     status: details.status ?? null,
     statusText: details.statusText ?? null,
     capitalErrorCode: details.capitalErrorCode ?? null,
+    retryCount: context.retryCount,
+    sessionRefreshHappened: context.sessionRefreshHappened,
   });
 }
 
@@ -149,7 +189,11 @@ function config(): CapitalConfig {
   const rawBaseUrl = process.env.CAPITAL_API_BASE_URL?.trim() || DEFAULT_BASE_URL;
 
   if (!apiKey || !identifier || !password) {
-    throw new CapitalApiError("Capital.com is not configured");
+    throw new CapitalApiError(
+      "CAPITAL_CONFIG",
+      "Capital.com is not configured",
+      "authentication",
+    );
   }
 
   let baseUrl: string;
@@ -161,7 +205,11 @@ function config(): CapitalConfig {
     parsed.hash = "";
     baseUrl = parsed.toString().replace(/\/$/, "");
   } catch {
-    throw new CapitalApiError("Capital.com base URL is invalid");
+    throw new CapitalApiError(
+      "CAPITAL_CONFIG",
+      "Capital.com base URL is invalid",
+      "authentication",
+    );
   }
 
   return {
@@ -184,37 +232,71 @@ function resetScopedCaches(scope: string) {
   cacheScope = scope;
 }
 
-async function createSession(settings: CapitalConfig): Promise<CapitalSession> {
+async function createSession(
+  settings: CapitalConfig,
+  context: CapitalRequestContext,
+): Promise<CapitalSession> {
   let response: Response;
   try {
-    response = await fetch(`${settings.baseUrl}/api/v1/session`, {
-      method: "POST",
-      cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CAP-API-KEY": settings.apiKey,
+    response = await fetchWithTimeoutRetry(
+      `${settings.baseUrl}/api/v1/session`,
+      {
+        method: "POST",
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CAP-API-KEY": settings.apiKey,
+        },
+        body: JSON.stringify({
+          identifier: settings.identifier,
+          password: settings.password,
+          encryptedPassword: false,
+        }),
       },
-      body: JSON.stringify({
-        identifier: settings.identifier,
-        password: settings.password,
-        encryptedPassword: false,
-      }),
+      {
+        timeoutMs: SESSION_TIMEOUT_MS,
+        maxAttempts: 3,
+        baseDelayMs: 1000,
+        metrics: context,
+        onFailure: ({ status, statusText, timedOut }) =>
+          logCapitalError("authentication", context, {
+            status,
+            statusText: timedOut ? "Request timed out" : statusText,
+          }),
+      },
+    );
+  } catch (error) {
+    const code =
+      error instanceof UpstreamFetchError && error.code === "TIMEOUT"
+        ? "CAPITAL_TIMEOUT"
+        : "CAPITAL_UPSTREAM";
+    logCapitalError("authentication", context, {
+      statusText: code === "CAPITAL_TIMEOUT" ? "Request timed out" : "Network error",
     });
-  } catch {
-    logCapitalError("authentication", {});
-    throw new CapitalApiError("Capital.com session request failed");
+    throw new CapitalApiError(code, (error as Error).message, "authentication");
   }
 
   const cst = response.headers.get("CST");
   const securityToken = response.headers.get("X-SECURITY-TOKEN");
   if (!response.ok || !cst || !securityToken) {
     const code = response.ok ? "missing-session-token" : await errorCode(response);
-    logCapitalError("authentication", {
+    logCapitalError("authentication", context, {
       status: response.status,
       statusText: response.statusText,
       capitalErrorCode: code,
     });
-    throw new CapitalApiError("Capital.com authentication failed");
+    const failureCode =
+      response.status === 429
+        ? "CAPITAL_RATE_LIMIT"
+        : response.status >= 500
+          ? "CAPITAL_UPSTREAM"
+          : "CAPITAL_AUTH";
+    throw new CapitalApiError(
+      failureCode,
+      "Capital.com authentication failed",
+      "authentication",
+      response.status,
+    );
   }
 
   let streamEndpoint: string | null = null;
@@ -242,16 +324,20 @@ async function createSession(settings: CapitalConfig): Promise<CapitalSession> {
   };
 }
 
-export async function ensureCapitalSession(): Promise<void> {
-  await getSession();
+export async function ensureCapitalSession(
+  context = createCapitalRequestContext(),
+): Promise<void> {
+  await getSession(context);
 }
 
-export async function getCapitalStreamingSession(): Promise<{
+export async function getCapitalStreamingSession(
+  context = createCapitalRequestContext(),
+): Promise<{
   cst: string;
   securityToken: string;
   streamEndpoint: string | null;
 }> {
-  const session = await getSession();
+  const session = await getSession(context);
   return {
     cst: session.cst,
     securityToken: session.securityToken,
@@ -259,7 +345,13 @@ export async function getCapitalStreamingSession(): Promise<{
   };
 }
 
-async function getSession(): Promise<CapitalSession> {
+export function capitalSessionStatus(): "ready" | "not_ready" {
+  return cachedSession && Date.now() - cachedSession.lastUsedAt < SESSION_IDLE_LIMIT_MS
+    ? "ready"
+    : "not_ready";
+}
+
+async function getSession(context: CapitalRequestContext): Promise<CapitalSession> {
   const settings = config();
   resetScopedCaches(settings.scope);
 
@@ -271,7 +363,8 @@ async function getSession(): Promise<CapitalSession> {
   }
 
   if (!sessionRequest) {
-    sessionRequest = createSession(settings)
+    context.sessionRefreshHappened = true;
+    sessionRequest = createSession(settings, context)
       .then((session) => {
         cachedSession = session;
         return session;
@@ -280,6 +373,8 @@ async function getSession(): Promise<CapitalSession> {
         sessionRequest = null;
       });
   }
+
+  if (!cachedSession) context.sessionRefreshHappened = true;
 
   return sessionRequest;
 }
@@ -297,16 +392,6 @@ async function errorCode(response: Response): Promise<string> {
   }
 }
 
-function isAuthenticationError(status: number, code: string): boolean {
-  return (
-    status === 401 ||
-    status === 403 ||
-    code.includes("token") ||
-    code.includes("session") ||
-    code.includes("auth")
-  );
-}
-
 async function waitForGetRequestSlot(): Promise<void> {
   const scheduled = getRequestQueue.then(async () => {
     const waitMs = Math.max(0, nextGetRequestAt - Date.now());
@@ -319,25 +404,48 @@ async function waitForGetRequestSlot(): Promise<void> {
   await scheduled;
 }
 
-async function capitalGet(path: string, step: CapitalRequestStep): Promise<unknown> {
+async function capitalGet(
+  path: string,
+  step: CapitalRequestStep,
+  context: CapitalRequestContext,
+): Promise<unknown> {
   const settings = config();
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const session = await getSession();
+  for (let authAttempt = 0; authAttempt < 2; authAttempt += 1) {
+    const session = await getSession(context);
     let response: Response;
     try {
-      await waitForGetRequestSlot();
-      response = await fetch(`${settings.baseUrl}${path}`, {
-        method: "GET",
-        cache: "no-store",
-        headers: {
-          CST: session.cst,
-          "X-SECURITY-TOKEN": session.securityToken,
+      response = await fetchWithTimeoutRetry(
+        `${settings.baseUrl}${path}`,
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            CST: session.cst,
+            "X-SECURITY-TOKEN": session.securityToken,
+          },
         },
+        {
+          timeoutMs: MARKET_TIMEOUT_MS,
+          maxAttempts: 3,
+          metrics: context,
+          beforeAttempt: waitForGetRequestSlot,
+          onFailure: ({ status, statusText, timedOut }) =>
+            logCapitalError(step, context, {
+              status,
+              statusText: timedOut ? "Request timed out" : statusText,
+            }),
+        },
+      );
+    } catch (error) {
+      const code =
+        error instanceof UpstreamFetchError && error.code === "TIMEOUT"
+          ? "CAPITAL_TIMEOUT"
+          : "CAPITAL_UPSTREAM";
+      logCapitalError(step, context, {
+        statusText: code === "CAPITAL_TIMEOUT" ? "Request timed out" : "Network error",
       });
-    } catch {
-      logCapitalError(step, {});
-      throw new CapitalApiError("Capital.com request failed");
+      throw new CapitalApiError(code, (error as Error).message, step);
     }
 
     if (response.ok) {
@@ -345,29 +453,48 @@ async function capitalGet(path: string, step: CapitalRequestStep): Promise<unkno
       try {
         return await response.json();
       } catch {
-        logCapitalError(step, {
+        logCapitalError(step, context, {
           status: response.status,
           statusText: response.statusText,
         });
-        throw new CapitalApiError("Capital.com returned invalid JSON");
+        throw new CapitalApiError(
+          "CAPITAL_INVALID_RESPONSE",
+          "Capital.com returned invalid JSON",
+          step,
+          response.status,
+        );
       }
     }
 
     const code = await errorCode(response);
-    logCapitalError(step, {
+    logCapitalError(step, context, {
       status: response.status,
       statusText: response.statusText,
       capitalErrorCode: code,
     });
-    if (attempt === 0 && isAuthenticationError(response.status, code)) {
+    if (authAttempt === 0 && isAuthenticationFailure(response.status, code)) {
       invalidateSession(session);
+      context.retryCount += 1;
       continue;
     }
 
-    throw new CapitalApiError("Capital.com request was rejected");
+    const failureCode =
+      response.status === 429
+        ? "CAPITAL_RATE_LIMIT"
+        : response.status >= 500
+          ? "CAPITAL_UPSTREAM"
+          : isAuthenticationFailure(response.status, code)
+            ? "CAPITAL_AUTH"
+            : "CAPITAL_UPSTREAM";
+    throw new CapitalApiError(
+      failureCode,
+      "Capital.com request was rejected",
+      step,
+      response.status,
+    );
   }
 
-  throw new CapitalApiError("Capital.com request failed");
+  throw new CapitalApiError("CAPITAL_AUTH", "Capital.com session refresh failed", step);
 }
 
 function normalized(value: unknown): string {
@@ -398,14 +525,19 @@ function candidateScore(candidate: SearchMarket, target: MarketTarget, term: str
   return score;
 }
 
-async function discoverMarket(symbol: PublicSymbol): Promise<MarketMapping> {
+async function discoverMarket(
+  symbol: PublicSymbol,
+  context: CapitalRequestContext,
+): Promise<MarketMapping> {
   const target = TARGETS[symbol];
 
   for (const term of target.searchTerms) {
     const query = new URLSearchParams({ searchTerm: term });
-    const payload = (await capitalGet(`/api/v1/markets?${query}`, "single_market")) as {
-      markets?: unknown;
-    };
+    const payload = (await capitalGet(
+      `/api/v1/markets?${query}`,
+      "single_market",
+      context,
+    )) as { markets?: unknown };
     if (!Array.isArray(payload.markets)) continue;
 
     const ranked = payload.markets
@@ -426,16 +558,23 @@ async function discoverMarket(symbol: PublicSymbol): Promise<MarketMapping> {
     }
   }
 
-  throw new CapitalApiError(`Capital.com market not found: ${symbol}`);
+  throw new CapitalApiError(
+    "CAPITAL_INVALID_RESPONSE",
+    `Capital.com market not found: ${symbol}`,
+    "single_market",
+  );
 }
 
-export async function resolveMarket(symbol: PublicSymbol): Promise<MarketMapping> {
+export async function resolveMarket(
+  symbol: PublicSymbol,
+  context = createCapitalRequestContext(),
+): Promise<MarketMapping> {
   const settings = config();
   resetScopedCaches(settings.scope);
   if (marketCache[symbol]) return marketCache[symbol];
 
   if (!marketRequests[symbol]) {
-    marketRequests[symbol] = discoverMarket(symbol)
+    marketRequests[symbol] = discoverMarket(symbol, context)
       .then((mapping) => {
         marketCache[symbol] = mapping;
         return mapping;
@@ -448,13 +587,15 @@ export async function resolveMarket(symbol: PublicSymbol): Promise<MarketMapping
   return marketRequests[symbol];
 }
 
-export async function resolveAllMarkets(): Promise<Record<PublicSymbol, MarketMapping | null>> {
+export async function resolveAllMarkets(
+  context = createCapitalRequestContext(),
+): Promise<Record<PublicSymbol, MarketMapping | null>> {
   const result = {} as Record<PublicSymbol, MarketMapping | null>;
 
   // Sequential discovery avoids bursting through Capital.com's request limit.
   for (const symbol of PUBLIC_SYMBOLS) {
     try {
-      result[symbol] = await resolveMarket(symbol);
+      result[symbol] = await resolveMarket(symbol, context);
     } catch {
       result[symbol] = null;
     }
@@ -463,32 +604,52 @@ export async function resolveAllMarkets(): Promise<Record<PublicSymbol, MarketMa
   return result;
 }
 
-export async function getMarketSnapshot(epic: string): Promise<CapitalSnapshot> {
+export async function getMarketSnapshot(
+  epic: string,
+  context = createCapitalRequestContext(),
+): Promise<CapitalSnapshot> {
   const encodedEpic = encodeURIComponent(epic);
-  const payload = await capitalGet(`/api/v1/markets/${encodedEpic}`, "single_market");
+  const payload = await capitalGet(
+    `/api/v1/markets/${encodedEpic}`,
+    "single_market",
+    context,
+  );
   if (!payload || typeof payload !== "object") {
-    logCapitalError("single_market", {
+    logCapitalError("single_market", context, {
       status: 200,
       statusText: "Invalid response schema",
     });
-    throw new CapitalApiError("Capital.com market response is invalid");
+    throw new CapitalApiError(
+      "CAPITAL_INVALID_RESPONSE",
+      "Capital.com market response is invalid",
+      "single_market",
+      200,
+    );
   }
   return payload as CapitalSnapshot;
 }
 
 export async function getMarketSummaries(
   epics: readonly string[],
+  context = createCapitalRequestContext(),
 ): Promise<Record<string, CapitalMarketSummary>> {
   const query = new URLSearchParams({ epics: epics.join(",") });
-  const payload = (await capitalGet(`/api/v1/markets?${query}`, "markets_batch")) as {
-    markets?: unknown;
-  };
+  const payload = (await capitalGet(
+    `/api/v1/markets?${query}`,
+    "markets_batch",
+    context,
+  )) as { markets?: unknown };
   if (!Array.isArray(payload.markets)) {
-    logCapitalError("markets_batch", {
+    logCapitalError("markets_batch", context, {
       status: 200,
       statusText: "Invalid response schema",
     });
-    throw new CapitalApiError("Capital.com markets response is invalid");
+    throw new CapitalApiError(
+      "CAPITAL_INVALID_RESPONSE",
+      "Capital.com markets response is invalid",
+      "markets_batch",
+      200,
+    );
   }
 
   const summaries: Record<string, CapitalMarketSummary> = {};

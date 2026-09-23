@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import {
+  CapitalApiError,
   capitalEnvironment,
+  createCapitalRequestContext,
   ensureCapitalSession,
   getMarketSummaries,
   getMarketSnapshot,
   PUBLIC_SYMBOLS,
   type CapitalSnapshot,
   type CapitalMarketSummary,
+  type CapitalRequestContext,
   type PublicSymbol,
 } from "@/lib/capital";
 import { PUBLIC_NO_STORE_HEADERS } from "@/lib/http";
@@ -14,6 +17,7 @@ import {
   getStreamingQuotes,
   type CapitalStreamingQuote,
 } from "@/lib/capital-stream";
+import { getLastGood, recordSuccessfulQuotes } from "@/lib/quote-state";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -170,36 +174,85 @@ function normalizeStreamingQuote(
   };
 }
 
-function upstreamUnavailable(step: "authentication" | "markets_batch" | "single_market") {
+function publicError(error: unknown) {
+  const code = error instanceof CapitalApiError ? error.code : "CAPITAL_UPSTREAM";
+  const messages: Record<string, string> = {
+    CAPITAL_AUTH: "Capital.com authentication failed",
+    CAPITAL_CONFIG: "Capital.com is not configured",
+    CAPITAL_INVALID_RESPONSE: "Capital.com returned an invalid response",
+    CAPITAL_RATE_LIMIT: "Capital.com rate limit reached",
+    CAPITAL_TIMEOUT: "Capital.com request timed out",
+    CAPITAL_UPSTREAM: "Capital.com upstream unavailable",
+  };
+  return { code, message: messages[code] ?? messages.CAPITAL_UPSTREAM };
+}
+
+function logQuoteRequest(
+  context: CapitalRequestContext,
+  startedAt: number,
+  upstreamStatus: "ok" | "partial" | "failed",
+  quotesReturned: number,
+) {
+  console.info({
+    event: "quotes_request",
+    requestId: context.requestId,
+    upstreamStatus,
+    durationMs: Date.now() - startedAt,
+    retryCount: context.retryCount,
+    sessionRefreshHappened: context.sessionRefreshHappened,
+    quotesReturned,
+  });
+}
+
+function upstreamUnavailable(
+  step: "authentication" | "markets_batch" | "single_market",
+  error: unknown,
+  context: CapitalRequestContext,
+  startedAt: number,
+) {
+  const fetchedAt = new Date().toISOString();
+  logQuoteRequest(context, startedAt, "failed", 0);
   return json(
     {
-      server_time: new Date().toISOString(),
+      ok: false,
+      server_time: fetchedAt,
+      serverTime: fetchedAt,
+      fetchedAt,
       source: "Capital.com Public API",
-      error: "Capital.com upstream unavailable",
+      provider: "Capital.com",
+      error: publicError(error),
       step,
+      requestId: context.requestId,
+      diagnostics: {
+        retryCount: context.retryCount,
+        sessionRefreshHappened: context.sessionRefreshHappened,
+      },
+      lastGood: getLastGood(Date.parse(fetchedAt)),
     },
     502,
   );
 }
 
 export async function GET() {
+  const startedAt = Date.now();
+  const context = createCapitalRequestContext();
   let environment: "demo" | "live";
   try {
     environment = capitalEnvironment();
-    await ensureCapitalSession();
-  } catch {
-    return upstreamUnavailable("authentication");
+    await ensureCapitalSession(context);
+  } catch (error) {
+    return upstreamUnavailable("authentication", error, context, startedAt);
   }
 
   const epics = PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]);
   const [requests, streamingQuotes, batchResult] = await Promise.all([
     Promise.allSettled(
       PUBLIC_SYMBOLS.map((symbol) => {
-        return getMarketSnapshot(QUOTE_EPICS[symbol]);
+        return getMarketSnapshot(QUOTE_EPICS[symbol], context);
       }),
     ),
-    getStreamingQuotes(epics, 2500),
-    getMarketSummaries(epics)
+    getStreamingQuotes(epics, 2500, context),
+    getMarketSummaries(epics, context)
       .then((summaries) => ({ summaries, timestampError: undefined }))
       .catch(
         (): {
@@ -238,13 +291,41 @@ export async function GET() {
     if (websocketQuote || restQuote) availableCount += 1;
   });
 
-  if (availableCount === 0) return upstreamUnavailable("single_market");
+  if (availableCount === 0) {
+    const firstFailure = requests.find(
+      (request): request is PromiseRejectedResult => request.status === "rejected",
+    );
+    return upstreamUnavailable(
+      "single_market",
+      firstFailure?.reason,
+      context,
+      startedAt,
+    );
+  }
 
+  const fetchedAt = serverTime.toISOString();
+  recordSuccessfulQuotes(markets, fetchedAt);
+  logQuoteRequest(
+    context,
+    startedAt,
+    availableCount === PUBLIC_SYMBOLS.length ? "ok" : "partial",
+    availableCount,
+  );
   return json({
-    server_time: serverTime.toISOString(),
+    ok: true,
+    server_time: fetchedAt,
+    serverTime: fetchedAt,
+    fetchedAt,
     source: "Capital.com Public API",
+    provider: "Capital.com",
     environment,
     markets,
+    quotes: markets,
+    requestId: context.requestId,
+    diagnostics: {
+      retryCount: context.retryCount,
+      sessionRefreshHappened: context.sessionRefreshHappened,
+    },
   });
 }
 

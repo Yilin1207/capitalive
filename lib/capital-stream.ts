@@ -1,7 +1,11 @@
 import "server-only";
 
 import WebSocket, { type RawData } from "ws";
-import { getCapitalStreamingSession } from "@/lib/capital";
+import {
+  createCapitalRequestContext,
+  getCapitalStreamingSession,
+  type CapitalRequestContext,
+} from "@/lib/capital";
 
 export type CapitalStreamingQuote = {
   epic: string;
@@ -32,30 +36,37 @@ function connectUrl(endpoint: string): string | null {
   }
 }
 
-function safeStreamingLog(event: string) {
-  console.error({ step: "websocket", event });
+function safeStreamingLog(event: string, context: CapitalRequestContext) {
+  console.error({
+    requestId: context.requestId,
+    step: "websocket",
+    event,
+    retryCount: context.retryCount,
+    sessionRefreshHappened: context.sessionRefreshHappened,
+  });
 }
 
 export async function getStreamingQuotes(
   epics: readonly string[],
   timeoutMs = 2500,
+  context = createCapitalRequestContext(),
 ): Promise<Record<string, CapitalStreamingQuote>> {
   let session: Awaited<ReturnType<typeof getCapitalStreamingSession>>;
   try {
-    session = await getCapitalStreamingSession();
+    session = await getCapitalStreamingSession(context);
   } catch {
-    safeStreamingLog("session_unavailable");
+    safeStreamingLog("session_unavailable", context);
     return {};
   }
 
   if (!session.streamEndpoint) {
-    safeStreamingLog("stream_endpoint_unavailable");
+    safeStreamingLog("stream_endpoint_unavailable", context);
     return {};
   }
 
   const url = connectUrl(session.streamEndpoint);
   if (!url) {
-    safeStreamingLog("invalid_stream_endpoint");
+    safeStreamingLog("invalid_stream_endpoint", context);
     return {};
   }
 
@@ -79,7 +90,7 @@ export async function getStreamingQuotes(
     try {
       socket = new WebSocket(url);
     } catch {
-      safeStreamingLog("connection_failed");
+      safeStreamingLog("connection_failed", context);
       clearTimeout(timeout);
       resolve(quotes);
       return;
@@ -131,7 +142,7 @@ export async function getStreamingQuotes(
     });
 
     socket.once("error", () => {
-      safeStreamingLog("socket_error");
+      safeStreamingLog("socket_error", context);
       finish(true);
     });
 

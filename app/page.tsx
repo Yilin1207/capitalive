@@ -8,6 +8,9 @@ export default function Home() {
       <p>
         <a href="/api/markets">GET /api/markets</a>
       </p>
+      <p>
+        <a href="/api/health">GET /api/health</a>
+      </p>
       <p>Source: Capital.com Public API</p>
     </main>
   );
