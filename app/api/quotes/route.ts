@@ -34,6 +34,9 @@ const QUOTE_EPICS: Record<PublicSymbol, string> = {
 
 type MarketQuote = {
   source_type: "WEBSOCKET" | "REST";
+  retrieved_at?: string | null;
+  live_retrieval?: boolean;
+  provider_timestamp_available?: boolean;
   epic: string | null;
   name: string | null;
   bid: number | null;
@@ -71,6 +74,9 @@ function utcDate(value: unknown): Date | null {
 function unavailable(symbol: PublicSymbol, epic: string | null): MarketQuote {
   return {
     source_type: "REST",
+    retrieved_at: null,
+    live_retrieval: false,
+    provider_timestamp_available: false,
     epic,
     name: null,
     bid: null,
@@ -95,6 +101,7 @@ function normalizeQuote(
   epic: string,
   response: CapitalSnapshot,
   batchMarket: CapitalMarketSummary | undefined,
+  retrievedAt: string,
   serverTimeMs: number,
   timestampError?: string,
 ): MarketQuote | null {
@@ -113,6 +120,9 @@ function normalizeQuote(
 
   return {
     source_type: "REST",
+    retrieved_at: retrievedAt,
+    live_retrieval: true,
+    provider_timestamp_available: quoteTime !== null,
     epic:
       typeof response.instrument?.epic === "string"
         ? response.instrument.epic
@@ -248,7 +258,10 @@ export async function GET() {
   const [requests, streamingQuotes, batchResult] = await Promise.all([
     Promise.allSettled(
       PUBLIC_SYMBOLS.map((symbol) => {
-        return getMarketSnapshot(QUOTE_EPICS[symbol], context);
+        return getMarketSnapshot(QUOTE_EPICS[symbol], context).then((response) => ({
+          response,
+          retrievedAt: new Date().toISOString(),
+        }));
       }),
     ),
     getStreamingQuotes(epics, 2500, context),
@@ -277,8 +290,9 @@ export async function GET() {
         ? normalizeQuote(
             symbol,
             epic,
-            request.value,
+            request.value.response,
             batchResult.summaries[epic],
+            request.value.retrievedAt,
             serverTime.getTime(),
             batchResult.timestampError,
           )
