@@ -7,6 +7,7 @@ import {
   getMarketSummaries,
   getMarketSnapshot,
   PUBLIC_SYMBOLS,
+  VERIFIED_MARKETS,
   type CapitalSnapshot,
   type CapitalMarketSummary,
   type CapitalRequestContext,
@@ -21,22 +22,6 @@ import { getLastGood, recordSuccessfulQuotes } from "@/lib/quote-state";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
-
-const QUOTE_EPICS: Record<PublicSymbol, string> = {
-  NAS100: "US100",
-  JP225: "J225",
-  USDJPY: "USDJPY",
-  EURUSD: "EURUSD",
-  XAUUSD: "GOLD",
-  GER40: "DE40",
-  EU50: "EU50",
-  US500: "US500",
-  XAGUSD: "SILVER",
-  UK100: "UK100",
-  US10Y: "TY",
-  BRENT: "OIL_BRENT",
-  GBPUSD: "GBPUSD",
-};
 
 type MarketQuote = {
   source_type: "WEBSOCKET" | "REST";
@@ -260,11 +245,11 @@ export async function GET() {
     return upstreamUnavailable("authentication", error, context, startedAt);
   }
 
-  const epics = PUBLIC_SYMBOLS.map((symbol) => QUOTE_EPICS[symbol]);
+  const epics = PUBLIC_SYMBOLS.map((symbol) => VERIFIED_MARKETS[symbol].epic);
   const [requests, streamingQuotes, batchResult] = await Promise.all([
     Promise.allSettled(
       PUBLIC_SYMBOLS.map((symbol) => {
-        return getMarketSnapshot(QUOTE_EPICS[symbol], context).then((response) => ({
+        return getMarketSnapshot(VERIFIED_MARKETS[symbol].epic, context).then((response) => ({
           response,
           retrievedAt: new Date().toISOString(),
         }));
@@ -289,7 +274,7 @@ export async function GET() {
   let availableCount = 0;
 
   PUBLIC_SYMBOLS.forEach((symbol, index) => {
-    const epic = QUOTE_EPICS[symbol];
+    const epic = VERIFIED_MARKETS[symbol].epic;
     const request = requests[index];
     const restQuote =
       request.status === "fulfilled"

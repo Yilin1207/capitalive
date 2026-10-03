@@ -3,6 +3,7 @@ import {
   ensureCapitalSession,
   PUBLIC_SYMBOLS,
   resolveAllMarkets,
+  VERIFIED_MARKETS,
   type MarketMapping,
   type PublicSymbol,
 } from "@/lib/capital";
@@ -19,13 +20,9 @@ export async function GET() {
   try {
     await ensureCapitalSession();
     const resolved = await resolveAllMarkets();
-    if (PUBLIC_SYMBOLS.some((symbol) => resolved[symbol] === null)) {
-      throw new Error("Market discovery incomplete");
-    }
-
     const markets = {} as Record<PublicSymbol, MarketMapping>;
     for (const symbol of PUBLIC_SYMBOLS) {
-      markets[symbol] = resolved[symbol] as MarketMapping;
+      markets[symbol] = resolved[symbol] ?? VERIFIED_MARKETS[symbol];
     }
     return json(markets);
   } catch {

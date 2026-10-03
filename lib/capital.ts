@@ -28,6 +28,22 @@ export const PUBLIC_SYMBOLS = [
 export type PublicSymbol = (typeof PUBLIC_SYMBOLS)[number];
 export type MarketMapping = { epic: string; name: string };
 
+export const VERIFIED_MARKETS: Record<PublicSymbol, MarketMapping> = {
+  NAS100: { epic: "US100", name: "US Tech 100" },
+  JP225: { epic: "J225", name: "Japan 225" },
+  USDJPY: { epic: "USDJPY", name: "USD/JPY" },
+  EURUSD: { epic: "EURUSD", name: "EUR/USD" },
+  XAUUSD: { epic: "GOLD", name: "Gold" },
+  GER40: { epic: "DE40", name: "Germany 40" },
+  EU50: { epic: "EU50", name: "EU Stocks 50" },
+  US500: { epic: "US500", name: "US 500" },
+  XAGUSD: { epic: "SILVER", name: "Silver" },
+  UK100: { epic: "UK100", name: "UK 100" },
+  US10Y: { epic: "TY", name: "US 10-Year T-Note" },
+  BRENT: { epic: "OIL_BRENT", name: "Brent Oil Spot" },
+  GBPUSD: { epic: "GBPUSD", name: "GBP/USD" },
+};
+
 type CapitalConfig = {
   apiKey: string;
   identifier: string;
