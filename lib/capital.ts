@@ -18,6 +18,12 @@ export const PUBLIC_SYMBOLS = [
   "XAUUSD",
   "GER40",
   "EU50",
+  "US500",
+  "XAGUSD",
+  "UK100",
+  "US10Y",
+  "BRENT",
+  "GBPUSD",
 ] as const;
 export type PublicSymbol = (typeof PUBLIC_SYMBOLS)[number];
 export type MarketMapping = { epic: string; name: string };
@@ -60,7 +66,7 @@ type SearchMarket = {
 export type CapitalMarketSummary = SearchMarket;
 
 type MarketTarget = {
-  instrumentType: "INDICES" | "CURRENCIES" | "COMMODITIES";
+  instrumentType: "INDICES" | "CURRENCIES" | "COMMODITIES" | "BONDS";
   searchTerms: readonly string[];
   aliases: readonly string[];
 };
@@ -120,6 +126,36 @@ const TARGETS: Record<PublicSymbol, MarketTarget> = {
     instrumentType: "INDICES",
     searchTerms: ["Europe 50", "EU50", "Euro Stoxx 50", "Euro Stoxx"],
     aliases: ["Europe 50", "EU50", "Euro Stoxx 50", "Euro Stoxx"],
+  },
+  US500: {
+    instrumentType: "INDICES",
+    searchTerms: ["US 500", "US500", "S&P 500"],
+    aliases: ["US 500", "US500", "S&P 500", "SPX"],
+  },
+  XAGUSD: {
+    instrumentType: "COMMODITIES",
+    searchTerms: ["Silver", "Silver Spot", "XAGUSD"],
+    aliases: ["Silver", "Silver Spot", "XAGUSD", "XAG/USD"],
+  },
+  UK100: {
+    instrumentType: "INDICES",
+    searchTerms: ["UK 100", "UK100", "FTSE 100"],
+    aliases: ["UK 100", "UK100", "FTSE 100", "FTSE100"],
+  },
+  US10Y: {
+    instrumentType: "BONDS",
+    searchTerms: ["US 10-Year T-Note Spot", "US 10-Year T-Note", "US10Y", "TY"],
+    aliases: ["US 10-Year T-Note Spot", "US 10-Year T-Note", "US10Y", "TY"],
+  },
+  BRENT: {
+    instrumentType: "COMMODITIES",
+    searchTerms: ["Brent Crude Oil Spot", "Oil - Brent", "Brent Crude Oil", "Brent"],
+    aliases: ["Brent Crude Oil Spot", "Oil - Brent", "Brent Crude Oil", "Brent"],
+  },
+  GBPUSD: {
+    instrumentType: "CURRENCIES",
+    searchTerms: ["GBP/USD", "GBPUSD", "British Pound / US Dollar"],
+    aliases: ["GBP/USD", "GBPUSD", "British Pound / US Dollar"],
   },
 };
 

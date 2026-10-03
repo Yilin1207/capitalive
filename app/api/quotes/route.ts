@@ -30,6 +30,12 @@ const QUOTE_EPICS: Record<PublicSymbol, string> = {
   XAUUSD: "GOLD",
   GER40: "DE40",
   EU50: "EU50",
+  US500: "US500",
+  XAGUSD: "SILVER",
+  UK100: "UK100",
+  US10Y: "TY",
+  BRENT: "OIL_BRENT",
+  GBPUSD: "GBPUSD",
 };
 
 type MarketQuote = {

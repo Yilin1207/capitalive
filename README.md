@@ -8,6 +8,9 @@ account-changing, or preference-changing endpoints.
 - `GET /api/quotes` — live WebSocket quotes with REST fallback. Optional cache-busting
   parameters such as `?cb=1727000000000` are ignored safely.
 - `GET /api/markets` — verified public-symbol to Capital.com EPIC mappings.
+
+Tracked symbols: `NAS100`, `JP225`, `USDJPY`, `EURUSD`, `XAUUSD`, `GER40`,
+`EU50`, `US500`, `XAGUSD`, `UK100`, `US10Y`, `BRENT`, and `GBPUSD`.
 - `GET /api/health` — process-local session and quote diagnostics without credentials.
 
 Quote responses retain the original `server_time` and `markets` fields and also expose
