@@ -100,16 +100,18 @@ test("actionable live requires both an open market and provider freshness", () =
   assert.equal(actionableLive(null, true), false);
 });
 
-test("rate context is explicitly price-based and never exposed as a yield spread", () => {
-  assert.equal(CONTEXT_MARKETS.DE2Y.representation, "rate_future");
-  assert.equal(CONTEXT_MARKETS.DE10Y.inverse_to_yield, true);
-  assert.equal(CONTEXT_MARKETS.UK10Y.inverse_to_yield, true);
+test("context does not expose unavailable futures or fake yield spreads", () => {
+  assert.deepEqual(Object.keys(CONTEXT_MARKETS), ["VIX"]);
+  assert.equal(CONTEXT_MARKETS.VIX.representation, "volatility_index");
   assert.equal(DERIVED.yield_spreads.available, false);
 });
 
 test("unconfirmed requested tenors stay explicitly unavailable", () => {
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.US2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.DE2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.DE10Y);
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.UK2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.UK10Y);
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP2Y);
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP10Y);
 });

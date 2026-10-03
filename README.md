@@ -13,22 +13,18 @@ Tracked symbols: `NAS100`, `JP225`, `USDJPY`, `EURUSD`, `XAUUSD`, `GER40`,
 `EU50`, `US500`, `XAGUSD`, `UK100`, `US10Y`, `BRENT`, and `GBPUSD`.
 
 `/api/quotes` keeps those 13 instruments in `markets`/`quotes` and adds optional
-macro context in `context_markets`:
+macro context in `context_markets`: `VIX` -> Volatility Index (`VIX`).
 
-- `DE2Y` -> German Schatz Dec-2026 future (`FGBSZ2026`)
-- `DE10Y` -> German Bund Dec-2026 future (`FGBLZ2026`)
-- `UK10Y` -> UK Long Gilt Dec-2026 future (`FLGZ6`)
-- `VIX` -> Volatility Index (`VIX`)
-
-These bond values are prices of bond CFDs or bond futures, not sovereign yields.
-Their metadata therefore uses `representation: "bond_price"` or
-`representation: "rate_future"` and `inverse_to_yield: true`. The API deliberately
+The existing `US10Y` value is a bond CFD price, not a sovereign yield. Its metadata
+therefore uses `representation: "bond_price"` and `inverse_to_yield: true`. The API deliberately
 does not calculate yield spreads from differences between bond prices. Requested
-`US2Y`, `UK2Y`, `JP2Y`, and `JP10Y` instruments remain explicitly listed as
-unavailable because no matching Capital.com market was confirmed.
+`US2Y`, `DE2Y`, `DE10Y`, `UK2Y`, `UK10Y`, `JP2Y`, and `JP10Y` instruments remain
+explicitly listed as unavailable. German Schatz, German Bund, and UK Long Gilt
+December-2026 contracts were visible in Capital.com's public catalogue but did not
+return quotes through the configured authenticated Demo API, so they are not exposed
+as live context data.
 
-The response also includes `metadata`, `relationships`, and `derived`. Context
-futures have an explicit contract month and must be reviewed before expiry.
+The response also includes `metadata`, `relationships`, and `derived`.
 - `GET /api/health` — process-local session and quote diagnostics without credentials.
 
 Quote responses retain the original `server_time` and `markets` fields and also expose
