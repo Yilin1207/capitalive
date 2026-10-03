@@ -8,6 +8,7 @@ export function markQuotesStale<T extends Record<string, object>>(quotes: T) {
         stale: true,
         actionable_live: false,
         live_retrieval: false,
+        quote_quality: "stale_last_good",
       },
     ]),
   );

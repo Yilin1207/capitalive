@@ -397,12 +397,6 @@ export async function getCapitalStreamingSession(
   };
 }
 
-export function capitalSessionStatus(): "ready" | "not_ready" {
-  return cachedSession && Date.now() - cachedSession.lastUsedAt < SESSION_IDLE_LIMIT_MS
-    ? "ready"
-    : "not_ready";
-}
-
 async function getSession(context: CapitalRequestContext): Promise<CapitalSession> {
   const settings = config();
   resetScopedCaches(settings.scope);

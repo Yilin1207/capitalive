@@ -25,7 +25,7 @@ return quotes through the configured authenticated Demo API, so they are not exp
 as live context data.
 
 The response also includes `metadata`, `relationships`, and `derived`.
-- `GET /api/health` — process-local session and quote diagnostics without credentials.
+- `GET /api/health` — active Capital.com REST/WebSocket self-check without credentials.
 
 Quote responses retain the original `server_time` and `markets` fields and also expose
 `ok`, `serverTime`, `fetchedAt`, and `quotes` aliases. Upstream calls use bounded timeout,
@@ -35,12 +35,22 @@ When Capital.com is unavailable, `/api/quotes` may include a best-effort `lastGo
 snapshot. Every saved quote is explicitly marked `stale: true` and `fresh: false`.
 It is also marked `actionable_live: false` and `live_retrieval: false`.
 This cache is process-local only: Vercel may recycle an instance or route a request to a
-different instance, so `lastGood` and health timestamps are not guaranteed to persist.
+different instance, so `lastGood` is not guaranteed to persist.
 
 `actionable_live` is true only when `market_status` is `TRADEABLE` and the quote is
 provider-fresh. A successful REST retrieval without a provider timestamp remains
 `fresh: false`; `retrieved_at` and `live_retrieval: true` show that it was fetched in
 the current request without incorrectly calling it a fresh market tick.
+
+`quote_quality` makes that distinction explicit: `provider_timestamp_verified`,
+`provider_timestamp_outside_freshness_window`, `live_rest_unverified_timestamp`,
+`stale_last_good`, or `unavailable`.
+
+Health does not report process uptime or rely on process-local quote state, because
+Vercel may execute `/api/health` and `/api/quotes` in different serverless instances.
+Instead it actively probes a known Capital.com market and reports `serviceStatus`
+separately from `capitalStatus`. A reachable endpoint with an unavailable upstream is
+therefore service `ready` and Capital `degraded`.
 
 ## Local setup
 

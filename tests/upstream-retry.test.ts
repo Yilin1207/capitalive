@@ -7,7 +7,12 @@ import {
   UpstreamFetchError,
 } from "../lib/upstream-retry.ts";
 import { markQuotesStale } from "../lib/quote-state-utils.ts";
-import { actionableLive } from "../lib/market-semantics.ts";
+import {
+  actionableLive,
+  capitalHealthStatus,
+  hasUsableSnapshot,
+  quoteQuality,
+} from "../lib/market-semantics.ts";
 import {
   CONTEXT_MARKETS,
   DERIVED,
@@ -98,6 +103,35 @@ test("actionable live requires both an open market and provider freshness", () =
   assert.equal(actionableLive("CLOSED", true), false);
   assert.equal(actionableLive("TRADEABLE", false), false);
   assert.equal(actionableLive(null, true), false);
+});
+
+test("quote quality distinguishes REST retrieval from stale and timestamp-verified data", () => {
+  assert.equal(
+    quoteQuality("REST", false, false),
+    "live_rest_unverified_timestamp",
+  );
+  assert.equal(
+    quoteQuality("WEBSOCKET", true, true),
+    "provider_timestamp_verified",
+  );
+  assert.equal(
+    quoteQuality("WEBSOCKET", true, false),
+    "provider_timestamp_outside_freshness_window",
+  );
+});
+
+test("health self-check accepts only finite bid and offer values", () => {
+  assert.equal(hasUsableSnapshot({ snapshot: { bid: 100, offer: 101 } }), true);
+  assert.equal(hasUsableSnapshot({ snapshot: { bid: 100, offer: null } }), false);
+  assert.equal(hasUsableSnapshot({ snapshot: { bid: Number.NaN, offer: 101 } }), false);
+  assert.equal(hasUsableSnapshot(null), false);
+});
+
+test("health is degraded only when both Capital.com transports fail", () => {
+  assert.equal(capitalHealthStatus(true, false), "ready");
+  assert.equal(capitalHealthStatus(false, true), "ready");
+  assert.equal(capitalHealthStatus(true, true), "ready");
+  assert.equal(capitalHealthStatus(false, false), "degraded");
 });
 
 test("context does not expose unavailable futures or fake yield spreads", () => {

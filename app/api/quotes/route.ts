@@ -28,7 +28,11 @@ import {
   UNAVAILABLE_CONTEXT_MARKETS,
   type ContextSymbol,
 } from "@/lib/market-context";
-import { actionableLive } from "@/lib/market-semantics";
+import {
+  actionableLive,
+  quoteQuality,
+  type QuoteQuality,
+} from "@/lib/market-semantics";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -55,6 +59,7 @@ type MarketQuote = {
   percentage_change: number | null;
   fresh: boolean;
   actionable_live: boolean;
+  quote_quality: QuoteQuality;
   timestamp_error?: string;
   error?: string;
 };
@@ -96,6 +101,7 @@ function unavailable(symbol: string, epic: string | null): MarketQuote {
     percentage_change: null,
     fresh: false,
     actionable_live: false,
+    quote_quality: "unavailable",
     error: "Capital.com quote unavailable",
   };
 }
@@ -129,12 +135,13 @@ function normalizeQuote(
     ageSeconds >= 0 &&
     ageSeconds <= 300 &&
     delaySeconds === 0;
+  const providerTimestampAvailable = quoteTime !== null;
 
   return {
     source_type: "REST",
     retrieved_at: retrievedAt,
     live_retrieval: true,
-    provider_timestamp_available: quoteTime !== null,
+    provider_timestamp_available: providerTimestampAvailable,
     epic:
       typeof response.instrument?.epic === "string"
         ? response.instrument.epic
@@ -158,6 +165,7 @@ function normalizeQuote(
     percentage_change: finiteNumber(snapshot.percentageChange),
     fresh,
     actionable_live: actionableLive(marketStatus, fresh),
+    quote_quality: quoteQuality("REST", providerTimestampAvailable, fresh),
     ...(timestampError ? { timestamp_error: timestampError } : {}),
   };
 }
@@ -194,6 +202,7 @@ function normalizeStreamingQuote(
     percentage_change: restQuote?.percentage_change ?? null,
     fresh,
     actionable_live: actionableLive(marketStatus, fresh),
+    quote_quality: quoteQuality("WEBSOCKET", true, fresh),
   };
 }
 
