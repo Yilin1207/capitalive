@@ -7,6 +7,12 @@ import {
   UpstreamFetchError,
 } from "../lib/upstream-retry.ts";
 import { markQuotesStale } from "../lib/quote-state-utils.ts";
+import { actionableLive } from "../lib/market-semantics.ts";
+import {
+  CONTEXT_MARKETS,
+  DERIVED,
+  UNAVAILABLE_CONTEXT_MARKETS,
+} from "../lib/market-context.ts";
 
 const noSleep = async () => undefined;
 
@@ -80,7 +86,30 @@ test("a last-good snapshot stays stale when one symbol is unavailable", () => {
   });
   assert.equal(quotes.NAS100.fresh, false);
   assert.equal(quotes.NAS100.stale, true);
+  assert.equal(quotes.NAS100.actionable_live, false);
+  assert.equal(quotes.NAS100.live_retrieval, false);
   assert.equal(quotes.EU50.fresh, false);
   assert.equal(quotes.EU50.stale, true);
   assert.equal((quotes.EU50 as { error?: string }).error, "Quote unavailable");
+});
+
+test("actionable live requires both an open market and provider freshness", () => {
+  assert.equal(actionableLive("TRADEABLE", true), true);
+  assert.equal(actionableLive("CLOSED", true), false);
+  assert.equal(actionableLive("TRADEABLE", false), false);
+  assert.equal(actionableLive(null, true), false);
+});
+
+test("rate context is explicitly price-based and never exposed as a yield spread", () => {
+  assert.equal(CONTEXT_MARKETS.DE2Y.representation, "rate_future");
+  assert.equal(CONTEXT_MARKETS.DE10Y.inverse_to_yield, true);
+  assert.equal(CONTEXT_MARKETS.UK10Y.inverse_to_yield, true);
+  assert.equal(DERIVED.yield_spreads.available, false);
+});
+
+test("unconfirmed requested tenors stay explicitly unavailable", () => {
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.US2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.UK2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP2Y);
+  assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP10Y);
 });
