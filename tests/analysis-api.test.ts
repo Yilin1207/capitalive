@@ -7,7 +7,7 @@ import { GET as audit, OPTIONS as auditOptions } from "../app/api/market-audit/r
 import { marketAudit } from "../lib/market-audit";
 import { unavailable } from "../lib/quote-normalization";
 import { HistoryError } from "../lib/candles";
-import type { CandleResponse } from "../lib/candle-data";
+import { HISTORY, type CandleResponse } from "../lib/candle-data";
 import { analyzeSeries } from "../lib/technical-analysis";
 
 test("analysis routes reject unsupported instruments, sides, layers and budgets before any upstream request", async () => {
@@ -67,7 +67,7 @@ test("audit explicit H4 IDs propagate to JSON and PNG URL; missing, provisional 
   const auto = analyzeSeries(data, "NAS100"), pair = auto.ranges.alternatives[0];
   const params = new URLSearchParams({ symbol: "NAS100", timeframe: "H4", range_high: pair.high!.id, range_low: pair.low!.id });
   const dependencies = {
-    getCandles: async (_symbol: string, timeframe: CandleResponse["timeframe"]) => ({ ...data, timeframe }),
+    getCandles: async (_symbol: string, timeframe: CandleResponse["timeframe"]) => ({ ...data, timeframe, candles: data.candles.slice(-HISTORY[timeframe].limit) }),
     getAnalysisQuote: async () => ({ ...unavailable("NAS100", "US100"), cache_hit: false, evaluated_at: data.fetched_at }),
   };
   const response = await marketAudit(new Request(`https://local/api/market-audit?${params}`), dependencies);

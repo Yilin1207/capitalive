@@ -1,0 +1,68 @@
+[
+  {
+    "name": "NAS100-audit",
+    "url": "https://capitalive.vercel.app/api/market-audit?symbol=NAS100&include_candles=1",
+    "checked_at": "2026-11-12T09:53:47.346Z",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 433963,
+    "sha256": "ed9722acc14364102edf57aa9e8615c2a3b8925c60e213773c7df408d60c2884",
+    "ok": true,
+    "schema": "2.0"
+  },
+  {
+    "name": "EURUSD-audit",
+    "url": "https://capitalive.vercel.app/api/market-audit?symbol=EURUSD&include_candles=1",
+    "checked_at": "2026-11-12T09:53:50.162Z",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 419828,
+    "sha256": "0e005bc85750d42d635f83bc31b5d6f55497c3e65cd81914968d87f018718b90",
+    "ok": true,
+    "schema": "2.0"
+  },
+  {
+    "name": "EU50-audit",
+    "url": "https://capitalive.vercel.app/api/market-audit?symbol=EU50&include_candles=1",
+    "checked_at": "2026-11-12T09:53:54.258Z",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 424230,
+    "sha256": "b7e2bec74c73004dc527bb6322cd55310b278ca0579f33926cbe6d6c539f6de4",
+    "ok": true,
+    "schema": "2.0"
+  },
+  {
+    "name": "structure",
+    "url": "https://capitalive.vercel.app/api/structure?symbol=EURUSD&mn1=60&w1=20&d1=30&h4=40",
+    "checked_at": "2026-11-12T09:53:58.719Z",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 52326,
+    "sha256": "5ed4ba69998e861bcfc115af36a244ffda9677cc5834c53bd5ed887b26c9a71e",
+    "ok": true
+  },
+  {
+    "name": "quotes",
+    "url": "https://capitalive.vercel.app/api/quotes",
+    "checked_at": "2026-11-12T09:54:03.176Z",
+    "status": 200,
+    "type": "application/json",
+    "bytes": 24582,
+    "sha256": "2a6ddcdfde9a1304e021f044a6fc2343aac11d45b6122cde6cbe7ebbd7cb71ec",
+    "ok": true
+  },
+  {
+    "name": "chart",
+    "url": "https://capitalive.vercel.app/api/chart?symbol=EURUSD&timeframe=H4",
+    "checked_at": "2026-11-12T09:54:09.238Z",
+    "status": 200,
+    "type": "image/png",
+    "bytes": 117093,
+    "sha256": "47733a965a5a642ef910b140e9bd427ca41febca3368634ec7bd28ad4fe0a259",
+    "dimensions": [
+      1400,
+      1000
+    ]
+  }
+]

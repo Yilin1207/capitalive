@@ -1,0 +1,184 @@
+
+> capital-market-feed@1.0.0 test
+> node --conditions=react-server --import tsx --test tests/*.test.ts
+
+✔ analysis routes reject unsupported instruments, sides, layers and budgets before any upstream request (22.7379ms)
+✔ audit assembles all four frames, flags unverified tick, retains provenance, bounded symbol scope and PNG URLs (57.0122ms)
+✔ audit can return one timeframe plus all-frame targets, with raw candles explicitly requested (42.6183ms)
+✔ audit explicit H4 IDs propagate to JSON and PNG URL; missing, provisional and wrong-side IDs are rejected (154.0271ms)
+✔ audit never returns a complete-looking partial structure; 429 and sanitized failures retain contract (3.0153ms)
+✔ real PNG route uses Capital transport, reuses cached history, handles side/layer toggles and emits only image bytes (1009.1188ms)
+✔ durable archive, exact/as-of separation, minute estimate and immutable EDGE (183.3261ms)
+✔ strict UTC timestamps: never uses local time or accepts date rollover (2.5528ms)
+✔ sorts and deduplicates provider timestamps, preserves both OHLC sides exactly (13.979ms)
+✔ bad OHLC side becomes null without averaging or copying the other side (0.3392ms)
+✔ discards crossed sides, future and invalid timestamps, non-finite and invalid OHLC (0.6785ms)
+✔ W1: closure is calculated as of fetch time, including exact boundary (5.2858ms)
+✔ D1: closure is calculated as of fetch time, including exact boundary (0.2641ms)
+✔ H4: closure is calculated as of fetch time, including exact boundary (0.1897ms)
+✔ limits default correctly and reject overflow, zero, decimals and malformed numbers (0.3844ms)
+✔ cache coalesces concurrent requests, expires and never saves failures (0.8737ms)
+✔ bounded limiter rejects over-budget requests and resets after its window (0.5473ms)
+✔ bundled font renders distinct real Latin/digit glyphs with system fonts disabled (24.4019ms)
+▶ real route handlers and shared Capital transport (mock upstream only)
+  ✔ NAS100, EURUSD, XAUUSD, EU50 × W1/D1/H4; mapping, both sides, defaults and public CORS (1250.3131ms)
+  ✔ structure reuses candle cache and honors each count (0.7946ms)
+  ✔ bad requests never contact upstream (0.8026ms)
+  ✔ unsupported and empty timeframes return explicit errors, never H4 (0.6246ms)
+  ✔ LIVE uses separate cache and max=1000 (108.7019ms)
+{
+  requestId: 'f2592a06-57b4-4523-8bd7-a7a62df96cd0',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+  ✔ expired session is refreshed once and original prices request retried (222.4159ms)
+  ✔ idle session is renewed before sending the historical request (1.5493ms)
+{
+  requestId: '108a4937-7650-4bdf-83d9-a5216729741e',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '108a4937-7650-4bdf-83d9-a5216729741e',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 1,
+  sessionRefreshHappened: true
+}
+  ✔ repeated auth failure stops after one refresh (228.9015ms)
+  ✔ empty/invalid data fails explicitly and errors never enter cache (335.3064ms)
+{
+  event: 'quotes_request',
+  requestId: '7d9fdb30-d858-4541-99c8-6d21ec0ead0b',
+  upstreamStatus: 'ok',
+  durationMs: 1717,
+  retryCount: 0,
+  sessionRefreshHappened: false,
+  quotesReturned: 13
+}
+  ✔ quotes retains its full existing contract and all 13 symbols (1721.1123ms)
+{
+  requestId: '3871770d-c446-40d1-87c5-2173e02f424a',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: null,
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '3871770d-c446-40d1-87c5-2173e02f424a',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: null,
+  retryCount: 1,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '3871770d-c446-40d1-87c5-2173e02f424a',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: 'error.too-many-requests',
+  retryCount: 2,
+  sessionRefreshHappened: false
+}
+  ✔ 429 retries are bounded, returned publicly with Retry-After and cooldown (571.2295ms)
+{
+  requestId: 'e23c1e97-ee12-4ed5-9d5a-b0c54d605939',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: 'error.too-many-requests',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+  ✔ provider Retry-After is retained by the shared transport (111.5776ms)
+  ✔ public load limit returns JSON 429 with CORS without touching upstream (22.3435ms)
+✔ real route handlers and shared Capital transport (mock upstream only) (4580.7897ms)
+✔ NAS100 regression: crossed current 04:00 bar is diagnosed even when older bars fill the requested count (21.7458ms)
+✔ missing upstream current bar is distinct from filtering, without claiming a market-hours outage (0.5147ms)
+✔ recent retrieval does not claim recent price updates; cache boundary is not a provider omission (1.3377ms)
+✔ current W1, D1, H4 UTC periods have correct starts and forming bars (4.5173ms)
+✔ weekend intervals are grouped and not filled with synthetic candles (0.7453ms)
+✔ rejected duplicate does not falsely mark an accepted timestamp as missing (0.2932ms)
+✔ diagnostics stay bounded and focus on the requested window (14.1814ms)
+✔ EURUSD: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (393.5253ms)
+✔ NAS100: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (278.8795ms)
+✔ EU50: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (234.7847ms)
+✔ NAS100 Weekly region independently has closed June/July tests; November one close and open week do not confirm reversal (31.7294ms)
+✔ risk returns null without a confirmed structural stop and preserves touched unswept D1 targets (34.8685ms)
+✔ htf-zones uses one shared four-frame snapshot and preserves request validation/CORS (94.9526ms)
+✔ over-budget evidence yields explicit error with counts rather than a truncated successful catalog (160.719ms)
+✔ SNR independent episodes require a whole bar away; a continuous stay is one test (17.2896ms)
+✔ strict wick sweep and equality have distinct semantics and neither establishes a break (5.3079ms)
+✔ two closes then a later retest and follow-through are needed for role reversal and failed reclaim (9.6021ms)
+✔ resistance-to-support is symmetric, and an open bar cannot confirm a flip (5.6545ms)
+✔ frozen origin bands and past events do not repaint when later volatility increases (7.9301ms)
+✔ known invalid rows reset confirmations; unknown invalid timestamp suppresses them all (3.8987ms)
+✔ invalid OHLC, crossed bid/ask, partial monthly aggregate and bad ordering are never accepted facts (8.0314ms)
+✔ all zones are returned and null reference stays null without JSON Infinity (2.5548ms)
+✔ trailing rejected observation makes current zone state unknown without erasing historical proof (2.9678ms)
+✔ price traversals without repeated nearby endpoints cannot masquerade as tested SNR (14.5737ms)
+✔ a rejected still-forming period cannot erase historical closed SNR significance (1.9531ms)
+✔ HH/HL, BOS and CHOCH use confirmed pivots and strict closed closes chronologically (10.5974ms)
+✔ wick-only and unclosed break bars never confirm BOS/CHOCH or order blocks (4.524ms)
+✔ OB requires displaced closed break; breaker requires later closed invalidation, retest and follow-through (8.5582ms)
+✔ known gap blocks structure confirmation and unknown timestamps suppress structure (6.0335ms)
+✔ MN1 calendar aggregation preserves each side, year rollover, gaps and forming month (20.2976ms)
+✔ MN1 never hides a missing price side or rejected daily observation (0.4662ms)
+✔ MN1 routes load 60 real calendar months for all seven symbols through bounded DAY windows (2925.3562ms)
+✔ WebSocket acknowledgements are per epic and never manufacture a tick (1.1037ms)
+✔ WebSocket ticks validate prices and milliseconds, retain receipt time, handle reordering (1.529ms)
+✔ REST timestamp never derives from HTTP retrieval time or a time-of-day (0.4975ms)
+✔ stream lifecycle uses documented URL without session metadata, confirms subscription, records ticks, closes and supports abort (57.9045ms)
+✔ strict fractal needs TWO closed right bars; forming center/right and ties cannot confirm (3.6403ms)
+✔ low fractals mirror high rules; equality on the left also rejects (0.5021ms)
+✔ equal touch by a forming candle is separate from a strict sweep; both timestamps persist (0.91ms)
+✔ low touch is equality; strict penetration sweeps without a close-back requirement (0.2518ms)
+✔ explicit H4 range honors confirmed IDs instead of latest automatic pivots; rejects invalid pairs (1.4635ms)
+✔ ranges use confirmed pivots, exact EQ, provenance, alternatives; missing pivot stays unconfirmed (0.6694ms)
+✔ known validation holes are never bridged into a five-bar fractal or FVG (0.2373ms)
+✔ missing calendar month or incomplete monthly source cannot confirm a monthly fractal (0.301ms)
+✔ unlocatable invalid timestamps suppress confirmations rather than assume adjacency (0.1736ms)
+✔ bullish FVG tracks progressive wick penetration including forming bar, then full fill (0.2622ms)
+✔ bearish FVG uses upper residual; open third candle is provisional only (0.1918ms)
+✔ EURUSD residual 0.2 pip remains visible but is NOT a material target; settings and ATR apply (0.2477ms)
+✔ nearest D1+ target respects side, swept/filled/material exclusions and intermediate H4 obstacles (0.4974ms)
+✔ cross timeframe checker flags contradictory closed extrema but skips forming snapshots (0.28ms)
+✔ fresh retrieval cannot substitute a missing/stale/future provider tick timestamp (0.4461ms)
+✔ recorded Capital.com DEMO EURUSD: both sides, exact pivot/EQ/FVG invariants and PNG (115.2299ms)
+✔ recorded Capital.com DEMO NAS100: both sides, exact pivot/EQ/FVG invariants and PNG (103.9126ms)
+✔ recorded Capital.com DEMO EU50: both sides, exact pivot/EQ/FVG invariants and PNG (75.9385ms)
+✔ history retries honor Retry-After and leave long delays to the server cooldown (28.6232ms)
+✔ returns a normal response without retry (0.5287ms)
+✔ retries 429 and 500 responses (0.8013ms)
+✔ does not retry a permanent 400 response (0.4642ms)
+✔ aborts timeout and stops after configured attempts (15.5147ms)
+✔ recognizes an expired session response (0.2574ms)
+✔ a last-good snapshot stays stale when one symbol is unavailable (0.2843ms)
+✔ actionable live requires both an open market and provider freshness (0.1923ms)
+✔ quote quality distinguishes REST retrieval from stale and timestamp-verified data (1.907ms)
+✔ health self-check accepts only finite bid and offer values (0.3681ms)
+✔ health is degraded only when both Capital.com transports fail (0.1896ms)
+✔ context does not expose unavailable futures or fake yield spreads (0.1457ms)
+✔ unconfirmed requested tenors stay explicitly unavailable (0.1117ms)
+ℹ tests 99
+ℹ suites 0
+ℹ pass 99
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5233.6937

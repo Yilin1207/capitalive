@@ -1,5 +1,61 @@
 # Capital.com Market Feed
 
+## Capitalive 2.1: HTF structure and SNR (not deployed)
+
+Prepared on `feature/capitalive-2-1-htf-snr`; production remains the verified 2.0
+deployment below. See [Russian 2.1 audit](CAPITALIVE_2_1_AUDIT_RU.md).
+
+```text
+GET /api/htf-zones?symbol=NAS100
+GET /api/htf-zones?symbol=EURUSD&side=ask&entry=1.12
+GET /api/market-audit?symbol=EU50
+GET /api/market-audit?symbol=EURUSD&htf=0
+```
+
+`market-audit` adds `htf` and advertises schema `2.1`; existing fields retain their
+meaning. `htf=0` explicitly requests the original analysis without the additional
+HTF catalog. `htf-zones` exposes the same HTF snapshot without making self-HTTP calls.
+`timeframe` still scopes only the legacy `structure`: HTF always includes all four
+frames, as declared in `response_scope`. Explicit H4 fractal range selection is preserved.
+
+`htf.snr` retains every historical OHLC endpoint candidate and its closed-bar evidence.
+Bands are frozen at origin with half-width `max(3 units, 0.05 * causal ATR14)`.
+Significance requires at least two endpoint-backed episodes separated by a whole
+bar away and at least three source bars, with a measurable closed reaction. Continuous
+overlap is one episode. Reactions require a close at least 0.3 ATR away within three
+bars. A break needs two consecutive closed closes beyond the band; role reversal
+additionally needs a later rejecting retest and subsequent closed follow-through.
+These thresholds, bands, scores, OB rules and obstacle ranking are **heuristics**.
+They are not probabilities, observed orders, or standardized market facts.
+
+`htf.structure` adds HH/HL/LH/LL, closed BOS/CHOCH and explicitly defined body-zone
+OB/Breaker hypotheses. `htf.catalog` combines all candidates, priorities,
+nearest zones, conflicts and downgrade reasons. SNR evidence is stored once under
+`snr[timeframe].zones`; catalog evidence references identify the complete source.
+No top-N filter removes MN1/W1 candidates. Confirmed time is UTC candle close;
+event `time`, `reaction_at` and test times identify the provider candle start.
+
+`htf.risk` gives both hypothetical directions, structural H4 SL, first obstacle,
+nearest eligible D1+ fractal/FVG TP and geometric RR. `entry` must be finite and
+positive; omission uses the selected quote side. Missing confirmed SL produces null
+SL/RR. SNR, OB and H4 cannot become the principal TP. Exact fractal touches remain
+eligible until a strict sweep. Spread, execution costs and slippage are not estimated.
+
+Known data barriers reset proof; unlocatable rejected rows suppress confirmation.
+Monthly partial aggregates cannot establish patterns. DEMO/LIVE and limited session
+coverage remain explicit. `VERIFIED/PARTIAL/UNVERIFIED` describes checks, never returns.
+No missing candles are synthesized. The response budget is 4,250,000 bytes; a larger
+snapshot returns an explicit `503 ANALYSIS_RESPONSE_TOO_LARGE`, never a silently
+truncated catalog. Export full evidence offline in that case; pagination remains a
+release limitation. All six captured symbol/side responses fit the budget.
+
+Reproduce the captured-data audit with
+`node --conditions=react-server --import tsx scripts/verify-htf-upgrade.ts`
+after running `node scripts/capture-htf-baseline.mjs` (read-only public HTTP).
+Tests use checked-in `tests/fixtures/htf-*.json` and do not require credentials.
+`vercel.json` disables Git deployment only for this review branch; production
+settings and the `main` branch policy are unchanged.
+
 ## Capitalive 2.0: technical analysis
 
 **Production release verified 2026-11-10:**
