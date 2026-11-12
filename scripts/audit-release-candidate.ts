@@ -7,7 +7,7 @@ import {marketAudit} from '../lib/market-audit';
 import {htfZones} from '../lib/htf-http';
 
 async function main(){
-  const root='verification/capitalive-v2-1/rc';mkdirSync(root,{recursive:true});const results=[];
+  const root=process.env.CAPITALIVE_REVIEW_OUTPUT??'verification/capitalive-v2-1/rc';mkdirSync(root,{recursive:true});const results=[];
   for(const asset of ANALYSIS_SYMBOLS){
     const f=JSON.parse(readFileSync(`tests/fixtures/htf-${asset}.json`,'utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
     const deps={getCandles:async(_s:string,tf:Timeframe)=>f.data[tf],getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.data.H4.fetched_at})};

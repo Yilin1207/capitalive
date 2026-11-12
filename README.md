@@ -3,8 +3,8 @@
 ## Capitalive 2.1: HTF structure and SNR (not deployed)
 
 Prepared on `feature/capitalive-2-1-htf-snr`; this release candidate has not been
-deployed. See [bugfix audit](CAPITALIVE_2_1_BUGFIX_AUDIT_RU.md) and
-[release reproduction instructions](REPRODUCE_RELEASE_CANDIDATE.md).
+deployed. See [RC2 contact audit](CAPITALIVE_2_1_RC2_CONTACT_AUDIT_RU.md) and
+[RC2 reproduction instructions](REPRODUCE_RELEASE_CANDIDATE_2.md).
 The 2.0 production checks below are historical, not a verification of this candidate.
 
 ```text
@@ -86,8 +86,21 @@ reassemble. Snapshot storage is process-local, bounded to 96 MiB, max 64 MiB/doc
 TTL 10 minutes. Expiry, eviction, restart or another server instance yields 410;
 there is no fallback to newer data. Distributed durable snapshots remain a release
 limitation. All six recorded symbol/side responses fit the single-response budget.
-The UI audit link now selects priority explicitly. `contact` is a fresh, timestamp-
-validated quote observation only, never a closed retest or emitted live alert.
+The UI audit link selects priority explicitly. Snapshot availability is explicitly
+`best_effort_process_local`, with `cross_instance_guarantee=false`; the download
+client discards partial pages on 410, preserves an existing output and exits 3 with
+a priority URL. Two actual local Next processes and a restart reproduce this limit.
+The target Vercel serverless runtime has not been deployed or verified.
+
+`contact` is a fresh, timestamp-validated quote observation only, never a closed
+retest or emitted live alert. It now scans the **full catalog** of significant,
+tested SNR with usable reliability/current segment, independently of the priority
+cap. Watch/unverified/gap-state candidates remain in the full catalog and are
+explicitly excluded by the contact policy. `contact_hits` and compatibility alias
+`zones` retain every matched source ID, bounds, role, provisional role and evidence
+times; `hit_count` and `coverage` declare totals and no ranking/merge omissions.
+Overlapping MN1/W1/D1 hits stay separate. Recorded NAS100 BID/ASK produce all three
+contacts in the explicitly simulated-freshness regression, not a live-price claim.
 
 Reproduce the captured-data audit with
 `node --conditions=react-server --import tsx scripts/verify-htf-upgrade.ts`

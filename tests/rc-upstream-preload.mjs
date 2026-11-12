@@ -17,6 +17,7 @@ globalThis.fetch=async(input,init)=>{
     return Response.json({prices:bars.map(c=>({snapshotTimeUTC:c.time.replace('.000Z',''),openPrice:c.open,highPrice:c.high,lowPrice:c.low,closePrice:c.close}))});
   }
   if(url.pathname==='/api/v1/markets')return Response.json({markets:(url.searchParams.get('epics')??'US100,EURUSD,EU50').split(',').map(epic=>({epic,delayTime:0,streamingPricesAvailable:false,marketStatus:'TRADEABLE'}))});
-  if(url.pathname.startsWith('/api/v1/markets/'))return Response.json({instrument:{epic,name:'Recorded fixture transport'},snapshot:{bid:fixture.quote.bid,offer:fixture.quote.ask,marketStatus:'TRADEABLE',updateTimeUTC:fixture.quote.quote_time?.replace('.000Z','')}});
+  if(url.pathname.startsWith('/api/v1/markets/'))return Response.json({instrument:{epic,name:'Recorded fixture transport'},snapshot:{bid:fixture.quote.bid,offer:fixture.quote.ask,marketStatus:'TRADEABLE',
+    updateTimeUTC:process.env.CAPITALIVE_RC_FRESHNESS_SIMULATION==='1'?new Date(Date.now()-1000).toISOString():fixture.quote.quote_time?.replace('.000Z','')}});
   throw new Error(`Unexpected fixture endpoint: ${url.pathname}`);
 };

@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
 
-const output='verification/capitalive-v2-1/rc';mkdirSync(output,{recursive:true});
+const output=process.env.CAPITALIVE_REVIEW_OUTPUT??'verification/capitalive-v2-1/rc';mkdirSync(output,{recursive:true});
 const origin='http://127.0.0.1:3102';
 const env={...process.env,CAPITALIVE_RC_TEST:'1',CAPITAL_API_KEY:'synthetic-rc-key',CAPITAL_IDENTIFIER:'synthetic-rc-identifier',CAPITAL_API_PASSWORD:'synthetic-rc-password',CAPITAL_API_BASE_URL:'https://demo-api-capital.backend-capital.com',NEXT_TELEMETRY_DISABLED:'1'};
 delete env.NODE_OPTIONS;delete env.VERCEL;delete env.DATABASE_URL;

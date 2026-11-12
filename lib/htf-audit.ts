@@ -28,7 +28,7 @@ export function buildHtfAudit(asset: AnalysisSymbol, side: PriceSide, data: Reco
     interpretation: 'VERIFIED applies only to listed checks, not complete history, profitability, or equivalence of DEMO and LIVE' };
   return { engine: 'capitalive-2.1-htf', version: '2.1', asset, price_side: side, environment: data.H4.environment, reference_price: price,
     reference_fresh: quote.fresh, data_reliability: reliability, snr, structure, catalog, priority_zones: priority,
-    contact:observeHtfContact(quote,side,priority),
+    contact:observeHtfContact(quote,side,catalog.zones),
     risk: { ...calculateStructuralRisk(analyses, catalog, entry ?? price, {data,asset,side,quote,settings:analyses[0]?.materiality}), entry_source: entry === undefined ? 'selected_quote_side' : 'user_hypothesis_unverified',
       reference_fresh: entry === undefined ? quote.fresh : false, data_reliability: reliability },
     scope: { view:'full', full_catalog_included:true, timeframes: ANALYSIS_TIMEFRAMES, loaded_history_only: true, omitted_zones: 0, source: 'same_snapshot_as_market_audit', no_synthetic_candles: true } };

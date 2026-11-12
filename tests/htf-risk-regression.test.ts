@@ -92,8 +92,8 @@ test('stale, absent, future timestamps and false freshness never generate realti
   const a=buildHtfAudit('NAS100','bid',f.data,ANALYSIS_TIMEFRAMES.map(tf=>analyzeSeries(f.data[tf],'NAS100')),f.quote);
   const now=Date.parse(f.quote.quote_time!);
   const valid={...f.quote,fresh:true,provider_timestamp_available:true,source_type:'WEBSOCKET' as const};
-  const fresh=observeHtfContact(valid,'bid',a.priority_zones,now);assert.equal(fresh.eligible,true);assert.ok(fresh.zones.length);assert.equal(fresh.zones[0].closed_retest_confirmed,false);
+  const fresh=observeHtfContact(valid,'bid',a.catalog.zones,now);assert.equal(fresh.eligible,true);assert.ok(fresh.zones.length);assert.equal(fresh.zones[0].closed_retest_confirmed,false);
   for(const [q,t] of [[{...valid,fresh:false},now],[{...valid,quote_time:null},now],[valid,now+300001],[valid,now-1]] as const){
-    const c=observeHtfContact(q,'bid',a.priority_zones,t);assert.equal(c.eligible,false);assert.deepEqual(c.zones,[]);assert.equal(c.alerts_emitted,false);
+    const c=observeHtfContact(q,'bid',a.catalog.zones,t);assert.equal(c.eligible,false);assert.deepEqual(c.zones,[]);assert.equal(c.alerts_emitted,false);
   }
 });

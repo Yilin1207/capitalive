@@ -17,6 +17,8 @@ function manifest(s:Snapshot){return {snapshot_id:s.id,snapshot_at:s.created,exp
   document:'market-audit full JSON, including requested candles and complete HTF evidence',encoding:'base64_chunks_of_utf8_json',
   sha256:hash(s.bytes),snapshot_id_scheme:'sha256(JSON.stringify({path:source_path,parameters}) + newline + UTF8 document bytes)',bytes:s.bytes.length,page_count:Math.ceil(s.bytes.length/CHUNK_BYTES),chunk_bytes:CHUNK_BYTES,first_page:pageUrl(s,0),
   storage:'bounded_process_memory; immutable while available; expiry/eviction/restart/other instance returns 410, never a newer snapshot',
+  availability:{mode:'best_effort_process_local',cross_instance_guarantee:false,
+    on_410:'Discard in-memory partial pages; keep existing output untouched. Use view=priority, or explicitly start a new full snapshot. Never merge snapshot IDs.'},
   reconstruction:'Fetch every page in order, base64 decode then concatenate bytes; verify bytes and SHA-256 before UTF-8 decoding/JSON.parse. No records omitted.'};}
 export function createAuditSnapshot(body:unknown,url:URL,now=Date.now()){
   const bytes=Buffer.from(JSON.stringify(body));

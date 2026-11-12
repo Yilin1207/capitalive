@@ -4,14 +4,14 @@ import {resolve,join,dirname,extname,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 
-const release=process.argv.includes('--rc');
-const cwd=process.cwd(),checkpoint=release?'5516a6fd8c02ad28fd0f054cf9026c42adecb416':'a07395ee73d4ecfdc0445109a66d2e4e2ac3193a';
+const contactFix=process.argv.includes('--rc2'),release=contactFix||process.argv.includes('--rc');
+const cwd=process.cwd(),checkpoint=contactFix?'fd09b847d56d1a424e3f9bf6fc71aa04584b4c77':release?'5516a6fd8c02ad28fd0f054cf9026c42adecb416':'a07395ee73d4ecfdc0445109a66d2e4e2ac3193a';
 const git=args=>execFileSync('git',args,{encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
-if(git(['rev-parse',release?'checkpoint/capitalive-2-1-before-bugfix':'checkpoint/capitalive-2-1-before-final-review'])!==checkpoint)throw new Error('Wrong checkpoint');
+if(git(['rev-parse',contactFix?'checkpoint/capitalive-2-1-before-contact-fix':release?'checkpoint/capitalive-2-1-before-bugfix':'checkpoint/capitalive-2-1-before-final-review'])!==checkpoint)throw new Error('Wrong checkpoint');
 const files=git(['ls-files','--cached','--others','--exclude-standard']).split('\n');
 const rootFiles=new Set(['package.json','package-lock.json','tsconfig.json','next.config.ts','next-env.d.ts','playwright.config.ts','vercel.json',
   '.gitignore','.dockerignore','.vercelignore','Dockerfile.worker','railway.json','README.md','CAPITALIVE_2_1_FINAL_AUDIT_RU.md','REPRODUCE_HTF_REVIEW.md',
-  'CAPITALIVE_2_1_BUGFIX_AUDIT_RU.md','REPRODUCE_RELEASE_CANDIDATE.md']);
+  'CAPITALIVE_2_1_BUGFIX_AUDIT_RU.md','REPRODUCE_RELEASE_CANDIDATE.md','CAPITALIVE_2_1_RC2_CONTACT_AUDIT_RU.md','REPRODUCE_RELEASE_CANDIDATE_2.md']);
 const allowed=files.filter(p=>rootFiles.has(p)||/^(app|lib|tests|scripts|assets|deploy)\//.test(p)||p.startsWith('verification/capitalive-v2-1/'))
   .filter(p=>!/(^|\/)(?:\.env[^/]*|node_modules|\.git|\.vercel|\.next|data|test-results|playwright-report)(\/|$)/i.test(p))
   .filter(p=>!/(?:\.sqlite(?:-wal|-shm)?|\.tsbuildinfo|\.zip|(?:final-)?package-build\.json)$/i.test(p));
@@ -61,6 +61,6 @@ const security={scope:'allowlisted source/tests and requested verification direc
   limitation:'Pattern/value checks are not a formal proof against every possible secret encoding. Human review remains appropriate.'};
 put('SECURITY_REVIEW.json',Buffer.from(JSON.stringify(security,null,2)));
 writeFileSync(join(stage,'REVIEW_PACKAGE_MANIFEST.json'),JSON.stringify({checkpoint,source_head:git(['rev-parse','HEAD']),files:manifest},null,2));
-const output={stage,archive:join(cwd,release?'CAPITALIVE_2_1_RELEASE_CANDIDATE.zip':'CAPITALIVE_2_1_FINAL_REVIEW.zip'),files:manifest.length+1,credential_matches:0,path_redactions:security.personal_path_redactions.length};
-writeFileSync(release?'verification/capitalive-v2-1/rc/package-build.json':'verification/capitalive-v2-1/final-package-build.json',JSON.stringify(output,null,2));
+const output={stage,archive:join(cwd,contactFix?'CAPITALIVE_2_1_RELEASE_CANDIDATE_2.zip':release?'CAPITALIVE_2_1_RELEASE_CANDIDATE.zip':'CAPITALIVE_2_1_FINAL_REVIEW.zip'),files:manifest.length+1,credential_matches:0,path_redactions:security.personal_path_redactions.length};
+writeFileSync(contactFix?'verification/capitalive-v2-1/rc2/package-build.json':release?'verification/capitalive-v2-1/rc/package-build.json':'verification/capitalive-v2-1/final-package-build.json',JSON.stringify(output,null,2));
 console.log(JSON.stringify(output));
