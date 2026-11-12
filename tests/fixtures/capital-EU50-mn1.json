@@ -1,0 +1,1692 @@
+{
+  "provenance": {
+    "source": "Existing Capital.com DEMO capture in data/staged-EU50-mn1.json",
+    "captured_at": "2026-11-06T04:16:19.438Z",
+    "synthetic": false
+  },
+  "ok": true,
+  "symbol": "EU50",
+  "epic": "EU50",
+  "timeframe": "MN1",
+  "provider": "Capital.com",
+  "environment": "demo",
+  "price_side": "bid_ask",
+  "fetched_at": "2026-11-06T04:16:19.438Z",
+  "candles": [
+    {
+      "time": "2021-12-01T00:00:00.000Z",
+      "start_time": "2021-12-01T00:00:00.000Z",
+      "end_time": "2022-01-01T00:00:00.000Z",
+      "open": {
+        "bid": 4082.6,
+        "ask": 4084.8
+      },
+      "high": {
+        "bid": 4321.6,
+        "ask": 4323
+      },
+      "low": {
+        "bid": 4042.8,
+        "ask": 4044.2
+      },
+      "close": {
+        "bid": 4297.9,
+        "ask": 4299.2
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2021-12-01T00:00:00.000Z",
+      "last_daily_bar": "2021-12-30T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-01-01T00:00:00.000Z",
+      "start_time": "2022-01-01T00:00:00.000Z",
+      "end_time": "2022-02-01T00:00:00.000Z",
+      "open": {
+        "bid": 4296.9,
+        "ask": 4298.3
+      },
+      "high": {
+        "bid": 4394,
+        "ask": 4395.3
+      },
+      "low": {
+        "bid": 3997,
+        "ask": 3999.1
+      },
+      "close": {
+        "bid": 4189.2,
+        "ask": 4190.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-01-03T00:00:00.000Z",
+      "last_daily_bar": "2022-01-31T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-02-01T00:00:00.000Z",
+      "start_time": "2022-02-01T00:00:00.000Z",
+      "end_time": "2022-03-01T00:00:00.000Z",
+      "open": {
+        "bid": 4189.3,
+        "ask": 4190.6
+      },
+      "high": {
+        "bid": 4255.9,
+        "ask": 4257.3
+      },
+      "low": {
+        "bid": 3752.9,
+        "ask": 3755.5
+      },
+      "close": {
+        "bid": 3888.8,
+        "ask": 3891
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-02-01T00:00:00.000Z",
+      "last_daily_bar": "2022-02-28T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-03-01T00:00:00.000Z",
+      "start_time": "2022-03-01T00:00:00.000Z",
+      "end_time": "2022-04-01T00:00:00.000Z",
+      "open": {
+        "bid": 3889.1,
+        "ask": 3891.2
+      },
+      "high": {
+        "bid": 4027.4,
+        "ask": 4030
+      },
+      "low": {
+        "bid": 3382,
+        "ask": 3383.4
+      },
+      "close": {
+        "bid": 3898.1,
+        "ask": 3900.2
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-03-01T00:00:00.000Z",
+      "last_daily_bar": "2022-03-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-04-01T00:00:00.000Z",
+      "start_time": "2022-04-01T00:00:00.000Z",
+      "end_time": "2022-05-01T00:00:00.000Z",
+      "open": {
+        "bid": 3898.1,
+        "ask": 3900.3
+      },
+      "high": {
+        "bid": 3971.6,
+        "ask": 3973.8
+      },
+      "low": {
+        "bid": 3671.5,
+        "ask": 3673.7
+      },
+      "close": {
+        "bid": 3745.8,
+        "ask": 3747.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-04-01T00:00:00.000Z",
+      "last_daily_bar": "2022-04-29T00:00:00.000Z",
+      "daily_bars": 22,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-05-01T00:00:00.000Z",
+      "start_time": "2022-05-01T00:00:00.000Z",
+      "end_time": "2022-06-01T00:00:00.000Z",
+      "open": {
+        "bid": 3730.8,
+        "ask": 3733.4
+      },
+      "high": {
+        "bid": 3847,
+        "ask": 3848.4
+      },
+      "low": {
+        "bid": 3489.5,
+        "ask": 3491.7
+      },
+      "close": {
+        "bid": 3800.9,
+        "ask": 3803
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-05-01T00:00:00.000Z",
+      "last_daily_bar": "2022-05-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-06-01T00:00:00.000Z",
+      "start_time": "2022-06-01T00:00:00.000Z",
+      "end_time": "2022-07-01T00:00:00.000Z",
+      "open": {
+        "bid": 3801,
+        "ask": 3803.1
+      },
+      "high": {
+        "bid": 3852.4,
+        "ask": 3854.5
+      },
+      "low": {
+        "bid": 3396.3,
+        "ask": 3397.7
+      },
+      "close": {
+        "bid": 3463.9,
+        "ask": 3466.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-06-01T00:00:00.000Z",
+      "last_daily_bar": "2022-06-30T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-07-01T00:00:00.000Z",
+      "start_time": "2022-07-01T00:00:00.000Z",
+      "end_time": "2022-08-01T00:00:00.000Z",
+      "open": {
+        "bid": 3464,
+        "ask": 3466.2
+      },
+      "high": {
+        "bid": 3729.6,
+        "ask": 3731.3
+      },
+      "low": {
+        "bid": 3351.9,
+        "ask": 3353.3
+      },
+      "close": {
+        "bid": 3714.2,
+        "ask": 3715.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-07-01T00:00:00.000Z",
+      "last_daily_bar": "2022-07-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-08-01T00:00:00.000Z",
+      "start_time": "2022-08-01T00:00:00.000Z",
+      "end_time": "2022-09-01T00:00:00.000Z",
+      "open": {
+        "bid": 3713.9,
+        "ask": 3715.3
+      },
+      "high": {
+        "bid": 3821.2,
+        "ask": 3822.5
+      },
+      "low": {
+        "bid": 3483.2,
+        "ask": 3485.8
+      },
+      "close": {
+        "bid": 3489,
+        "ask": 3490.4
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-08-01T00:00:00.000Z",
+      "last_daily_bar": "2022-08-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-09-01T00:00:00.000Z",
+      "start_time": "2022-09-01T00:00:00.000Z",
+      "end_time": "2022-10-01T00:00:00.000Z",
+      "open": {
+        "bid": 3489.1,
+        "ask": 3490.5
+      },
+      "high": {
+        "bid": 3682.5,
+        "ask": 3684.6
+      },
+      "low": {
+        "bid": 3244.8,
+        "ask": 3246.6
+      },
+      "close": {
+        "bid": 3276.3,
+        "ask": 3278.4
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-09-01T00:00:00.000Z",
+      "last_daily_bar": "2022-09-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-10-01T00:00:00.000Z",
+      "start_time": "2022-10-01T00:00:00.000Z",
+      "end_time": "2022-11-01T00:00:00.000Z",
+      "open": {
+        "bid": 3269.1,
+        "ask": 3271.7
+      },
+      "high": {
+        "bid": 3651,
+        "ask": 3654
+      },
+      "low": {
+        "bid": 3237.4,
+        "ask": 3238.8
+      },
+      "close": {
+        "bid": 3622.5,
+        "ask": 3625.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-10-02T00:00:00.000Z",
+      "last_daily_bar": "2022-10-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-11-01T00:00:00.000Z",
+      "start_time": "2022-11-01T00:00:00.000Z",
+      "end_time": "2022-12-01T00:00:00.000Z",
+      "open": {
+        "bid": 3622.7,
+        "ask": 3625.7
+      },
+      "high": {
+        "bid": 4016.1,
+        "ask": 4019.1
+      },
+      "low": {
+        "bid": 3562.3,
+        "ask": 3564.3
+      },
+      "close": {
+        "bid": 4013.6,
+        "ask": 4016.6
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-11-01T00:00:00.000Z",
+      "last_daily_bar": "2022-11-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2022-12-01T00:00:00.000Z",
+      "start_time": "2022-12-01T00:00:00.000Z",
+      "end_time": "2023-01-01T00:00:00.000Z",
+      "open": {
+        "bid": 4013.2,
+        "ask": 4016.2
+      },
+      "high": {
+        "bid": 4034.6,
+        "ask": 4036.6
+      },
+      "low": {
+        "bid": 3748.5,
+        "ask": 3750.5
+      },
+      "close": {
+        "bid": 3805.5,
+        "ask": 3807.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2022-12-01T00:00:00.000Z",
+      "last_daily_bar": "2022-12-30T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-01-01T00:00:00.000Z",
+      "start_time": "2023-01-01T00:00:00.000Z",
+      "end_time": "2023-02-01T00:00:00.000Z",
+      "open": {
+        "bid": 3797.6,
+        "ask": 3800.6
+      },
+      "high": {
+        "bid": 4196.9,
+        "ask": 4198.9
+      },
+      "low": {
+        "bid": 3781.6,
+        "ask": 3784.6
+      },
+      "close": {
+        "bid": 4174.8,
+        "ask": 4177.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-01-02T00:00:00.000Z",
+      "last_daily_bar": "2023-01-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-02-01T00:00:00.000Z",
+      "start_time": "2023-02-01T00:00:00.000Z",
+      "end_time": "2023-03-01T00:00:00.000Z",
+      "open": {
+        "bid": 4174.9,
+        "ask": 4177.9
+      },
+      "high": {
+        "bid": 4314.5,
+        "ask": 4316.5
+      },
+      "low": {
+        "bid": 4154.6,
+        "ask": 4156.6
+      },
+      "close": {
+        "bid": 4220.9,
+        "ask": 4223.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-02-01T00:00:00.000Z",
+      "last_daily_bar": "2023-02-28T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-03-01T00:00:00.000Z",
+      "start_time": "2023-03-01T00:00:00.000Z",
+      "end_time": "2023-04-01T00:00:00.000Z",
+      "open": {
+        "bid": 4221.3,
+        "ask": 4224.3
+      },
+      "high": {
+        "bid": 4325.3,
+        "ask": 4328.3
+      },
+      "low": {
+        "bid": 3975.8,
+        "ask": 3977.8
+      },
+      "close": {
+        "bid": 4321.9,
+        "ask": 4324.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-03-01T00:00:00.000Z",
+      "last_daily_bar": "2023-03-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-04-01T00:00:00.000Z",
+      "start_time": "2023-04-01T00:00:00.000Z",
+      "end_time": "2023-05-01T00:00:00.000Z",
+      "open": {
+        "bid": 4311.6,
+        "ask": 4314.6
+      },
+      "high": {
+        "bid": 4411.6,
+        "ask": 4413.6
+      },
+      "low": {
+        "bid": 4281.1,
+        "ask": 4284.1
+      },
+      "close": {
+        "bid": 4357.9,
+        "ask": 4360.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-04-02T00:00:00.000Z",
+      "last_daily_bar": "2023-04-30T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-05-01T00:00:00.000Z",
+      "start_time": "2023-05-01T00:00:00.000Z",
+      "end_time": "2023-06-01T00:00:00.000Z",
+      "open": {
+        "bid": 4357.7,
+        "ask": 4360.7
+      },
+      "high": {
+        "bid": 4411.9,
+        "ask": 4413.9
+      },
+      "low": {
+        "bid": 4209.6,
+        "ask": 4211.6
+      },
+      "close": {
+        "bid": 4236.9,
+        "ask": 4239.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-05-01T00:00:00.000Z",
+      "last_daily_bar": "2023-05-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-06-01T00:00:00.000Z",
+      "start_time": "2023-06-01T00:00:00.000Z",
+      "end_time": "2023-07-01T00:00:00.000Z",
+      "open": {
+        "bid": 4236.7,
+        "ask": 4239.7
+      },
+      "high": {
+        "bid": 4412.4,
+        "ask": 4414.4
+      },
+      "low": {
+        "bid": 4225.3,
+        "ask": 4227.3
+      },
+      "close": {
+        "bid": 4405.8,
+        "ask": 4408.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-06-01T00:00:00.000Z",
+      "last_daily_bar": "2023-06-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-07-01T00:00:00.000Z",
+      "start_time": "2023-07-01T00:00:00.000Z",
+      "end_time": "2023-08-01T00:00:00.000Z",
+      "open": {
+        "bid": 4411.5,
+        "ask": 4414.5
+      },
+      "high": {
+        "bid": 4490.5,
+        "ask": 4492.5
+      },
+      "low": {
+        "bid": 4196.2,
+        "ask": 4198.2
+      },
+      "close": {
+        "bid": 4473,
+        "ask": 4476
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-07-02T00:00:00.000Z",
+      "last_daily_bar": "2023-07-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-08-01T00:00:00.000Z",
+      "start_time": "2023-08-01T00:00:00.000Z",
+      "end_time": "2023-09-01T00:00:00.000Z",
+      "open": {
+        "bid": 4472.7,
+        "ask": 4475.7
+      },
+      "high": {
+        "bid": 4477,
+        "ask": 4479
+      },
+      "low": {
+        "bid": 4173.5,
+        "ask": 4175.5
+      },
+      "close": {
+        "bid": 4296.8,
+        "ask": 4299.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-08-01T00:00:00.000Z",
+      "last_daily_bar": "2023-08-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-09-01T00:00:00.000Z",
+      "start_time": "2023-09-01T00:00:00.000Z",
+      "end_time": "2023-10-01T00:00:00.000Z",
+      "open": {
+        "bid": 4297,
+        "ask": 4300
+      },
+      "high": {
+        "bid": 4327.5,
+        "ask": 4329.5
+      },
+      "low": {
+        "bid": 4101.9,
+        "ask": 4103.9
+      },
+      "close": {
+        "bid": 4165.3,
+        "ask": 4168.3
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-09-01T00:00:00.000Z",
+      "last_daily_bar": "2023-09-29T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-10-01T00:00:00.000Z",
+      "start_time": "2023-10-01T00:00:00.000Z",
+      "end_time": "2023-11-01T00:00:00.000Z",
+      "open": {
+        "bid": 4179.3,
+        "ask": 4182.3
+      },
+      "high": {
+        "bid": 4232.4,
+        "ask": 4234.4
+      },
+      "low": {
+        "bid": 3987.8,
+        "ask": 3989.8
+      },
+      "close": {
+        "bid": 4066.3,
+        "ask": 4069.3
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-10-01T00:00:00.000Z",
+      "last_daily_bar": "2023-10-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-11-01T00:00:00.000Z",
+      "start_time": "2023-11-01T00:00:00.000Z",
+      "end_time": "2023-12-01T00:00:00.000Z",
+      "open": {
+        "bid": 4066.2,
+        "ask": 4069.2
+      },
+      "high": {
+        "bid": 4395.8,
+        "ask": 4397.8
+      },
+      "low": {
+        "bid": 4048.6,
+        "ask": 4050.6
+      },
+      "close": {
+        "bid": 4389,
+        "ask": 4392
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-11-01T00:00:00.000Z",
+      "last_daily_bar": "2023-11-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2023-12-01T00:00:00.000Z",
+      "start_time": "2023-12-01T00:00:00.000Z",
+      "end_time": "2024-01-01T00:00:00.000Z",
+      "open": {
+        "bid": 4388.7,
+        "ask": 4391.7
+      },
+      "high": {
+        "bid": 4592.4,
+        "ask": 4594.4
+      },
+      "low": {
+        "bid": 4387.8,
+        "ask": 4390.8
+      },
+      "close": {
+        "bid": 4520.5,
+        "ask": 4523.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2023-12-01T00:00:00.000Z",
+      "last_daily_bar": "2023-12-29T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-01-01T00:00:00.000Z",
+      "start_time": "2024-01-01T00:00:00.000Z",
+      "end_time": "2024-02-01T00:00:00.000Z",
+      "open": {
+        "bid": 4526.9,
+        "ask": 4529.9
+      },
+      "high": {
+        "bid": 4673.2,
+        "ask": 4675.2
+      },
+      "low": {
+        "bid": 4379.3,
+        "ask": 4381.3
+      },
+      "close": {
+        "bid": 4637,
+        "ask": 4640
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-01-01T00:00:00.000Z",
+      "last_daily_bar": "2024-01-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-02-01T00:00:00.000Z",
+      "start_time": "2024-02-01T00:00:00.000Z",
+      "end_time": "2024-03-01T00:00:00.000Z",
+      "open": {
+        "bid": 4637.3,
+        "ask": 4640.3
+      },
+      "high": {
+        "bid": 4897.8,
+        "ask": 4899.8
+      },
+      "low": {
+        "bid": 4610.8,
+        "ask": 4612.8
+      },
+      "close": {
+        "bid": 4890,
+        "ask": 4893
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-02-01T00:00:00.000Z",
+      "last_daily_bar": "2024-02-29T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-03-01T00:00:00.000Z",
+      "start_time": "2024-03-01T00:00:00.000Z",
+      "end_time": "2024-04-01T00:00:00.000Z",
+      "open": {
+        "bid": 4890.1,
+        "ask": 4893.1
+      },
+      "high": {
+        "bid": 5116.1,
+        "ask": 5119.1
+      },
+      "low": {
+        "bid": 4864.3,
+        "ask": 4866.3
+      },
+      "close": {
+        "bid": 5115.1,
+        "ask": 5118.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-03-01T00:00:00.000Z",
+      "last_daily_bar": "2024-03-31T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-04-01T00:00:00.000Z",
+      "start_time": "2024-04-01T00:00:00.000Z",
+      "end_time": "2024-05-01T00:00:00.000Z",
+      "open": {
+        "bid": 5115,
+        "ask": 5118
+      },
+      "high": {
+        "bid": 5121.3,
+        "ask": 5123.3
+      },
+      "low": {
+        "bid": 4811,
+        "ask": 4813
+      },
+      "close": {
+        "bid": 4895.1,
+        "ask": 4898.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-04-01T00:00:00.000Z",
+      "last_daily_bar": "2024-04-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-05-01T00:00:00.000Z",
+      "start_time": "2024-05-01T00:00:00.000Z",
+      "end_time": "2024-06-01T00:00:00.000Z",
+      "open": {
+        "bid": 4895.8,
+        "ask": 4898.6
+      },
+      "high": {
+        "bid": 5108.6,
+        "ask": 5111.6
+      },
+      "low": {
+        "bid": 4879.6,
+        "ask": 4882.6
+      },
+      "close": {
+        "bid": 5011.2,
+        "ask": 5014.2
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-05-01T00:00:00.000Z",
+      "last_daily_bar": "2024-05-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-06-01T00:00:00.000Z",
+      "start_time": "2024-06-01T00:00:00.000Z",
+      "end_time": "2024-07-01T00:00:00.000Z",
+      "open": {
+        "bid": 5012.9,
+        "ask": 5015.9
+      },
+      "high": {
+        "bid": 5081.9,
+        "ask": 5083.9
+      },
+      "low": {
+        "bid": 4817.6,
+        "ask": 4819.6
+      },
+      "close": {
+        "bid": 4911.4,
+        "ask": 4914.4
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-06-02T00:00:00.000Z",
+      "last_daily_bar": "2024-06-30T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-07-01T00:00:00.000Z",
+      "start_time": "2024-07-01T00:00:00.000Z",
+      "end_time": "2024-08-01T00:00:00.000Z",
+      "open": {
+        "bid": 4911.5,
+        "ask": 4914.5
+      },
+      "high": {
+        "bid": 5051.8,
+        "ask": 5053.8
+      },
+      "low": {
+        "bid": 4765.6,
+        "ask": 4767.6
+      },
+      "close": {
+        "bid": 4890.7,
+        "ask": 4893.7
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-07-01T00:00:00.000Z",
+      "last_daily_bar": "2024-07-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-08-01T00:00:00.000Z",
+      "start_time": "2024-08-01T00:00:00.000Z",
+      "end_time": "2024-09-01T00:00:00.000Z",
+      "open": {
+        "bid": 4890.8,
+        "ask": 4893.8
+      },
+      "high": {
+        "bid": 4980.8,
+        "ask": 4982.8
+      },
+      "low": {
+        "bid": 4470.4,
+        "ask": 4472.4
+      },
+      "close": {
+        "bid": 4964.9,
+        "ask": 4967.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-08-01T00:00:00.000Z",
+      "last_daily_bar": "2024-08-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-09-01T00:00:00.000Z",
+      "start_time": "2024-09-01T00:00:00.000Z",
+      "end_time": "2024-10-01T00:00:00.000Z",
+      "open": {
+        "bid": 4966.6,
+        "ask": 4969.6
+      },
+      "high": {
+        "bid": 5076.1,
+        "ask": 5078.1
+      },
+      "low": {
+        "bid": 4711.8,
+        "ask": 4714.8
+      },
+      "close": {
+        "bid": 5008,
+        "ask": 5011
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-09-01T00:00:00.000Z",
+      "last_daily_bar": "2024-09-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-10-01T00:00:00.000Z",
+      "start_time": "2024-10-01T00:00:00.000Z",
+      "end_time": "2024-11-01T00:00:00.000Z",
+      "open": {
+        "bid": 5007.8,
+        "ask": 5010.8
+      },
+      "high": {
+        "bid": 5062.1,
+        "ask": 5064.1
+      },
+      "low": {
+        "bid": 4803.2,
+        "ask": 4805.2
+      },
+      "close": {
+        "bid": 4833.9,
+        "ask": 4836.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-10-01T00:00:00.000Z",
+      "last_daily_bar": "2024-10-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-11-01T00:00:00.000Z",
+      "start_time": "2024-11-01T00:00:00.000Z",
+      "end_time": "2024-12-01T00:00:00.000Z",
+      "open": {
+        "bid": 4833.7,
+        "ask": 4836.7
+      },
+      "high": {
+        "bid": 4946.3,
+        "ask": 4948.3
+      },
+      "low": {
+        "bid": 4686.7,
+        "ask": 4688.7
+      },
+      "close": {
+        "bid": 4794,
+        "ask": 4797
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-11-01T00:00:00.000Z",
+      "last_daily_bar": "2024-11-29T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2024-12-01T00:00:00.000Z",
+      "start_time": "2024-12-01T00:00:00.000Z",
+      "end_time": "2025-01-01T00:00:00.000Z",
+      "open": {
+        "bid": 4801,
+        "ask": 4804
+      },
+      "high": {
+        "bid": 5005,
+        "ask": 5007
+      },
+      "low": {
+        "bid": 4747.5,
+        "ask": 4749.5
+      },
+      "close": {
+        "bid": 4866.2,
+        "ask": 4869.2
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2024-12-01T00:00:00.000Z",
+      "last_daily_bar": "2024-12-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-01-01T00:00:00.000Z",
+      "start_time": "2025-01-01T00:00:00.000Z",
+      "end_time": "2025-02-01T00:00:00.000Z",
+      "open": {
+        "bid": 4866.5,
+        "ask": 4869.5
+      },
+      "high": {
+        "bid": 5313.5,
+        "ask": 5315.5
+      },
+      "low": {
+        "bid": 4834.3,
+        "ask": 4836.3
+      },
+      "close": {
+        "bid": 5253.8,
+        "ask": 5256.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-01-01T00:00:00.000Z",
+      "last_daily_bar": "2025-01-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-02-01T00:00:00.000Z",
+      "start_time": "2025-02-01T00:00:00.000Z",
+      "end_time": "2025-03-01T00:00:00.000Z",
+      "open": {
+        "bid": 5160.4,
+        "ask": 5163.4
+      },
+      "high": {
+        "bid": 5541.8,
+        "ask": 5543.8
+      },
+      "low": {
+        "bid": 5101,
+        "ask": 5103
+      },
+      "close": {
+        "bid": 5451.6,
+        "ask": 5454.6
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-02-02T00:00:00.000Z",
+      "last_daily_bar": "2025-02-28T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-03-01T00:00:00.000Z",
+      "start_time": "2025-03-01T00:00:00.000Z",
+      "end_time": "2025-04-01T00:00:00.000Z",
+      "open": {
+        "bid": 5473.7,
+        "ask": 5476.7
+      },
+      "high": {
+        "bid": 5565.8,
+        "ask": 5567.8
+      },
+      "low": {
+        "bid": 5208.5,
+        "ask": 5210.5
+      },
+      "close": {
+        "bid": 5252.8,
+        "ask": 5255.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-03-02T00:00:00.000Z",
+      "last_daily_bar": "2025-03-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-04-01T00:00:00.000Z",
+      "start_time": "2025-04-01T00:00:00.000Z",
+      "end_time": "2025-05-01T00:00:00.000Z",
+      "open": {
+        "bid": 5252.7,
+        "ask": 5255.7
+      },
+      "high": {
+        "bid": 5356.8,
+        "ask": 5359.8
+      },
+      "low": {
+        "bid": 4502.8,
+        "ask": 4504.8
+      },
+      "close": {
+        "bid": 5200.1,
+        "ask": 5203.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-04-01T00:00:00.000Z",
+      "last_daily_bar": "2025-04-30T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-05-01T00:00:00.000Z",
+      "start_time": "2025-05-01T00:00:00.000Z",
+      "end_time": "2025-06-01T00:00:00.000Z",
+      "open": {
+        "bid": 5190,
+        "ask": 5193
+      },
+      "high": {
+        "bid": 5467.6,
+        "ask": 5469.6
+      },
+      "low": {
+        "bid": 5175.7,
+        "ask": 5178.7
+      },
+      "close": {
+        "bid": 5362.9,
+        "ask": 5365.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-05-01T00:00:00.000Z",
+      "last_daily_bar": "2025-05-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-06-01T00:00:00.000Z",
+      "start_time": "2025-06-01T00:00:00.000Z",
+      "end_time": "2025-07-01T00:00:00.000Z",
+      "open": {
+        "bid": 5354,
+        "ask": 5357
+      },
+      "high": {
+        "bid": 5435.2,
+        "ask": 5437.2
+      },
+      "low": {
+        "bid": 5180,
+        "ask": 5182
+      },
+      "close": {
+        "bid": 5305.8,
+        "ask": 5308.8
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-06-01T00:00:00.000Z",
+      "last_daily_bar": "2025-06-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-07-01T00:00:00.000Z",
+      "start_time": "2025-07-01T00:00:00.000Z",
+      "end_time": "2025-08-01T00:00:00.000Z",
+      "open": {
+        "bid": 5306.1,
+        "ask": 5309.1
+      },
+      "high": {
+        "bid": 5469.4,
+        "ask": 5472.4
+      },
+      "low": {
+        "bid": 5264.3,
+        "ask": 5266.3
+      },
+      "close": {
+        "bid": 5307.3,
+        "ask": 5310.3
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-07-01T00:00:00.000Z",
+      "last_daily_bar": "2025-07-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-08-01T00:00:00.000Z",
+      "start_time": "2025-08-01T00:00:00.000Z",
+      "end_time": "2025-09-01T00:00:00.000Z",
+      "open": {
+        "bid": 5306.8,
+        "ask": 5309.8
+      },
+      "high": {
+        "bid": 5510.1,
+        "ask": 5512.1
+      },
+      "low": {
+        "bid": 5153.2,
+        "ask": 5155.2
+      },
+      "close": {
+        "bid": 5367.5,
+        "ask": 5370.5
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-08-01T00:00:00.000Z",
+      "last_daily_bar": "2025-08-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-09-01T00:00:00.000Z",
+      "start_time": "2025-09-01T00:00:00.000Z",
+      "end_time": "2025-10-01T00:00:00.000Z",
+      "open": {
+        "bid": 5367.3,
+        "ask": 5370.3
+      },
+      "high": {
+        "bid": 5543.8,
+        "ask": 5545.8
+      },
+      "low": {
+        "bid": 5285.6,
+        "ask": 5287.6
+      },
+      "close": {
+        "bid": 5531.3,
+        "ask": 5534.3
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-09-01T00:00:00.000Z",
+      "last_daily_bar": "2025-09-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-10-01T00:00:00.000Z",
+      "start_time": "2025-10-01T00:00:00.000Z",
+      "end_time": "2025-11-01T00:00:00.000Z",
+      "open": {
+        "bid": 5531.5,
+        "ask": 5534.5
+      },
+      "high": {
+        "bid": 5733.5,
+        "ask": 5735.5
+      },
+      "low": {
+        "bid": 5460,
+        "ask": 5463
+      },
+      "close": {
+        "bid": 5659.9,
+        "ask": 5661.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-10-01T00:00:00.000Z",
+      "last_daily_bar": "2025-10-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-11-01T00:00:00.000Z",
+      "start_time": "2025-11-01T00:00:00.000Z",
+      "end_time": "2025-12-01T00:00:00.000Z",
+      "open": {
+        "bid": 5665.9,
+        "ask": 5668.9
+      },
+      "high": {
+        "bid": 5817.2,
+        "ask": 5819.2
+      },
+      "low": {
+        "bid": 5472,
+        "ask": 5474
+      },
+      "close": {
+        "bid": 5673.1,
+        "ask": 5676.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-11-02T00:00:00.000Z",
+      "last_daily_bar": "2025-11-30T00:00:00.000Z",
+      "daily_bars": 25,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2025-12-01T00:00:00.000Z",
+      "start_time": "2025-12-01T00:00:00.000Z",
+      "end_time": "2026-01-01T00:00:00.000Z",
+      "open": {
+        "bid": 5673.2,
+        "ask": 5676.2
+      },
+      "high": {
+        "bid": 5817.8,
+        "ask": 5819.8
+      },
+      "low": {
+        "bid": 5621.8,
+        "ask": 5623.8
+      },
+      "close": {
+        "bid": 5768.1,
+        "ask": 5771.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2025-12-01T00:00:00.000Z",
+      "last_daily_bar": "2025-12-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-01-01T00:00:00.000Z",
+      "start_time": "2026-01-01T00:00:00.000Z",
+      "end_time": "2026-02-01T00:00:00.000Z",
+      "open": {
+        "bid": 5770.5,
+        "ask": 5773.5
+      },
+      "high": {
+        "bid": 6052.6,
+        "ask": 6054.6
+      },
+      "low": {
+        "bid": 5769.8,
+        "ask": 5771.8
+      },
+      "close": {
+        "bid": 5929.2,
+        "ask": 5932.2
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-01-01T00:00:00.000Z",
+      "last_daily_bar": "2026-01-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-02-01T00:00:00.000Z",
+      "start_time": "2026-02-01T00:00:00.000Z",
+      "end_time": "2026-03-01T00:00:00.000Z",
+      "open": {
+        "bid": 5898.5,
+        "ask": 5901.5
+      },
+      "high": {
+        "bid": 6199.6,
+        "ask": 6201.1
+      },
+      "low": {
+        "bid": 5855.4,
+        "ask": 5857.4
+      },
+      "close": {
+        "bid": 6093.7,
+        "ask": 6096.7
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-02-01T00:00:00.000Z",
+      "last_daily_bar": "2026-02-27T00:00:00.000Z",
+      "daily_bars": 24,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-03-01T00:00:00.000Z",
+      "start_time": "2026-03-01T00:00:00.000Z",
+      "end_time": "2026-04-01T00:00:00.000Z",
+      "open": {
+        "bid": 6051.5,
+        "ask": 6054.5
+      },
+      "high": {
+        "bid": 6073.2,
+        "ask": 6075.2
+      },
+      "low": {
+        "bid": 5375.5,
+        "ask": 5377
+      },
+      "close": {
+        "bid": 5670.9,
+        "ask": 5673.9
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-03-01T00:00:00.000Z",
+      "last_daily_bar": "2026-03-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-04-01T00:00:00.000Z",
+      "start_time": "2026-04-01T00:00:00.000Z",
+      "end_time": "2026-05-01T00:00:00.000Z",
+      "open": {
+        "bid": 5670.7,
+        "ask": 5673.7
+      },
+      "high": {
+        "bid": 6074,
+        "ask": 6075.5
+      },
+      "low": {
+        "bid": 5588.1,
+        "ask": 5589.6
+      },
+      "close": {
+        "bid": 5882.1,
+        "ask": 5885.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-04-01T00:00:00.000Z",
+      "last_daily_bar": "2026-04-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-05-01T00:00:00.000Z",
+      "start_time": "2026-05-01T00:00:00.000Z",
+      "end_time": "2026-06-01T00:00:00.000Z",
+      "open": {
+        "bid": 5882.8,
+        "ask": 5885.8
+      },
+      "high": {
+        "bid": 6146.4,
+        "ask": 6147.9
+      },
+      "low": {
+        "bid": 5712.3,
+        "ask": 5713.8
+      },
+      "close": {
+        "bid": 6035.3,
+        "ask": 6038.3
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-05-01T00:00:00.000Z",
+      "last_daily_bar": "2026-05-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-06-01T00:00:00.000Z",
+      "start_time": "2026-06-01T00:00:00.000Z",
+      "end_time": "2026-07-01T00:00:00.000Z",
+      "open": {
+        "bid": 6035.1,
+        "ask": 6038.1
+      },
+      "high": {
+        "bid": 6344.4,
+        "ask": 6347.4
+      },
+      "low": {
+        "bid": 5946.6,
+        "ask": 5949.6
+      },
+      "close": {
+        "bid": 6329.1,
+        "ask": 6332.1
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-06-01T00:00:00.000Z",
+      "last_daily_bar": "2026-06-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-07-01T00:00:00.000Z",
+      "start_time": "2026-07-01T00:00:00.000Z",
+      "end_time": "2026-08-01T00:00:00.000Z",
+      "open": {
+        "bid": 6329.2,
+        "ask": 6332.2
+      },
+      "high": {
+        "bid": 6430.3,
+        "ask": 6431.8
+      },
+      "low": {
+        "bid": 6177.4,
+        "ask": 6180
+      },
+      "close": {
+        "bid": 6346.4,
+        "ask": 6349.4
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-07-01T00:00:00.000Z",
+      "last_daily_bar": "2026-07-31T00:00:00.000Z",
+      "daily_bars": 27,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-08-01T00:00:00.000Z",
+      "start_time": "2026-08-01T00:00:00.000Z",
+      "end_time": "2026-09-01T00:00:00.000Z",
+      "open": {
+        "bid": 6394.2,
+        "ask": 6397.2
+      },
+      "high": {
+        "bid": 6579.5,
+        "ask": 6581
+      },
+      "low": {
+        "bid": 6384.9,
+        "ask": 6387.9
+      },
+      "close": {
+        "bid": 6410,
+        "ask": 6413
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-08-02T00:00:00.000Z",
+      "last_daily_bar": "2026-08-31T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-09-01T00:00:00.000Z",
+      "start_time": "2026-09-01T00:00:00.000Z",
+      "end_time": "2026-10-01T00:00:00.000Z",
+      "open": {
+        "bid": 6410.4,
+        "ask": 6413.4
+      },
+      "high": {
+        "bid": 6425.1,
+        "ask": 6426.6
+      },
+      "low": {
+        "bid": 6193.2,
+        "ask": 6194.7
+      },
+      "close": {
+        "bid": 6268.7,
+        "ask": 6271.7
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-09-01T00:00:00.000Z",
+      "last_daily_bar": "2026-09-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-10-01T00:00:00.000Z",
+      "start_time": "2026-10-01T00:00:00.000Z",
+      "end_time": "2026-11-01T00:00:00.000Z",
+      "open": {
+        "bid": 6268.9,
+        "ask": 6271.9
+      },
+      "high": {
+        "bid": 6310.2,
+        "ask": 6311.7
+      },
+      "low": {
+        "bid": 6019.3,
+        "ask": 6020.8
+      },
+      "close": {
+        "bid": 6119.2,
+        "ask": 6120.7
+      },
+      "is_closed": true,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-10-01T00:00:00.000Z",
+      "last_daily_bar": "2026-10-30T00:00:00.000Z",
+      "daily_bars": 26,
+      "history_completeness": "unknown_sessions_not_verified"
+    },
+    {
+      "time": "2026-11-01T00:00:00.000Z",
+      "start_time": "2026-11-01T00:00:00.000Z",
+      "end_time": "2026-12-01T00:00:00.000Z",
+      "open": {
+        "bid": 6129.7,
+        "ask": 6132.7
+      },
+      "high": {
+        "bid": 6318,
+        "ask": 6319.5
+      },
+      "low": {
+        "bid": 6058.4,
+        "ask": 6060.4
+      },
+      "close": {
+        "bid": 6164.3,
+        "ask": 6166.3
+      },
+      "is_closed": false,
+      "source": "Capital.com DAY",
+      "first_daily_bar": "2026-11-01T00:00:00.000Z",
+      "last_daily_bar": "2026-11-06T00:00:00.000Z",
+      "daily_bars": 6,
+      "history_completeness": "unknown_sessions_not_verified"
+    }
+  ],
+  "metadata": {
+    "requested": 60,
+    "returned": 60,
+    "available": 60,
+    "insufficient_history": false,
+    "discarded_rows": 0,
+    "discarded_sides": 0,
+    "discarded_reasons": {
+      "invalid_time": 0,
+      "future_time": 0,
+      "no_valid_side": 0,
+      "crossed_sides": 0
+    },
+    "duplicate_rows": 0,
+    "time_semantics": "calendar_month_start_utc",
+    "closure_basis": "calendar_month_end_elapsed_at_fetch",
+    "aggregation": {
+      "source": "Capital.com DAY",
+      "calendar": "UTC",
+      "requested_from": "2021-12-01T00:00:00.000Z",
+      "requested_to": "2026-11-06T04:16:18.323Z",
+      "pages": 3,
+      "coverage": "requested_window_fetched",
+      "session_completeness": "unknown"
+    },
+    "cache_ttl_seconds": 30,
+    "cache_hit": false,
+    "diagnostics": {
+      "evaluated_at": "2026-11-06T04:16:19.460Z",
+      "retrieval_age_seconds": 0.022,
+      "retrieval_status": "recent",
+      "price_update_freshness": "unknown_bar_start_is_not_last_tick",
+      "provider_rows": 1530,
+      "latest_provider_bar_time": "2026-11-01T00:00:00.000Z",
+      "latest_returned_bar_time": "2026-11-01T00:00:00.000Z",
+      "current_period": {
+        "time": "2026-11-01T00:00:00.000Z",
+        "status": "present",
+        "rejected": []
+      },
+      "forming_bars": [
+        "2026-11-01T00:00:00.000Z"
+      ],
+      "window_start": "2021-12-01T00:00:00.000Z",
+      "missing_filtered_count": 0,
+      "missing_filtered_times": [],
+      "rejected_rows": [],
+      "rejected_rows_omitted": 0,
+      "provider_gap_slots": 0,
+      "provider_gaps": [],
+      "provider_gap_ranges_omitted": 0,
+      "gap_interpretation": "nominal_intervals_only_market_hours_not_checked",
+      "counts_do_not_prove_continuity": true
+    }
+  }
+}

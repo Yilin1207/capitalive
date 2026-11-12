@@ -1,0 +1,11 @@
+.git
+.next
+.vercel
+node_modules
+.env*
+data
+*.sqlite*
+*.tsbuildinfo
+verification
+test-results
+playwright-report

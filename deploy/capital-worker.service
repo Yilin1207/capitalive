@@ -1,0 +1,18 @@
+[Unit]
+Description=Capital.com persistent market data archive
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=capital
+WorkingDirectory=/opt/capital-live
+EnvironmentFile=/etc/capital-live.env
+ExecStart=/usr/bin/npm run worker
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

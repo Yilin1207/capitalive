@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   fetchWithTimeoutRetry,
   isAuthenticationFailure,
+  retryAfterSeconds,
   UpstreamFetchError,
   type RetryMetrics,
 } from "@/lib/upstream-retry";
@@ -183,7 +184,7 @@ const marketRequests: Partial<Record<PublicSymbol, Promise<MarketMapping>>> = {}
 let getRequestQueue: Promise<void> = Promise.resolve();
 let nextGetRequestAt = 0;
 
-type CapitalRequestStep = "authentication" | "markets_batch" | "single_market";
+type CapitalRequestStep = "authentication" | "markets_batch" | "single_market" | "prices";
 
 export type CapitalErrorCode =
   | "CAPITAL_AUTH"
@@ -208,6 +209,7 @@ export class CapitalApiError extends Error {
     message: string,
     public readonly step: CapitalRequestStep,
     public readonly status: number | null = null,
+    public readonly retryAfter: number | null = null,
   ) {
     super(message);
     this.name = "CapitalApiError";
@@ -393,7 +395,7 @@ export async function getCapitalStreamingSession(
   return {
     cst: session.cst,
     securityToken: session.securityToken,
-    streamEndpoint: session.streamEndpoint,
+    streamEndpoint: session.streamEndpoint ?? "wss://api-streaming-capital.backend-capital.com/connect",
   };
 }
 
@@ -476,6 +478,7 @@ async function capitalGet(
           maxAttempts: 3,
           metrics: context,
           beforeAttempt: waitForGetRequestSlot,
+          respectRetryAfter: step === "prices",
           onFailure: ({ status, statusText, timedOut }) =>
             logCapitalError(step, context, {
               status,
@@ -537,6 +540,7 @@ async function capitalGet(
       "Capital.com request was rejected",
       step,
       response.status,
+      step === "prices" ? retryAfterSeconds(response.headers.get("Retry-After")) : null,
     );
   }
 
@@ -710,4 +714,22 @@ export async function getMarketSummaries(
 export function capitalEnvironment(): "demo" | "live" {
   const hostname = new URL(config().baseUrl).hostname;
   return hostname.startsWith("demo-") ? "demo" : "live";
+}
+
+// Reuses the same server-only session, refresh, retry and GET pacing as quotes.
+export async function getHistoricalPrices(
+  epic: string,
+  resolution: "WEEK" | "DAY" | "HOUR_4" | "MINUTE",
+  limit: number,
+  context = createCapitalRequestContext(),
+  range?: { from?: string; to?: string },
+): Promise<unknown> {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+    throw new RangeError("History limit must be between 1 and 1000");
+  }
+  const query = new URLSearchParams({ resolution, max: String(limit) });
+  for (const key of ["from", "to"] as const) {
+    if (range?.[key]) query.set(key, new Date(range[key]!).toISOString().slice(0, 19));
+  }
+  return capitalGet(`/api/v1/prices/${encodeURIComponent(epic)}?${query}`, "prices", context);
 }

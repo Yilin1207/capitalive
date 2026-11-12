@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   fetchWithTimeoutRetry,
   isAuthenticationFailure,
+  retryAfterSeconds,
   type RetryMetrics,
   UpstreamFetchError,
 } from "../lib/upstream-retry.ts";
@@ -20,6 +21,27 @@ import {
 } from "../lib/market-context.ts";
 
 const noSleep = async () => undefined;
+
+test("history retries honor Retry-After and leave long delays to the server cooldown", async () => {
+  const waits: number[] = [];
+  let calls = 0;
+  const response = await fetchWithTimeoutRetry("https://capital.test", {}, {
+    timeoutMs: 50, respectRetryAfter: true,
+    sleepImpl: async delay => { waits.push(delay); },
+    fetchImpl: async () => ++calls === 1 ? new Response("{}", { status: 429, headers: { "Retry-After": "1" } }) : new Response("{}"),
+  });
+  assert.equal(response.status, 200);
+  assert.deepEqual(waits, [1000]);
+  calls = 0;
+  const long = await fetchWithTimeoutRetry("https://capital.test", {}, {
+    timeoutMs: 50, respectRetryAfter: true, sleepImpl: noSleep,
+    fetchImpl: async () => { calls++; return new Response("{}", { status: 429, headers: { "Retry-After": "120" } }); },
+  });
+  assert.equal(long.status, 429);
+  assert.equal(calls, 1);
+  assert.equal(retryAfterSeconds("Wed, 21 Oct 2026 12:02:00 GMT", Date.parse("2026-10-21T12:00:00Z")), 120);
+  assert.equal(retryAfterSeconds("garbage"), null);
+});
 
 test("returns a normal response without retry", async () => {
   const metrics: RetryMetrics = { retryCount: 0 };

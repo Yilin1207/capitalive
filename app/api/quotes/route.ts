@@ -8,16 +8,13 @@ import {
   getMarketSnapshot,
   PUBLIC_SYMBOLS,
   VERIFIED_MARKETS,
-  type CapitalSnapshot,
   type CapitalMarketSummary,
   type CapitalRequestContext,
   type PublicSymbol,
 } from "@/lib/capital";
 import { PUBLIC_NO_STORE_HEADERS } from "@/lib/http";
-import {
-  getStreamingQuotes,
-  type CapitalStreamingQuote,
-} from "@/lib/capital-stream";
+import { liveQuotes } from "@/lib/live-quotes";
+import { archiveConfigured, saveQuote } from "@/lib/archive";
 import { getLastGood, recordSuccessfulQuotes } from "@/lib/quote-state";
 import {
   CONTEXT_MARKETS,
@@ -28,182 +25,13 @@ import {
   UNAVAILABLE_CONTEXT_MARKETS,
   type ContextSymbol,
 } from "@/lib/market-context";
-import {
-  actionableLive,
-  quoteQuality,
-  type QuoteQuality,
-} from "@/lib/market-semantics";
+import { normalizeQuote, normalizeStreamingQuote, unavailable, type MarketQuote } from "@/lib/quote-normalization";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-type MarketQuote = {
-  source_type: "WEBSOCKET" | "REST";
-  role?: "tradable" | "context";
-  retrieved_at?: string | null;
-  live_retrieval?: boolean;
-  provider_timestamp_available?: boolean;
-  epic: string | null;
-  name: string | null;
-  bid: number | null;
-  ask: number | null;
-  mid: number | null;
-  quote_time: string | null;
-  age_seconds: number | null;
-  delay_seconds: number | null;
-  streaming_prices_available: boolean | null;
-  market_status: string | null;
-  high: number | null;
-  low: number | null;
-  net_change: number | null;
-  percentage_change: number | null;
-  fresh: boolean;
-  actionable_live: boolean;
-  quote_quality: QuoteQuality;
-  timestamp_error?: string;
-  error?: string;
-};
-
 function json(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: PUBLIC_NO_STORE_HEADERS });
-}
-
-function finiteNumber(value: unknown): number | null {
-  return typeof value === "number" && Number.isFinite(value) ? value : null;
-}
-
-function utcDate(value: unknown): Date | null {
-  if (typeof value !== "string" || value.trim() === "") return null;
-  const timestamp = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : `${value}Z`;
-  const date = new Date(timestamp);
-  return Number.isNaN(date.getTime()) ? null : date;
-}
-
-function unavailable(symbol: string, epic: string | null): MarketQuote {
-  return {
-    source_type: "REST",
-    retrieved_at: null,
-    live_retrieval: false,
-    provider_timestamp_available: false,
-    epic,
-    name: null,
-    bid: null,
-    ask: null,
-    mid: null,
-    quote_time: null,
-    age_seconds: null,
-    delay_seconds: null,
-    streaming_prices_available: null,
-    market_status: null,
-    high: null,
-    low: null,
-    net_change: null,
-    percentage_change: null,
-    fresh: false,
-    actionable_live: false,
-    quote_quality: "unavailable",
-    error: "Capital.com quote unavailable",
-  };
-}
-
-function normalizeQuote(
-  symbol: string,
-  epic: string,
-  response: CapitalSnapshot,
-  batchMarket: CapitalMarketSummary | undefined,
-  retrievedAt: string,
-  serverTimeMs: number,
-  timestampError?: string,
-): MarketQuote | null {
-  const snapshot = response.snapshot;
-  if (!snapshot) return null;
-
-  const bid = finiteNumber(snapshot.bid);
-  const ask = finiteNumber(snapshot.offer);
-  if (bid === null || ask === null) return null;
-
-  const quoteTime = utcDate(batchMarket?.updateTimeUTC);
-  const ageSeconds = quoteTime
-    ? (serverTimeMs - quoteTime.getTime()) / 1000
-    : null;
-  const delaySeconds = finiteNumber(batchMarket?.delayTime);
-
-  const marketStatus =
-    typeof snapshot.marketStatus === "string" ? snapshot.marketStatus : null;
-  const fresh =
-    ageSeconds !== null &&
-    ageSeconds >= 0 &&
-    ageSeconds <= 300 &&
-    delaySeconds === 0;
-  const providerTimestampAvailable = quoteTime !== null;
-
-  return {
-    source_type: "REST",
-    retrieved_at: retrievedAt,
-    live_retrieval: true,
-    provider_timestamp_available: providerTimestampAvailable,
-    epic:
-      typeof response.instrument?.epic === "string"
-        ? response.instrument.epic
-        : epic,
-    name:
-      typeof response.instrument?.name === "string" ? response.instrument.name : symbol,
-    bid,
-    ask,
-    mid: (bid + ask) / 2,
-    quote_time: quoteTime?.toISOString() ?? null,
-    age_seconds: ageSeconds,
-    delay_seconds: delaySeconds,
-    streaming_prices_available:
-      typeof batchMarket?.streamingPricesAvailable === "boolean"
-        ? batchMarket.streamingPricesAvailable
-        : null,
-    market_status: marketStatus,
-    high: finiteNumber(snapshot.high),
-    low: finiteNumber(snapshot.low),
-    net_change: finiteNumber(snapshot.netChange),
-    percentage_change: finiteNumber(snapshot.percentageChange),
-    fresh,
-    actionable_live: actionableLive(marketStatus, fresh),
-    quote_quality: quoteQuality("REST", providerTimestampAvailable, fresh),
-    ...(timestampError ? { timestamp_error: timestampError } : {}),
-  };
-}
-
-function normalizeStreamingQuote(
-  symbol: string,
-  quote: CapitalStreamingQuote,
-  restQuote: MarketQuote | null,
-  serverTimeMs: number,
-): MarketQuote | null {
-  const quoteDate = new Date(quote.timestamp);
-  if (Number.isNaN(quoteDate.getTime())) return null;
-
-  const ageSeconds = (serverTimeMs - quote.timestamp) / 1000;
-  const fresh = ageSeconds >= 0 && ageSeconds <= 300;
-  const marketStatus = restQuote?.market_status ?? null;
-  return {
-    source_type: "WEBSOCKET",
-    live_retrieval: true,
-    provider_timestamp_available: true,
-    epic: quote.epic,
-    name: restQuote?.name ?? symbol,
-    bid: quote.bid,
-    ask: quote.ask,
-    mid: (quote.bid + quote.ask) / 2,
-    quote_time: quoteDate.toISOString(),
-    age_seconds: ageSeconds,
-    delay_seconds: null,
-    streaming_prices_available: true,
-    market_status: marketStatus,
-    high: restQuote?.high ?? null,
-    low: restQuote?.low ?? null,
-    net_change: restQuote?.net_change ?? null,
-    percentage_change: restQuote?.percentage_change ?? null,
-    fresh,
-    actionable_live: actionableLive(marketStatus, fresh),
-    quote_quality: quoteQuality("WEBSOCKET", true, fresh),
-  };
 }
 
 function publicError(error: unknown) {
@@ -289,7 +117,7 @@ export async function GET() {
     })),
   ];
   const epics = instruments.map(({ epic }) => epic);
-  const [requests, streamingQuotes, batchResult] = await Promise.all([
+  const [requests, streamingResult, batchResult] = await Promise.all([
     Promise.allSettled(
       instruments.map(({ epic }) => {
         return getMarketSnapshot(epic, context).then((response) => ({
@@ -298,7 +126,7 @@ export async function GET() {
         }));
       }),
     ),
-    getStreamingQuotes(epics, 2500, context),
+    liveQuotes(epics, context),
     getMarketSummaries(epics, context)
       .then((summaries) => ({ summaries, timestampError: undefined }))
       .catch(
@@ -313,6 +141,24 @@ export async function GET() {
   ]);
 
   const serverTime = new Date();
+  const streamingQuotes = streamingResult.quotes;
+  const archiveWrites: Promise<void>[] = [];
+  let archiveStatus = streamingResult.diagnostics.archive_status;
+  const enrich = (quote: MarketQuote, symbol: string): MarketQuote => {
+    quote.provider_timestamp = quote.quote_time;
+    quote.received_at_utc ??= quote.retrieved_at ?? null;
+    quote.fetched_at_utc = serverTime.toISOString();
+    quote.environment = environment;
+    quote.rest_fallback_reason = quote.source_type === "REST"
+      ? streamingResult.diagnostics.request?.instruments[quote.epic ?? ""]?.fallback_reason ?? "no_recent_archived_tick" : null;
+    if (archiveConfigured() && quote.bid !== null && quote.ask !== null && quote.epic && quote.received_at_utc) {
+      archiveWrites.push(saveQuote({ symbol, epic: quote.epic, bid: quote.bid, ask: quote.ask,
+        provider_timestamp: quote.quote_time, received_at_utc: quote.received_at_utc, fetched_at_utc: quote.fetched_at_utc,
+        environment, source_type: quote.source_type, market_status: quote.market_status, age_seconds: quote.age_seconds,
+      }).catch(() => { archiveStatus = "unavailable"; }));
+    }
+    return quote;
+  };
   const markets = {} as Record<PublicSymbol, MarketQuote>;
   const contextMarkets = {} as Record<ContextSymbol, MarketQuote>;
   let availableCount = 0;
@@ -333,11 +179,12 @@ export async function GET() {
           )
         : null;
     const streamingQuote = streamingQuotes[epic];
+    if (restQuote) enrich(restQuote, symbol);
     const websocketQuote = streamingQuote
       ? normalizeStreamingQuote(symbol, streamingQuote, restQuote, serverTime.getTime())
       : null;
     markets[symbol] = {
-      ...(websocketQuote ?? restQuote ?? unavailable(symbol, epic)),
+      ...enrich(websocketQuote ?? restQuote ?? unavailable(symbol, epic), symbol),
       role: TRADABLE_METADATA[symbol].role,
     };
     if (websocketQuote || restQuote) availableCount += 1;
@@ -360,15 +207,17 @@ export async function GET() {
           )
         : null;
     const streamingQuote = streamingQuotes[epic];
+    if (restQuote) enrich(restQuote, symbol);
     const websocketQuote = streamingQuote
       ? normalizeStreamingQuote(symbol, streamingQuote, restQuote, serverTime.getTime())
       : null;
     contextMarkets[symbol] = {
-      ...(websocketQuote ?? restQuote ?? unavailable(symbol, epic)),
+      ...enrich(websocketQuote ?? restQuote ?? unavailable(symbol, epic), symbol),
       role: "context",
     };
   });
 
+  await Promise.all(archiveWrites);
   if (availableCount === 0) {
     const firstFailure = requests.slice(0, PUBLIC_SYMBOLS.length).find(
       (request): request is PromiseRejectedResult => request.status === "rejected",
@@ -420,6 +269,8 @@ export async function GET() {
     diagnostics: {
       retryCount: context.retryCount,
       sessionRefreshHappened: context.sessionRefreshHappened,
+      websocket: streamingResult.diagnostics,
+      archive_status: archiveStatus,
     },
   });
 }

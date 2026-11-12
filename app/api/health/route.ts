@@ -6,7 +6,7 @@ import {
   ensureCapitalSession,
   getMarketSnapshot,
 } from "@/lib/capital";
-import { getStreamingQuotes } from "@/lib/capital-stream";
+import { streamQuotes } from "@/lib/capital-stream";
 import { PUBLIC_NO_STORE_HEADERS } from "@/lib/http";
 import {
   capitalHealthStatus,
@@ -36,12 +36,12 @@ export async function GET() {
 
     const [restResult, websocketResult] = await Promise.allSettled([
       getMarketSnapshot("US100", context),
-      getStreamingQuotes(["US100"], 1200, context),
+      streamQuotes(["US100"], { durationMs: 1200, stopAfterFirst: true, context }),
     ]);
     const restReady =
       restResult.status === "fulfilled" && hasUsableSnapshot(restResult.value);
     const websocketQuote =
-      websocketResult.status === "fulfilled" ? websocketResult.value.US100 : undefined;
+      websocketResult.status === "fulfilled" ? websocketResult.value.quotes.US100 : undefined;
     const websocketReady = Boolean(websocketQuote);
     const capitalStatus = capitalHealthStatus(restReady, websocketReady);
 
@@ -72,6 +72,7 @@ export async function GET() {
           sessionRefreshHappened: context.sessionRefreshHappened,
           restReady,
           websocketReady,
+          websocket: websocketResult.status === "fulfilled" ? websocketResult.value.diagnostics : null,
         },
       },
       { headers: PUBLIC_NO_STORE_HEADERS },
