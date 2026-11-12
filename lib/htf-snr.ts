@@ -19,6 +19,7 @@ export type SNRZone = {
   test_count: number; historical_test_count: number; reaction_count: number; last_test: string; last_interaction: string;
   break_status: 'unbroken' | 'pending' | 'confirmed' | 'reclaimed' | 'unknown_after_gap'; retest_status: 'none' | 'pending' | 'confirmed';
   current_state: SNRState | null; provisional_role: SNRRole | null;
+  role_reversal_confirmed: boolean;
   quality: { score: number; basis: 'heuristic_not_probability'; downgrade_reasons: string[] };
   evidence: { tests: ZoneInteraction[]; events: ZoneEvent[]; clustered_endpoints: { time: string; kind: 'high' | 'low'; price: number }[] };
   invalidation: string; data_reliability: Reliability; distance_to_price: number | null; confirmed_at: string | null;
@@ -49,7 +50,7 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
         lower: round(Math.max(unit * 0.01, value - width)), upper: round(value + width), role: endpoint === 'low' ? 'support' : 'resistance', status: 'watch',
         origin: { method: 'historical_OHLC_endpoint_cluster', time: b.time, endpoint, price: value, atr: b.atr, half_width: width, bounds: 'heuristic_frozen_at_origin' },
         test_count: 0, historical_test_count: 0, reaction_count: 0, last_test: b.time, last_interaction: b.time,
-        break_status: 'unbroken', retest_status: 'none', current_state: null, provisional_role: null, quality: { score: 0, basis: 'heuristic_not_probability', downgrade_reasons: [] },
+        break_status: 'unbroken', retest_status: 'none', current_state: null, provisional_role: null, role_reversal_confirmed: false, quality: { score: 0, basis: 'heuristic_not_probability', downgrade_reasons: [] },
         evidence: { tests: [], events: [], clustered_endpoints: [{ time: b.time, kind: endpoint, price: value }] },
         invalidation: 'See parameters.role_reversal_rule',
         data_reliability: { ...reliability, scope:'frame_data_reliability' }, distance_to_price: reference === null ? null : round(Math.max(0, reference - (value + width), (value - width) - reference)), confirmed_at: null });
@@ -75,7 +76,7 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
       if (b.segment !== segment) {
         segment = b.segment; away = true; lastTest = -Infinity; consecutive = 0; pendingBreak = null; proofReset = i; testedAt = null;
         z.break_status = 'unknown_after_gap'; z.retest_status = 'none';
-        z.current_state = null; z.provisional_role = null;
+        z.current_state = null; z.provisional_role = null; z.role_reversal_confirmed = false;
         role = b.close > z.upper ? 'support' : b.close < z.lower ? 'resistance' : role;
       }
       const touch = intersects(b, z);
@@ -117,7 +118,7 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
           }
           if (pendingBreak.retest && b.index > pendingBreak.retest.index && pendingBreak.confirmed && sameSide(b, z, pendingBreak.to)) {
             add('role_reversal', b, 'confirmed_break_then_failed_reclaim_then_later_closed_hold');
-            role = pendingBreak.to; pendingBreak = null; z.provisional_role = null; z.retest_status = 'confirmed'; consecutive = 0;
+            role = pendingBreak.to; pendingBreak = null; z.provisional_role = null; z.role_reversal_confirmed = true; z.retest_status = 'confirmed'; consecutive = 0;
           } else if (b.index > pendingBreak.index && touch) {
             // Every visit is an observed retest, even before a rejection/confirmation.
             if (!z.evidence.events.some(e => e.type === 'retest' && e.break_time === pendingBreak!.time)) add('retest', b, 'post_close_break_overlap');
@@ -146,7 +147,7 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
           }
         } else if (consecutive >= closeBars) {
           // Unproven seed: positional role only, not a confirmed SNR reversal.
-          role = role === 'support' ? 'resistance' : 'support'; consecutive = 0;
+          role = role === 'support' ? 'resistance' : 'support'; z.role_reversal_confirmed = false; consecutive = 0;
         }
       }
       if (!pendingBreak && !cancelled && (role === 'support' ? b.low < z.lower && b.close > z.upper : b.high > z.upper && b.close < z.lower))

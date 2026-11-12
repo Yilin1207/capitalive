@@ -7,21 +7,25 @@ import type { Reliability } from './htf-data-quality';
 export type CatalogEntry = {
   id: string; source_id: string; asset: AnalysisSymbol; timeframe: Timeframe; type: 'SNR' | 'FVG' | 'FORMING_FVG' | 'FRACTAL' | 'FORMING_FRACTAL' | 'RANGE_BOUNDARY' | 'ORDER_BLOCK' | 'BREAKER';
   lower: number; upper: number; role: 'support' | 'resistance' | 'boundary'; status: string; origin: unknown; test_count: number | null;
+  provisional_role?: 'support' | 'resistance' | null; role_reversal_confirmed?: boolean; role_confirmed_at?: string | null; provisional_at?: string | null;
   last_test: string | null; break_status: string; retest_status: string; quality: unknown; evidence: unknown; invalidation: string;
-  data_reliability: Reliability; main_tp_eligible: boolean; significant: boolean; downgrade_reasons: string[]; distance: number | null;
+  data_reliability: Reliability | {status:Reliability['status'];scope:string;reasons_ref:string}; main_tp_eligible: boolean; significant: boolean; downgrade_reasons: string[]; distance: number | null;
 };
 
 export function buildCompleteZoneCatalog(asset: AnalysisSymbol, snr: Record<Timeframe, SNRAudit>, analyses: SeriesAnalysis[], structures: Record<Timeframe, HtfStructure>, price: number | null) {
   const zones: CatalogEntry[] = [];
   const put = (z: Omit<CatalogEntry, 'distance'>) => zones.push({ ...z, distance: price === null ? null : Math.max(0, price - z.upper, z.lower - price) });
   for (const s of analyses) {
-    const tf = s.timeframe, reliability = { ...snr[tf].data_reliability, scope: `snr.${tf}.data_reliability` };
+    const tf = s.timeframe, reliability = { status:snr[tf].data_reliability.status, scope: `snr.${tf}.data_reliability`, reasons_ref:`snr.${tf}.data_reliability.reasons` };
     const common = { asset, timeframe: tf, test_count: null, last_test: null, break_status: 'not_applicable', retest_status: 'not_applicable', data_reliability: reliability };
     for (const z of snr[tf].zones) put({ id: z.id, source_id: z.id, asset, timeframe: tf, type: 'SNR', lower: z.lower, upper: z.upper,
-      role: z.role, status: z.status, origin: { source:'snr', timeframe:tf, zone_id:z.id }, test_count: z.test_count, last_test: z.last_test,
+      role: z.role, provisional_role:z.provisional_role, role_reversal_confirmed:z.role_reversal_confirmed,
+      role_confirmed_at:z.role_reversal_confirmed ? z.evidence.events.findLast(e=>e.type==='role_reversal')?.confirmed_at ?? null : z.confirmed_at,
+      ...(z.provisional_role ? {provisional_at:z.evidence.events.findLast(e=>e.type==='close_break')?.confirmed_at??null}:{}),
+      status: z.status, origin: { source:'snr', timeframe:tf, zone_id:z.id }, test_count: z.test_count, last_test: z.last_test,
       break_status: z.break_status, retest_status: z.retest_status, quality: z.quality,
       evidence: { source: 'snr', timeframe: tf, zone_id: z.id, tests: z.historical_test_count, reactions: z.reaction_count,
-        events: z.evidence.events.length, note: 'Full evidence returned once in snr[timeframe].zones by zone_id; no evidence omitted' },
+        events: z.evidence.events.length },
       invalidation: 'See source SNR invalidation rule', data_reliability: reliability,
       main_tp_eligible: false, significant: z.status === 'tested', downgrade_reasons: z.quality.downgrade_reasons });
     for (const g of [...s.fvgs, ...s.forming_fvgs]) {
@@ -56,7 +60,7 @@ export function buildCompleteZoneCatalog(asset: AnalysisSymbol, snr: Record<Time
   for (let i = 0; i < significant.length; i++) for (let j = i + 1; j < significant.length; j++) {
     const a = significant[i], b = significant[j];
     if (a.timeframe !== b.timeframe && a.role !== b.role && a.lower <= b.upper && a.upper >= b.lower)
-      conflicts.push({ a: a.id, b: b.id, lower: Math.max(a.lower, b.lower), upper: Math.min(a.upper, b.upper), reason: 'Overlapping observed zones with opposite assigned roles; no automatic cancellation' });
+      conflicts.push({ a: a.id, b: b.id, lower: Math.max(a.lower, b.lower), upper: Math.min(a.upper, b.upper), reason: 'OPPOSITE_ROLE_OVERLAP' });
   }
   const nearest = (role: 'support' | 'resistance') => price === null ? [] : significant.filter(z => z.role === role && (role === 'support' ? z.upper <= price : z.lower >= price))
     .sort((a, b) => a.distance! - b.distance! || ANALYSIS_TIMEFRAMES.indexOf(a.timeframe) - ANALYSIS_TIMEFRAMES.indexOf(b.timeframe)).map(z => z.id);
@@ -65,7 +69,9 @@ export function buildCompleteZoneCatalog(asset: AnalysisSymbol, snr: Record<Time
     nearest: { supports: nearest('support'), resistances: nearest('resistance') },
     potential_interest: significant.map(z => z.id), current_zones: price === null ? [] : significant.filter(z => z.lower <= price && z.upper >= price).map(z => z.id),
     conflicts, structural_conflicts: ANALYSIS_TIMEFRAMES.flatMap((a, i) => ANALYSIS_TIMEFRAMES.slice(i + 1).filter(b => structures[a].bias !== 'undetermined' && structures[b].bias !== 'undetermined' && structures[a].bias !== structures[b].bias).map(b => ({ a, b, a_bias: structures[a].bias, b_bias: structures[b].bias }))),
-    htf_priority: ANALYSIS_TIMEFRAMES, note: 'Bands and importance are heuristic; events are observed OHLC facts. SNR/OB never replace principal D1+ fractal/FVG targets.' };
+    htf_priority: ANALYSIS_TIMEFRAMES, evidence_lookup:'Complete SNR evidence in snr[timeframe].zones by source_id; nothing omitted',
+    conflict_policy:'OPPOSITE_ROLE_OVERLAP: different timeframes and opposite established roles; no automatic cancellation',
+    note: 'Bands and importance are heuristic; events are observed OHLC facts. SNR/OB never replace principal D1+ fractal/FVG targets.' };
 }
 
 export { calculateStructuralRisk } from './htf-risk';

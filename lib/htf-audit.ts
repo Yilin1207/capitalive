@@ -6,12 +6,14 @@ import { analyzeHtfStructure } from './htf-structure';
 import { buildCompleteZoneCatalog, calculateStructuralRisk } from './htf-zone-catalog';
 import { checkConsistency } from './analysis-consistency';
 import { rankPriorityZones } from './htf-priority';
+import { observeHtfContact } from './htf-contact';
 
 export function buildHtfAudit(asset: AnalysisSymbol, side: PriceSide, data: Record<Timeframe, CandleResponse>, analyses: SeriesAnalysis[], quote: MarketQuote, entry?: number) {
   const price = quote[side];
   const snr = Object.fromEntries(ANALYSIS_TIMEFRAMES.map(tf => [tf, detectIndependentSNR(data[tf], asset, side, price)])) as Record<Timeframe, ReturnType<typeof detectIndependentSNR>>;
   const structure = Object.fromEntries(analyses.map(s => [s.timeframe, analyzeHtfStructure(data[s.timeframe], s, side)])) as Record<Timeframe, ReturnType<typeof analyzeHtfStructure>>;
   const catalog = buildCompleteZoneCatalog(asset, snr, analyses, structure, price);
+  const priority=rankPriorityZones(snr,analyses,price);
   const consistency = checkConsistency(data, side);
   const reasons = [...new Set(Object.values(snr).flatMap(s => s.data_reliability.reasons))];
   const validSpread = quote.bid !== null && quote.ask !== null && Number.isFinite(quote.bid) && Number.isFinite(quote.ask) && quote.bid > 0 && quote.ask >= quote.bid;
@@ -25,7 +27,8 @@ export function buildHtfAudit(asset: AnalysisSymbol, side: PriceSide, data: Reco
       session_coverage: 'UNVERIFIED', environment: data.H4.environment, cross_timeframe: consistency.status },
     interpretation: 'VERIFIED applies only to listed checks, not complete history, profitability, or equivalence of DEMO and LIVE' };
   return { engine: 'capitalive-2.1-htf', version: '2.1', asset, price_side: side, environment: data.H4.environment, reference_price: price,
-    reference_fresh: quote.fresh, data_reliability: reliability, snr, structure, catalog, priority_zones: rankPriorityZones(snr, analyses, price),
+    reference_fresh: quote.fresh, data_reliability: reliability, snr, structure, catalog, priority_zones: priority,
+    contact:observeHtfContact(quote,side,priority),
     risk: { ...calculateStructuralRisk(analyses, catalog, entry ?? price, {data,asset,side,quote,settings:analyses[0]?.materiality}), entry_source: entry === undefined ? 'selected_quote_side' : 'user_hypothesis_unverified',
       reference_fresh: entry === undefined ? quote.fresh : false, data_reliability: reliability },
     scope: { view:'full', full_catalog_included:true, timeframes: ANALYSIS_TIMEFRAMES, loaded_history_only: true, omitted_zones: 0, source: 'same_snapshot_as_market_audit', no_synthetic_candles: true } };

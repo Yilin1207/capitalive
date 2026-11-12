@@ -4,15 +4,17 @@ import {resolve,join,dirname,extname,sep} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 
-const cwd=process.cwd(),checkpoint='a07395ee73d4ecfdc0445109a66d2e4e2ac3193a';
+const release=process.argv.includes('--rc');
+const cwd=process.cwd(),checkpoint=release?'5516a6fd8c02ad28fd0f054cf9026c42adecb416':'a07395ee73d4ecfdc0445109a66d2e4e2ac3193a';
 const git=args=>execFileSync('git',args,{encoding:'utf8',stdio:['pipe','pipe','pipe']}).trim();
-if(git(['rev-parse','checkpoint/capitalive-2-1-before-final-review'])!==checkpoint)throw new Error('Wrong checkpoint');
+if(git(['rev-parse',release?'checkpoint/capitalive-2-1-before-bugfix':'checkpoint/capitalive-2-1-before-final-review'])!==checkpoint)throw new Error('Wrong checkpoint');
 const files=git(['ls-files','--cached','--others','--exclude-standard']).split('\n');
 const rootFiles=new Set(['package.json','package-lock.json','tsconfig.json','next.config.ts','next-env.d.ts','playwright.config.ts','vercel.json',
-  '.gitignore','.dockerignore','.vercelignore','Dockerfile.worker','railway.json','README.md','CAPITALIVE_2_1_FINAL_AUDIT_RU.md','REPRODUCE_HTF_REVIEW.md']);
+  '.gitignore','.dockerignore','.vercelignore','Dockerfile.worker','railway.json','README.md','CAPITALIVE_2_1_FINAL_AUDIT_RU.md','REPRODUCE_HTF_REVIEW.md',
+  'CAPITALIVE_2_1_BUGFIX_AUDIT_RU.md','REPRODUCE_RELEASE_CANDIDATE.md']);
 const allowed=files.filter(p=>rootFiles.has(p)||/^(app|lib|tests|scripts|assets|deploy)\//.test(p)||p.startsWith('verification/capitalive-v2-1/'))
   .filter(p=>!/(^|\/)(?:\.env[^/]*|node_modules|\.git|\.vercel|\.next|data|test-results|playwright-report)(\/|$)/i.test(p))
-  .filter(p=>!/(?:\.sqlite(?:-wal|-shm)?|\.tsbuildinfo|\.zip|final-package-build\.json)$/i.test(p));
+  .filter(p=>!/(?:\.sqlite(?:-wal|-shm)?|\.tsbuildinfo|\.zip|(?:final-)?package-build\.json)$/i.test(p));
 const knownSecrets=[];
 const sensitiveNames=/(?:API_KEY|PASSWORD|TOKEN|SECRET|COOKIE|IDENTIFIER|DATABASE_URL)/i;
 for(const name of ['.env','.env.local'])if(existsSync(name)){
@@ -49,9 +51,9 @@ for(const path of allowed){
   }else if(!['.png','.ttf'].includes(extname(path)))throw new Error(`Unreviewed binary format ${path}`);
   put(path,bytes);
 }
-const diff=git(['diff',checkpoint,'--binary']);
+const diff=git(['diff',checkpoint,'--binary','--','.',':(exclude)verification']);
 put('SOURCE_DIFF.patch',Buffer.from(sanitize(diff,'SOURCE_DIFF.patch')+'\n'));
-put('CHANGED_FILES.txt',Buffer.from(git(['diff',checkpoint,'--name-status'])+'\n'));
+put('CHANGED_FILES.txt',Buffer.from(git(['diff',checkpoint,'--name-status','--','.',':(exclude)verification'])+'\n'));
 const security={scope:'allowlisted source/tests and requested verification directory; no private configuration or live logs',
   excluded:['.env*','.git','.vercel','.next','node_modules','databases','other verification folders','ZIP archives'],
   checks:['known private values from local environment compared in memory; values never exported','private-key/GitHub-token/credential-URL patterns','binary whitelist PNG/font only','personal local paths redacted'],
@@ -59,6 +61,6 @@ const security={scope:'allowlisted source/tests and requested verification direc
   limitation:'Pattern/value checks are not a formal proof against every possible secret encoding. Human review remains appropriate.'};
 put('SECURITY_REVIEW.json',Buffer.from(JSON.stringify(security,null,2)));
 writeFileSync(join(stage,'REVIEW_PACKAGE_MANIFEST.json'),JSON.stringify({checkpoint,source_head:git(['rev-parse','HEAD']),files:manifest},null,2));
-const output={stage,archive:join(cwd,'CAPITALIVE_2_1_FINAL_REVIEW.zip'),files:manifest.length+1,credential_matches:0,path_redactions:security.personal_path_redactions.length};
-writeFileSync('verification/capitalive-v2-1/final-package-build.json',JSON.stringify(output,null,2));
+const output={stage,archive:join(cwd,release?'CAPITALIVE_2_1_RELEASE_CANDIDATE.zip':'CAPITALIVE_2_1_FINAL_REVIEW.zip'),files:manifest.length+1,credential_matches:0,path_redactions:security.personal_path_redactions.length};
+writeFileSync(release?'verification/capitalive-v2-1/rc/package-build.json':'verification/capitalive-v2-1/final-package-build.json',JSON.stringify(output,null,2));
 console.log(JSON.stringify(output));

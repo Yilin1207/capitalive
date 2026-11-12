@@ -38,7 +38,7 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
   }, [data, analysis, symbol, side, layers, selectionError,htf]);
   if (!analysis) return null;
   const params = new URLSearchParams({ symbol, timeframe: data.timeframe, side, ...Object.fromEntries(Object.entries(layers).map(([key, value]) => [key, value ? "1" : "0"])) });
-  const auditParams = new URLSearchParams({ symbol, side });
+  const auditParams = new URLSearchParams({ symbol, side, view:'priority' });
   if (selection) for (const [key, value] of [["range_high", selection.high_id], ["range_low", selection.low_id]]) { params.set(key, value); auditParams.set(key, value); }
   const highId = selection?.high_id ?? automatic?.ranges.selected.high?.id ?? "";
   const lowId = selection?.low_id ?? automatic?.ranges.selected.low?.id ?? "";

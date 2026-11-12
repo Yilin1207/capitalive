@@ -8,6 +8,7 @@ export async function htfZones(request: Request, dependencies?: Parameters<typeo
   const response = await marketAudit(request, dependencies);
   if (!response.ok) return response;
   const body = await response.json();
+  if(body.pagination || body.snapshot_id)return historyJson(body);
   return historyJson({ ok: true, schema_version: '2.1', symbol: body.symbol, provider: body.provider, generated_at: body.generated_at,
     ...body.htf, charts: body.charts });
 }

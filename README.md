@@ -2,13 +2,15 @@
 
 ## Capitalive 2.1: HTF structure and SNR (not deployed)
 
-Prepared on `feature/capitalive-2-1-htf-snr`; production remains the verified 2.0
-deployment below. See [final Russian audit](CAPITALIVE_2_1_FINAL_AUDIT_RU.md)
-and [reproduction instructions](REPRODUCE_HTF_REVIEW.md).
+Prepared on `feature/capitalive-2-1-htf-snr`; this release candidate has not been
+deployed. See [bugfix audit](CAPITALIVE_2_1_BUGFIX_AUDIT_RU.md) and
+[release reproduction instructions](REPRODUCE_RELEASE_CANDIDATE.md).
+The 2.0 production checks below are historical, not a verification of this candidate.
 
 ```text
 GET /api/htf-zones?symbol=NAS100
 GET /api/htf-zones?symbol=NAS100&view=priority
+GET /api/htf-zones?symbol=NAS100&view=snapshot
 GET /api/htf-zones?symbol=EURUSD&side=ask&entry=1.12
 GET /api/market-audit?symbol=EU50
 GET /api/market-audit?symbol=EURUSD&htf=0
@@ -60,7 +62,14 @@ opposite swing established by the latest closed H4 BOS/CHOCH in that direction;
 a nearer later fractal alone is insufficient. Missing setup produces null SL/RR.
 Long enters Ask and exits Bid; short enters Bid and exits Ask. SL/TP use actual
 exit-side OHLC. Current spread is used to convert hypothetical selected-side Entry
-and approximate opposite-side SNR obstacles, with that approximation explicit.
+and approximate opposite-side catalog obstacle bounds, with that approximation explicit.
+Obstacles require an opposing established or explicitly provisional role, lie ahead
+and strictly before principal TP. Support inside LONG and resistance inside SHORT
+are context, not automatic obstacles. A correctly classified opposing zone containing
+Entry can legitimately have zero distance. `role`, `provisional_role` and
+`role_reversal_confirmed` remain separate. `first_opposing_obstacle` aliases
+`first_obstacle`; each includes source, role evidence, conflict count, bounds and
+timestamp semantics. Catalog reliability reasons are referenced by `reasons_ref`.
 SNR, OB and H4 cannot become the principal TP. Exact fractal touches remain eligible
 until a strict sweep. Future spread, execution costs and slippage are not estimated.
 
@@ -69,8 +78,16 @@ Monthly partial aggregates cannot establish patterns. DEMO/LIVE and limited sess
 coverage remain explicit. `VERIFIED/PARTIAL/UNVERIFIED` describes checks, never returns.
 No missing candles are synthesized. The response budget is 4,250,000 bytes; a larger
 snapshot returns an explicit `503 ANALYSIS_RESPONSE_TOO_LARGE`, never a silently
-truncated catalog. Export full evidence offline in that case; pagination remains a
-release limitation. All six captured symbol/side responses fit the budget.
+truncated catalog, plus a manifest to download its exact full JSON. `view=snapshot`
+creates the same manifest directly. Pages contain bounded base64 byte chunks and
+SHA-256 checksums, preserving every record and event including UTF-8 text.
+Use `scripts/download-audit-snapshot.mjs <snapshot-URL> <output.json>` to verify and
+reassemble. Snapshot storage is process-local, bounded to 96 MiB, max 64 MiB/document,
+TTL 10 minutes. Expiry, eviction, restart or another server instance yields 410;
+there is no fallback to newer data. Distributed durable snapshots remain a release
+limitation. All six recorded symbol/side responses fit the single-response budget.
+The UI audit link now selects priority explicitly. `contact` is a fresh, timestamp-
+validated quote observation only, never a closed retest or emitted live alert.
 
 Reproduce the captured-data audit with
 `node --conditions=react-server --import tsx scripts/verify-htf-upgrade.ts`
