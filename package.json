@@ -3,23 +3,37 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test:ui": "playwright test",
+    "test:analysis-public": "node --conditions=react-server --import tsx scripts/verify-analysis-public.ts",
+    "worker": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx scripts/quote-worker.ts",
+    "archive:init": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx scripts/archive-init.ts",
+    "test:release": "node scripts/verify-production.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
+    "test:public": "node scripts/verify-public.mjs"
   },
   "dependencies": {
+    "@resvg/resvg-js": "2.6.2",
+    "lightweight-charts": "^5.2.1",
     "next": "^16.0.0",
+    "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "server-only": "^0.0.1",
+    "sharp": "0.35.5",
     "ws": "^8.21.3"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.0",
     "@types/node": "^24.0.0",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/ws": "^8.18.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.0"
   }
 }

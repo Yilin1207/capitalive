@@ -4,6 +4,7 @@ export function markQuotesStale<T extends Record<string, object>>(quotes: T) {
       symbol,
       {
         ...quote,
+        ...("provider_timestamp" in quote ? { age_seconds: typeof quote.provider_timestamp === "string" ? (Date.now() - Date.parse(quote.provider_timestamp)) / 1000 : null } : {}),
         fresh: false,
         stale: true,
         actionable_live: false,

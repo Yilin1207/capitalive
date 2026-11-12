@@ -1,0 +1,21 @@
+
+> capital-market-feed@1.0.0 test:ui
+> playwright test
+
+node.exe : [WebServer] (node:18968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+строка:1 знак:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([WebServer] (no... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:26692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\browser\analysis.spec.ts:5:1 › recorded real MN1: layer switches, side, symbol, PNG link, errors and mobile layout (786ms)
+  ok 2 tests\browser\analysis.spec.ts:44:1 › H4 explicit range updates exact EQ and both API links; reset restores automatic range (380ms)
+
+  2 passed (3.2s)

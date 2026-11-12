@@ -1,0 +1,340 @@
+[
+  {
+    "asset": "EURUSD",
+    "environment": "demo",
+    "captured_at": "2026-11-12T09:53:11.697Z",
+    "elapsed_ms": 64,
+    "bytes": 2472944,
+    "reliability": {
+      "status": "PARTIAL",
+      "reasons": [
+        "PROVIDER_VALIDATION_LOSS",
+        "MONTHLY_SESSION_COMPLETENESS_UNKNOWN",
+        "KNOWN_VALIDATION_BARRIERS",
+        "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+        "REQUESTED_HISTORY_INCOMPLETE",
+        "NOMINAL_GAPS_SESSION_CALENDAR_UNKNOWN"
+      ],
+      "checks": {
+        "bid_ask_spread": "VERIFIED",
+        "tick_timestamp": "VERIFIED",
+        "session_coverage": "UNVERIFIED",
+        "environment": "demo",
+        "cross_timeframe": "no_contradiction_in_checked_bars"
+      },
+      "interpretation": "VERIFIED applies only to listed checks, not complete history, profitability, or equivalence of DEMO and LIVE"
+    },
+    "frames": {
+      "MN1": {
+        "bars": 57,
+        "candidates": 53,
+        "tested": 4,
+        "reversals": 0,
+        "structure_breaks": 2,
+        "order_blocks": 1
+      },
+      "W1": {
+        "bars": 119,
+        "candidates": 92,
+        "tested": 38,
+        "reversals": 16,
+        "structure_breaks": 9,
+        "order_blocks": 8
+      },
+      "D1": {
+        "bars": 191,
+        "candidates": 123,
+        "tested": 62,
+        "reversals": 37,
+        "structure_breaks": 15,
+        "order_blocks": 11
+      },
+      "H4": {
+        "bars": 239,
+        "candidates": 80,
+        "tested": 43,
+        "reversals": 33,
+        "structure_breaks": 19,
+        "order_blocks": 12
+      }
+    },
+    "total_zones": 671,
+    "conflicts": 155,
+    "nas100_weekly_requested_area": []
+  },
+  {
+    "asset": "NAS100",
+    "environment": "demo",
+    "captured_at": "2026-11-12T09:53:08.692Z",
+    "elapsed_ms": 65,
+    "bytes": 3487846,
+    "reliability": {
+      "status": "PARTIAL",
+      "reasons": [
+        "PROVIDER_VALIDATION_LOSS",
+        "MONTHLY_SESSION_COMPLETENESS_UNKNOWN",
+        "KNOWN_VALIDATION_BARRIERS",
+        "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+        "REQUESTED_HISTORY_INCOMPLETE",
+        "NOMINAL_GAPS_SESSION_CALENDAR_UNKNOWN"
+      ],
+      "checks": {
+        "bid_ask_spread": "VERIFIED",
+        "tick_timestamp": "VERIFIED",
+        "session_coverage": "UNVERIFIED",
+        "environment": "demo",
+        "cross_timeframe": "no_contradiction_in_checked_bars"
+      },
+      "interpretation": "VERIFIED applies only to listed checks, not complete history, profitability, or equivalence of DEMO and LIVE"
+    },
+    "frames": {
+      "MN1": {
+        "bars": 58,
+        "candidates": 77,
+        "tested": 6,
+        "reversals": 0,
+        "structure_breaks": 6,
+        "order_blocks": 1
+      },
+      "W1": {
+        "bars": 119,
+        "candidates": 119,
+        "tested": 36,
+        "reversals": 4,
+        "structure_breaks": 10,
+        "order_blocks": 3
+      },
+      "D1": {
+        "bars": 191,
+        "candidates": 135,
+        "tested": 61,
+        "reversals": 38,
+        "structure_breaks": 18,
+        "order_blocks": 11
+      },
+      "H4": {
+        "bars": 239,
+        "candidates": 207,
+        "tested": 87,
+        "reversals": 30,
+        "structure_breaks": 23,
+        "order_blocks": 17
+      }
+    },
+    "total_zones": 890,
+    "conflicts": 160,
+    "nas100_weekly_requested_area": [
+      {
+        "id": "NAS100:W1:bid:snr:2026-06-08T00:00:00.000Z:low",
+        "asset": "NAS100",
+        "timeframe": "W1",
+        "side": "bid",
+        "type": "SNR",
+        "lower": 28115.2103571,
+        "upper": 28254.1896429,
+        "role": "support",
+        "status": "tested",
+        "origin": {
+          "method": "historical_OHLC_endpoint_cluster",
+          "time": "2026-06-08T00:00:00.000Z",
+          "endpoint": "low",
+          "price": 28184.7,
+          "atr": 1389.792857142857,
+          "half_width": 69.48964285714285,
+          "bounds": "heuristic_frozen_at_origin"
+        },
+        "test_count": 3,
+        "historical_test_count": 3,
+        "reaction_count": 2,
+        "last_test": "2026-10-26T00:00:00.000Z",
+        "last_interaction": "2026-11-02T00:00:00.000Z",
+        "break_status": "pending",
+        "retest_status": "none",
+        "quality": {
+          "score": 35,
+          "basis": "heuristic_not_probability",
+          "downgrade_reasons": []
+        },
+        "evidence": {
+          "tests": [
+            {
+              "time": "2026-06-08T00:00:00.000Z",
+              "index": 97,
+              "segment": 0,
+              "kind": "origin",
+              "role": "support",
+              "reaction": "up",
+              "reaction_at": "2026-06-08T00:00:00.000Z",
+              "reaction_distance": 1773.9103571,
+              "reaction_atr": 1.276384713,
+              "endpoint_near_zone": true,
+              "approach": {
+                "bars": 0,
+                "net_move_atr": null,
+                "directional_efficiency": null
+              }
+            },
+            {
+              "time": "2026-07-13T00:00:00.000Z",
+              "index": 102,
+              "segment": 0,
+              "kind": "wick_touch",
+              "role": "support",
+              "reaction": "up",
+              "reaction_at": "2026-07-13T00:00:00.000Z",
+              "reaction_distance": 433.7103571,
+              "reaction_atr": 0.310658518086,
+              "endpoint_near_zone": true,
+              "approach": {
+                "bars": 3,
+                "net_move_atr": -0.457273834253,
+                "directional_efficiency": 0.434167573449
+              }
+            },
+            {
+              "time": "2026-10-26T00:00:00.000Z",
+              "index": 117,
+              "segment": 0,
+              "kind": "traverse",
+              "role": "support",
+              "reaction": "not_proven",
+              "reaction_at": null,
+              "reaction_distance": null,
+              "reaction_atr": null,
+              "endpoint_near_zone": false,
+              "approach": {
+                "bars": 3,
+                "net_move_atr": -2.12059122357,
+                "directional_efficiency": 1
+              }
+            }
+          ],
+          "events": [
+            {
+              "type": "liquidity_sweep",
+              "time": "2026-07-20T00:00:00.000Z",
+              "confirmed_at": "2026-07-27T00:00:00.000Z",
+              "index": 103,
+              "role": "support",
+              "break_time": null,
+              "retest_time": null,
+              "evidence": "Wick crossed far edge, closed back outside original edge; no close-confirmed break"
+            },
+            {
+              "type": "liquidity_sweep",
+              "time": "2026-07-27T00:00:00.000Z",
+              "confirmed_at": "2026-08-03T00:00:00.000Z",
+              "index": 104,
+              "role": "support",
+              "break_time": null,
+              "retest_time": null,
+              "evidence": "Wick crossed far edge, closed back outside original edge; no close-confirmed break"
+            },
+            {
+              "type": "liquidity_sweep",
+              "time": "2026-10-26T00:00:00.000Z",
+              "confirmed_at": "2026-11-02T00:00:00.000Z",
+              "index": 117,
+              "role": "support",
+              "break_time": null,
+              "retest_time": null,
+              "evidence": "Wick crossed far edge, closed back outside original edge; no close-confirmed break"
+            }
+          ],
+          "clustered_endpoints": [
+            {
+              "time": "2026-06-08T00:00:00.000Z",
+              "kind": "low",
+              "price": 28184.7
+            },
+            {
+              "time": "2026-07-13T00:00:00.000Z",
+              "kind": "low",
+              "price": 28217.3
+            },
+            {
+              "time": "2026-08-03T00:00:00.000Z",
+              "kind": "low",
+              "price": 28192
+            }
+          ]
+        },
+        "invalidation": "Role changes after 2 consecutive closed closes beyond the far edge plus a later retest and closed follow-through. Historical zone retained.",
+        "data_reliability": {
+          "status": "PARTIAL",
+          "reasons": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ],
+          "scope": "loaded_history_only; provider_closed_bar_semantics; UTC; no_imputed_bars"
+        },
+        "distance_to_price": 0,
+        "confirmed_at": "2026-07-20T00:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "asset": "EU50",
+    "environment": "demo",
+    "captured_at": "2026-11-12T09:53:15.756Z",
+    "elapsed_ms": 52,
+    "bytes": 2914127,
+    "reliability": {
+      "status": "PARTIAL",
+      "reasons": [
+        "PROVIDER_VALIDATION_LOSS",
+        "MONTHLY_SESSION_COMPLETENESS_UNKNOWN",
+        "KNOWN_VALIDATION_BARRIERS",
+        "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+        "REQUESTED_HISTORY_INCOMPLETE",
+        "NOMINAL_GAPS_SESSION_CALENDAR_UNKNOWN",
+        "CURRENT_PERIOD_MISSING",
+        "QUOTE_NOT_VERIFIED_FRESH"
+      ],
+      "checks": {
+        "bid_ask_spread": "VERIFIED",
+        "tick_timestamp": "UNVERIFIED",
+        "session_coverage": "UNVERIFIED",
+        "environment": "demo",
+        "cross_timeframe": "no_contradiction_in_checked_bars"
+      },
+      "interpretation": "VERIFIED applies only to listed checks, not complete history, profitability, or equivalence of DEMO and LIVE"
+    },
+    "frames": {
+      "MN1": {
+        "bars": 59,
+        "candidates": 77,
+        "tested": 14,
+        "reversals": 4,
+        "structure_breaks": 5,
+        "order_blocks": 1
+      },
+      "W1": {
+        "bars": 119,
+        "candidates": 108,
+        "tested": 44,
+        "reversals": 16,
+        "structure_breaks": 12,
+        "order_blocks": 10
+      },
+      "D1": {
+        "bars": 191,
+        "candidates": 115,
+        "tested": 62,
+        "reversals": 35,
+        "structure_breaks": 23,
+        "order_blocks": 17
+      },
+      "H4": {
+        "bars": 239,
+        "candidates": 83,
+        "tested": 60,
+        "reversals": 62,
+        "structure_breaks": 23,
+        "order_blocks": 16
+      }
+    },
+    "total_zones": 744,
+    "conflicts": 160,
+    "nas100_weekly_requested_area": []
+  }
+]

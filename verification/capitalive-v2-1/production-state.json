@@ -1,0 +1,11 @@
+﻿{
+    "checked_at":  "2026-11-12T10:08:30.1636578Z",
+    "project":  "capitalive",
+    "production_deployment":  "dpl_8J4UM2UtAGDzfoMF3NcVnD7V3g98",
+    "production_unchanged":  true,
+    "environment_metadata_unchanged_since_release":  true,
+    "node_version":  "24.x",
+    "git_production_branch":  "main",
+    "automatic_deployments":  "enabled",
+    "bypass_token_count":  0
+}

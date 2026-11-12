@@ -1,0 +1,21 @@
+✔ all candles are closed and supported side is consistent (0.9821ms)
+✔ forming candle can never generate an SNR confirmation or influence ATR (2.4743ms)
+✔ candidate SNR zones are produced independently of five-bar fractals (1.1034ms)
+✔ zero-data, bad-data and unsorted candles cannot claim verified zones (0.1208ms)
+✔ explicit session-quality gaps downgrade confidence (0.5867ms)
+✔ don't claim role reversal from a wick sweep (0.3101ms)
+✔ build interest map respects priority of W1 over H4 (0.9197ms)
+✔ an explicitly known invalid candle between tests cannot confirm post-gap SNR (0.6122ms)
+✔ unknown invalid row timing suppresses claimed role reversals (0.3941ms)
+✔ two closed closes through historical SNR, followed by retest and rejection, confirm role flip (0.6485ms)
+✔ catalog preserves independent W1 SNR and original FVG/fractal zones (1.8787ms)
+✔ only suitable D1+ FVG or confirmed unswept fractal qualifies as principal target (0.4547ms)
+✔ does not invent absent zones from malformed input (0.2793ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 228.5554

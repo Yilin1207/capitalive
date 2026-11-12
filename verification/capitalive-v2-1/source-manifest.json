@@ -1,0 +1,111 @@
+{
+  "baseline": "50d48ce6ffec0c5054249d584532d79a93f2230c",
+  "branch": "feature/capitalive-2-1-htf-snr",
+  "files": [
+    {
+      "path": "app/api/htf-zones/route.ts",
+      "sha256": "0acd27d08f1729b3dc98737c0277176758ea22992395f108483964760d10146b",
+      "bytes": 313
+    },
+    {
+      "path": "app/page.tsx",
+      "sha256": "80e9c0aee62d55c0b400fe2f3cb339b82818d8d47e161e6003bd07ff19ec49c6",
+      "bytes": 1475
+    },
+    {
+      "path": "lib/htf-audit.ts",
+      "sha256": "5bca1145787a14fc511229d12f77d86c578c550b0eac666856fe2daeae2853e8",
+      "bytes": 3063
+    },
+    {
+      "path": "lib/htf-data-quality.ts",
+      "sha256": "632277340f9776a4c27eca5312292753b3fb0c5ba8da69025c75e4f6a0720edc",
+      "bytes": 6389
+    },
+    {
+      "path": "lib/htf-http.ts",
+      "sha256": "87bbe7cbeff59bc3c9b4c6c999e825d810da719eaffe12c5098e9d1648ec998a",
+      "bytes": 833
+    },
+    {
+      "path": "lib/htf-snr.ts",
+      "sha256": "2e110fd279d8268676e0e2e418708308544e23b420306055b8adae829ce19b24",
+      "bytes": 13397
+    },
+    {
+      "path": "lib/htf-structure.ts",
+      "sha256": "69e4f51e2043ee5dbf6263164f14e3bee816a4ce76a9b9358544bcc296a82cf6",
+      "bytes": 7168
+    },
+    {
+      "path": "lib/htf-zone-catalog.ts",
+      "sha256": "9aefd9fe59c2850839b416f9f2863d42437cd3324a3304f76e710e54cc509261",
+      "bytes": 10692
+    },
+    {
+      "path": "lib/market-audit.ts",
+      "sha256": "100b8fa2e8d332b9c4cf6410d56db44342766d361648ab1b37a9d08b1f4df586",
+      "bytes": 5682
+    },
+    {
+      "path": "scripts/audit-htf-zip.ts",
+      "sha256": "d5f409ac39c509cf4d2ab2d9128007b50e741ddd60c5971e12941d12c759a390",
+      "bytes": 1773
+    },
+    {
+      "path": "scripts/capture-htf-baseline.mjs",
+      "sha256": "f0b5dffb738cfd4ceee82415f81bde7d2b47cd81628a2b8497b62a6e138e7ad8",
+      "bytes": 1518
+    },
+    {
+      "path": "scripts/verify-htf-upgrade.ts",
+      "sha256": "378ab8f497e7721154e4914754d5e7435064fcf4d2ea4140b6f6fcb6c844ead3",
+      "bytes": 3158
+    },
+    {
+      "path": "tests/analysis-api.test.ts",
+      "sha256": "2baafc91871a045f392dbe3579350d7c9899e0eca0c5f8705e2127e4450561cf",
+      "bytes": 9500
+    },
+    {
+      "path": "tests/fixtures/htf-EU50.json",
+      "sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+      "bytes": 143106
+    },
+    {
+      "path": "tests/fixtures/htf-EURUSD.json",
+      "sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+      "bytes": 148784
+    },
+    {
+      "path": "tests/fixtures/htf-NAS100.json",
+      "sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+      "bytes": 147888
+    },
+    {
+      "path": "tests/htf-audit.test.ts",
+      "sha256": "0bd4b413843bf424f91cdecfaccad43605af0f07b5649b8e071ccdda5e46eb30",
+      "bytes": 7581
+    },
+    {
+      "path": "tests/htf-snr.test.ts",
+      "sha256": "172981585797a5281b22dedb0e0cac82e2813f4864e313d79dc7b35b9aa65897",
+      "bytes": 7068
+    },
+    {
+      "path": "tests/htf-structure.test.ts",
+      "sha256": "d08dba3063761538ab612c9f899e6028a4d3f0cb98ac7237c6c9227d760a3c76",
+      "bytes": 3089
+    },
+    {
+      "path": "tests/htf-test-helpers.ts",
+      "sha256": "149e65ccf443637c17f5c4f8da6698b5359b368985c30694fc85c98488bcc219",
+      "bytes": 1438
+    },
+    {
+      "path": "vercel.json",
+      "sha256": "0e527d340f4794be5b8d823b67c6ccedd4223d8fa1d1c37a08c314c056d6128c",
+      "bytes": 152
+    }
+  ]
+}

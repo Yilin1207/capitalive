@@ -1,0 +1,20 @@
+{
+  "provenance": "Author-defined synthetic partial expectations, written separately from engine output. Not independent human expert labels.",
+  "precision": null,
+  "recall": null,
+  "reason": "No exhaustive independently labelled real-market reference set is available.",
+  "cases": [
+    {"id":"monthly_snr_without_fvg","timeframe":"MN1","pattern":"support","focus_price":100,"reference_band":[97,103],"status":"tested","minimum_tests":3,"minimum_reactions":3,"states":[],"forbidden":["CONFIRMED_ROLE_REVERSAL"],"note":"Repeated historical lows and departures; no FVG required."},
+    {"id":"support_to_resistance","timeframe":"W1","pattern":"flip","focus_price":100,"reference_band":[97,103],"states":["CLOSE_BREAK","CONFIRMED_BREAK","RETEST","FAILED_RECLAIM","CONFIRMED_ROLE_REVERSAL"],"role":"resistance"},
+    {"id":"sweep_without_break","timeframe":"W1","pattern":"sweep","focus_price":100,"reference_band":[97,103],"states":["SWEEP"],"forbidden":["CLOSE_BREAK","CONFIRMED_ROLE_REVERSAL"]},
+    {"id":"false_close_break_reclaimed","timeframe":"W1","pattern":"false_break","focus_price":100,"reference_band":[97,103],"states":["CLOSE_BREAK","BREAK_PENDING","BREAK_INVALIDATED"],"forbidden":["CONFIRMED_ROLE_REVERSAL"],"role":"support"},
+    {"id":"failed_reclaim_no_followthrough_yet","timeframe":"W1","pattern":"failed_reclaim","focus_price":100,"reference_band":[97,103],"states":["CONFIRMED_BREAK","RETEST","FAILED_RECLAIM"],"forbidden":["CONFIRMED_ROLE_REVERSAL"]},
+    {"id":"continuous_overlap_one_episode","timeframe":"W1","pattern":"continuous","focus_price":100,"reference_band":[97,103],"maximum_tests":1,"status":"watch","states":[],"forbidden":["CONFIRMED_ROLE_REVERSAL"]},
+    {"id":"weak_reactions","timeframe":"W1","pattern":"weak","focus_price":100,"reference_band":[97,103],"maximum_reactions":0,"status":"watch","states":[]},
+    {"id":"strong_reactions","timeframe":"W1","pattern":"support","focus_price":100,"reference_band":[97,103],"minimum_reactions":3,"status":"tested","states":[]},
+    {"id":"overlapping_MN1_W1","timeframe":"W1","pattern":"overlap","focus_price":100,"reference_band":[97,103],"states":[],"overlap_timeframes":["MN1","W1"],"note":"Both provenance layers must remain even where bands overlap."},
+    {"id":"insufficient_history","timeframe":"W1","pattern":"short","focus_price":100,"reference_band":[97,103],"maximum_tests":1,"status":"watch","states":[],"forbidden":["CONFIRMED_BREAK","CONFIRMED_ROLE_REVERSAL"]},
+    {"id":"forming_break_not_evidence","timeframe":"W1","pattern":"forming","focus_price":100,"reference_band":[97,103],"states":[],"forbidden":["CLOSE_BREAK","CONFIRMED_BREAK","CONFIRMED_ROLE_REVERSAL"]}
+  ],
+  "real_reference": {"NAS100_W1":{"band":[28090,28220],"source":"User-provided approximate area; sparse anchor, not exhaustive independent gold labels"},"EURUSD":null,"EU50":null}
+}

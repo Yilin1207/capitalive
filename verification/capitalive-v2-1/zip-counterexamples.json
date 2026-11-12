@@ -1,0 +1,39 @@
+{
+  "archive_tests": "13/13 pass, but do not test these independent counterexamples",
+  "continuous_stay": {
+    "original": [
+      {
+        "status": "tested",
+        "tests": 7
+      }
+    ],
+    "revised": [
+      {
+        "status": "watch",
+        "tests": 1
+      }
+    ]
+  },
+  "future_volatility": {
+    "original_tolerance_before": 3,
+    "original_tolerance_after": 7.9,
+    "revised_origin_band_before": {
+      "method": "historical_OHLC_endpoint_cluster",
+      "time": "2025-01-06T00:00:00.000Z",
+      "endpoint": "low",
+      "price": 100,
+      "atr": 12,
+      "half_width": 3,
+      "bounds": "heuristic_frozen_at_origin"
+    },
+    "revised_origin_band_after": {
+      "method": "historical_OHLC_endpoint_cluster",
+      "time": "2025-01-06T00:00:00.000Z",
+      "endpoint": "low",
+      "price": 100,
+      "atr": 12,
+      "half_width": 3,
+      "bounds": "heuristic_frozen_at_origin"
+    }
+  }
+}
