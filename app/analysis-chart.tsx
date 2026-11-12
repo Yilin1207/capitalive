@@ -67,6 +67,7 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
     {snrEnabled && !htf && <p role="status">{htfState.key===htfKey && htfState.error ? `HTF: ${htfState.error}` : 'Загрузка HTF-зон…'}</p>}
     {snrEnabled && htf && <details className="priority-zones"><summary>Приоритетные HTF-зоны: {htf.priority_zones.selected_count} из {htf.priority_zones.full_snr_count}</summary>
       <p>На графике — до двух видимых зон каждого включённого таймфрейма: ближайшая и следующая по рангу, до двух последних отметок событий на зону. Все кандидаты и причины отбора сохранены в <a href={`/api/htf-zones?${new URLSearchParams({symbol,side,view:'full'})}`} target="_blank" rel="noreferrer">полном каталоге SNR</a>.</p>
+      <p className="chart-note">Основной режим — приоритетные зоны. Полный snapshot доступен без гарантии сохранности между запросами (best effort): при ошибке 410 начните загрузку заново или вернитесь к приоритетным зонам. Страницы разных снимков нельзя объединять.</p>
       <div className="analysis-table-wrap"><table><thead><tr><th>TF / границы</th><th>Роль / состояние</th><th>Тесты / реакции</th><th>Ранг</th></tr></thead><tbody>
         {htf.priority_zones.zones.map(z=><tr key={z.id}><td style={{color:SNR_COLORS[z.timeframe]}}>{z.timeframe} · {z.lower}—{z.upper}</td><td>{z.role}{z.provisional_role?` → ${z.provisional_role}?`:''} · {z.current_state??z.status}</td><td>{z.tests} / {z.reactions}</td>
           <td><span title={JSON.stringify(z.components)}>{z.score.toFixed(1)}</span> · {z.selection_reasons.join(', ')}</td></tr>)}

@@ -9,6 +9,8 @@ import {observeHtfContact} from '../lib/htf-contact';
 import type {CatalogEntry} from '../lib/htf-zone-catalog';
 import {marketAudit} from '../lib/market-audit';
 import {htfZones} from '../lib/htf-http';
+import {normalizeQuote,normalizeStreamingQuote,unavailable} from '../lib/quote-normalization';
+import {acceptStreamMessage,streamDiagnostics} from '../lib/tick-data';
 
 const f=JSON.parse(readFileSync('tests/fixtures/htf-NAS100.json','utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
 // Independent-audit counterexample: historical price retained, ONLY freshness simulated.
@@ -67,4 +69,30 @@ for(const side of ['bid','ask'] as const)test(`freshness simulation ${side}: ful
   const htf=await compact.json();assert.equal(compact.status,200);assert.equal(htf.contact.hit_count,3);
   assert.deepEqual(htf.contact.contact_hits.map((z:{id:string})=>z.id),body.htf.contact.contact_hits.map((z:{id:string})=>z.id));
   assert.equal(htf.scope.full_catalog_included,false);assert.ok(htf.contact.contact_hits.some((z:{timeframe:string})=>z.timeframe==='D1'));
+});
+
+for(const flag of [undefined,null,false])test(`timestamp availability ${String(flag)} is not affirmative evidence, even with fresh=true`,()=>{
+  const q={...freshQuote(),provider_timestamp_available:flag} as MarketQuote;
+  const c=observeHtfContact(q,'bid',candidates());assert.equal(c.eligible,false);assert.equal(c.hit_count,0);
+});
+test('explicit timestamp evidence still requires a fresh non-future timestamp',()=>{
+  const now=Date.now(),q={...freshQuote(),provider_timestamp_available:true},all=candidates();
+  assert.equal(observeHtfContact(q,'bid',all,now).eligible,true);
+  for(const time of [now-300001,now+1])assert.equal(observeHtfContact({...q,quote_time:new Date(time).toISOString()},'bid',all,now).eligible,false);
+});
+test('REST normalization never invents provider timestamp from receipt time or market summary',()=>{
+  const now=Date.now(),retrieved=new Date(now).toISOString();
+  const missing=normalizeQuote('NAS100','US100',{snapshot:{bid:f.quote.bid!,offer:f.quote.ask!,marketStatus:'TRADEABLE'}},{delayTime:0},retrieved,now)!;
+  assert.equal(missing.provider_timestamp_available,false);assert.equal(missing.quote_time,null);assert.equal(missing.fresh,false);
+  assert.equal(observeHtfContact({...missing,fresh:true},'bid',candidates(),now).eligible,false);
+  assert.equal(unavailable('NAS100','US100').provider_timestamp_available,false);
+  const valid=normalizeQuote('NAS100','US100',{snapshot:{bid:f.quote.bid!,offer:f.quote.ask!,marketStatus:'TRADEABLE',updateTimeUTC:new Date(now-1000).toISOString()}},{delayTime:0},retrieved,now)!;
+  assert.equal(valid.provider_timestamp_available,true);assert.equal(valid.fresh,true);assert.equal(observeHtfContact(valid,'bid',candidates(),now).eligible,true);
+});
+test('validated real-contract WebSocket tick retains explicit timestamp evidence through normalization',()=>{
+  const now=Date.now(),d=streamDiagnostics(['US100']);
+  const tick=acceptStreamMessage(JSON.stringify({destination:'quote',status:'OK',payload:{epic:'US100',bid:f.quote.bid,ofr:f.quote.ask,timestamp:now-1000}}),d,now)!;
+  assert.ok(tick);const q=normalizeStreamingQuote('NAS100',tick,null,now)!;
+  assert.equal(q.provider_timestamp_available,true);assert.equal(q.quote_time,new Date(tick.timestamp).toISOString());assert.equal(q.fresh,true);
+  assert.equal(observeHtfContact(q,'bid',candidates(),now).eligible,true);
 });

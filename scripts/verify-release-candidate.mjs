@@ -2,8 +2,8 @@ import {spawnSync} from 'node:child_process';
 import {dirname,join} from 'node:path';
 import {writeFileSync,mkdirSync} from 'node:fs';
 const npm=join(dirname(process.execPath),'node_modules/npm/bin/npm-cli.js'),npx=join(dirname(process.execPath),'node_modules/npm/bin/npx-cli.js');
-const rc2=process.argv.includes('--rc2');
-const root=`verification/capitalive-v2-1/${rc2?'rc2':'rc'}`,attempt=`${root}/attempt-${new Date().toISOString().replaceAll(':','-')}`;
+const release=process.argv.includes('--release'),rc2=release||process.argv.includes('--rc2');
+const root=`verification/capitalive-v2-1/${release?'release':rc2?'rc2':'rc'}`,attempt=`${root}/attempt-${new Date().toISOString().replaceAll(':','-')}`;
 mkdirSync(attempt,{recursive:true});const env={...process.env,CI:'true'};delete env.FORCE_COLOR;delete env.NO_COLOR;
 env.CAPITALIVE_REVIEW_OUTPUT=root;
 const checks=[['npm test',[npm,'test'],'tests'],['npm run lint',[npm,'run','lint'],'lint'],['npx tsc --noEmit',[npx,'tsc','--noEmit'],'tsc'],['npm run build',[npm,'run','build'],'build'],['npm run test:ui',[npm,'run','test:ui'],'ui'],

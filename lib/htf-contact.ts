@@ -6,7 +6,7 @@ import { ANALYSIS_TIMEFRAMES } from './technical-analysis';
 /** A point-in-time quote observation is never a closed retest or an emitted alert. */
 export function observeHtfContact(quote:MarketQuote,side:PriceSide,catalog:readonly CatalogEntry[],now=Date.now()){
   const price=quote[side],time=quote.quote_time?Date.parse(quote.quote_time):NaN;
-  const eligible=quote.fresh && quote.provider_timestamp_available!==false && Number.isFinite(time) && now-time>=0 && now-time<=300_000 &&
+  const eligible=quote.fresh && quote.provider_timestamp_available===true && Number.isFinite(time) && now-time>=0 && now-time<=300_000 &&
     price!==null && Number.isFinite(price) && price>0 && (quote.source_type==='WEBSOCKET'||quote.delay_seconds===0);
   // Contact coverage is independent of UI ranking/capacity and preserves overlapping source IDs.
   const snr=catalog.filter(z=>z.type==='SNR');

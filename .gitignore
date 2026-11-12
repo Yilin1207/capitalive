@@ -11,3 +11,7 @@ data/
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
+*.zip
+*.zip.sha256
+verification/**/package-build.json
+verification/**/final-package-build.json

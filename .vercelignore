@@ -9,3 +9,5 @@ data/
 verification/
 test-results/
 playwright-report/
+*.zip
+*.zip.sha256
