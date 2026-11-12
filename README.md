@@ -3,10 +3,12 @@
 ## Capitalive 2.1: HTF structure and SNR (not deployed)
 
 Prepared on `feature/capitalive-2-1-htf-snr`; production remains the verified 2.0
-deployment below. See [Russian 2.1 audit](CAPITALIVE_2_1_AUDIT_RU.md).
+deployment below. See [final Russian audit](CAPITALIVE_2_1_FINAL_AUDIT_RU.md)
+and [reproduction instructions](REPRODUCE_HTF_REVIEW.md).
 
 ```text
 GET /api/htf-zones?symbol=NAS100
+GET /api/htf-zones?symbol=NAS100&view=priority
 GET /api/htf-zones?symbol=EURUSD&side=ask&entry=1.12
 GET /api/market-audit?symbol=EU50
 GET /api/market-audit?symbol=EURUSD&htf=0
@@ -23,8 +25,12 @@ Bands are frozen at origin with half-width `max(3 units, 0.05 * causal ATR14)`.
 Significance requires at least two endpoint-backed episodes separated by a whole
 bar away and at least three source bars, with a measurable closed reaction. Continuous
 overlap is one episode. Reactions require a close at least 0.3 ATR away within three
-bars. A break needs two consecutive closed closes beyond the band; role reversal
-additionally needs a later rejecting retest and subsequent closed follow-through.
+bars. One closed close beyond the band emits CLOSE_BREAK and BREAK_PENDING.
+CONFIRMED_BREAK requires either two consecutive outside closes or a single strong
+close: displacement >=0.5 preceding ATR, directional body >=0.8 preceding ATR,
+close in the outer directional quarter. Role reversal additionally needs a later
+failed reclaim and subsequent closed follow-through. Reclaim of the old side cancels
+the cycle. Categorical confidence is observation/provisional/rule-confirmed, never probability.
 These thresholds, bands, scores, OB rules and obstacle ranking are **heuristics**.
 They are not probabilities, observed orders, or standardized market facts.
 
@@ -34,12 +40,29 @@ nearest zones, conflicts and downgrade reasons. SNR evidence is stored once unde
 `snr[timeframe].zones`; catalog evidence references identify the complete source.
 No top-N filter removes MN1/W1 candidates. Confirmed time is UTC candle close;
 event `time`, `reaction_at` and test times identify the provider candle start.
+`priority_zones` is a separate, explained selection of at most 20 zones, with explicit
+nonselection reasons and full-catalog references. Ranking combines timeframe, endpoint
+evidence, reaction, distance/ATR, recency and capped confluence. MN1/W1 nearest zones
+get representation without requiring FVG/fractal confluence. `view=priority` requests
+the compact view explicitly; `view=full` remains the complete catalog.
+
+The existing chart adds optional `snr_mn1`, `snr_w1`, `snr_d1`, `snr_h4`, `snr_events`
+0/1 layers in both UI and PNG. Colors identify timeframes. Up to two visible bands per
+enabled frame (nearest + ranked) and two recent event stamps per band prevent clutter;
+caps are stated on the image and never remove full-catalog evidence. SNR-enabled PNG
+is 1400x1280; the original layer set remains 1400x1000. The UI shows separate HTF fetch
+timestamps and retains the original chart if HTF loading fails.
 
 `htf.risk` gives both hypothetical directions, structural H4 SL, first obstacle,
 nearest eligible D1+ fractal/FVG TP and geometric RR. `entry` must be finite and
-positive; omission uses the selected quote side. Missing confirmed SL produces null
-SL/RR. SNR, OB and H4 cannot become the principal TP. Exact fractal touches remain
-eligible until a strict sweep. Spread, execution costs and slippage are not estimated.
+positive; omission uses the selected quote side. SL requires an unswept protected
+opposite swing established by the latest closed H4 BOS/CHOCH in that direction;
+a nearer later fractal alone is insufficient. Missing setup produces null SL/RR.
+Long enters Ask and exits Bid; short enters Bid and exits Ask. SL/TP use actual
+exit-side OHLC. Current spread is used to convert hypothetical selected-side Entry
+and approximate opposite-side SNR obstacles, with that approximation explicit.
+SNR, OB and H4 cannot become the principal TP. Exact fractal touches remain eligible
+until a strict sweep. Future spread, execution costs and slippage are not estimated.
 
 Known data barriers reset proof; unlocatable rejected rows suppress confirmation.
 Monthly partial aggregates cannot establish patterns. DEMO/LIVE and limited session
@@ -51,7 +74,9 @@ release limitation. All six captured symbol/side responses fit the budget.
 
 Reproduce the captured-data audit with
 `node --conditions=react-server --import tsx scripts/verify-htf-upgrade.ts`
-after running `node scripts/capture-htf-baseline.mjs` (read-only public HTTP).
+using the included recorded baseline responses. Refreshing through
+`node scripts/capture-htf-baseline.mjs` is optional read-only public HTTP and changes
+the evaluation snapshot; it is not necessary to reproduce the submitted results.
 Tests use checked-in `tests/fixtures/htf-*.json` and do not require credentials.
 `vercel.json` disables Git deployment only for this review branch; production
 settings and the `main` branch policy are unchanged.

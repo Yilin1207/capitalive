@@ -9,13 +9,16 @@ export type ZoneInteraction = {
   endpoint_near_zone: boolean;
   reaction_atr: number | null; approach: { bars: number; net_move_atr: number | null; directional_efficiency: number | null };
 };
-export type ZoneEvent = { type: 'close_break' | 'retest' | 'role_reversal' | 'failed_reclaim' | 'liquidity_sweep';
-  time: string; confirmed_at: string; index: number; role: SNRRole; break_time: string | null; retest_time: string | null; evidence: string };
+export type SNRState = 'CLOSE_BREAK' | 'BREAK_PENDING' | 'CONFIRMED_BREAK' | 'RETEST' | 'FAILED_RECLAIM' | 'CONFIRMED_ROLE_REVERSAL' | 'SWEEP' | 'BREAK_INVALIDATED';
+export type ZoneEvent = { type: 'close_break' | 'break_pending' | 'confirmed_break' | 'retest' | 'role_reversal' | 'failed_reclaim' | 'liquidity_sweep' | 'break_invalidated';
+  state: SNRState; confidence: 'OBSERVED' | 'PROVISIONAL' | 'RULE_CONFIRMED'; facts: { close: number };
+  time: string; confirmed_at: string; index: number; role: SNRRole; break_time?: string; retest_time?: string; evidence: string };
 export type SNRZone = {
   id: string; asset: AnalysisSymbol; timeframe: Timeframe; side: PriceSide; type: 'SNR'; lower: number; upper: number;
   role: SNRRole; status: 'tested' | 'watch'; origin: { method: string; time: string; endpoint: 'high' | 'low'; price: number; atr: number; half_width: number; bounds: 'heuristic_frozen_at_origin' };
   test_count: number; historical_test_count: number; reaction_count: number; last_test: string; last_interaction: string;
-  break_status: 'unbroken' | 'pending' | 'confirmed' | 'unknown_after_gap'; retest_status: 'none' | 'pending' | 'confirmed';
+  break_status: 'unbroken' | 'pending' | 'confirmed' | 'reclaimed' | 'unknown_after_gap'; retest_status: 'none' | 'pending' | 'confirmed';
+  current_state: SNRState | null; provisional_role: SNRRole | null;
   quality: { score: number; basis: 'heuristic_not_probability'; downgrade_reasons: string[] };
   evidence: { tests: ZoneInteraction[]; events: ZoneEvent[]; clustered_endpoints: { time: string; kind: 'high' | 'low'; price: number }[] };
   invalidation: string; data_reliability: Reliability; distance_to_price: number | null; confirmed_at: string | null;
@@ -46,20 +49,25 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
         lower: round(Math.max(unit * 0.01, value - width)), upper: round(value + width), role: endpoint === 'low' ? 'support' : 'resistance', status: 'watch',
         origin: { method: 'historical_OHLC_endpoint_cluster', time: b.time, endpoint, price: value, atr: b.atr, half_width: width, bounds: 'heuristic_frozen_at_origin' },
         test_count: 0, historical_test_count: 0, reaction_count: 0, last_test: b.time, last_interaction: b.time,
-        break_status: 'unbroken', retest_status: 'none', quality: { score: 0, basis: 'heuristic_not_probability', downgrade_reasons: [] },
+        break_status: 'unbroken', retest_status: 'none', current_state: null, provisional_role: null, quality: { score: 0, basis: 'heuristic_not_probability', downgrade_reasons: [] },
         evidence: { tests: [], events: [], clustered_endpoints: [{ time: b.time, kind: endpoint, price: value }] },
-        invalidation: `Role changes after ${closeBars} consecutive closed closes beyond the far edge plus a later retest and closed follow-through. Historical zone retained.`,
-        data_reliability: reliability, distance_to_price: reference === null ? null : round(Math.max(0, reference - (value + width), (value - width) - reference)), confirmed_at: null });
+        invalidation: 'See parameters.role_reversal_rule',
+        data_reliability: { ...reliability, scope:'frame_data_reliability' }, distance_to_price: reference === null ? null : round(Math.max(0, reference - (value + width), (value - width) - reference)), confirmed_at: null });
     }
   }
   for (const z of zones) {
     const start = bars.findIndex(b => b.time === z.origin.time);
     let role = z.role, segment = bars[start].segment, away = true, lastTest = -Infinity, consecutive = 0;
-    let pendingBreak: { time: string; index: number; to: SNRRole; retest: ClosedBar | null } | null = null;
+    let pendingBreak: { time: string; index: number; to: SNRRole; retest: ClosedBar | null; confirmed: boolean; consecutive: number } | null = null;
     let proofReset = start, testedAt: string | null = null;
-    const add = (type: ZoneEvent['type'], b: ClosedBar, evidence: string) => {
+    const states: Record<ZoneEvent['type'], SNRState> = { close_break: 'CLOSE_BREAK', break_pending: 'BREAK_PENDING', confirmed_break: 'CONFIRMED_BREAK',
+      retest: 'RETEST', failed_reclaim: 'FAILED_RECLAIM', role_reversal: 'CONFIRMED_ROLE_REVERSAL', liquidity_sweep: 'SWEEP', break_invalidated: 'BREAK_INVALIDATED' };
+    const add = (type: ZoneEvent['type'], b: ClosedBar, criterion: string) => {
       z.evidence.events.push({ type, time: b.time, confirmed_at: barCloseTime(data.candles[b.index], data.timeframe, data.candles[b.index + 1]),
-        index: b.index, role, break_time: pendingBreak?.time ?? null, retest_time: pendingBreak?.retest?.time ?? null, evidence });
+        state: states[type], confidence: type === 'break_pending' ? 'PROVISIONAL' : type === 'confirmed_break' || type === 'role_reversal' ? 'RULE_CONFIRMED' : 'OBSERVED',
+        facts: { close: b.close }, index: b.index, role, ...(pendingBreak ? { break_time: pendingBreak.time } : {}),
+        ...(pendingBreak?.retest ? { retest_time: pendingBreak.retest.time } : {}), evidence: criterion });
+      z.current_state = states[type];
       z.last_interaction = b.time;
     };
     for (let i = start; i < bars.length; i++) {
@@ -67,6 +75,7 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
       if (b.segment !== segment) {
         segment = b.segment; away = true; lastTest = -Infinity; consecutive = 0; pendingBreak = null; proofReset = i; testedAt = null;
         z.break_status = 'unknown_after_gap'; z.retest_status = 'none';
+        z.current_state = null; z.provisional_role = null;
         role = b.close > z.upper ? 'support' : b.close < z.lower ? 'resistance' : role;
       }
       const touch = intersects(b, z);
@@ -96,33 +105,52 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
       const currentTests = z.evidence.tests.filter(t => t.segment === segment && t.index >= bars[proofReset].index);
       if (currentTests.filter(t => t.endpoint_near_zone).length >= 2 && currentTests.some(t => t.endpoint_near_zone && t.reaction !== 'not_proven') && testedAt === null && confirmationsAllowed) testedAt = b.time;
       if (i === start || !confirmationsAllowed) continue;
+      let cancelled = false;
       if (pendingBreak) {
         if (sameSide(b, z, role)) {
-          // Reclaim of the old side cancels this retest cycle; never search across it.
-          pendingBreak = null; z.retest_status = 'none'; consecutive = 0;
-        } else if (pendingBreak.retest && b.index > pendingBreak.retest.index && sameSide(b, z, pendingBreak.to)) {
-          add('role_reversal', b, 'Closed break, later retest rejecting old role, subsequent closed follow-through');
-          role = pendingBreak.to; pendingBreak = null; z.retest_status = 'confirmed'; consecutive = 0;
-        } else if (b.index > pendingBreak.index && touch && sameSide(b, z, pendingBreak.to) && !pendingBreak.retest) {
-          pendingBreak.retest = b; add('retest', b, 'Post-break zone overlap, close on the broken side');
-          add('failed_reclaim', b, 'Attempt to enter the old zone rejected at the closed candle; not proof of future direction');
-          z.retest_status = 'pending';
+          add('break_invalidated', b, 'closed_reclaim_of_old_side');
+          pendingBreak = null; z.retest_status = 'none'; z.break_status = 'reclaimed'; z.provisional_role = null; consecutive = 0; cancelled = true;
+        } else {
+          pendingBreak.consecutive = sameSide(b, z, pendingBreak.to) ? pendingBreak.consecutive + 1 : 0;
+          if (!pendingBreak.confirmed && pendingBreak.consecutive >= closeBars) {
+            pendingBreak.confirmed = true; z.break_status = 'confirmed'; add('confirmed_break', b, 'consecutive_closed_closes_outside');
+          }
+          if (pendingBreak.retest && b.index > pendingBreak.retest.index && pendingBreak.confirmed && sameSide(b, z, pendingBreak.to)) {
+            add('role_reversal', b, 'confirmed_break_then_failed_reclaim_then_later_closed_hold');
+            role = pendingBreak.to; pendingBreak = null; z.provisional_role = null; z.retest_status = 'confirmed'; consecutive = 0;
+          } else if (b.index > pendingBreak.index && touch) {
+            // Every visit is an observed retest, even before a rejection/confirmation.
+            if (!z.evidence.events.some(e => e.type === 'retest' && e.break_time === pendingBreak!.time)) add('retest', b, 'post_close_break_overlap');
+            z.retest_status = 'pending';
+            if (sameSide(b, z, pendingBreak.to) && !pendingBreak.retest) {
+              pendingBreak.retest = b; add('failed_reclaim', b, 'post_break_overlap_closes_on_broken_side');
+            }
+          }
         }
       }
-      if (!pendingBreak) {
+      if (!pendingBreak && !cancelled) {
         const beyond = role === 'support' ? b.close < z.lower : b.close > z.upper;
         consecutive = beyond ? consecutive + 1 : 0;
-        if (consecutive > 0) z.break_status = 'pending';
-        else if (z.break_status === 'pending') z.break_status = z.evidence.events.some(e => e.type === 'close_break') ? 'confirmed' : 'unbroken';
-        if (consecutive === closeBars) {
-          pendingBreak = { time: b.time, index: b.index, to: role === 'support' ? 'resistance' : 'support', retest: null };
-          // A previously untested seed may have a price cross, but cannot prove a meaningful broken SNR.
-          if (testedAt !== null && testedAt < b.time) { add('close_break', b, `${closeBars} consecutive closed closes beyond frozen zone; prior independent endpoint tests`); z.break_status = 'confirmed'; }
-          else { pendingBreak = null; role = role === 'support' ? 'resistance' : 'support'; z.break_status = 'unbroken'; }
+        if (beyond && testedAt !== null && testedAt < b.time) {
+          pendingBreak = { time: b.time, index: b.index, to: role === 'support' ? 'resistance' : 'support', retest: null, confirmed: false, consecutive: 1 };
+          z.provisional_role = pendingBreak.to; z.break_status = 'pending';
+          add('close_break', b, 'one_strict_closed_close_beyond_far_edge'); add('break_pending', b, 'await_additional_evidence');
+          const priorAtr = bars[i - 1]?.segment === segment ? bars[i - 1].atr : 0;
+          const distance = role === 'support' ? z.lower - b.close : b.close - z.upper;
+          const body = role === 'support' ? b.open - b.close : b.close - b.open;
+          const edge = role === 'support' ? b.close - b.low : b.high - b.close;
+          const strong = priorAtr > 0 && distance >= priorAtr * 0.5 && body >= priorAtr * 0.8 && b.high > b.low && edge / (b.high - b.low) <= 0.25;
+          if (strong || closeBars === 1) {
+            pendingBreak.confirmed = true; z.break_status = 'confirmed';
+            add('confirmed_break', b, strong ? 'displacement_ge_0.5_prior_ATR_body_ge_0.8_prior_ATR_close_in_outer_quarter' : 'configured_single_close');
+          }
+        } else if (consecutive >= closeBars) {
+          // Unproven seed: positional role only, not a confirmed SNR reversal.
+          role = role === 'support' ? 'resistance' : 'support'; consecutive = 0;
         }
       }
-      if (!pendingBreak && (role === 'support' ? b.low < z.lower && b.close > z.upper : b.high > z.upper && b.close < z.lower))
-        add('liquidity_sweep', b, 'Wick crossed far edge, closed back outside original edge; no close-confirmed break');
+      if (!pendingBreak && !cancelled && (role === 'support' ? b.low < z.lower && b.close > z.upper : b.high > z.upper && b.close < z.lower))
+        add('liquidity_sweep', b, 'strict_wick_cross_and_closed_return_no_close_break');
     }
     const currentTests = z.evidence.tests.filter(t => t.segment === segment && t.index >= bars[proofReset].index);
     z.role = role; z.test_count = currentTests.length; z.historical_test_count = z.evidence.tests.length;
@@ -148,6 +176,9 @@ export function detectIndependentSNR(data: CandleResponse, asset: AnalysisSymbol
   return { timeframe: data.timeframe, asset, side, reference_price: reference, data_reliability: reliability,
     history: { input: data.candles.length, accepted_closed: bars.length, first: bars[0]?.time ?? null, last: bars.at(-1)?.time ?? null, excluded: prepared.excluded },
     parameters: { width_atr_fraction: widthFraction, min_width_units: 3, minimum_test_separation_bars: separation, close_break_bars: closeBars,
+      early_break: 'one_close_plus_0.5_prior_ATR_displacement_0.8_prior_ATR_directional_body_close_outer_quarter',
+      role_reversal_rule:'rule_confirmed_break_then_later_failed_reclaim_then_subsequent_closed_hold; closed_reclaim_old_side_cancels_cycle',
+      confidence: 'categorical_evidence_only_not_success_probability; RULE_CONFIRMED_is_a_heuristic_rule',
       reaction_min_atr: 0.3, reaction_window_bars: 3, independent_test: 'whole_bar_away_then_new_overlap', atr: 'causal_simple_mean_TR_up_to_14_closed_bars' },
     zones, all_zone_count: zones.length, selection: 'all_candidates_no_topN_truncation',
     facts_scope: 'closed_OHLC_observations', time_semantics: 'time_and_reaction_at_are_bar_start_UTC; confirmed_at_is_close_time',

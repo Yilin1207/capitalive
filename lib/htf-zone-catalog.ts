@@ -1,4 +1,4 @@
-import { ANALYSIS_TIMEFRAMES, targetMap, type AnalysisSymbol, type SeriesAnalysis } from './technical-analysis';
+import { ANALYSIS_TIMEFRAMES, type AnalysisSymbol, type SeriesAnalysis } from './technical-analysis';
 import type { Timeframe } from './candle-data';
 import type { SNRAudit } from './htf-snr';
 import type { HtfStructure } from './htf-structure';
@@ -15,14 +15,14 @@ export function buildCompleteZoneCatalog(asset: AnalysisSymbol, snr: Record<Time
   const zones: CatalogEntry[] = [];
   const put = (z: Omit<CatalogEntry, 'distance'>) => zones.push({ ...z, distance: price === null ? null : Math.max(0, price - z.upper, z.lower - price) });
   for (const s of analyses) {
-    const tf = s.timeframe, reliability = snr[tf].data_reliability;
+    const tf = s.timeframe, reliability = { ...snr[tf].data_reliability, scope: `snr.${tf}.data_reliability` };
     const common = { asset, timeframe: tf, test_count: null, last_test: null, break_status: 'not_applicable', retest_status: 'not_applicable', data_reliability: reliability };
     for (const z of snr[tf].zones) put({ id: z.id, source_id: z.id, asset, timeframe: tf, type: 'SNR', lower: z.lower, upper: z.upper,
-      role: z.role, status: z.status, origin: z.origin, test_count: z.test_count, last_test: z.last_test,
+      role: z.role, status: z.status, origin: { source:'snr', timeframe:tf, zone_id:z.id }, test_count: z.test_count, last_test: z.last_test,
       break_status: z.break_status, retest_status: z.retest_status, quality: z.quality,
       evidence: { source: 'snr', timeframe: tf, zone_id: z.id, tests: z.historical_test_count, reactions: z.reaction_count,
         events: z.evidence.events.length, note: 'Full evidence returned once in snr[timeframe].zones by zone_id; no evidence omitted' },
-      invalidation: z.invalidation, data_reliability: z.data_reliability,
+      invalidation: 'See source SNR invalidation rule', data_reliability: reliability,
       main_tp_eligible: false, significant: z.status === 'tested', downgrade_reasons: z.quality.downgrade_reasons });
     for (const g of [...s.fvgs, ...s.forming_fvgs]) {
       const active = g.confirmed && g.material && g.remaining_size > 0;
@@ -68,29 +68,4 @@ export function buildCompleteZoneCatalog(asset: AnalysisSymbol, snr: Record<Time
     htf_priority: ANALYSIS_TIMEFRAMES, note: 'Bands and importance are heuristic; events are observed OHLC facts. SNR/OB never replace principal D1+ fractal/FVG targets.' };
 }
 
-export function calculateStructuralRisk(analyses: SeriesAnalysis[], catalog: ReturnType<typeof buildCompleteZoneCatalog>, entry: number | null) {
-  const targets = targetMap(analyses, entry);
-  const h4 = analyses.find(s => s.timeframe === 'H4');
-  const scenario = (direction: 'long' | 'short') => {
-    const long = direction === 'long';
-    const stopReliable = catalog.zones.filter(z => z.timeframe === 'H4').every(z => z.data_reliability.status !== 'UNVERIFIED' && !z.data_reliability.reasons.includes('TRAILING_DATA_GAP_CURRENT_STATE_UNVERIFIED'));
-    const stop = entry === null || !stopReliable ? null : h4?.fractals.filter(f => f.status === 'confirmed' && f.liquidity_status !== 'swept' && (long ? f.kind === 'low' && f.price < entry : f.kind === 'high' && f.price > entry))
-      .sort((a, b) => b.index - a.index)[0] ?? null;
-    const target = long ? targets.above.nearest : targets.below.nearest;
-    const obstacles = entry === null ? [] : catalog.zones.filter(z => z.significant && (z.type === 'SNR' || z.role === (long ? 'resistance' : 'support')) && (long ? z.upper >= entry : z.lower <= entry))
-      .map(z => ({ id: z.id, timeframe: z.timeframe, type: z.type, price: long ? Math.max(entry, z.lower) : Math.min(entry, z.upper) }))
-      .sort((a, b) => Math.abs(a.price - entry!) - Math.abs(b.price - entry!) || ANALYSIS_TIMEFRAMES.indexOf(a.timeframe) - ANALYSIS_TIMEFRAMES.indexOf(b.timeframe));
-    const obstacle = obstacles[0] ?? null;
-    const risk = entry !== null && stop ? Math.abs(entry - stop.price) : null;
-    const obstacleDistance = entry !== null && obstacle ? Math.abs(obstacle.price - entry) : null;
-    const tpDistance = entry !== null && target ? Math.abs(target.price - entry) : null;
-    return { direction, structural_sl: stop ? { price: stop.price, source_id: stop.id, confirmed_at: stop.confirmed_at, timeframe: 'H4' } : null,
-      distance_to_sl: risk, first_obstacle: obstacle, distance_to_first_obstacle: obstacleDistance, principal_tp: target, distance_to_tp: tpDistance,
-      rr_to_obstacle: risk && obstacleDistance !== null ? obstacleDistance / risk : null, rr_to_tp: risk && tpDistance !== null ? tpDistance / risk : null,
-      obstacles_before_tp: obstacles.filter(o => tpDistance === null || Math.abs(o.price - entry!) < tpDistance),
-      reason: stop ? 'Most recent confirmed unswept opposite H4 fractal on protective side of hypothetical entry; no buffer invented' : 'NO_CONFIRMED_H4_STRUCTURAL_STOP',
-    };
-  };
-  return { hypothetical_entry: entry, long: scenario('long'), short: scenario('short'),
-    assumptions: 'Geometric distances in price units; no orders, position sizing, spread/slippage fees or execution guarantees. Serious obstacle selection is heuristic.' };
-}
+export { calculateStructuralRisk } from './htf-risk';

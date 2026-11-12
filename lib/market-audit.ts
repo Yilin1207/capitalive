@@ -13,6 +13,8 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
     const url = new URL(request.url), { symbol, side, settings, selection } = analysisParams(url.searchParams);
     const includeCandles = url.searchParams.get("include_candles") ?? "0";
     const includeHtf = url.searchParams.get('htf') ?? '1';
+    const view = url.searchParams.get('view') ?? 'full';
+    if (view !== 'full' && view !== 'priority') throw new HistoryError('INVALID_VIEW', 'view must be full or priority', 400);
     if (includeHtf !== '0' && includeHtf !== '1') throw new HistoryError('INVALID_HTF', 'htf must be 0 or 1', 400);
     const rawEntry = url.searchParams.get('entry');
     if (rawEntry !== null && (!/^\d+(?:\.\d+)?$/.test(rawEntry) || !Number.isFinite(Number(rawEntry)) || Number(rawEntry) <= 0))
@@ -33,7 +35,14 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
     if (!quote.actionable_live) warnings.push({ timeframe: null, code: "MARKET_NOT_VERIFIED_TRADEABLE_WITH_FRESH_QUOTE" });
     if (consistency.status === "mismatch") warnings.push({ timeframe: null, code: "CROSS_TIMEFRAME_CONTRADICTION" });
     const targets = targetMap(analyses, price);
-    const htf = includeHtf === '1' ? buildHtfAudit(symbol, side, data, analyses, quote, rawEntry === null ? undefined : Number(rawEntry)) : undefined;
+    const completeHtf = includeHtf === '1' ? buildHtfAudit(symbol, side, data, analyses, quote, rawEntry === null ? undefined : Number(rawEntry)) : undefined;
+    const fullUrl = new URL(url); fullUrl.searchParams.set('view','full');
+    const htf = completeHtf && view === 'priority' ? { engine:completeHtf.engine,version:completeHtf.version,asset:symbol,price_side:side,
+      environment:completeHtf.environment,reference_price:completeHtf.reference_price,reference_fresh:completeHtf.reference_fresh,
+      data_reliability:completeHtf.data_reliability,priority_zones:completeHtf.priority_zones,risk:completeHtf.risk,
+      frame_snapshots:Object.fromEntries(ANALYSIS_TIMEFRAMES.map(tf=>[tf,data[tf].fetched_at])),
+      scope:{...completeHtf.scope,view:'priority',full_catalog_url:fullUrl.href,full_catalog_count:completeHtf.catalog.total,full_catalog_included:false},
+    } : completeHtf;
     const body = { ok: true, schema_version: "2.1", symbol, provider: "Capital.com", environment: data.H4.environment,
       price_side: side, generated_at: new Date().toISOString(), quote,
       reliability: { fresh_tick_verified: quote.fresh, history_warnings_present: analyses.some(s => s.warnings.length > 0),
@@ -53,7 +62,7 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
     };
     if (Buffer.byteLength(JSON.stringify(body)) > 4_250_000) return historyJson({ ok: false,
       error: { code: 'ANALYSIS_RESPONSE_TOO_LARGE', message: 'Full evidence exceeds the response budget. No zones were silently dropped. Use htf=0 for legacy analysis; export the complete HTF snapshot offline.' },
-      metadata: { zone_count: htf?.catalog.total ?? 0, htf_included: !!htf, budget_bytes: 4_250_000 } }, 503);
+      metadata: { zone_count: completeHtf?.catalog.total ?? 0, htf_included: !!htf, budget_bytes: 4_250_000 } }, 503);
     return historyJson(body);
   } catch (error) { return historyFailure(error); }
 }

@@ -1,8 +1,10 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CandleResponse, PriceSide } from "@/lib/candle-data";
 import { ANALYSIS_SYMBOLS, analyzeSeries, type AnalysisSymbol, type RangeSelection } from "@/lib/technical-analysis";
-import { chartSvg, DEFAULT_LAYERS, type ChartLayers } from "@/lib/chart-svg";
+import { chartSvg, DEFAULT_LAYERS, SNR_LAYER, type ChartLayers } from "@/lib/chart-svg";
+import type { ChartHtf } from '@/lib/chart-htf';
+import { SNR_COLORS } from '@/lib/htf-priority';
 
 export default function AnalysisChart({ data, side }: { data: CandleResponse; side: PriceSide }) {
   const [layers, setLayers] = useState<ChartLayers>({ ...DEFAULT_LAYERS });
@@ -11,6 +13,19 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
   const identity = `${symbol}:${data.timeframe}:${side}`;
   const selection = chosen?.identity === identity ? chosen.selection : undefined;
   const supported = ANALYSIS_SYMBOLS.includes(symbol);
+  const [htfState,setHtfState]=useState<{key:string;value:ChartHtf|null;error:string}>({key:'',value:null,error:''});
+  const snrEnabled=Object.values(SNR_LAYER).some(key=>layers[key]);
+  const htfKey=`${symbol}:${side}:${data.fetched_at}`;
+  const htf=htfState.key===htfKey?htfState.value:null;
+  useEffect(()=>{
+    if(!snrEnabled||!supported)return;
+    const controller=new AbortController();
+    void fetch(`/api/htf-zones?${new URLSearchParams({symbol,side,view:'priority'})}`,{signal:controller.signal,cache:'no-store'})
+      .then(async response=>{const body=await response.json(); if(!response.ok||!body.ok)throw new Error(body.error?.message??'HTF недоступен');
+        if(!controller.signal.aborted)setHtfState({key:htfKey,value:{priority_zones:body.priority_zones,frame_snapshots:body.frame_snapshots},error:''});})
+      .catch(error=>{if(!controller.signal.aborted)setHtfState({key:htfKey,value:null,error:error instanceof Error?error.message:'HTF недоступен'});});
+    return()=>controller.abort();
+  },[symbol,side,htfKey,snrEnabled,supported]);
   const automatic = useMemo(() => supported ? analyzeSeries(data, symbol, side) : null, [data, symbol, side, supported]);
   const { analysis, selectionError } = useMemo(() => {
     if (!selection || !automatic) return { analysis: automatic, selectionError: "" };
@@ -19,15 +34,16 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
   }, [data, symbol, side, selection, automatic]);
   const svg = useMemo(() => {
     if (!analysis || selectionError) return null;
-    try { return chartSvg(data, analysis, symbol, side, layers); } catch { return null; }
-  }, [data, analysis, symbol, side, layers, selectionError]);
+    try { return chartSvg(data, analysis, symbol, side, layers,120,htf??undefined); } catch { return null; }
+  }, [data, analysis, symbol, side, layers, selectionError,htf]);
   if (!analysis) return null;
   const params = new URLSearchParams({ symbol, timeframe: data.timeframe, side, ...Object.fromEntries(Object.entries(layers).map(([key, value]) => [key, value ? "1" : "0"])) });
   const auditParams = new URLSearchParams({ symbol, side });
   if (selection) for (const [key, value] of [["range_high", selection.high_id], ["range_low", selection.low_id]]) { params.set(key, value); auditParams.set(key, value); }
   const highId = selection?.high_id ?? automatic?.ranges.selected.high?.id ?? "";
   const lowId = selection?.low_id ?? automatic?.ranges.selected.low?.id ?? "";
-  const labels = { fractals: "Фракталы", fvg: "FVG", ranges: "Диапазоны", eq: "EQ / Premium / Discount" };
+  const labels:Record<keyof ChartLayers,string> = { fractals: "Фракталы", fvg: "FVG", ranges: "Диапазоны", eq: "EQ / Premium / Discount",
+    snr_mn1:'Monthly SNR',snr_w1:'Weekly SNR',snr_d1:'Daily SNR',snr_h4:'H4 SNR',snr_events:'Пробои / ретесты / failed reclaim' };
   return <section className="analysis-panel" aria-label="Техническая структура Capitalive">
     <h2>Структура рынка</h2>
     <div className="controls">
@@ -47,7 +63,15 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
     </div>}
     {selectionError && <p role="alert">{selectionError}</p>}
     {svg ? <div className="analysis-svg" dangerouslySetInnerHTML={{ __html: svg }} /> : !selectionError && <p role="status">Нет валидных OHLC для выбранной стороны цены.</p>}
-    <p className="chart-note">Треугольники — подтверждённые фракталы: янтарные — касание ровно по уровню, серые — снятие с выходом за уровень. Пунктирный янтарный диапазон ещё формируется. Заполнение FVG учитывает текущую свечу. Сила реакции не оценивается.</p>
+    <p className="chart-note">Треугольники — подтверждённые фракталы: янтарные — касание ровно по уровню, серые — снятие с выходом за уровень. Пунктирный янтарный диапазон ещё формируется. Заполнение FVG учитывает текущую свечу. SNR — отдельный снимок HTF; цвета различают таймфреймы, score не является вероятностью.</p>
+    {snrEnabled && !htf && <p role="status">{htfState.key===htfKey && htfState.error ? `HTF: ${htfState.error}` : 'Загрузка HTF-зон…'}</p>}
+    {snrEnabled && htf && <details className="priority-zones"><summary>Приоритетные HTF-зоны: {htf.priority_zones.selected_count} из {htf.priority_zones.full_snr_count}</summary>
+      <p>На графике — до двух видимых зон каждого включённого таймфрейма: ближайшая и следующая по рангу, до двух последних отметок событий на зону. Все кандидаты и причины отбора сохранены в <a href={`/api/htf-zones?${new URLSearchParams({symbol,side,view:'full'})}`} target="_blank" rel="noreferrer">полном каталоге SNR</a>.</p>
+      <div className="analysis-table-wrap"><table><thead><tr><th>TF / границы</th><th>Роль / состояние</th><th>Тесты / реакции</th><th>Ранг</th></tr></thead><tbody>
+        {htf.priority_zones.zones.map(z=><tr key={z.id}><td style={{color:SNR_COLORS[z.timeframe]}}>{z.timeframe} · {z.lower}—{z.upper}</td><td>{z.role}{z.provisional_role?` → ${z.provisional_role}?`:''} · {z.current_state??z.status}</td><td>{z.tests} / {z.reactions}</td>
+          <td><span title={JSON.stringify(z.components)}>{z.score.toFixed(1)}</span> · {z.selection_reasons.join(', ')}</td></tr>)}
+      </tbody></table></div>
+    </details>}
     {!selectionError && <details><summary>Границы диапазонов и незаполненные FVG</summary>
       <p>Выбор: {selection ? "заданные подтверждённые фракталы" : "последняя пара противоположных подтверждённых фракталов"}. Альтернатив: {analysis.ranges.alternatives.length}. Статус: {analysis.ranges.selected.status}. EQ: <span data-testid="range-eq">{analysis.ranges.selected.equilibrium ?? "—"}</span>.</p>
       <div className="analysis-table-wrap"><table><thead><tr><th>FVG / UTC</th><th>Границы остатка</th><th>Заполнено</th><th>Остаток</th><th>Значимость</th></tr></thead><tbody>

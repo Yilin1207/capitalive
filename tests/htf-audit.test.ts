@@ -41,8 +41,10 @@ test('NAS100 Weekly region independently has closed June/July tests; November on
   assert.ok(zone && zone.lower < 28220 && zone.upper > 28090); assert.equal(zone.status,'tested');
   const evidence = zone.evidence.tests.filter(t => t.endpoint_near_zone);
   assert.deepEqual(evidence.map(t => t.time), ['2026-06-08T00:00:00.000Z','2026-07-13T00:00:00.000Z']);
-  assert.equal(zone.break_status,'pending'); assert.equal(zone.retest_status,'none');
-  assert.equal(zone.evidence.events.filter(e => e.type === 'role_reversal' || e.type === 'close_break').length,0);
+  assert.equal(zone.break_status,'confirmed'); assert.equal(zone.retest_status,'none');
+  assert.equal(zone.evidence.events.filter(e => e.type === 'role_reversal').length,0);
+  assert.equal(zone.evidence.events.filter(e => e.type === 'close_break').length,1);
+  assert.ok(zone.evidence.events.some(e=>e.state==='CONFIRMED_BREAK'&&e.time==='2026-11-02T00:00:00.000Z'&&e.evidence.startsWith('displacement')));
   assert.ok(zone.evidence.events.some(e => e.type === 'liquidity_sweep' && e.time === '2026-10-26T00:00:00.000Z'));
   assert.ok(result.catalog.zones.some(z => z.id === zone.id && z.significant));
   assert.ok(zone.evidence.tests.every(t => t.time < '2026-11-09T00:00:00.000Z'));
@@ -55,11 +57,11 @@ test('risk returns null without a confirmed structural stop and preserves touche
   for (const s of analyses) { s.fractals = s.timeframe === 'D1' ? [chosen] : []; s.fvgs = []; }
   const result = buildHtfAudit('NAS100','bid',f.data,analyses,{ ...f.quote,bid:90,ask:90.2 },90);
   assert.equal(result.catalog.zones.find(z => z.source_id === chosen.id)!.main_tp_eligible,true);
-  assert.equal(result.risk.long.principal_tp!.price,100);
+  assert.equal(targetMap(analyses,90).above.nearest!.price,100);
   assert.equal(result.risk.long.structural_sl,null); assert.equal(result.risk.long.rr_to_tp,null);
   h4.fractals = [{ ...pivot,id:'synthetic-h4-low',timeframe:'H4',kind:'low',price:85,liquidity_status:'untouched' }];
   const risk = calculateStructuralRisk(analyses,result.catalog,90);
-  assert.equal(risk.long.distance_to_sl,5); assert.equal(risk.long.distance_to_tp,10); assert.equal(risk.long.rr_to_tp,2);
+  assert.equal(risk.long.distance_to_sl,null); assert.equal(risk.long.rr_to_tp,null); // A standalone fractal is no longer a structural setup.
   assert.equal(calculateStructuralRisk(analyses,result.catalog,null).long.structural_sl,null);
 });
 test('htf-zones uses one shared four-frame snapshot and preserves request validation/CORS', async () => {
