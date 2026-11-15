@@ -24,7 +24,8 @@ async function get(path,kind='json',status=200){
 const unauth=await fetch(origin+'/api/intelligence?symbol=EURUSD',{redirect:'manual'});
 const publicAccess={status:unauth.status,content_type:unauth.headers.get('content-type'),protected:unauth.status!==200};await unauth.arrayBuffer();
 for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask']){
- const r=await get(`/api/intelligence?symbol=${symbol}&side=${side}`);assert.equal(r.schema_version,'edge-knowledge-2');assert.equal(r.verdict.action,'WAIT');assert.equal(r.narrative.B,null);
+ const r=await get(`/api/intelligence?symbol=${symbol}&side=${side}`);assert.equal(r.schema_version,'edge-knowledge-2');assert.equal(r.verdict.action,'WAIT');if(r.narrative.B)assert.equal(r.target_selection.status,'TARGET_VALIDATED');
+ if(r.narrative.candidate_bias==='Neutral')assert.ok(!r.narrative.blockers.some(b=>b.startsWith('OPPOSING_')));
  writeFileSync(`${output}/${symbol}-${side}.json`,JSON.stringify(r)+'\n');
  if(symbol==='EURUSD'&&side==='bid'){
   const p=r.frames.find(f=>f.timeframe==='H4').findings.filter(f=>f.kind==='FRACTAL'&&f.variant===3);

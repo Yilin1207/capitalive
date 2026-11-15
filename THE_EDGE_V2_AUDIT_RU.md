@@ -13,6 +13,8 @@ SHA-256 исходного market-audit; [comparison.json](verification/the-edge
 содержит SHA-256 файла и канонического входа `data`, общий `as_of`, отдельные результаты Bid/Ask.
 Полный исходный ответ Intelligence сохранён локально в `verification/the-edge-v2/preview-before-*.json`;
 полный ответ нового Preview — в `verification/the-edge-v2/preview/*.json`. Они не дублируются в Git.
+Источник — Capital.com **demo**. В снимке `fresh=false`, `quote_time=null`, `provider_timestamp_available=false`:
+reference берётся из закрытого H4, а не выдаётся за текущий live Bid/Ask.
 Сырые Preview-ответы получены отдельными запросами и имеют собственные времена; для контролируемого
 сравнения используются вычисления на зафиксированном OHLC. Replay также сохраняет полный V2 Intelligence
 на этом входе в `control-response-*.json`. Манифест хешей: [snapshot-manifest.json](verification/the-edge-v2/snapshot-manifest.json).
@@ -135,10 +137,10 @@ H4 VC не отменяет MN1/W1 приоритет. Существующие 
 
 Рабочие маршруты Preview (требуют входа Vercel):
 
-- [Intelligence UI](https://capitalive-geipy8amd-yilin1207s-projects.vercel.app/intelligence)
-- [Intelligence EURUSD](https://capitalive-geipy8amd-yilin1207s-projects.vercel.app/api/intelligence?symbol=EURUSD&side=bid)
-- [Market audit JSON](https://capitalive-geipy8amd-yilin1207s-projects.vercel.app/api/market-audit?symbol=EURUSD)
-- [H4 PNG](https://capitalive-geipy8amd-yilin1207s-projects.vercel.app/api/chart?symbol=EURUSD&timeframe=H4)
+- [Intelligence UI](https://capitalive-m5wiikbc5-yilin1207s-projects.vercel.app/intelligence)
+- [Intelligence EURUSD](https://capitalive-m5wiikbc5-yilin1207s-projects.vercel.app/api/intelligence?symbol=EURUSD&side=bid)
+- [Market audit JSON](https://capitalive-m5wiikbc5-yilin1207s-projects.vercel.app/api/market-audit?symbol=EURUSD)
+- [H4 PNG](https://capitalive-m5wiikbc5-yilin1207s-projects.vercel.app/api/chart?symbol=EURUSD&timeframe=H4)
 
 Без авторизации Preview возвращает **302**, поэтому это не обещание публичного JSON без входа.
 Проверка использовала разрешённый automation bypass. CLI создал временный секрет при первом обращении;

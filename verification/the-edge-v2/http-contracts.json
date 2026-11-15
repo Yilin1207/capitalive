@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-11-15T12:48:44.887Z",
+  "checked_at": "2026-11-15T12:58:54.962Z",
   "server": "Actual local Next production build, loopback HTTP",
   "upstream": "Recorded real candle/quote fixture transport; monthly aggregation has only available recorded D1 history. No live provider/production verification.",
   "snapshot": {
-    "id": "bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef",
-    "bytes": 3886092,
+    "id": "54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90",
+    "bytes": 3886093,
     "pages": 8,
-    "sha256": "b4676b43f21b32b477fbf61b4d2a33a1f85d32efd9115f8a9169a65d1afea0d5",
+    "sha256": "d07d1467090cd513a2059a0a66a1a34a845aed62df6128a907890fd29eeac6f9",
     "verified": true
   },
   "results": [
@@ -20,13 +20,13 @@
       "path": "/api/intelligence?symbol=EURUSD",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 3127165
+      "bytes": 3126874
     },
     {
       "path": "/api/intelligence?symbol=EURUSD&high_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T04%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-21T00%3A00%3A00.000Z&low_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T08%3A00%3A00.000Z%3A3%3Alow%3A2026-09-21T04%3A00%3A00.000Z",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 3132456
+      "bytes": 3132165
     },
     {
       "path": "/api/intelligence?symbol=EURUSD&high_id=unknown",
@@ -38,7 +38,7 @@
       "path": "/api/market-audit?symbol=EURUSD&view=priority&knowledge=1",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 3481143
+      "bytes": 3480852
     },
     {
       "path": "/api/market-audit?symbol=EURUSD&side=bid&view=priority",
@@ -50,13 +50,13 @@
       "path": "/api/market-audit?symbol=EURUSD&side=ask&view=priority",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 352835
+      "bytes": 352834
     },
     {
       "path": "/api/market-audit?symbol=NAS100&side=bid&view=priority",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 413495
+      "bytes": 413496
     },
     {
       "path": "/api/market-audit?symbol=NAS100&side=ask&view=priority",
@@ -68,25 +68,25 @@
       "path": "/api/market-audit?symbol=EU50&side=bid&view=priority",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 385298
+      "bytes": 385302
     },
     {
       "path": "/api/market-audit?symbol=EU50&side=ask&view=priority",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 385375
+      "bytes": 385376
     },
     {
       "path": "/api/market-audit?symbol=EURUSD&include_candles=1",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 2899226
+      "bytes": 2899227
     },
     {
       "path": "/api/structure?symbol=EURUSD",
       "status": 200,
       "content_type": "application/json",
-      "bytes": 117583
+      "bytes": 117585
     },
     {
       "path": "/api/quotes",
@@ -104,13 +104,13 @@
       "path": "/api/chart?symbol=EURUSD&timeframe=H4",
       "status": 200,
       "content_type": "image/png",
-      "bytes": 115950
+      "bytes": 115877
     },
     {
       "path": "/api/chart?symbol=NAS100&timeframe=W1&snr_w1=1&snr_events=1",
       "status": 200,
       "content_type": "image/png",
-      "bytes": 147170
+      "bytes": 146938
     },
     {
       "path": "/api/htf-zones?symbol=NAS100&side=ask&include_candles=1&view=snapshot",
@@ -119,49 +119,49 @@
       "bytes": 1395
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=0",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=0",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699613
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=1",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=1",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699618
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=2",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=2",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699619
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=3",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=3",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699619
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=4",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=4",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699619
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=5",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=5",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699619
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=6",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=6",
       "status": 200,
       "content_type": "application/json",
       "bytes": 699619
     },
     {
-      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=7",
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=54995332e5d0e69171ec93f7f6ed5668bf382c261b5076a0e5cec3de8002ce90&page=7",
       "status": 200,
       "content_type": "application/json",
       "bytes": 288520

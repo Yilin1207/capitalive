@@ -107,16 +107,16 @@
     },
     {
       "path": "verification/the-edge-v2/control-response-EU50-bid.json",
-      "bytes": 3600797,
-      "sha256": "9bc1471ffbd109b6e94d950e283a210b4f2b5262c7241aa154f745b23f957f26",
+      "bytes": 3600497,
+      "sha256": "b2469e350ee24af42ca189427c4f4b92f3e3369008a8a70bb02274346bda82b4",
       "as_of": "2026-11-15T12:36:57.919Z",
       "price_side": "bid",
       "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
     },
     {
       "path": "verification/the-edge-v2/control-response-EU50-ask.json",
-      "bytes": 3607787,
-      "sha256": "4cde1033028a7133cdb3413807c88c2741a474919278b3cb59f6b5233f9169c5",
+      "bytes": 3607487,
+      "sha256": "9e13783a3ec5275c2f24ac6fb4c0c02c5b33dc093358e776316cbac1ff13f6e9",
       "as_of": "2026-11-15T12:36:57.919Z",
       "price_side": "ask",
       "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"

@@ -26,7 +26,7 @@ export function narrativeAssessment(context:ReturnType<typeof resolveContext>,st
  if(!s?.reaction)reasons.push('NO_CLOSED_HTF_OR_X_MINUS_1_REACTION');
  if(s?.lower_tf_breach)reasons.push('ANCHOR_LOWER_TF_BREACH');
  const structure=frames.filter(f=>['MN1','W1','D1'].includes(f.timeframe)).map(f=>({timeframe:f.timeframe,bias:f.structure_bias,order_flow:f.order_flow}));
- for(const f of structure){if(f.bias!=='Neutral'&&f.bias!==bias)reasons.push(`OPPOSING_${f.timeframe}_STRUCTURE`);if(f.order_flow.bias!=='Neutral'&&f.order_flow.bias!==bias)reasons.push(`OPPOSING_${f.timeframe}_SWING_FLOW`);}
+ if(bias!=='Neutral')for(const f of structure){if(f.bias!=='Neutral'&&f.bias!==bias)reasons.push(`OPPOSING_${f.timeframe}_STRUCTURE`);if(f.order_flow.bias!=='Neutral'&&f.order_flow.bias!==bias)reasons.push(`OPPOSING_${f.timeframe}_SWING_FLOW`);}
  const anchorFrame=frames.find(f=>f.timeframe===a?.timeframe),range=anchorFrame?.range;
  const rangeCurrent=!!range&&!!s&&range.confirmed_at<=s.as_of&&reference!==null&&reference>=range.lower&&reference<=range.upper;
  const location=rangeCurrent?reference!<range!.equilibrium?'DISCOUNT':reference!>range!.equilibrium?'PREMIUM':'EQ':'UNVERIFIED';
