@@ -72,3 +72,45 @@ test('Bridge preserves explicit H4 range IDs, confirmation, EQ and invalidation 
   assert.equal((report.evidence[dr.high] as {id:string}).id,high.id);assert.equal((report.evidence[dr.low] as {id:string}).id,low.id);
   assert.equal(dr.equilibrium,h4.range.equilibrium);assert.equal(dr.confirmed_at,confirmed);assert.equal(dr.state,'INVALIDATED');
 });
+
+
+test('Bridge offers provisional H4 range only with linked 3-bar fractals; not a confirmed Narrative',()=>{
+  for(const symbol of ['EURUSD','NAS100','EU50']){
+    const input=fixture(symbol),report=buildDeskReport(analysis(symbol),input.data,input.quote,now);
+    const h4=report.frames.find(f=>f.timeframe==='H4')!;
+    assert.equal(h4.dealing_range,null,'a candidate must not silently become a selected range');
+    assert.equal(report.scenario!.confirmed_narrative,null);
+    if(h4.range_candidate){
+      const {high,low,review_required,method,lower,upper,equilibrium}=h4.range_candidate;
+      const hi=report.evidence[high] as {kind:string;variant:number;polarity:string};
+      const lo=report.evidence[low] as {kind:string;variant:number;polarity:string};
+      assert.deepEqual([hi.kind,hi.variant,hi.polarity],['FRACTAL',3,'high']);
+      assert.deepEqual([lo.kind,lo.variant,lo.polarity],['FRACTAL',3,'low']);
+      assert.equal(review_required,true);assert.equal(method,'LATEST_FRACTAL3_PROJECT_CANDIDATE');
+      assert.ok(lower<upper&&equilibrium>lower&&equilibrium<upper);
+    }
+    validateReport(report,symbol);
+  }
+});
+test('Bridge records nearby active HTF A alternatives without asserting a selected A',()=>{
+  const input=fixture('EU50'),report=buildDeskReport(analysis('EU50'),input.data,input.quote,now);
+  assert.equal(report.scenario!.A.selected,null);
+  assert.ok(report.scenario!.A.items.length>0,'show candidate HTF levels rather than misleading empty A');
+  assert.equal(report.scenario!.confirmed_narrative,null);
+});
+test('Portable range candidate rejects wrong polarity and false review confirmation',()=>{
+  const input=fixture('EURUSD'),report=buildDeskReport(analysis('EURUSD'),input.data,input.quote,now);
+  const edited=structuredClone(report),h4=edited.frames.find(f=>f.timeframe==='H4')!;
+  const hi=h4.fractals.find(f=>f.variant===3&&f.polarity==='high')!.items[0],lo=h4.fractals.find(f=>f.variant===3&&f.polarity==='low')!.items[0];
+  const high=edited.evidence[hi] as {upper:number;confirmed_at:string},low=edited.evidence[lo] as {lower:number;confirmed_at:string};
+  assert.ok(high.upper>low.lower);
+  h4.range_candidate={high:hi,low:lo,lower:low.lower,upper:high.upper,equilibrium:(high.upper+low.lower)/2,
+    confirmed_at:high.confirmed_at>low.confirmed_at?high.confirmed_at:low.confirmed_at,
+    method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true};
+  validateReport(edited,'EURUSD');
+  h4.range_candidate.review_required=false as never;
+  assert.throws(()=>validateReport(edited,'EURUSD'),/contract/);
+  h4.range_candidate.review_required=true;
+  h4.range_candidate.high=lo;
+  assert.throws(()=>validateReport(edited,'EURUSD'),/INVALID_RANGE_CANDIDATE/);
+});
