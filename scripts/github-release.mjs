@@ -10,8 +10,8 @@ async function api(path,method='GET',body){const r=await fetch(`https://api.gith
   const result=await r.json();if(!r.ok)throw new Error(`GitHub HTTP ${r.status}: ${result.message??'request failed'}`);return result;}
 if(action==='status'){const p=await api('');console.log(JSON.stringify({repo:p.full_name,permissions:p.permissions,default_branch:p.default_branch}));}
 else if(action==='create-pr'){
-  const [branch,bodyFile]=args;const existing=await api(`/pulls?head=Yilin1207:${encodeURIComponent(branch)}&base=main&state=open`);
-  const pr=existing[0]??await api('/pulls','POST',{title:'Release Capitalive 2.1: HTF SNR, structural risk and verified contact coverage',head:branch,base:'main',body:readFileSync(bodyFile,'utf8')});
+  const [branch,bodyFile,title='Release Capitalive 2.1: HTF SNR, structural risk and verified contact coverage']=args;const existing=await api(`/pulls?head=Yilin1207:${encodeURIComponent(branch)}&base=main&state=open`);
+  const pr=existing[0]??await api('/pulls','POST',{title,head:branch,base:'main',body:readFileSync(bodyFile,'utf8')});
   console.log(JSON.stringify({number:pr.number,url:pr.html_url,head:pr.head.sha,base:pr.base.sha}));
 }else if(action==='checks'){
   const sha=args[0],checks=await api(`/commits/${sha}/check-runs`),statuses=await api(`/commits/${sha}/status`),runs=await api(`/actions/runs?head_sha=${sha}`);

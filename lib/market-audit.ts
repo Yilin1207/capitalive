@@ -7,6 +7,7 @@ import { checkConsistency } from "@/lib/analysis-consistency";
 import { checkHistoryRequest, historyFailure, historyJson } from "@/lib/history-http";
 import { buildHtfAudit } from "@/lib/htf-audit";
 import { createAuditSnapshot, readAuditSnapshot } from './audit-snapshots';
+import { buildIntelligence } from './knowledge/intelligence';
 
 export async function marketAudit(request: Request, dependencies = { getCandles, getAnalysisQuote }) {
   try {
@@ -17,6 +18,8 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
     if(url.searchParams.has('page'))throw new HistoryError('SNAPSHOT_ID_REQUIRED','page requires snapshot_id',400);
     const includeCandles = url.searchParams.get("include_candles") ?? "0";
     const includeHtf = url.searchParams.get('htf') ?? '1';
+    const includeKnowledge = url.searchParams.get('knowledge') ?? '0';
+    if (!['0','1'].includes(includeKnowledge)) throw new HistoryError('INVALID_KNOWLEDGE', 'knowledge must be 0 or 1', 400);
     const view = url.searchParams.get('view') ?? 'full';
     if (!['full','priority','snapshot'].includes(view)) throw new HistoryError('INVALID_VIEW', 'view must be full, priority or snapshot', 400);
     if (includeHtf !== '0' && includeHtf !== '1') throw new HistoryError('INVALID_HTF', 'htf must be 0 or 1', 400);
@@ -58,7 +61,7 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
         metadata: data[s.timeframe].metadata }])),
       response_scope: { structure_timeframes: only ? [only] : ANALYSIS_TIMEFRAMES, targets_timeframes: ANALYSIS_TIMEFRAMES, candles_included: includeCandles === "1", htf_timeframes: htf ? ANALYSIS_TIMEFRAMES : [], htf_requested: includeHtf === '1' },
       targets: { ...targets, reference_fresh: quote.fresh, interpretation: "Observed candidates, not an instruction to place TP; inspect warnings and intermediate H4 obstacles." },
-      htf, consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
+      htf, ...(includeKnowledge === '1' ? { knowledge_intelligence: buildIntelligence(data, side, quote) } : {}), consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
         const params = new URLSearchParams({ symbol, timeframe, side, min_remaining_units: String(settings.min_remaining_units), atr_fraction: String(settings.atr_fraction) });
         if (timeframe === "H4" && selection) { params.set("range_high", selection.high_id); params.set("range_low", selection.low_id); }
         return [timeframe, { url: new URL(`/api/chart?${params}`, url.origin).href, content_type: "image/png", snapshot: "independently_fetched_cached_history_check_chart_timestamp" }];

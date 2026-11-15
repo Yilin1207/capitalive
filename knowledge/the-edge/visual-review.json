@@ -1,0 +1,30 @@
+{
+  "reviewed_at": "2026-11-15",
+  "original_images_persisted": false,
+  "method": "Notion MCP signed file URLs, in-memory image inspection only",
+  "documents": [
+    {
+      "id": "419e05dadd1881f68a6bd60a2e1d2cff",
+      "files": "el01_01.png through el01_12.png (12 images)",
+      "observations": [
+        "Single rejection is contrasted with a two-candle opposite-direction RB.",
+        "Body junction lies outside the KL; a body crossing the KL is a counterexample in el01_06.",
+        "Either of the two wicks can make the extreme, as shown in the chart examples.",
+        "The marked reference is the body junction; complete executable zone, unequal open/close tolerance and stop buffer remain unspecified."
+      ]
+    },
+    {
+      "id": "419e05dadd1881c6a539fe10cf3ea892",
+      "files": "el02_01.png through el02_10.png (10 images)",
+      "observations": [
+        "Resistance and support originate at the junction of two opposing candle bodies.",
+        "el02_04 shows closed crossing of that junction after KL delivery; waiting for the whole wick envelope is not required.",
+        "Support is crossed downward in the diagrams, resolving the direction differently from one sentence in the source text.",
+        "Lower-TF FVG is an optional strengthening context, not a requirement to detect SNR.",
+        "The code reports proposed role after the break; successful retest and exact trade eligibility are not inferred."
+      ]
+    }
+  ],
+  "unreviewed_catalog_images": 434,
+  "historical_price_transcription": false
+}

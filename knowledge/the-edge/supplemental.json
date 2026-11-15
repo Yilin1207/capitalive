@@ -1,0 +1,176 @@
+{
+  "scope": "Personal system and structured notes; separate from the 85-material denominator",
+  "documents": [
+    {
+      "id": "656e05dadd18831c8cad81178ae5c92c",
+      "title": "General",
+      "url": "https://app.notion.com/p/656e05dadd18831c8cad81178ae5c92c",
+      "revision": "2026-07-05T06:21:00.496Z",
+      "summary": "Метод мышления через контекст и дисбаланс; не самостоятельный численный детектор.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "721e05dadd188352809c81ba686feb82",
+      "title": "优势",
+      "url": "https://app.notion.com/p/721e05dadd188352809c81ba686feb82",
+      "revision": "2026-08-10T15:23:27.492Z",
+      "summary": "Личная гипотеза о прогнозировании PA и локализации через младший диапазон; независимая результативность не доказана.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "debe05dadd1883a8a014015065dabd79",
+      "title": "Performance",
+      "url": "https://app.notion.com/p/debe05dadd1883a8a014015065dabd79",
+      "revision": "2026-07-05T06:07:37.974Z",
+      "summary": "Структура отслеживания эффективности и оптимизации; встроенные журналы сделок не импортировались.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "6abe05dadd1883be9a928150613e41cc",
+      "title": "Risk Management",
+      "url": "https://app.notion.com/p/6abe05dadd1883be9a928150613e41cc",
+      "revision": "2026-11-14T17:47:29.830Z",
+      "summary": "Параметры личного риска заполнены не полностью; численные примеры не приняты как действующая политика.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "7d9e05dadd188366a19301b7bd49fd06",
+      "title": "Analysis Method",
+      "url": "https://app.notion.com/p/7d9e05dadd188366a19301b7bd49fd06",
+      "revision": "2026-07-13T08:25:01.838Z",
+      "summary": "Приоритет M→W→D→H4 и контекст перед исполнением.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "8bde05dadd18832d9543812df955d9e3",
+      "title": "Basic",
+      "url": "https://app.notion.com/p/8bde05dadd18832d9543812df955d9e3",
+      "revision": "2026-07-07T14:42:00.112Z",
+      "summary": "Справочник основных PA-элементов и связей с диапазоном; часть полей календаря и инструментов незавершена.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "a6ce05dadd1883deb64901c8937779e6",
+      "title": "Trade Execution",
+      "url": "https://app.notion.com/p/a6ce05dadd1883deb64901c8937779e6",
+      "revision": "2026-11-14T17:36:19.366Z",
+      "summary": "Разделены варианты VC/No VC и инвалидация исполнения; неопределённые условия остаются на ручной проверке.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "17ee05dadd1883a1b87d015ca1dd15ea",
+      "title": "FVG",
+      "url": "https://app.notion.com/p/17ee05dadd1883a1b87d015ca1dd15ea",
+      "revision": "2026-07-05T07:54:00.018Z",
+      "summary": "FVG рассматривается как неэффективность с контекстными функциями; статистика возврата не подтверждена.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "3e7e05dadd188365a6a40138ec17e0ec",
+      "title": "Fractals",
+      "url": "https://app.notion.com/p/3e7e05dadd188365a6a40138ec17e0ec",
+      "revision": "2026-07-05T06:28:06.925Z",
+      "summary": "Фракталы интерпретируются как области ликвидности; реакция не гарантирована.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "418e05dadd188119921ffae3ccc879b2",
+      "title": "🧭 Narrative — Monthly / Weekly: A → B",
+      "url": "https://app.notion.com/p/418e05dadd188119921ffae3ccc879b2",
+      "revision": "2026-11-14T17:30:58.335Z",
+      "summary": "Структурированный конспект месячного и недельного A→B с разделением направления и входа.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "418e05dadd18815996b0ec319231562b",
+      "title": "🧭 Top-Down Analysis (TDA) — полный алгоритм",
+      "url": "https://app.notion.com/p/418e05dadd18815996b0ec319231562b",
+      "revision": "2026-11-14T17:22:10.259Z",
+      "summary": "Конспект переходов X, X−1, X−2 с POI, VC и триггером; неопределённости не заменяются порогами.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "418e05dadd18817a8600c2593e1aec97",
+      "title": "📉 Compression / Trendline / LRL",
+      "url": "https://app.notion.com/p/418e05dadd18817a8600c2593e1aec97",
+      "revision": "2026-11-14T17:10:03.386Z",
+      "summary": "Цепочка фракталов у KL; нет точных численных параметров компрессии.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "418e05dadd1881b5b2c3f1b6dadfd1ae",
+      "title": "📊 Gap на Forex — причины, сессии и отличие от FVG",
+      "url": "https://app.notion.com/p/418e05dadd1881b5b2c3f1b6dadfd1ae",
+      "revision": "2026-11-14T17:43:39.091Z",
+      "summary": "Разрыв между сессиями отделён от FVG; требуется календарь конкретного источника.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "ab6e05dadd1882e8814501db2a4a2654",
+      "title": "SNR",
+      "url": "https://app.notion.com/p/ab6e05dadd1882e8814501db2a4a2654",
+      "revision": "2026-07-05T07:58:00.057Z",
+      "summary": "Закрытое преодоление прежней области продаж/покупок; использование без контекста отвергается.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "dbee05dadd18830e859c01ce5f4a0ccb",
+      "title": "Rejection & RB",
+      "url": "https://app.notion.com/p/dbee05dadd18830e859c01ce5f4a0ccb",
+      "revision": "2026-07-05T06:37:02.924Z",
+      "summary": "Простое отторжение отделено от RB; для RB требуется снятие фрактала или заполнение FVG.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "3b5e05dadd18834fa41d013456ffb248",
+      "title": "Strong High / Low (HRL)",
+      "url": "https://app.notion.com/p/3b5e05dadd18834fa41d013456ffb248",
+      "revision": "2026-07-07T14:44:31.613Z",
+      "summary": "Strong High/Low требует снятия фрактала и PA-элемента, а не только геометрии экстремума.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "df6e05dadd1882e2987f01ffd759d22b",
+      "title": "Trigger",
+      "url": "https://app.notion.com/p/df6e05dadd1882e2987f01ffd759d22b",
+      "revision": "2026-07-05T06:07:41.837Z",
+      "summary": "Перечень условий триггера фактически не заполнен; источник не даёт исполнимой спецификации.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "ccae05dadd18835cafe1013971d6dc56",
+      "title": "Order Flow (OF/SOF)",
+      "url": "https://app.notion.com/p/ccae05dadd18835cafe1013971d6dc56",
+      "revision": "2026-07-05T06:07:42.046Z",
+      "summary": "Раздел Order Flow содержит незаполненные определения и схемы; формализация заблокирована.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    },
+    {
+      "id": "cfee05dadd1883f6b54581b0b6203b0e",
+      "title": "Dealing Range (DR)",
+      "url": "https://app.notion.com/p/cfee05dadd1883f6b54581b0b6203b0e",
+      "revision": "2026-07-05T06:07:42.137Z",
+      "summary": "Личная страница DR содержит незаполненные условия; определение взято из основного материала THE EDGE.",
+      "source_status": "FETCHED",
+      "review": "TEXT_SUMMARY_ONLY_IMAGES_NOT_REVIEWED"
+    }
+  ]
+}

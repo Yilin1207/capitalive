@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "knowledge:import": "node --import tsx scripts/import-edge-knowledge.ts",
+    "knowledge:coverage": "node --import tsx scripts/knowledge-coverage.ts",
+    "knowledge:replay": "node --conditions=react-server --import tsx scripts/verify-edge-replay.ts",
+    "knowledge:risk": "node --import tsx scripts/assess-edge-risk.ts",
     "test:ui": "playwright test",
     "test:analysis-public": "node --conditions=react-server --import tsx scripts/verify-analysis-public.ts",
     "worker": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx scripts/quote-worker.ts",

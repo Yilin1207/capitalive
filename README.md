@@ -1,5 +1,37 @@
 # Capital.com Market Feed
 
+## THE EDGE knowledge integration (PR branch; not deployed)
+
+The `feature/the-edge-knowledge` branch adds a versioned 85-material metadata
+catalog, original rule specifications, closed-candle detectors, and a separate
+analysis pipeline. See [scope, evidence and limitations](THE_EDGE_INTEGRATION_RU.md).
+No copyrighted source articles or images are stored in the repository.
+
+```text
+GET /knowledge
+GET /intelligence
+GET /api/knowledge?q=FVG
+GET /api/intelligence?symbol=EURUSD&side=bid
+GET /api/intelligence?symbol=EURUSD&high_id=<knowledge-pivot-id>&low_id=<knowledge-pivot-id>
+GET /api/market-audit?symbol=EURUSD&view=priority&knowledge=1
+```
+
+The existing market-audit contract remains unchanged by default. Knowledge
+three-bar pivots have their own IDs; legacy chart five-bar IDs are not interchangeable.
+RB/SNR candidates explicitly retain unresolved author boundary conventions.
+`TESTED` means deterministic implementation checks, not validated profitability.
+Risk limits require an explicit private ledger (`npm run knowledge:risk -- <file>`);
+the public GET analysis never invents a personal risk policy.
+
+```sh
+npm run knowledge:coverage
+npm run knowledge:import -- knowledge/the-edge/catalog.json
+npm run knowledge:replay
+```
+
+The 2.1 candidate notes below describe the historical development stage; the
+current THE EDGE branch does not deploy or merge any changes to production.
+
 ## Capitalive 2.1: HTF structure and SNR (not deployed)
 
 Prepared on `feature/capitalive-2-1-htf-snr`; this release candidate has not been

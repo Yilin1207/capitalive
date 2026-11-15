@@ -10,6 +10,8 @@ export default function Home() {
       <p className="intro">Свечи Capital.com: MN1 · W1 · D1 · H4. Фракталы, диапазоны и FVG для EURUSD, NAS100 и EU50.</p>
       <CandleChart instruments={PUBLIC_SYMBOLS.map(symbol => ({ symbol, name: VERIFIED_MARKETS[symbol].name }))} />
       <nav className="api-links" aria-label="Public API">
+        <a href="/knowledge">Knowledge Base · THE EDGE</a>
+        <a href="/intelligence">Market Intelligence</a>
         <a href="/api/quotes">GET /api/quotes</a>
         <a href="/api/candles?symbol=NAS100&timeframe=H4&limit=200">GET /api/candles</a>
         <a href="/api/structure?symbol=NAS100&w1=20&d1=30&h4=40">GET /api/structure</a>
