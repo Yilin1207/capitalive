@@ -81,7 +81,18 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
     for(const index of e.candle_refs){const w=r.candle_windows[index];if(!Number.isInteger(index)||!w||w.length!==2||!Number.isFinite(Date.parse(w[0]))||!Number.isFinite(Date.parse(w[1]))||w[0]>=w[1]||w[1]>e.confirmed_at)throw Error('FUTURE_CANDLE');}
     if(e.lifecycle){if(e.lifecycle.evaluated_through>r.as_of!||e.lifecycle.invalidated_at&&e.lifecycle.invalidated_at>e.lifecycle.evaluated_through)throw Error('FUTURE_STATE');for(const i of e.lifecycle.interactions){const w=r.candle_windows[i.candle];if(!Number.isInteger(i.candle)||!w||w[0]<e.confirmed_at||w[1]>e.lifecycle.evaluated_through||w[0]>=w[1])throw Error('FUTURE_INTERACTION');}}
   }
-  for(const f of r.frames)if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');
+  for(const f of r.frames){
+    if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');
+    const candidate=(f as typeof f&{range_candidate?:{high:string;low:string;lower:number;upper:number;equilibrium:number;confirmed_at:string;review_required:boolean}}).range_candidate;
+    if(!candidate)continue;
+    const levels=r.evidence as Record<string,{kind:string;variant:number|null;polarity:string|null;timeframe:string;lower:number|null;upper:number|null;confirmed_at:string}>;
+    const high=levels[candidate.high],low=levels[candidate.low];
+    if(!high||!low||high.kind!=='FRACTAL'||low.kind!=='FRACTAL'||high.variant!==3||low.variant!==3||
+      high.polarity!=='high'||low.polarity!=='low'||high.timeframe!==f.timeframe||low.timeframe!==f.timeframe||
+      high.upper!==candidate.upper||low.lower!==candidate.lower||candidate.lower>=candidate.upper||
+      candidate.confirmed_at!==(high.confirmed_at>low.confirmed_at?high.confirmed_at:low.confirmed_at)||
+      Math.abs(candidate.equilibrium-(candidate.lower+candidate.upper)/2)>1e-10*Math.max(1,Math.abs(candidate.equilibrium)))throw Error('INVALID_RANGE_CANDIDATE');
+  }
   function refs(v:unknown):void{if(typeof v==='string'&&/^e\d{1,4}$/.test(v)&&!Object.hasOwn(r.evidence,v))throw Error('MISSING_EVIDENCE');if(Array.isArray(v))v.forEach(refs);else if(v&&typeof v==='object')Object.values(v).forEach(refs);}refs(value);
   function counts(v:unknown):void{if(Array.isArray(v)){v.forEach(counts);return;}if(!v||typeof v!=='object')return;const x=v as Record<string,unknown>;
     if(Array.isArray(x.items)&&typeof x.total==='number'&&typeof x.omitted==='number'&&(!Number.isInteger(x.total)||!Number.isInteger(x.omitted)||x.omitted<0||x.total!==x.items.length+x.omitted))throw Error('INVALID_COVERAGE_COUNTS');
