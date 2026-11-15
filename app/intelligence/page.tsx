@@ -152,6 +152,15 @@ export default function IntelligencePage() {
             )}
           </fieldset>
           <h2>Narrative: {audit.narrative.bias}</h2>
+          <p data-testid="narrative-review">{audit.narrative.status} · Контекст кандидата: {audit.narrative.candidate_bias} · {audit.verdict.action}</p>
+          <p data-testid="target-status">Цель: {audit.target_selection.status}. Препятствий: {audit.target_selection.obstacles.length}.</p>
+          <details><summary>Почему сценарий требует проверки</summary>
+            <ul>{audit.narrative.blockers.map(b=><li key={b}>{b}</li>)}</ul>
+            <pre style={{whiteSpace:"pre-wrap"}}>{JSON.stringify(audit.target_selection,null,2)}</pre>
+          </details>
+          <details><summary>Состояния уровней на {audit.as_of}</summary>
+            <pre style={{whiteSpace:"pre-wrap"}}>{JSON.stringify(audit.levels,null,2)}</pre>
+          </details>
           <p>
             A: {audit.narrative.A?.id ?? "Не определена"}; B:{" "}
             {audit.narrative.B?.price ?? "Нет подтверждённой цели"}; C:{" "}
@@ -186,6 +195,7 @@ export default function IntelligencePage() {
               <p>
                 {f.range_blocker}; {f.session_blocker}
               </p>
+              <details><summary>Причины качества данных · {f.timeframe}</summary><pre style={{whiteSpace:"pre-wrap"}}>{JSON.stringify(f.diagnostics,null,2)}</pre></details>
               {f.findings.map((e) => (
                 <details key={e.id}>
                   <summary>

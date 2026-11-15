@@ -25,7 +25,11 @@ import {
 } from "./detectors";
 import { provenance, knowledgeCoverage } from "./rules";
 import { assessRisk, type RiskPosition, type RiskPolicy } from "./risk";
+import {assessLevel,contextualLevels} from "./level-state";
+import {selectTarget} from "./target-selection";
+import {resolveContext,swingFlow,narrativeAssessment} from "./narrative";
 export type IntelligenceOptions = {
+  target_id?: string;
   as_of?: string;
   ranges?: Partial<Record<Timeframe, { high_id: string; low_id: string }>>;
   sessions?: SessionCalendar;
@@ -35,45 +39,7 @@ export type IntelligenceOptions = {
     policy: RiskPolicy;
   };
 };
-export function resolveHierarchy(levels: KeyLevel[], reference: number | null) {
-  if (reference === null)
-    return {
-      bias: "Neutral",
-      a: null,
-      conflicts: [],
-      reason: "NO_REFERENCE_PRICE",
-    };
-  const hits = levels
-    .filter(
-      (l) =>
-        ["MN1", "W1"].includes(l.timeframe) &&
-        reference >= l.lower &&
-        reference <= l.upper &&
-        l.qualified,
-    )
-    .sort(
-      (a, b) =>
-        TF_ORDER.indexOf(a.timeframe) - TF_ORDER.indexOf(b.timeframe) ||
-        a.id.localeCompare(b.id),
-    );
-  const a = hits[0] ?? null,
-    conflicts = a ? hits.filter((l) => l.role !== a.role) : [];
-  return {
-    bias:
-      !a || conflicts.length
-        ? "Neutral"
-        : a.role === "support"
-          ? "Bullish"
-          : "Bearish",
-    a,
-    conflicts,
-    reason: conflicts.length
-      ? "CONFLICTING_HTF_KL"
-      : a
-        ? "HTF_KL_CONTEXT"
-        : "NO_ACTIVE_MN1_W1_KL",
-  };
-}
+export const resolveHierarchy=resolveContext;
 export function buildIntelligence(
   data: Record<Timeframe, CandleResponse>,
   side: PriceSide,
@@ -147,52 +113,23 @@ export function buildIntelligence(
       timeframe: tf,
       data_status: frame.status,
       warnings: frame.warnings,
+      diagnostics: frame.diagnostics??[],
       closed_candles: frame.bars.length,
       findings,
       range: dr.range,
       range_blocker: dr.reason,
       session_blocker: sessions.blocked,
       structure_bias: structure.bias,
+      order_flow: swingFlow(frame,pivots),
     };
   });
-  const last = frames.H4.bars.at(-1),
-    reference = last?.close ?? null,
-    active = allLevels.filter(
-      (l) =>
-        l.confirmed_at <= asOf &&
-        l.continuity_end >= asOf &&
-        (!l.invalidated_at || l.invalidated_at > asOf),
-    );
-  const hierarchy = resolveHierarchy(active, reference),
-    direction =
-      hierarchy.bias === "Bullish"
-        ? "up"
-        : hierarchy.bias === "Bearish"
-          ? "down"
-          : null;
-  const raids = perFrame.flatMap((f) =>
-    f.findings.filter((x) => x.kind === "RAID"),
-  );
-  const targets = active
-    .filter(
-      (l) =>
-        ["MN1", "W1", "D1"].includes(l.timeframe) &&
-        l.id !== hierarchy.a?.id &&
-        !raids.some((r) => r.facts.pivot_id === l.id) &&
-        reference !== null &&
-        (direction === "up"
-          ? l.lower > reference
-          : direction === "down"
-            ? l.upper < reference
-            : false),
-    )
-    .sort(
-      (a, b) =>
-        Math.abs((direction === "up" ? a.lower : a.upper) - reference!) -
-        Math.abs((direction === "up" ? b.lower : b.upper) - reference!),
-    );
-  const target = targets[0] ?? null,
-    a = hierarchy.a;
+  const last=frames.H4.bars.at(-1),reference=last?.close??null,through=last?.end??asOf;
+  const detected=[...allLevels,...contextualLevels(perFrame.flatMap(f=>f.findings))];
+  const states=detected.map(l=>assessLevel(l,frames,asOf,through));
+  const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...l,role:states.find(s=>s.id===l.id)!.current_role??l.role}));
+  const hierarchy=resolveHierarchy(active,reference),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
+  const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id);
+  const target=detected.find(l=>l.id===targetSelection.validated_target?.id)??null,a=hierarchy.a;
   const c =
     a?.kind === "FVG"
       ? {
@@ -219,11 +156,13 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
+  const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable);
   const narrative = {
-    ...provenance("EDGE.NARRATIVE.v1"),
+    ...provenance("EDGE.NARRATIVE.v2"),
+    ...assessment,
     ...conclusionEvidence,
-    bias: reliable && target && c ? hierarchy.bias : "Neutral",
-    candidate_bias: hierarchy.bias,
+    bias: assessment.bias,
+    candidate_bias: assessment.candidate_bias,
     A: a
       ? {
           id: a.id,
@@ -247,8 +186,9 @@ export function buildIntelligence(
     candle_evidence: conclusionEvidence.candle_evidence,
     counterarguments: [
       hierarchy.reason,
+      ...assessment.blockers,
       ...hierarchy.conflicts.map((l) => `OPPOSING_HTF_KL:${l.id}`),
-      ...provenance("EDGE.NARRATIVE.v1").counterarguments,
+      ...provenance("EDGE.NARRATIVE.v2").counterarguments,
     ],
     invalidation: {
       entry: "Separate chosen execution structure; no entry selected",
@@ -257,7 +197,7 @@ export function buildIntelligence(
         "Requires review of HTF A/B/C; local H4 break alone does not cancel narrative",
     },
   };
-  const canPropose = narrative.bias !== "Neutral" && !!a && !!target && !!c;
+  const canPropose = !assessment.review_required && !!a && !!target && !!c;
   const downstream = perFrame.filter(
     (f) => a && TF_ORDER.indexOf(f.timeframe) > TF_ORDER.indexOf(a.timeframe),
   );
@@ -268,7 +208,7 @@ export function buildIntelligence(
         f.kind === "FVG" &&
         f.origin >= a!.confirmed_at &&
         f.facts.direction ===
-          (narrative.bias === "Bullish" ? "bullish" : "bearish") &&
+          (narrative.candidate_bias === "Bullish" ? "bullish" : "bearish") &&
         f.candle_evidence.some((b) => b.high >= a!.lower && b.low <= a!.upper),
     );
   const idm = downstream
@@ -334,7 +274,7 @@ export function buildIntelligence(
   );
   return {
     ok: true,
-    schema_version: "edge-knowledge-1",
+    schema_version: "edge-knowledge-2",
     symbol: data.H4.symbol,
     environment: data.H4.environment,
     price_side: side,
@@ -375,6 +315,8 @@ export function buildIntelligence(
       },
       quote_used_as_closed_evidence: false,
     },
+    levels: {state_rule:provenance('EDGE.LEVEL_STATE.v2'),test_episodes_policy:'Sum of per-timeframe episodes; overlapping TF observations are not independent tests',detected_levels:detected.map(l=>({id:l.id,kind:l.kind,timeframe:l.timeframe,lower:l.lower,upper:l.upper,initial_role:l.role,confirmed_at:l.confirmed_at,source_finding_id:l.source_finding.id})),active_level_ids:active.map(l=>l.id),states:states.map(({sources,rule_status,specification,invalidation,...state})=>state)},
+    target_selection: targetSelection,
     frames: perFrame,
     narrative,
     execution,
@@ -399,7 +341,8 @@ export function buildIntelligence(
     verdict: {
       ...provenance("EDGE.EVIDENCE.v1"),
       status: reliable ? "OBSERVATION_ONLY" : "INSUFFICIENT_DATA",
-      action: null,
+      action: "WAIT",
+      reasons: [...assessment.blockers,...targetSelection.blockers],
       data_status: reliable ? "PARTIAL" : "UNVERIFIED",
       timeframes: TF_ORDER,
       candle_evidence: last ? [last] : [],

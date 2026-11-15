@@ -25,6 +25,9 @@ export async function intelligenceHttp(
     );
     const high = params.get("high_id"),
       low = params.get("low_id");
+    const target = params.get("target_id");
+    if(target !== null && (!target || target.length > 500))
+      throw new HistoryError("INVALID_TARGET_SELECTION", "target_id must contain 1–500 characters", 400);
     if (
       (high !== null || low !== null) &&
       (!high || !low || high.length > 500 || low.length > 500)
@@ -39,6 +42,7 @@ export async function intelligenceHttp(
       data[tf] = await dependencies.getCandles(symbol, tf, HISTORY[tf].limit);
     const quote = await dependencies.getAnalysisQuote(symbol),
       body = buildIntelligence(data, side, quote, {
+        ...(target ? {target_id:target} : {}),
         ...(high && low
           ? { ranges: { H4: { high_id: high, low_id: low } } }
           : {}),

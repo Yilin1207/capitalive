@@ -1,0 +1,16 @@
+{
+ "data_kind":"SYNTHETIC_LOGIC_CASES_NOT_MARKET_REPORTS",
+ "declared_before_run":true,
+ "cases":[
+  {"id":"old-low-above","expected":"TARGET_UNVERIFIED"},
+  {"id":"untouched-high-above","expected":"TARGET_VALIDATED"},
+  {"id":"lower-tf-consumed","expected":"CONSUMED"},
+  {"id":"geometry-without-role","expected":"TARGET_UNVERIFIED"},
+  {"id":"monthly-fvg-opposing-daily","expected":"CANDIDATE_NARRATIVE"},
+  {"id":"monthly-weekly-conflict","expected":"CONFLICTING_HTF_KL"},
+  {"id":"local-stop-htf-preserved","expected":false},
+  {"id":"gap-before-raid","expected":"UNVERIFIED"},
+  {"id":"invalid-bid-ask","expected":"INVALID_OHLC"},
+  {"id":"repeat-replay","expected":true}
+ ]
+}

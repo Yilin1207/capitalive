@@ -52,6 +52,8 @@ test("intelligence renders recorded analysis, selects concrete H4 fractals and c
     .getByRole("button", { name: "Получить анализ", exact: true })
     .click();
   await expect(page.getByRole("heading", { name: /Narrative:/ })).toBeVisible();
+  await expect(page.getByTestId("narrative-review")).toContainText("WAIT");
+  await expect(page.getByTestId("target-status")).toContainText("TARGET_UNVERIFIED");
   const p = detectFractals(closedFrame(fixture.data.H4, "bid")),
     h = p.find(
       (h) =>

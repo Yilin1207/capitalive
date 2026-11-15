@@ -1,5 +1,8 @@
 # Capitalive — THE EDGE: интеграция и проверка
 
+Исторический отчёт V1 (commit `1d92341`). Актуальные исправления логики,
+контракт `edge-knowledge-2` и результаты проверки: [THE_EDGE_V2_AUDIT_RU.md](THE_EDGE_V2_AUDIT_RU.md).
+
 Дата подготовки: 15 ноября 2026. Ветка `feature/the-edge-knowledge`, база `d7d1ec5`.
 Изменения предназначены для Pull Request. Production и автоматическая торговля не изменяются.
 

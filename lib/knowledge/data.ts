@@ -18,6 +18,7 @@ export type Frame = {
   warnings: string[];
   as_of: string;
   symbol: string;
+  diagnostics?: {code:string;origin:string;count:number;times:string[];detail:string}[];
 };
 export function closedFrame(
   data: CandleResponse,
@@ -31,6 +32,9 @@ export function closedFrame(
   let segment = 0,
     previous = -Infinity,
     formingSeen = false;
+  const diagnostics:NonNullable<Frame['diagnostics']>=[];
+  const record=(code:string,origin:string,time:string,detail:string)=>{let d=diagnostics.find(x=>x.code===code);if(!d){d={code,origin,count:0,times:[],detail};diagnostics.push(d);}d.count++;if(time)d.times.push(time);};
+  record('SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED','MISSING_CALENDAR','','Provider/exchange session calendar is not independently verified; nominal gaps are not automatically missing trades.');
   const rejected = (
     data.metadata.validation_gaps ??
     data.metadata.diagnostics.missing_filtered_times
@@ -52,12 +56,14 @@ export function closedFrame(
           : t + HISTORY[data.timeframe].seconds * 1000;
     if (!Number.isFinite(t) || t <= previous) {
       warnings.add("INVALID_TIME_ORDER");
+      record('INVALID_TIME_ORDER','PIPELINE_GUARD',c.time,'Malformed or non-increasing normalized time; no pattern may cross it.');
       segment++;
       continue;
     }
     previous = t;
-    if (t > now) continue;
+    if (t >= now) continue;
     if (!c.is_closed || end > now || end > fetched) {
+      record('FORMING_OR_NOT_YET_CLOSED','NORMAL_CLOSURE_FILTER',c.time,'Excluded until nominal interval and provider closure are both satisfied.');
       formingSeen = true;
       segment++;
       continue;
@@ -67,18 +73,22 @@ export function closedFrame(
       segment++;
       continue;
     }
+    if(c.history_completeness==='partial_validation'){
+      warnings.add('PARTIAL_AGGREGATION');record('PARTIAL_AGGREGATION','AGGREGATION_WITH_UPSTREAM_REJECTION',c.time,'Monthly aggregate lost validated daily input; this is not necessarily malformed monthly OHLC.');segment++;continue;
+    }
     const values = [c.open[side], c.high[side], c.low[side], c.close[side]];
     if (
       values.some((v) => v === null || !Number.isFinite(v) || v! <= 0) ||
       c.low[side]! > Math.min(c.open[side]!, c.close[side]!) ||
       c.high[side]! < Math.max(c.open[side]!, c.close[side]!) ||
-      c.history_completeness === "partial_validation" ||
       ["open", "high", "low", "close"].some((f) => {
         const p = c[f as "open"];
         return p.bid !== null && p.ask !== null && p.bid > p.ask;
       })
     ) {
       warnings.add("INVALID_OHLC");
+      const crossed=['open','high','low','close'].some(f=>{const p=c[f as 'open'];return p.bid!==null&&p.ask!==null&&p.bid>p.ask;});
+      record(crossed?'CROSSED_BID_ASK':'INVALID_SELECTED_SIDE_OHLC','NORMALIZED_PROVIDER_DATA',c.time,crossed?'Bid exceeds Ask in at least one matched OHLC field; both sides are unusable.':`Selected ${side} side is missing, nonfinite, nonpositive, or violates OHLC geometry.`);
       segment++;
       continue;
     }
@@ -90,6 +100,7 @@ export function closedFrame(
     ) {
       segment++;
       warnings.add("GAP_BOUNDARY_NO_PATTERN_STITCHING");
+      record('GAP_BOUNDARY_NO_PATTERN_STITCHING','PROVIDER_INTERVAL_OR_VALIDATION_GAP',c.time,'Nominal interval is absent or rejected; could be a session closure. No automatic calendar inference.');
     }
     if (rejected.includes(t)) {
       segment++;
@@ -108,9 +119,9 @@ export function closedFrame(
     });
   }
   if (data.metadata.insufficient_history)
-    warnings.add("REQUESTED_HISTORY_INCOMPLETE");
+    {warnings.add("REQUESTED_HISTORY_INCOMPLETE");record('REQUESTED_HISTORY_INCOMPLETE','HISTORY_WINDOW','','Provider returned fewer requested candles; before-window interactions cannot be reconstructed.');}
   if (data.metadata.discarded_rows || data.metadata.discarded_sides)
-    warnings.add("PROVIDER_VALIDATION_LOSS");
+    {warnings.add("PROVIDER_VALIDATION_LOSS");record('PROVIDER_VALIDATION_LOSS','UPSTREAM_NORMALIZATION','','Provider rows/sides were discarded before this engine. Consult metadata.discarded_reasons and rejected_rows; do not infer root cause without raw upstream evidence.');}
   if (fatal) warnings.add("UNLOCATABLE_OR_INVALID_TIME");
   return {
     timeframe: data.timeframe,
@@ -120,6 +131,7 @@ export function closedFrame(
     warnings: [...warnings],
     as_of: asOf,
     symbol: data.symbol,
+    diagnostics,
   };
 }
 export function contiguous(bars: Bar[]) {

@@ -1,0 +1,149 @@
+{
+  "checked_at": "2026-11-15T12:51:25.737Z",
+  "origin": "https://capitalive-geipy8amd-yilin1207s-projects.vercel.app",
+  "transport": "External HTTPS to Vercel Preview; authenticated protection bypass; NOT public unauthenticated JSON",
+  "public_access": {
+    "status": 302,
+    "content_type": "text/plain",
+    "protected": true
+  },
+  "production_target": "capitalive-2rnu3zimh-yilin1207s-projects.vercel.app",
+  "results": [
+    {
+      "path": "/api/intelligence?symbol=EURUSD&side=bid",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3742614,
+      "sha256": "b3207b8c0e2695d751812c28f5612245051b0e7360c383b978af35762a287144"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&side=bid&high_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-23T00%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-22T20%3A00%3A00.000Z&low_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-22T20%3A00%3A00.000Z%3A3%3Alow%3A2026-09-22T16%3A00%3A00.000Z",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3746299,
+      "sha256": "105253e4bcc360fa2af978dd0d46eb350536cb8652051822122a171440aa68fd",
+      "range": {
+        "high_id": "EURUSD:H4:bid:FRACTAL:2026-09-23T00:00:00.000Z:3:high:2026-09-22T20:00:00.000Z",
+        "low_id": "EURUSD:H4:bid:FRACTAL:2026-09-22T20:00:00.000Z:3:low:2026-09-22T16:00:00.000Z",
+        "lower": 1.14289,
+        "upper": 1.14553,
+        "equilibrium": 1.14421
+      }
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&target_id=unknown",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3742599,
+      "sha256": "32fae85c137abd24f4bf4edf0f8d10c1839a0110ab4ece60a5b897157a385958"
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 390485,
+      "sha256": "68ab45e0291dadfa125e2ede90251c2974ee80888cae91cf22be7f04b25b1a66"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&side=ask",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3756689,
+      "sha256": "6af18b45f2fa494c5db111410f45b596b46656004f2c3a4f4602712573611686"
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 391160,
+      "sha256": "44c15a43ddd66a4a55e44a4a7386221552cb4fa80f8a9226d89db7facb03e41f"
+    },
+    {
+      "path": "/api/intelligence?symbol=NAS100&side=bid",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3539516,
+      "sha256": "a746ea39140dffdf34c080c54e63d530f2ad79ff6edd759fded4bcd24ef31ba0"
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 445830,
+      "sha256": "5e93cadb3c70961ba14bcf3547c9db7d3c712b56777c7c9aa7b157c7bcd2769b"
+    },
+    {
+      "path": "/api/intelligence?symbol=NAS100&side=ask",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3539182,
+      "sha256": "b3959960b9a12fa9cf623ab54b4b03abc77a3a9b1944ae4c5b1c5d3f9e7df9ae"
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 446422,
+      "sha256": "00e25ede533e6facedf40e437219cd1dde96fbd58a4c0697e5ff1cbab8f848f7"
+    },
+    {
+      "path": "/api/intelligence?symbol=EU50&side=bid",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3601049,
+      "sha256": "0b8ab038882c767e982ac556a7d0610c978675f756f590bf25878958af3a62c7"
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 419679,
+      "sha256": "c9712ae5d2278bf42a97ade17000554f9f1d54cded97178a3bc661090775f888"
+    },
+    {
+      "path": "/api/intelligence?symbol=EU50&side=ask",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3608037,
+      "sha256": "91e18614f25d07ac56cc4682a978d533d5ed1bd515a93cd6cf3e1311d0725be7"
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 419145,
+      "sha256": "5e5eeafcee870af535b87edf1441469a096dabd7f76a18a11ba4e703ae409419"
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3035164,
+      "sha256": "869a77a68e12cd42a643a1d3677e456789e02317ae5595eb5408511bfe3d2633"
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 115659,
+      "sha256": "04a58e36a6a09035fcb2676fad5b789235b4362c7eb05ad665f1edb788480115",
+      "width": 1400,
+      "height": 1000,
+      "pixels_decoded": true
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=priority&knowledge=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 4133301,
+      "sha256": "0f7a36b0140acc714dc58e5eda4df7e327270e011feaca79d9f0ec9574b093ae"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&high_id=unknown",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 129,
+      "sha256": "5f335b20c73b32cc8d7c7065e077674b64043d6fbe45cb108a0f789db78c3b16"
+    }
+  ]
+}

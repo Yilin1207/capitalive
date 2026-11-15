@@ -370,6 +370,14 @@ export const RULES: Rule[] = specs.map(
     },
   }),
 );
+for(const [name,concept,definition,src] of [
+ ['LEVEL_STATE','As-of multi-timeframe level state','Separate geometric detection, observed activity, liquidity consumption and confirmed role retest; coverage is an explicit prerequisite.','raid'],
+ ['TARGET_ROLE','Structural target eligibility','Validate directional role, observed continuity, consumption and A-to-B obstacles. Unique structural TF anchor or explicit ID; no nearest-price fallback.','narrative'],
+ ['NARRATIVE','Evidence-based candidate narrative','KL containment is context only. Expose HTF structure, explicit DR/location, reaction, delivery, order-flow limits and target evidence; unresolved author criteria require review.','narrative'],
+] as const){
+ const base=RULES.find(r=>r.id==='EDGE.NARRATIVE.v1')!;
+ RULES.push({...base,id:`EDGE.${name}.v2`,concept,version:2,status:'TESTED',specification:'PARTIAL',source_ids:[source[src],source.tda],definition,formation:['Closed observations must follow level confirmation and precede evaluation; maintain per-level interval coverage.'],confirmation:['Geometric target is not validated until role and path checks pass.'],invalidation:['New role break, liquidity consumption, data gap or source change requires re-evaluation.'],examples:['Named V2 regression cases declare expected outcomes before execution.'],counterexamples:['Old fractal above price is not automatically a bullish target; local raid is not an HTF BOS.'],unresolved:['Role-retest evidence protocol is a conservative project formalization, not a universal author rule.','Delivery and author SOF thresholds remain undefined; no profitability inference.'],validation:{unit:'tests/knowledge-v2.test.ts',golden:'Predeclared synthetic expected outcomes; separate immutable provider snapshots for replay',out_of_sample:'NOT_RUN',profitability:'UNVERIFIED'}});
+}
 export function rule(id: string) {
   const r = RULES.find((r) => r.id === id);
   if (!r) throw new Error(`Unknown rule ${id}`);

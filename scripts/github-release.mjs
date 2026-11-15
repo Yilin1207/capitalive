@@ -13,6 +13,10 @@ else if(action==='create-pr'){
   const [branch,bodyFile,title='Release Capitalive 2.1: HTF SNR, structural risk and verified contact coverage']=args;const existing=await api(`/pulls?head=Yilin1207:${encodeURIComponent(branch)}&base=main&state=open`);
   const pr=existing[0]??await api('/pulls','POST',{title,head:branch,base:'main',body:readFileSync(bodyFile,'utf8')});
   console.log(JSON.stringify({number:pr.number,url:pr.html_url,head:pr.head.sha,base:pr.base.sha}));
+}else if(action==='update-pr'){
+  const [number,bodyFile,title]=args;
+  const pr=await api(`/pulls/${number}`,'PATCH',{body:readFileSync(bodyFile,'utf8'),...(title?{title}:{})});
+  console.log(JSON.stringify({number:pr.number,url:pr.html_url,head:pr.head.sha,state:pr.state}));
 }else if(action==='checks'){
   const sha=args[0],checks=await api(`/commits/${sha}/check-runs`),statuses=await api(`/commits/${sha}/status`),runs=await api(`/actions/runs?head_sha=${sha}`);
   console.log(JSON.stringify({sha,checks:checks.check_runs.map(c=>({name:c.name,status:c.status,conclusion:c.conclusion,url:c.html_url})),status:statuses.state,statuses:statuses.statuses.map(s=>({context:s.context,state:s.state,url:s.target_url})),runs:runs.workflow_runs.map(r=>({id:r.id,name:r.name,status:r.status,conclusion:r.conclusion,url:r.html_url}))}));

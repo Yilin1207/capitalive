@@ -1,0 +1,188 @@
+{
+  "checked_at": "2026-11-15T12:48:44.887Z",
+  "server": "Actual local Next production build, loopback HTTP",
+  "upstream": "Recorded real candle/quote fixture transport; monthly aggregation has only available recorded D1 history. No live provider/production verification.",
+  "snapshot": {
+    "id": "bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef",
+    "bytes": 3886092,
+    "pages": 8,
+    "sha256": "b4676b43f21b32b477fbf61b4d2a33a1f85d32efd9115f8a9169a65d1afea0d5",
+    "verified": true
+  },
+  "results": [
+    {
+      "path": "/api/knowledge",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 112410
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3127165
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&high_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T04%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-21T00%3A00%3A00.000Z&low_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T08%3A00%3A00.000Z%3A3%3Alow%3A2026-09-21T04%3A00%3A00.000Z",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3132456
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&high_id=unknown",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 129
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=priority&knowledge=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3481143
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 353947
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 352835
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 413495
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 413913
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 385298
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 385375
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&include_candles=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2899226
+    },
+    {
+      "path": "/api/structure?symbol=EURUSD",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 117583
+    },
+    {
+      "path": "/api/quotes",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 24915
+    },
+    {
+      "path": "/api/htf-zones?symbol=NAS100&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 151547
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 115950
+    },
+    {
+      "path": "/api/chart?symbol=NAS100&timeframe=W1&snr_w1=1&snr_events=1",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 147170
+    },
+    {
+      "path": "/api/htf-zones?symbol=NAS100&side=ask&include_candles=1&view=snapshot",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 1395
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=0",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699613
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699618
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=2",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699619
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=3",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699619
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=4",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699619
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=5",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699619
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=6",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699619
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=bc1e9a7b8a836627fb53dc03d3da5c54de306bf30df839200df1a06ef036d8ef&page=7",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 288520
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=BAD",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 124
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=invalid",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 121
+    },
+    {
+      "path": "/api/market-audit?view=snapshot&snapshot_id=0000000000000000000000000000000000000000000000000000000000000000",
+      "status": 410,
+      "content_type": "application/json",
+      "bytes": 207
+    }
+  ]
+}

@@ -5,6 +5,13 @@
 The `feature/the-edge-knowledge` branch adds a versioned 85-material metadata
 catalog, original rule specifications, closed-candle detectors, and a separate
 analysis pipeline. See [scope, evidence and limitations](THE_EDGE_INTEGRATION_RU.md).
+
+The current intelligence contract is `edge-knowledge-2`: level lifecycle, role-aware
+target candidates and explicit narrative review gates. See the [V2 audit and HTTP evidence](THE_EDGE_V2_AUDIT_RU.md).
+`target_id=<knowledge-level-id>` requests a specific target without automatic fallback;
+unknown or unverified targets return `TARGET_UNVERIFIED`. Capitalive 2.1 default APIs are unchanged.
+Run `npm run knowledge:replay:v2` for same-input BEFORE/AFTER checks of the new control snapshots
+and the earlier archive. These snapshots are not the lost original independent audit.
 No copyrighted source articles or images are stored in the repository.
 
 ```text

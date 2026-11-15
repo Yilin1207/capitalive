@@ -41,7 +41,7 @@ test("MN1/W1 context cannot be outvoted by H4; conflicting HTF KL stays neutral"
     resolveHierarchy(
       [l("M", "MN1", "resistance"), l("H", "H4", "support")],
       1.5,
-    ).bias,
+    ).candidate_bias,
     "Bearish",
   );
   assert.equal(
@@ -128,6 +128,8 @@ test("historical prefix does not acquire signals or context from later OHLC", ()
   const prefix = buildIntelligence(f.data, "bid", f.quote, { as_of: asOf });
   assert.deepEqual(prefix.frames, full.frames);
   assert.deepEqual(prefix.narrative, full.narrative);
+  assert.deepEqual(prefix.levels, full.levels);
+  assert.deepEqual(prefix.target_selection, full.target_selection);
 });
 test("explicit H4 pivot pair builds requested DR; wrong side/variant IDs reject", () => {
   const f = fixture(),
@@ -175,7 +177,7 @@ test("HTTP returns genuine analysis JSON and fails invalid parameters/provider e
   );
   assert.equal(ok.status, 200);
   assert.match(ok.headers.get("content-type")!, /application\/json/);
-  assert.equal((await ok.json()).schema_version, "edge-knowledge-1");
+  assert.equal((await ok.json()).schema_version, "edge-knowledge-2");
   const invalid = await intelligenceHttp(
     new Request("http://localhost/api/intelligence?symbol=EURUSD&high_id=x"),
     deps,
@@ -258,7 +260,7 @@ test("market-audit retains 2.1 default and embeds knowledge only on explicit opt
     b = await rich.json();
   assert.equal(rich.status, 200);
   assert.equal(b.knowledge_intelligence.symbol, "EURUSD");
-  assert.equal(b.knowledge_intelligence.schema_version, "edge-knowledge-1");
+  assert.equal(b.knowledge_intelligence.schema_version, "edge-knowledge-2");
   assert.equal(b.schema_version, a.schema_version);
   assert.deepEqual(b.analysis, a.analysis);
   assert.equal(

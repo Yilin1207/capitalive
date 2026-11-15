@@ -17,7 +17,8 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
-    "test:public": "node scripts/verify-public.mjs"
+    "test:public": "node scripts/verify-public.mjs",
+    "knowledge:replay:v2": "node --conditions=react-server --import tsx scripts/verify-edge-v2.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "2.6.2",
