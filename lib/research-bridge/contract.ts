@@ -1,11 +1,12 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-type Spec={type?:'object'|'array'|'string'|'number'|'boolean';properties?:Record<string,Spec>;record?:Spec;keyPattern?:RegExp;items?:Spec;enum?:unknown[];nullable?:boolean;pattern?:RegExp;max?:number};
+type Spec={type?:'object'|'array'|'string'|'number'|'boolean';properties?:Record<string,Spec>;record?:Spec;keyPattern?:RegExp;items?:Spec;enum?:unknown[];nullable?:boolean;optional?:boolean;pattern?:RegExp;max?:number};
 const str=(pattern:RegExp,max=160):Spec=>({type:'string',pattern,max});
 const en=(...values:unknown[]):Spec=>({enum:values});
 const obj=(properties:Record<string,Spec>):Spec=>({type:'object',properties});
 const arr=(items:Spec,max=250):Spec=>({type:'array',items,max});
 const nullable=(s:Spec):Spec=>({...s,nullable:true});
+const optional=(s:Spec):Spec=>({...s,optional:true});
 const num:Spec={type:'number'},bool:Spec={type:'boolean'};
 const time=str(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,24),hex=str(/^[a-f0-9]{64}$/,64),ref=str(/^e\d{1,4}$/,5);
 const tf=en('MN1','W1','D1','H4'),code=str(/^[A-Z][A-Z0-9_]{0,100}$/,101),bias=en('Bullish','Bearish','Neutral');
@@ -21,7 +22,7 @@ const frame=obj({timeframe:tf,fetched_at:time,last_closed_at:nullable(time),clos
   fractals:arr(obj({variant:en(3,5),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
   dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
-  range_candidate:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE'),review_required:en(true)}))});
+  range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE'),review_required:en(true)})))});
 const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nullable(bias),status:code,
   evidence_quality:obj({status:code,human_reviewed:bool,independently_validated:en(false),probability:en(null)}),
   A:obj({selected:nullable(ref),items:arr(ref,3),total:num,omitted:num}),
@@ -45,8 +46,8 @@ function check(v:unknown,s:Spec,path='report'):void {
   if(s.type==='object'){
     if(!v||typeof v!=='object'||Array.isArray(v))return fail();const o=v as Record<string,unknown>;
     if(s.record){if(Object.keys(o).length>250)return fail();for(const [k,x]of Object.entries(o)){if(!s.keyPattern!.test(k))return fail();check(x,s.record,`${path}.${k}`);}return;}
-    const props=s.properties!;if(Object.keys(o).length!==Object.keys(props).length||Object.keys(o).some(k=>!Object.hasOwn(props,k)))return fail();
-    for(const [k,rule]of Object.entries(props))check(o[k],rule,`${path}.${k}`);return;
+    const props=s.properties!;if(Object.keys(o).some(k=>!Object.hasOwn(props,k))||Object.entries(props).some(([k,v])=>!v.optional&&!Object.hasOwn(o,k)))return fail();
+    for(const [k,rule]of Object.entries(props))if(Object.hasOwn(o,k))check(o[k],rule,`${path}.${k}`);return;
   }
   if(typeof v!==s.type)return fail();
   if(s.type==='number'&&!Number.isFinite(v))fail();
