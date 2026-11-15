@@ -20,7 +20,8 @@ const frame=obj({timeframe:tf,fetched_at:time,last_closed_at:nullable(time),clos
   structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('PROJECT_OBSERVATION_NOT_AUTHOR_SOF'),swing_evidence:arr(ref,4)}),
   fractals:arr(obj({variant:en(3,5),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
-  dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code});
+  dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
+  range_candidate:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE'),review_required:en(true)}))});
 const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nullable(bias),status:code,
   evidence_quality:obj({status:code,human_reviewed:bool,independently_validated:en(false),probability:en(null)}),
   A:obj({selected:nullable(ref),items:arr(ref,3),total:num,omitted:num}),
