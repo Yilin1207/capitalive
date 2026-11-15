@@ -75,7 +75,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     const proposed=recentHigh&&recentLow?selectRange(closedFrame(data[tf],r.price_side,r.as_of),[recentHigh,recentLow],{high_id:recentHigh.id,low_id:recentLow.id}).range:null;
     const lastClose=bars.at(-1)?.close;
     const usableProposal=proposed&&assessRange(closedFrame(data[tf],r.price_side,r.as_of),proposed).state==='ACTIVE'&&lastClose!==undefined&&lastClose>=proposed.lower&&lastClose<=proposed.upper;
-    const rangeCandidate=usableProposal?{high:add(proposed.high_id),low:add(proposed.low_id),lower:proposed.lower,upper:proposed.upper,
+    const rangeCandidate=proposed&&usableProposal?{high:add(proposed.high_id),low:add(proposed.low_id),lower:proposed.lower,upper:proposed.upper,
       equilibrium:proposed.equilibrium,confirmed_at:proposed.confirmed_at,method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true}:null;
     return {timeframe:tf,fetched_at:data[tf].fetched_at,last_closed_at:bars.at(-1)?.end??null,closed_candles:f.closed_candles,
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
