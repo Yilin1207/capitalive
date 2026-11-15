@@ -16,16 +16,17 @@ export function evaluateQuote(quote: MarketQuote, now = Date.now()): MarketQuote
     quote_quality: quote.bid === null || quote.ask === null ? "unavailable" : quoteQuality(quote.source_type, age !== null, fresh) };
 }
 
-export async function getAnalysisQuote(symbol: AnalysisSymbol) {
+export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarketSnapshot,getMarketSummaries,liveQuotes}) {
   const environment = capitalEnvironment();
   const scope = createHash("sha256").update([process.env.CAPITAL_API_BASE_URL, process.env.CAPITAL_IDENTIFIER, process.env.CAPITAL_API_KEY, process.env.CAPITAL_API_PASSWORD].join("\n")).digest("hex");
   const { value, hit } = await cache.get(`${scope}:${symbol}`, async () => {
     const context = createCapitalRequestContext(), epic = VERIFIED_MARKETS[symbol].epic;
     const [snapshot, summaries, streaming] = await Promise.allSettled([
-      getMarketSnapshot(epic, context).then(value => ({ value, receivedAt: new Date().toISOString() })),
-      getMarketSummaries([epic], context), liveQuotes([epic], context),
+      sources.getMarketSnapshot(epic, context).then(value => ({ value, receivedAt: new Date().toISOString() })),
+      sources.getMarketSummaries([epic], context), sources.liveQuotes([epic], context),
     ]);
     const now = Date.now(), retrieved = new Date(now).toISOString();
+    if(summaries.status==='rejected')console.warn(JSON.stringify({event:'analysis_quote_optional_failure',stage:'provider',code:'MARKETS_BATCH_UNAVAILABLE',critical:false}));
     const rest = snapshot.status === "fulfilled" ? normalizeQuote(symbol, epic, snapshot.value.value,
       summaries.status === "fulfilled" ? summaries.value[epic] : undefined, snapshot.value.receivedAt, now) : null;
     const tick = streaming.status === "fulfilled" ? streaming.value.quotes[epic] : undefined;

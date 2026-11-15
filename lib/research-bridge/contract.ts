@@ -1,5 +1,27 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
+export const CONTRACT_REVISION='desk-report-v1.1';
+export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
+export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
+export class BridgeFailure extends Error {
+  diagnostic:BridgeDiagnostic;
+  constructor(value:BridgeDiagnostic){super(value.code);this.name='BridgeFailure';this.diagnostic=value;}
+}
+export function diagnostic(stage:FailureStage,code:string,metadata:Partial<Pick<BridgeDiagnostic,'http_status'|'response_bytes'|'media_type'>>={}):BridgeDiagnostic {
+  const allowed=['NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'];
+  return {stage,code:allowed.includes(code)?code:stage==='publish'?'PUBLISH_FAILED':'CONTRACT_REJECTED',http_status:metadata.http_status??null,response_bytes:metadata.response_bytes??null,media_type:metadata.media_type??null,contract_revision:CONTRACT_REVISION};
+}
+export function classifyFailure(error:unknown,fallback:FailureStage='schema'):BridgeDiagnostic {
+  if(error instanceof BridgeFailure)return error.diagnostic;
+  const message=error instanceof Error?error.message:'';
+  if(message==='REPORT_TOO_LARGE')return diagnostic('size',message);
+  if(message==='REPORT_EXPIRED'||message==='INVALID_REPORT_TIME')return diagnostic('expiry',message);
+  if(message==='SECRET_IN_REPORT')return diagnostic('schema',message);
+  if(error instanceof Error&&['AbortError','TimeoutError'].includes(error.name))return diagnostic('http','TIMEOUT');
+  if(message==='PRIVATE_REPOSITORY_REQUIRED'||message==='INVALID_PUBLICATION')return diagnostic('publish',message);
+  if(message==='INVALID_BRIDGE_CONFIGURATION'||message==='WRONG_WORKFLOW_REPOSITORY')return diagnostic('publish','CONFIGURATION_ERROR');
+  return diagnostic(fallback,fallback==='http'?'NETWORK_ERROR':fallback==='publish'?'PUBLISH_FAILED':'CONTRACT_REJECTED');
+}
 type Spec={type?:'object'|'array'|'string'|'number'|'boolean';properties?:Record<string,Spec>;record?:Spec;keyPattern?:RegExp;items?:Spec;enum?:unknown[];nullable?:boolean;optional?:boolean;pattern?:RegExp;max?:number};
 const str=(pattern:RegExp,max=160):Spec=>({type:'string',pattern,max});
 const en=(...values:unknown[]):Spec=>({enum:values});
@@ -31,7 +53,8 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
   C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT')});
 const schema=obj({schema_version:en('desk-report-v1'),symbol:en('EURUSD','NAS100','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
-  error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE'),
+  error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
+  diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION)})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-3'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
   quote:nullable(obj({bid:nullable(num),ask:nullable(num),spread:nullable(num),provider_timestamp:nullable(time),retrieved_at:nullable(time),source_type:en('REST','WEBSOCKET',null),market_status:en('TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED',null),provider_age_seconds:nullable(num),fresh:bool,used_as_closed_evidence:en(false)})),
   frames:arr(frame,4),scenario:nullable(scenario),evidence:{type:'object',record:evidence,keyPattern:/^e\d{1,4}$/},
@@ -58,7 +81,7 @@ function check(v:unknown,s:Spec,path='report'):void {
 /** Unknown keys, raw OHLC, free text and unresolved evidence refs fail closed before publication. */
 export function validateReport(value:unknown,symbol?:string,now?:number,secrets:string[]=[]):void {
   const serialized=JSON.stringify(value);
-  if(Buffer.byteLength(serialized)>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
+  if(Buffer.byteLength(serialized)+1>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
   if(secrets.some(s=>s.length>=8&&serialized.includes(s))||/gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,}|Bearer\s+[A-Za-z0-9._-]{20,}/.test(serialized))throw Error('SECRET_IN_REPORT');
   check(value,schema);
   // All fields have been checked above; the local structural view avoids depending on engine types.
@@ -66,6 +89,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   if(symbol&&r.symbol!==symbol)throw Error('WRONG_SYMBOL');
   const generated=Date.parse(r.generated_at),asof=r.as_of?Date.parse(r.as_of):null;
   if(!Number.isFinite(generated)||!Number.isFinite(Date.parse(r.expires_at))||r.expires_at<r.generated_at||asof!==null&&(!Number.isFinite(asof)||asof>generated)||now!==undefined&&(generated>now+30_000||generated<now-15*60_000))throw Error('INVALID_REPORT_TIME');
+  if(now!==undefined&&r.status!=='ERROR'&&Date.parse(r.expires_at)<=now)throw Error('REPORT_EXPIRED');
   if(r.status!=='ERROR'&&(!r.source||!r.as_of||!r.scenario||r.frames.length!==4||new Set(r.frames.map(f=>f.timeframe)).size!==4))throw Error('INCOMPLETE_REPORT');
   if(r.status==='ERROR'&&!r.error)throw Error('MISSING_ERROR');
   if(r.scenario?.confirmed_narrative!==null&&r.scenario&&!r.scenario.evidence_quality.human_reviewed)throw Error('UNREVIEWED_CONFIRMATION');

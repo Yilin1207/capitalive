@@ -143,7 +143,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     evidence,rules,candle_windows:windows,coverage:{selection_policy:'RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES',
       findings_total:all.length,findings_included:refById.size,findings_omitted:all.length-refById.size,selected_evidence_complete:true,
       all_findings_included:refById.size===all.length,stale_reasons:staleReasons,raw_ohlc_included:false},trading_enabled:false};
-  if(Buffer.byteLength(JSON.stringify(result))>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
+  if(Buffer.byteLength(JSON.stringify(result))+1>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
   validateReport(result,symbol);
   return result;
 }

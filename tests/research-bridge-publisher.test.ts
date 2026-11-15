@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {collectReports,publishReports,transportError,boundedJson,TARGET_REPOSITORY} from '../scripts/publish-research-bridge.ts';
-import {MAX_REPORT_BYTES} from '../lib/research-bridge/contract.ts';
+import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
+import {syntheticDeskReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
 const reports=()=>Object.fromEntries(['EURUSD','NAS100','EU50'].map(s=>[s,transportError(s,iso)]));
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
@@ -9,7 +10,36 @@ test('Publisher replaces inaccessible/HTML/oversize upstream results with indepe
   const result=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','private-bypass-canary',fetcher as typeof fetch,()=>now);
   assert.deepEqual(Object.keys(result),['EURUSD','NAS100','EU50']);assert.ok(Object.values(result).every(r=>r.status==='ERROR'));assert.ok(!JSON.stringify(result).includes('private-password'));
   await assert.rejects(()=>collectReports('https://evil.test','secret',fetcher as typeof fetch),/CONFIGURATION/);
-  await assert.rejects(()=>boundedJson(new Response('x'.repeat(MAX_REPORT_BYTES+1),{headers:{'content-type':'application/json'}})),/UNTRUSTED_RESPONSE/);
+  await assert.rejects(()=>boundedJson(new Response('x'.repeat(MAX_REPORT_BYTES+1),{headers:{'content-type':'application/json'}})),/REPORT_TOO_LARGE/);
+});
+test('Publisher accepts range_candidate through the exact portable contract without promoting it',async()=>{
+  const fetcher=async(url:unknown)=>Response.json(syntheticDeskReport(new URL(String(url)).searchParams.get('symbol')!),{headers:{'x-desk-contract':CONTRACT_REVISION}});
+  const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',fetcher as typeof fetch,()=>now);
+  for(const [symbol,r]of Object.entries(output)){validateReport(r,symbol,now);assert.equal(r.status,'PARTIAL');const actual=r as unknown as ReturnType<typeof syntheticDeskReport>;assert.equal(actual.frames[3].range_candidate?.review_required,true);assert.equal(actual.frames[3].dealing_range,null);assert.equal(actual.scenario.confirmed_narrative,null);}
+});
+test('Failures distinguish HTTP, schema, size, expiry, provider and network; never log upstream strings',async()=>{
+  const expired=syntheticDeskReport();expired.expires_at=iso;
+  const invalid=syntheticDeskReport();invalid.frames[3].range_candidate!.high='e1';
+  const cases:[()=>Promise<Response>,string,string][]=[
+    [async()=>new Response('private-secret-canary',{status:302}),'http','HTTP_REDIRECT'],
+    [async()=>new Response('private-secret-canary',{status:500}),'http','HTTP_STATUS'],
+    [async()=>new Response('private-secret-canary',{headers:{'content-type':'text/html'}}),'http','CONTENT_TYPE'],
+    [async()=>new Response('{private-secret-canary',{headers:{'content-type':'application/json'}}),'schema','INVALID_JSON'],
+    [async()=>Response.json(invalid),'schema','CONTRACT_REJECTED'],
+    [async()=>Response.json(syntheticDeskReport(),{headers:{'x-desk-contract':'unknown-secret-version'}}),'schema','CONTRACT_REVISION_MISMATCH'],
+    [async()=>Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}),'size','REPORT_TOO_LARGE'],
+    [async()=>Response.json(expired),'expiry','REPORT_EXPIRED'],
+    [async()=>Response.json(transportError('EURUSD',iso,'UPSTREAM_UNAVAILABLE'),{status:503}),'provider','UPSTREAM_UNAVAILABLE'],
+    [async()=>{throw Error('private-secret-canary');},'http','NETWORK_ERROR'],
+  ];
+  for(const [fetcher,stage,code]of cases){const log:BridgeDiagnostic[]=[];const out=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','private-secret-canary',fetcher as typeof fetch,()=>now,[],row=>log.push(row));
+    assert.equal(out.EURUSD.status,'ERROR');assert.equal(log[0].stage,stage);assert.equal(log[0].code,code);assert.ok(!JSON.stringify({log,out}).includes('private-secret-canary'));validateReport(out.EURUSD,'EURUSD',now);
+  }
+});
+test('Publish API refusal has a safe publish-stage diagnostic',async()=>{
+  await assert.rejects(()=>publishReports('token-canary',reports(),(async()=>new Response('private-account-body',{status:403})) as typeof fetch,now),(e:unknown)=>{
+    const failure=e as {diagnostic:BridgeDiagnostic};assert.equal(failure.diagnostic.stage,'publish');assert.equal(failure.diagnostic.http_status,403);assert.ok(!JSON.stringify(e).includes('private-account'));return true;
+  });
 });
 test('Publisher refuses a public repository before uploading any report',async()=>{
   let calls=0;const fetcher=async()=>{calls++;return Response.json({private:false,full_name:TARGET_REPOSITORY,default_branch:'main'});};
