@@ -15,9 +15,10 @@ export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:num
   if(!l.qualified)reasons.push('BOUNDARY_OR_CONTEXT_UNSPECIFIED');
   return {id:l.id,timeframe:l.timeframe,kind:l.kind,price:direction==='up'?l.lower:l.upper,initial_role:l.role,current_role:s?.current_role??null,role_status:s?.role_status??'UNVERIFIED',role_eligible:reasons.length===0,reasons,evidence_ids:[l.source_finding.id,...s?.role_evidence.map(e=>`${e.timeframe}:${e.time}`)??[]]};
  });
+ // X -> X-1 -> X-2 structural target hierarchy (MN1 -> W1 -> D1). Never rank a target by nearest price.
  // Structural anchor first, not nearest price. Ambiguity requires explicit selection.
  // Never skip an unverified choice to silently choose a farther convenient target.
- const allowedTfs=a?TF_ORDER.slice(TF_ORDER.indexOf(a.timeframe),TF_ORDER.indexOf(a.timeframe)+2):TF_ORDER;
+ const allowedTfs=a?TF_ORDER.slice(TF_ORDER.indexOf(a.timeframe),TF_ORDER.indexOf(a.timeframe)+3):TF_ORDER;
  const qualified=candidates.filter(c=>c.role_eligible&&allowedTfs.includes(c.timeframe));
  const structuralTf=a&&qualified.some(c=>c.timeframe===a.timeframe)?a.timeframe:TF_ORDER.find(tf=>qualified.some(c=>c.timeframe===tf));
  const pool=requestedId?candidates.filter(c=>c.id===requestedId):qualified.filter(c=>c.timeframe===structuralTf);

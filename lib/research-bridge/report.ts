@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 import type {buildIntelligence} from '../knowledge/intelligence';
-import type {Finding} from '../knowledge/detectors';
+import {selectRange,assessRange,type Finding,type Pivot} from '../knowledge/detectors';
 import type {CandleResponse, Timeframe} from '../candle-data';
 import type {MarketQuote} from '../quote-normalization';
 import {closedFrame} from '../knowledge/data';
@@ -68,6 +68,15 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     const tf=f.timeframe,bars=closedFrame(data[tf],r.price_side,r.as_of).bars;
     const fractals=[3,5].flatMap(variant=>['high','low'].map(polarity=>({variant,polarity,...group(f.findings.filter(x=>x.kind==='FRACTAL'&&x.facts.variant===variant&&x.facts.polarity===polarity),1)})));
     const range=f.range;
+    // A research-only range candidate from the latest confirmed author 3-bar pivots.
+    // It is not an explicit selection, a validated HTF dealing range or an entry trigger.
+    const recentHigh=f.findings.filter((x):x is Pivot=>x.kind==='FRACTAL'&&x.facts.variant===3&&x.facts.polarity==='high').sort(newest)[0];
+    const recentLow=f.findings.filter((x):x is Pivot=>x.kind==='FRACTAL'&&x.facts.variant===3&&x.facts.polarity==='low').sort(newest)[0];
+    const proposed=recentHigh&&recentLow?selectRange(closedFrame(data[tf],r.price_side,r.as_of),[recentHigh,recentLow],{high_id:recentHigh.id,low_id:recentLow.id}).range:null;
+    const lastClose=bars.at(-1)?.close;
+    const usableProposal=proposed&&assessRange(closedFrame(data[tf],r.price_side,r.as_of),proposed).state==='ACTIVE'&&lastClose!==undefined&&lastClose>=proposed.lower&&lastClose<=proposed.upper;
+    const rangeCandidate=!range&&proposed&&usableProposal?{high:add(proposed.high_id),low:add(proposed.low_id),lower:proposed.lower,upper:proposed.upper,
+      equilibrium:proposed.equilibrium,confirmed_at:proposed.confirmed_at,method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true}:null;
     return {timeframe:tf,fetched_at:data[tf].fetched_at,last_closed_at:bars.at(-1)?.end??null,closed_candles:f.closed_candles,
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
@@ -77,11 +86,18 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       liquidity:{raids:group(f.findings.filter(x=>x.kind==='RAID'),1),idm:group(f.findings.filter(x=>x.kind==='IDM_INSIDE_POI'),0),strong:group(f.findings.filter(x=>x.kind==='STRONG_PIVOT_CANDIDATE'),0),irl:group(f.findings.filter(x=>x.kind==='INTERNAL_LIQUIDITY'),1)},
       dealing_range:range?{high:add(range.high_id),low:add(range.low_id),lower:range.lower,upper:range.upper,equilibrium:range.equilibrium,
         confirmed_at:range.confirmed_at,state:f.range_state.state,invalidated_at:f.range_state.invalidated_at}:null,
-      range_status:range?f.range_state.state:'EXPLICIT_SELECTION_REQUIRED'};
+      range_status:range?f.range_state.state:'EXPLICIT_SELECTION_REQUIRED',range_candidate:rangeCandidate};
   });
   const selectedA=r.narrative.A?.id??null,reference=r.data_quality.reference_price;
   const anchorAlternatives=r.levels.detected_levels.filter(l=>['MN1','W1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&reference!==null&&l.lower<=reference&&l.upper>=reference).map(l=>l.id);
-  const aIds=[...new Set([...(selectedA?[selectedA]:[]),...anchorAlternatives])];
+  // Surface nearby active HTF levels when price is outside all KLs, without inventing an active A.
+  const nearbyA=!selectedA&&anchorAlternatives.length===0&&reference!==null?r.levels.detected_levels
+    .filter(l=>['MN1','W1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&states.get(l.id)?.role_status!=='UNVERIFIED')
+    .sort((a,b)=>{
+      const distance=(l:typeof a)=>reference<l.lower?l.lower-reference:reference>l.upper?reference-l.upper:0;
+      return distance(a)-distance(b)||a.id.localeCompare(b.id);
+    }).slice(0,2).map(l=>l.id):[];
+  const aIds=[...new Set([...(selectedA?[selectedA]:[]),...anchorAlternatives,...nearbyA])];
   const aShown=aIds.slice(0,3);
   const ts=r.target_selection,candidates=ts.target_candidates;
   // Preserve engine eligibility. Recency is only a display order, never a new preferred target.
@@ -127,7 +143,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     evidence,rules,candle_windows:windows,coverage:{selection_policy:'RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES',
       findings_total:all.length,findings_included:refById.size,findings_omitted:all.length-refById.size,selected_evidence_complete:true,
       all_findings_included:refById.size===all.length,stale_reasons:staleReasons,raw_ohlc_included:false},trading_enabled:false};
-  if(Buffer.byteLength(JSON.stringify(result))>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
+  if(Buffer.byteLength(JSON.stringify(result))+1>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
   validateReport(result,symbol);
   return result;
 }
