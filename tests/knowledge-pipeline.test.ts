@@ -177,7 +177,7 @@ test("HTTP returns genuine analysis JSON and fails invalid parameters/provider e
   );
   assert.equal(ok.status, 200);
   assert.match(ok.headers.get("content-type")!, /application\/json/);
-  assert.equal((await ok.json()).schema_version, "edge-knowledge-2");
+  assert.equal((await ok.json()).schema_version, "edge-knowledge-3");
   const invalid = await intelligenceHttp(
     new Request("http://localhost/api/intelligence?symbol=EURUSD&high_id=x"),
     deps,
@@ -260,7 +260,7 @@ test("market-audit retains 2.1 default and embeds knowledge only on explicit opt
     b = await rich.json();
   assert.equal(rich.status, 200);
   assert.equal(b.knowledge_intelligence.symbol, "EURUSD");
-  assert.equal(b.knowledge_intelligence.schema_version, "edge-knowledge-2");
+  assert.equal(b.knowledge_intelligence.schema_version, "edge-knowledge-3");
   assert.equal(b.schema_version, a.schema_version);
   assert.deepEqual(b.analysis, a.analysis);
   assert.equal(

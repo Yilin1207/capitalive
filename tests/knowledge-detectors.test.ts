@@ -210,9 +210,11 @@ test("strong pivot needs both raid and contextual two-candle VC, ordinary fracta
     kind: "RB_TWO_CANDLE",
     candle_evidence: pivot.candle_evidence,
     state: "CANDIDATE",
-    facts: {},
+      facts: {direction:'bearish'},
   };
   assert.equal(pa.detectStrong(f, [pivot], raids, [proof]).length, 1);
+  assert.equal(pa.detectStrong(f, [pivot], raids.map(r=>({...r,facts:{...r.facts,polarity:'low'}})), [proof]).length,0);
+  assert.equal(pa.detectStrong(f, [pivot], raids, [{...proof,facts:{direction:'bullish'}}]).length,0);
   assert.equal(pa.detectStrong(f, [pivot], raids, []).length, 0);
 });
 test("BOS/CHOCH uses only pivots confirmed before break; repeated crossing consumed once", () => {

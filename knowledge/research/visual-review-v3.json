@@ -1,0 +1,122 @@
+{
+  "reviewed_at": "2026-11-15T13:35:03.634Z",
+  "original_images_persisted": false,
+  "method": "All 23 original images inspected in memory; source schemas, not independent market labels",
+  "images": [
+    {
+      "reference": "notion-file-block://419e05da-dd18-8109-844b-fd22e98281f2/47f9113f-dce7-4d94-a3b4-1a50139dd894?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_01.png",
+      "sha256": "b47691c2406e76dc2c82201a7c86e2162ee42174a6e1514f19a0672354446b74",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81f5-9a82-cc7903fb1009/268e01d3-7bd3-4858-bea2-4b9377c0e520?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_02.png",
+      "sha256": "531ea2b6f5357c45359362d27964e5ab863d30aa85802f7960cdc9d6c64352fd",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8101-9f72-c3631e75e4b1/77a6cff6-d7a3-49fa-ac9d-3a3aac187910?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_03.png",
+      "sha256": "c2863292639952de0587c5a3b0afb2a310c4fb4a61c5d07f23743539476ab3bd",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81bc-9696-fd3d6089d17b/771dde43-d41e-4a05-a995-bc1228ef965e?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_04.png",
+      "sha256": "6538f8482c6d08d46fdb1fb193aacb1c40a4a0538a0fc99490c97da6f0a0daec",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8133-997e-f0ec861b1f12/7c676d4a-9628-4f79-89c5-c307ffea1e3c?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_05.png",
+      "sha256": "549b91cda1d072e762ed61d4be153a933b592da63d49078f0e83706bad594dbe",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8156-8a4e-d9deea5a1425/362246cc-a729-428c-939d-c932bb7beef2?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el03_06.png",
+      "sha256": "fe6022ebd74571d0eede65f935028531ae8a3f8f67afdba9210a5a360340c35b",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81b1-9308-e9567b11dace/76a49860-93cf-4dcf-929b-daf74aa2e97d?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_01.png",
+      "sha256": "4b8920e906363cb7a2d3ab3e8dd51b4de7d256f01631cb4756f0d06996045b3b",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8141-8b86-d5aa8faf63c7/cc9f7493-8acd-44bb-a059-dcb22303279c?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_02.png",
+      "sha256": "11393eb46c60758357d1494f0a24ad8ad23ce1a650f5de51afcf56f5cc084067",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81ff-ac44-d105ba256dfd/b71a34d7-e2fb-4f16-b899-150011115848?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_03.png",
+      "sha256": "c6c0140d223905925cdc79f346eccfca235c66830e1261f29c2040ce1fe8e2eb",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8173-9bbe-d408e0c0a5b2/14db6be1-9a7e-4fd0-9a2c-262e55a97d14?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_04.png",
+      "sha256": "91ead7d5cdeca43dd6ef58e35193dfd87309368226cfd7e5937307ef37abc988",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8107-ad1a-df72e5f1b5ff/a624bb47-12c5-48c2-b60f-1d6c531b51df?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_05.png",
+      "sha256": "274dec161f84183c4c90f85798a85abdd7bd9d19e4f9a866063bb944cd9dd446",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81bb-a455-c67494e819aa/f4eaacbe-6e14-43cf-9ae7-ad57376906c3?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_06.png",
+      "sha256": "0bea4b3c8e3e40a67e05495128a7d9f5e4e8e305384d9473f54a96855f4a5bee",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8178-81b9-cf3c02146cfa/39204282-2698-4bf9-b4a2-a42231e30c7a?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_07.png",
+      "sha256": "3f43c868711ab65053356a76ac1025719c66e416e32d188ebe3ca54a9d22c91d",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81c1-8eea-c572aff10c61/bb64c770-af40-40d5-a40d-ac37e0f6f924?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_08.png",
+      "sha256": "139f2ef4ef82e3566c8554961d68cd4e8cc1f3addee3c204b90cf71d3c16f237",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8192-935d-e2afbe08b222/da62a850-95f6-4245-8453-34bdf60e948a?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_09.png",
+      "sha256": "9d5ed0c054ecf7cf7f315eb50e7800f64ee959d5bd7f6e9fe01dd489e6408792",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8143-93f2-cc4aad3bf384/38fb82cf-6d06-4ba5-bf28-3bc1f5f2e483?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=el04_10.png",
+      "sha256": "c6dfe980a40a730a5252d9c4b2d03cd06f7c3043012b62cdbafdca9fd96d4015",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8145-9f5c-faf8266ca8e7/2d0522e0-b8e1-40c4-84f8-6dcdd6409ded?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_01.png",
+      "sha256": "786543a6cb6919e46df02be44f00d8b7f9fba7682f125498b4243d2d260eab86",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8147-bd66-ea94962cd61e/e41a32c4-26c4-4258-8d7c-7420a572c918?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_02.png",
+      "sha256": "4db6985cb5f0959f4a8f9ec067230971a6ff168df5e431f56a0c3b9988610066",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-817a-9229-f05e0c92c710/57a8aced-c5e9-4108-85ba-c55afe254a7b?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_03.png",
+      "sha256": "67b2d45616951a9956ecacf526475a3ca9879e73b257f1e2076fbe83a127ad26",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8117-8f90-d1355dbc747e/19034592-4f12-4390-8f09-124010ccc1f1?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_04.png",
+      "sha256": "f2040f7a0b08b98cee531da99fe5c16afc2d5005a54099ff8d53d22867fcb9a7",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-81ba-ba72-cc0e3a1129ec/801e61ef-e9a9-4063-8e81-fe43af595af3?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_05.png",
+      "sha256": "887d5c6b7a8fb3d6e2fbbf5bce4a35e7bdbfd5127d85f799b2c796d0220a0633",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-8164-bbb1-f32b4cb9cc09/32b9effa-806e-4c1f-a129-2230b6efebb2?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_06.png",
+      "sha256": "54d029b60e302c405d69f3934f17ab9453003b21c49c310ed79bde5e06b27972",
+      "reviewed": true
+    },
+    {
+      "reference": "notion-file-block://419e05da-dd18-816b-9d43-e7e874232cef/971d0d02-e49e-46b2-8ca8-c00779ba7043?space_id=d62e05da-dd18-8174-a5b4-00038106af06&name=narrative_07.png",
+      "sha256": "ad6cf1c57efbb0a29896a24b3e1a98f533d3ae3ca0e30efecfcd46ff15c1097c",
+      "reviewed": true
+    }
+  ]
+}

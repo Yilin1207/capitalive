@@ -1,0 +1,20 @@
+import {test,expect} from '@playwright/test';
+test('blind UI shows only causal data, persists manual draft and freezes a separate export',async({page})=>{
+ const requests:string[]=[],errors:string[]=[];page.on('request',r=>requests.push(r.url()));page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('/research/blind');await expect(page.getByRole('heading',{name:'Ручная разметка исторических примеров'})).toBeVisible();
+ await expect(page.getByRole('combobox',{name:'Пример',exact:true}).locator('option')).toHaveCount(18);await expect(page.getByText('as_of:',{exact:false}).first()).toBeVisible();
+ await expect(page.getByRole('combobox',{name:'Пример',exact:true}).locator('option').nth(1)).toBeDisabled();
+ await page.getByRole('combobox',{name:'Таймфрейм',exact:true}).selectOption('H4');await expect(page.locator('canvas').first()).toBeVisible();
+ await page.getByLabel('Автор разметки',{exact:true}).fill('PLAYWRIGHT SYNTHETIC WORKFLOW ONLY');await page.getByRole('combobox',{name:'Narrative',exact:true}).selectOption('Uncertain');
+ await page.getByLabel('Условия инвалидации',{exact:true}).fill('Synthetic test; not a reference market label.');
+ for(let i=1;i<=3;i++)await page.getByLabel(`Контраргумент или нерешённый вопрос ${i}`,{exact:true}).fill(`Synthetic workflow question ${i}`);
+ await page.reload();await expect(page.getByLabel('Автор разметки',{exact:true})).toHaveValue('PLAYWRIGHT SYNTHETIC WORKFLOW ONLY');
+ await page.getByLabel('Разметка этого примера завершена',{exact:true}).check();
+ await page.getByRole('button',{name:'Зафиксировать пример и открыть следующий',exact:true}).click();await expect(page.getByLabel('Автор разметки',{exact:true})).toBeDisabled();await expect(page.getByRole('combobox',{name:'Пример',exact:true}).locator('option').nth(1)).toBeEnabled();
+ const download=page.waitForEvent('download');await page.getByRole('button',{name:'Зафиксировать завершённую разметку',exact:true}).click();expect((await download).suggestedFilename()).toMatch(/^capitalive-labels-[a-f0-9]{12}\.json$/);
+ await expect(page.getByTestId('frozen-labels')).toContainText('FROZEN');await expect(page.getByLabel('Автор разметки',{exact:true})).toBeDisabled();
+ expect(requests.filter(u=>/\/api\/(intelligence|market-audit|candles|chart|research-source)/.test(u))).toEqual([]);expect(errors).toEqual([]);
+ await page.screenshot({path:'verification/capitalive-v3/blind-ui.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
+});
+test('blind API rejects unknown case and exposes no expected answers',async({request})=>{const m=await (await request.get('/api/research/blind')).json();const r=await request.get(`/api/research/blind?case_id=${m.cases[0].id}`);expect(r.status()).toBe(200);const c=await r.json();expect(c.case_sha256).toMatch(/^[a-f0-9]{64}$/);expect(c.narrative).toBeUndefined();expect((await request.get('/api/research/blind?case_id=unknown')).status()).toBe(404);});

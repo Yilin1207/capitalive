@@ -680,3 +680,35 @@ credits/resource quotas do not guarantee uninterrupted 24/7 collection. Do not u
 plans automatically or describe the worker as running until a fresh persisted heartbeat
 and actual saved ticks confirm deployment. Data remains in the separate Neon database
 when a worker process stops; capacity and provider quotas still need monitoring.
+
+## Capitalive V3 research (Preview only)
+
+See [the V3 validation report](CAPITALIVE_V3_VALIDATION_RU.md) for actual HTTP evidence,
+data provenance, detector limitations and readiness. V3 does not enable trading.
+
+`/research/blind` contains 18 chronological EURUSD/NAS100/EU50 examples with closed
+MN1/W1/D1/H4 candles available at each historical `as_of`. It never displays engine
+predictions. Label levels, PA, A/B/C and invalidations manually; save draft exports.
+Seal each case before opening the next. Final freeze downloads a separate hashed
+`FROZEN` label file and ends the session, including any unfinished cases. Labels stay
+in browser storage/export files and are not uploaded automatically. Only after the
+reviewer finishes and freezes may an operator run:
+
+```sh
+node --conditions=react-server --import tsx scripts/research-compare.ts frozen-labels.json
+```
+
+The comparison verifies labels before importing the engine and stores labels and
+predictions separately. No historical accuracy metrics exist yet; user blind labels
+still require another expert's review. The original historical data revision is not
+verified, and overlapping examples are not an independent OOS performance test.
+
+`/intelligence` supports explicit A/B and fractal range selection, plus an evidence-bound
+human review. POST `/api/intelligence` accepts that review; stale evidence returns 409.
+V3 JSON uses `schema_version: edge-knowledge-3` and lossless
+`wire_format: evidence-dictionary-1`; clients should call
+`decodeIntelligence` from `lib/knowledge/wire.ts` to resolve provenance and path
+references. The default `/api/market-audit` retains schema 2.1; its optional
+`knowledge=1` embeds the V3 wire object. Compression retains all findings and evidence.
+
+Preview requires the existing Vercel login. Production and its settings are unchanged.

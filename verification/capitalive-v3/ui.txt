@@ -1,0 +1,17 @@
+
+> capital-market-feed@1.0.0 test:ui
+> playwright test
+
+
+Running 8 tests using 1 worker
+
+  ok 1 tests\browser\analysis.spec.ts:5:1 › recorded real MN1: layer switches, side, symbol, PNG link, errors and mobile layout (945ms)
+  ok 2 tests\browser\analysis.spec.ts:44:1 › H4 explicit range updates exact EQ and both API links; reset restores automatic range (386ms)
+  ok 3 tests\browser\htf.spec.ts:7:1 › HTF controls render distinct timeframes/events, preserve PNG parameters and show priority explanations on mobile (1.3s)
+  ok 4 tests\browser\htf.spec.ts:29:1 › an HTF error leaves original candle/fractal chart usable and explicit (349ms)
+  ok 5 tests\browser\knowledge.spec.ts:12:1 › knowledge catalog searches original summaries and exposes uncertainties (767ms)
+  ok 6 tests\browser\knowledge.spec.ts:27:1 › intelligence renders recorded analysis, selects concrete H4 fractals and clears stale data on errors (16.4s)
+  ok 7 tests\browser\research.spec.ts:2:1 › blind UI shows only causal data, persists manual draft and freezes a separate export (1.4s)
+  ok 8 tests\browser\research.spec.ts:20:1 › blind API rejects unknown case and exposes no expected answers (57ms)
+
+  8 passed (24.4s)

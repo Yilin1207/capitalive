@@ -19,11 +19,13 @@ export type Candle = {
   is_closed: boolean;
   start_time?: string;
   end_time?: string;
-  source?: "Capital.com DAY";
+  source?: "Capital.com DAY" | "Capital.com HOUR_4" | "Capital.com DAY + HOUR_4";
+  reconstructed_daily_times?: string[];
   first_daily_bar?: string;
   last_daily_bar?: string;
   daily_bars?: number;
   history_completeness?: "unknown_sessions_not_verified" | "partial_validation";
+  history_completeness_by_side?: Record<PriceSide,"unknown_sessions_not_verified"|"partial_validation">;
 };
 export type RejectedCandle = {
   time: string | null;
@@ -53,7 +55,7 @@ export type CandleResponse = {
     validation_gaps?: string[];
     time_semantics: "provider_bar_start_utc" | "calendar_month_start_utc";
     closure_basis: "successor_or_nominal_interval_elapsed_at_fetch" | "calendar_month_end_elapsed_at_fetch";
-    aggregation?: { source: "Capital.com DAY"; calendar: "UTC"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown" };
+    aggregation?: { source: "Capital.com DAY"; calendar: "UTC"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown"; reconstructions?:import('./daily-recovery').DailyRecovery[] };
     cache_ttl_seconds: number;
     cache_hit: boolean;
     diagnostics: import("./history-diagnostics").HistoryDiagnostics;

@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "EURUSD",
+    "rejected_day": "2024-04-16T00:00:00.000Z",
+    "status": 200,
+    "file": "EURUSD-2024-04-16.json",
+    "sha256": "04877f1aa96f31fb94216b4664ef68d1644f39cfec2081769fabe60d6c487738",
+    "rows": 19,
+    "error": null
+  },
+  {
+    "symbol": "EURUSD",
+    "rejected_day": "2024-04-19T00:00:00.000Z",
+    "status": 200,
+    "file": "EURUSD-2024-04-19.json",
+    "sha256": "2288e626d1edfe192bdd4b7ebbc9f67b89458f6c944ede84c8d830953c976683",
+    "rows": 12,
+    "error": null
+  },
+  {
+    "symbol": "EURUSD",
+    "rejected_day": "2024-05-03T00:00:00.000Z",
+    "status": 200,
+    "file": "EURUSD-2024-05-03.json",
+    "sha256": "2a4d9d9caaa915596c8fd467a8473d52e747ac41c541fd63ecf39c2dbb907b92",
+    "rows": 12,
+    "error": null
+  },
+  {
+    "symbol": "NAS100",
+    "rejected_day": "2024-04-12T00:00:00.000Z",
+    "status": 200,
+    "file": "NAS100-2024-04-12.json",
+    "sha256": "e75187a6d569c8373e8d9838b0cd2e7c948f6fdffb7e7dbe85561bcb4f57a14f",
+    "rows": 12,
+    "error": null
+  }
+]

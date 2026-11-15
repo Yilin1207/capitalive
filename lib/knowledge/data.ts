@@ -73,7 +73,7 @@ export function closedFrame(
       segment++;
       continue;
     }
-    if(c.history_completeness==='partial_validation'){
+    if((c.history_completeness_by_side?.[side]??c.history_completeness)==='partial_validation'){
       warnings.add('PARTIAL_AGGREGATION');record('PARTIAL_AGGREGATION','AGGREGATION_WITH_UPSTREAM_REJECTION',c.time,'Monthly aggregate lost validated daily input; this is not necessarily malformed monthly OHLC.');segment++;continue;
     }
     const values = [c.open[side], c.high[side], c.low[side], c.close[side]];

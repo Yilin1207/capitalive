@@ -1,0 +1,265 @@
+[
+  {
+    "symbol": "EURUSD",
+    "day": "2024-04-16",
+    "source_sha256": "04877f1aa96f31fb94216b4664ef68d1644f39cfec2081769fabe60d6c487738",
+    "valid_h4_bars": 6,
+    "rejected_h4": [],
+    "complete_utc_grid": true,
+    "both_sides": true,
+    "recovery": "RECONSTRUCTION_CANDIDATE_NEEDS_PROVIDER_SEMANTICS_REVIEW",
+    "comparisons": [
+      {
+        "date": "2024-04-15",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-04-16",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": false,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-04-17",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      }
+    ],
+    "prices": {
+      "bid": {
+        "open": 1.06244,
+        "high": 1.06534,
+        "low": 1.06011,
+        "close": 1.06208
+      },
+      "ask": {
+        "open": 1.0625,
+        "high": 1.0654,
+        "low": 1.06017,
+        "close": 1.06214
+      }
+    }
+  },
+  {
+    "symbol": "EURUSD",
+    "day": "2024-04-19",
+    "source_sha256": "2288e626d1edfe192bdd4b7ebbc9f67b89458f6c944ede84c8d830953c976683",
+    "valid_h4_bars": 6,
+    "rejected_h4": [],
+    "complete_utc_grid": true,
+    "both_sides": true,
+    "recovery": "RECONSTRUCTION_CANDIDATE_NEEDS_PROVIDER_SEMANTICS_REVIEW",
+    "comparisons": [
+      {
+        "date": "2024-04-18",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-04-19",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": false,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-04-20",
+        "complete": false
+      }
+    ],
+    "prices": {
+      "bid": {
+        "open": 1.06422,
+        "high": 1.06773,
+        "low": 1.06104,
+        "close": 1.06561
+      },
+      "ask": {
+        "open": 1.06428,
+        "high": 1.06779,
+        "low": 1.0611,
+        "close": 1.06571
+      }
+    }
+  },
+  {
+    "symbol": "EURUSD",
+    "day": "2024-05-03",
+    "source_sha256": "2a4d9d9caaa915596c8fd467a8473d52e747ac41c541fd63ecf39c2dbb907b92",
+    "valid_h4_bars": 6,
+    "rejected_h4": [],
+    "complete_utc_grid": true,
+    "both_sides": true,
+    "recovery": "RECONSTRUCTION_CANDIDATE_NEEDS_PROVIDER_SEMANTICS_REVIEW",
+    "comparisons": [
+      {
+        "date": "2024-05-02",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-05-03",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": false,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-05-04",
+        "complete": false
+      }
+    ],
+    "prices": {
+      "bid": {
+        "open": 1.07297,
+        "high": 1.08124,
+        "low": 1.07242,
+        "close": 1.07618
+      },
+      "ask": {
+        "open": 1.07303,
+        "high": 1.08134,
+        "low": 1.07248,
+        "close": 1.07636
+      }
+    }
+  },
+  {
+    "symbol": "NAS100",
+    "day": "2024-04-12",
+    "source_sha256": "e75187a6d569c8373e8d9838b0cd2e7c948f6fdffb7e7dbe85561bcb4f57a14f",
+    "valid_h4_bars": 5,
+    "rejected_h4": [
+      {
+        "time": "2024-04-12T00:00:00.000Z",
+        "reason": "crossed_sides",
+        "crossed_fields": [
+          {
+            "field": "open",
+            "bid": 18310.1,
+            "ask": 18307.6
+          }
+        ]
+      }
+    ],
+    "complete_utc_grid": false,
+    "both_sides": true,
+    "recovery": "CANNOT_RECONSTRUCT_WITHOUT_MISSING_OR_INVALID_DATA",
+    "comparisons": [
+      {
+        "date": "2024-04-11",
+        "complete": true,
+        "matches": {
+          "bid": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          },
+          "ask": {
+            "open": true,
+            "high": true,
+            "low": true,
+            "close": true
+          }
+        }
+      },
+      {
+        "date": "2024-04-12",
+        "complete": false
+      },
+      {
+        "date": "2024-04-13",
+        "complete": false
+      }
+    ],
+    "prices": null
+  }
+]

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { buildIntelligence } from "../../lib/knowledge/intelligence";
 import { detectFractals } from "../../lib/knowledge/detectors";
 import { closedFrame } from "../../lib/knowledge/data";
+import {encodeIntelligence} from '../../lib/knowledge/wire';
 import type { CandleResponse, Timeframe } from "../../lib/candle-data";
 import type { MarketQuote } from "../../lib/quote-normalization";
 const fixture = JSON.parse(
@@ -40,11 +41,11 @@ test("intelligence renders recorded analysis, selects concrete H4 fractals and c
       high = q.get("high_id"),
       low = q.get("low_id");
     return route.fulfill({
-      json: buildIntelligence(fixture.data, side, fixture.quote, {
+      json: encodeIntelligence(buildIntelligence(fixture.data, side, fixture.quote, {
         ...(high && low
           ? { ranges: { H4: { high_id: high, low_id: low } } }
           : {}),
-      }),
+      })),
     });
   });
   await page.goto("/intelligence");

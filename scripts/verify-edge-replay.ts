@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { buildIntelligence } from "../lib/knowledge/intelligence";
+import { encodeIntelligence } from "../lib/knowledge/wire";
 import type { CandleResponse, Timeframe } from "../lib/candle-data";
 import type { MarketQuote } from "../lib/quote-normalization";
 const rows = [];
@@ -16,7 +17,7 @@ for (const symbol of ["EURUSD", "NAS100", "EU50"]) {
     const started = performance.now(),
       result = buildIntelligence(fixture.data, side, fixture.quote);
     const events = result.frames.flatMap((f) => f.findings),
-      bytes = Buffer.byteLength(JSON.stringify(result));
+      bytes = Buffer.byteLength(JSON.stringify(encodeIntelligence(result)));
     if (
       events.some(
         (e) =>
@@ -27,7 +28,7 @@ for (const symbol of ["EURUSD", "NAS100", "EU50"]) {
       throw new Error("Future evidence");
     if (new Set(events.map((e) => e.id)).size !== events.length)
       throw new Error("Duplicate finding IDs");
-    if (bytes > 4_250_000) throw new Error("Response budget exceeded");
+    if (bytes > 4_250_000) throw new Error(`Response budget exceeded: ${symbol}/${side} ${bytes}; components ${JSON.stringify(Object.fromEntries(Object.entries(result).map(([k,v])=>[k,Buffer.byteLength(JSON.stringify(v))])))}`);
     rows.push({
       symbol,
       side,

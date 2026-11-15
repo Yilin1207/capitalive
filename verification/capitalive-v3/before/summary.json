@@ -1,0 +1,444 @@
+{
+  "phase": "before",
+  "controls": "Previously exposed V2 controls; NOT blind evaluation or original lost audit snapshot",
+  "summary": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 1.10225,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 357,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1362,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 57
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 1.10232,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 358,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1371,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 57
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 27835.9,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 170,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1379,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 58
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 27837.7,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 170,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1379,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 58
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 6395.2,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Neutral",
+        "status": "REVIEW_REQUIRED"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 0,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1398,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 59
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "data_quality": {
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 6398.2,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Neutral",
+        "status": "REVIEW_REQUIRED"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 0,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1400,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 59
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    }
+  ]
+}

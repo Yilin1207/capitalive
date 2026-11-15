@@ -2,6 +2,8 @@
 import { useState } from "react";
 import type { buildIntelligence } from "@/lib/knowledge/intelligence";
 import "../market-feed.css";
+import HumanReviewPanel from './human-review-panel';
+import {decodeIntelligence} from '@/lib/knowledge/wire';
 type Audit = ReturnType<typeof buildIntelligence>;
 export default function IntelligencePage() {
   const [symbol, setSymbol] = useState("EURUSD"),
@@ -27,7 +29,7 @@ export default function IntelligencePage() {
       const body = await r.json();
       if (!r.ok || !body.ok)
         throw new Error(body.error?.message ?? `HTTP ${r.status}`);
-      setAudit(body);
+      setAudit(decodeIntelligence<Audit>(body));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Не удалось загрузить");
     } finally {
@@ -152,6 +154,7 @@ export default function IntelligencePage() {
             )}
           </fieldset>
           <h2>Narrative: {audit.narrative.bias}</h2>
+          <HumanReviewPanel key={audit.narrative.human_review.evidence_sha256} audit={audit} onAudit={setAudit}/>
           <p data-testid="narrative-review">{audit.narrative.status} · Контекст кандидата: {audit.narrative.candidate_bias} · {audit.verdict.action}</p>
           <p data-testid="target-status">Цель: {audit.target_selection.status}. Препятствий: {audit.target_selection.obstacles.length}.</p>
           <details><summary>Почему сценарий требует проверки</summary>

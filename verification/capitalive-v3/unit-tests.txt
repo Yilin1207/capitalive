@@ -1,0 +1,293 @@
+
+> capital-market-feed@1.0.0 test
+> node --conditions=react-server --import tsx --test tests/*.test.ts
+
+✔ analysis routes reject unsupported instruments, sides, layers and budgets before any upstream request (48.1898ms)
+✔ audit assembles all four frames, flags unverified tick, retains provenance, bounded symbol scope and PNG URLs (181.022ms)
+✔ audit can return one timeframe plus all-frame targets, with raw candles explicitly requested (102.9071ms)
+✔ audit explicit H4 IDs propagate to JSON and PNG URL; missing, provisional and wrong-side IDs are rejected (373.2334ms)
+✔ audit never returns a complete-looking partial structure; 429 and sanitized failures retain contract (2.0663ms)
+✔ real PNG route uses Capital transport, reuses cached history, handles side/layer toggles and emits only image bytes (1765.1923ms)
+✔ durable archive, exact/as-of separation, minute estimate and immutable EDGE (250.5592ms)
+✔ oversized unicode snapshot reassembles byte-for-byte after newer snapshot; bound parameters and explicit expiry (689.8889ms)
+✔ too-large full HTTP response offers complete snapshot; priority still succeeds and subsequent pages never refetch (1405.736ms)
+✔ strict UTC timestamps: never uses local time or accepts date rollover (3.8116ms)
+✔ sorts and deduplicates provider timestamps, preserves both OHLC sides exactly (30.6048ms)
+✔ bad OHLC side becomes null without averaging or copying the other side (1.3483ms)
+✔ discards crossed sides, future and invalid timestamps, non-finite and invalid OHLC (1.6971ms)
+✔ W1: closure is calculated as of fetch time, including exact boundary (0.6552ms)
+✔ D1: closure is calculated as of fetch time, including exact boundary (0.4329ms)
+✔ H4: closure is calculated as of fetch time, including exact boundary (0.2788ms)
+✔ limits default correctly and reject overflow, zero, decimals and malformed numbers (0.57ms)
+✔ cache coalesces concurrent requests, expires and never saves failures (1.1998ms)
+✔ bounded limiter rejects over-budget requests and resets after its window (0.5903ms)
+✔ bundled font renders distinct real Latin/digit glyphs with system fonts disabled (34.6322ms)
+✔ Real EURUSD defective D1 can be reconstructed from six actual H4 with exact neighboring-day and unaffected-field agreement (112.4143ms)
+✔ NAS100 crossed H4 remains unrecoverable; no invented candle fills its month (13.4655ms)
+✔ Recovery rejects missing H4, mismatched previous day, mismatched unaffected prices and not-yet-closed day (21.6598ms)
+▶ real route handlers and shared Capital transport (mock upstream only)
+  ✔ NAS100, EURUSD, XAUUSD, EU50 × W1/D1/H4; mapping, both sides, defaults and public CORS (1411.0369ms)
+  ✔ structure reuses candle cache and honors each count (7.0676ms)
+  ✔ bad requests never contact upstream (12.228ms)
+  ✔ unsupported and empty timeframes return explicit errors, never H4 (5.8788ms)
+  ✔ LIVE uses separate cache and max=1000 (86.2213ms)
+{
+  requestId: '5bf5c4db-d949-410e-ad07-a3f2a8431ea6',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+  ✔ expired session is refreshed once and original prices request retried (250.9107ms)
+  ✔ idle session is renewed before sending the historical request (1.2797ms)
+{
+  requestId: '4a864324-eacc-484b-8a49-d94a5c65e3f6',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '4a864324-eacc-484b-8a49-d94a5c65e3f6',
+  step: 'prices',
+  status: 401,
+  statusText: '',
+  capitalErrorCode: 'error.security.client-token-invalid',
+  retryCount: 1,
+  sessionRefreshHappened: true
+}
+  ✔ repeated auth failure stops after one refresh (247.3897ms)
+  ✔ empty/invalid data fails explicitly and errors never enter cache (368.6717ms)
+{
+  event: 'quotes_request',
+  requestId: '08ae988c-f0db-450e-b425-673d78730e24',
+  upstreamStatus: 'ok',
+  durationMs: 1874,
+  retryCount: 0,
+  sessionRefreshHappened: false,
+  quotesReturned: 13
+}
+  ✔ quotes retains its full existing contract and all 13 symbols (1888.0123ms)
+{
+  requestId: '0965568a-8601-40f4-830e-1dec5f574338',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: null,
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '0965568a-8601-40f4-830e-1dec5f574338',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: null,
+  retryCount: 1,
+  sessionRefreshHappened: false
+}
+{
+  requestId: '0965568a-8601-40f4-830e-1dec5f574338',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: 'error.too-many-requests',
+  retryCount: 2,
+  sessionRefreshHappened: false
+}
+  ✔ 429 retries are bounded, returned publicly with Retry-After and cooldown (593.6943ms)
+{
+  requestId: '0ef8e918-b7de-4f12-88f3-6f9d5d1e47df',
+  step: 'prices',
+  status: 429,
+  statusText: '',
+  capitalErrorCode: 'error.too-many-requests',
+  retryCount: 0,
+  sessionRefreshHappened: false
+}
+  ✔ provider Retry-After is retained by the shared transport (121.4885ms)
+  ✔ public load limit returns JSON 429 with CORS without touching upstream (33.6486ms)
+✔ real route handlers and shared Capital transport (mock upstream only) (5041.6354ms)
+✔ NAS100 regression: crossed current 04:00 bar is diagnosed even when older bars fill the requested count (20.5414ms)
+✔ missing upstream current bar is distinct from filtering, without claiming a market-hours outage (2.5759ms)
+✔ recent retrieval does not claim recent price updates; cache boundary is not a provider omission (0.5826ms)
+✔ current W1, D1, H4 UTC periods have correct starts and forming bars (0.5534ms)
+✔ weekend intervals are grouped and not filled with synthetic candles (0.4363ms)
+✔ rejected duplicate does not falsely mark an accepted timestamp as missing (0.3012ms)
+✔ diagnostics stay bounded and focus on the requested window (15.1764ms)
+✔ EURUSD: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (1199.2259ms)
+✔ NAS100: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (1957.8918ms)
+✔ EU50: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise (1957.0737ms)
+✔ NAS100 Weekly region independently has closed June/July tests; November one close and open week do not confirm reversal (262.9285ms)
+✔ risk returns null without a confirmed structural stop and preserves touched unswept D1 targets (245.5102ms)
+✔ htf-zones uses one shared four-frame snapshot and preserves request validation/CORS (539.8846ms)
+✔ over-budget evidence yields explicit error with counts rather than a truncated successful catalog (724.1002ms)
+✔ all SNR frames and closed event labels render with explicit image-only counts; switches preserve full data (215.5888ms)
+✔ PNG route uses one sequential history request per TF only when SNR requested and decodes genuine image (2640.6366ms)
+✔ priority HTTP view is compact and links full evidence without presenting it as the full catalog (690.9562ms)
+✔ NAS100 bid: all three significant SNR contacts survive top-20 exclusion (540.2163ms)
+✔ NAS100 ask: all three significant SNR contacts survive top-20 exclusion (223.3608ms)
+✔ 31 overlapping W1/D1 contacts remain separate and deterministic, independent of top-20 and input order (238.2435ms)
+✔ contact policy explicitly excludes watch, unreliable, gap-state and non-SNR; inclusive boundaries remain contacts (207.0481ms)
+✔ full-catalog contacts remain suppressed for stale, future, missing timestamp or invalid price (164.4409ms)
+✔ freshness simulation bid: full and compact HTTP retain all three contact hits and response budget (1444.3983ms)
+✔ freshness simulation ask: full and compact HTTP retain all three contact hits and response budget (1125.2731ms)
+✔ timestamp availability undefined is not affirmative evidence, even with fresh=true (336.4738ms)
+✔ timestamp availability null is not affirmative evidence, even with fresh=true (275.1846ms)
+✔ timestamp availability false is not affirmative evidence, even with fresh=true (260.1266ms)
+✔ explicit timestamp evidence still requires a fresh non-future timestamp (232.4857ms)
+✔ REST normalization never invents provider timestamp from receipt time or market summary (469.0424ms)
+✔ validated real-contract WebSocket tick retains explicit timestamp evidence through normalization (177.2323ms)
+✔ one weak close is observed/pending; strong displacement confirms break but never same-bar role reversal (35.2975ms)
+✔ prefix replay proves event timestamps, confidence and frozen bands do not use future candles (24.4033ms)
+✔ priority is bounded, explained, HTF represented without FVG, and every other candidate remains accounted for (342.6461ms)
+✔ SL protects the pre-BOS swing, not a newer nearer fractal; Ask/Bid spread enters both directional geometries (50.9729ms)
+✔ real NAS100 W1 and EURUSD MN1 historical event replay is prefix invariant (314.1025ms)
+✔ early break rejects weak displacement, small body and a close away from the directional extreme (13.1702ms)
+✔ predeclared synthetic expectation: monthly_snr_without_fvg (12.5181ms)
+✔ predeclared synthetic expectation: support_to_resistance (17.6875ms)
+✔ predeclared synthetic expectation: sweep_without_break (1.9039ms)
+✔ predeclared synthetic expectation: false_close_break_reclaimed (18.9392ms)
+✔ predeclared synthetic expectation: failed_reclaim_no_followthrough_yet (2.06ms)
+✔ predeclared synthetic expectation: continuous_overlap_one_episode (2.0805ms)
+✔ predeclared synthetic expectation: weak_reactions (1.7812ms)
+✔ predeclared synthetic expectation: strong_reactions (1.6522ms)
+✔ predeclared synthetic expectation: overlapping_MN1_W1 (5.4829ms)
+✔ predeclared synthetic expectation: insufficient_history (1.78ms)
+✔ predeclared synthetic expectation: forming_break_not_evidence (1.8397ms)
+✔ LONG inside monthly support: context only; bearish FVG at 110 is first supply, not zero distance (2.9046ms)
+✔ SHORT inside weekly resistance: context only; bullish OB at 90 is first demand (0.4092ms)
+✔ zero obstacle distance is legitimate only for opposing role; geometry does not convert a role (0.5147ms)
+✔ provisional role is potential opposing evidence, never a confirmed reversal or the old role in both directions (0.406ms)
+✔ confirmed reversal, neutral role and conflicted cross-TF evidence remain distinct (0.4472ms)
+✔ first obstacle is ahead and strictly before TP; at/beyond TP is separately enumerated (1.551ms)
+✔ a completed reversal flag is causal; first close and forming follow-through cannot set it (35.5996ms)
+✔ EURUSD recorded BID/ASK: every obstacle has opposing evidence and correct geometry; independent audit counterexamples (415.9423ms)
+✔ NAS100 recorded BID/ASK: every obstacle has opposing evidence and correct geometry; independent audit counterexamples (413.5834ms)
+✔ EU50 recorded BID/ASK: every obstacle has opposing evidence and correct geometry; independent audit counterexamples (448.5913ms)
+✔ stale, absent, future timestamps and false freshness never generate realtime contact or alerts (159.4362ms)
+✔ SNR independent episodes require a whole bar away; a continuous stay is one test (9.7132ms)
+✔ strict wick sweep and equality have distinct semantics and neither establishes a break (4.5983ms)
+✔ two closes then a later retest and follow-through are needed for role reversal and failed reclaim (8.1059ms)
+✔ resistance-to-support is symmetric, and an open bar cannot confirm a flip (8.0753ms)
+✔ frozen origin bands and past events do not repaint when later volatility increases (8.0119ms)
+✔ known invalid rows reset confirmations; unknown invalid timestamp suppresses them all (3.8034ms)
+✔ invalid OHLC, crossed bid/ask, partial monthly aggregate and bad ordering are never accepted facts (4.6254ms)
+✔ all zones are returned and null reference stays null without JSON Infinity (3.0991ms)
+✔ trailing rejected observation makes current zone state unknown without erasing historical proof (3.274ms)
+✔ price traversals without repeated nearby endpoints cannot masquerade as tested SNR (17.8428ms)
+✔ a rejected still-forming period cannot erase historical closed SNR significance (2.1737ms)
+✔ HH/HL, BOS and CHOCH use confirmed pivots and strict closed closes chronologically (8.7256ms)
+✔ wick-only and unclosed break bars never confirm BOS/CHOCH or order blocks (4.9853ms)
+✔ OB requires displaced closed break; breaker requires later closed invalidation, retest and follow-through (11.488ms)
+✔ known gap blocks structure confirmation and unknown timestamps suppress structure (6.0625ms)
+✔ author three-bar and project five-bar pivots are distinct; ties and missing right bar reject (6.1129ms)
+✔ FVG golden geometry requires three closed contiguous bars and body coverage; touching wicks are not gaps (2.1626ms)
+✔ iFVG closed breach is a candidate, not an invented confirmed opposite role (0.6944ms)
+✔ raid preserves equal touch separately; close beyond level does not require reclaim (0.7683ms)
+✔ RB textual golden: two opposite candles with rejection at already-known KL; lone rejection and future KL reject (0.8689ms)
+✔ SNR origin, KL delivery and closed breakout are independent of FVG (1.2314ms)
+✔ IDM inside only: correct X/X-1, not arbitrary near or future POI (1.2103ms)
+✔ strong pivot needs both raid and contextual two-candle VC, ordinary fractal is not strong (1.3473ms)
+✔ BOS/CHOCH uses only pivots confirmed before break; repeated crossing consumed once (0.8221ms)
+✔ opposite closed break changes project BOS to CHOCH without inventing a narrative reversal (0.8111ms)
+✔ DR requires explicit IDs, EQ is midpoint, IRL remains internal geometry (1.1323ms)
+✔ Compression/LRL and Displacement expose measurements, never invented thresholds or reversal signals (0.8396ms)
+✔ Session Gap requires verified calendar and exact boundaries for spot/CFD/futures; wrong timezone rejects (30.2255ms)
+✔ Weekly and Monthly Open are provider-specific closed-period facts (0.4635ms)
+✔ data gate rejects incomplete/crossed OHLC, forming/future closure and preserves gap barriers (4.2974ms)
+✔ prefix invariance: appending future bars cannot alter prior confirmed fractals/FVG/break events (0.6698ms)
+✔ MCP import rejects search results, keeps no raw text and is idempotent/deduplicated (3.7745ms)
+✔ revisions preserved and stale/partial source metadata remains explicit (0.9078ms)
+✔ MN1/W1 context cannot be outvoted by H4; conflicting HTF KL stays neutral (11.4061ms)
+✔ recorded provider data: closed provenance, separate evidence/quality/risk, no trade probability (13462.0338ms)
+✔ incomplete/mixed datasets suppress narrative; Bid/Ask remain separate (24935.9145ms)
+✔ historical prefix does not acquire signals or context from later OHLC (9408.7978ms)
+✔ explicit H4 pivot pair builds requested DR; wrong side/variant IDs reject (6170.5897ms)
+✔ HTTP returns genuine analysis JSON and fails invalid parameters/provider errors explicitly (6509.6817ms)
+✔ catalog has 85 unique fetched metadata summaries, searchable rules and honest validation states (2.2322ms)
+✔ source revision change gates rule provenance and narrative until re-review (6065.3522ms)
+✔ market-audit retains 2.1 default and embeds knowledge only on explicit opt-in using the same OHLC (2765.2395ms)
+✔ risk requires explicit limits; adding never resets idea budget or nets historical winners (34.4826ms)
+✔ risk guards position, period, aggregate correlation, duplicates and Risk Off additions (2.2141ms)
+✔ contract/FX conversion and actual confirmed stop are mandatory; no automatic BE profit offset (0.4963ms)
+✔ V2 01 old-low-above: no arbitrary bullish target from an old low (4.215ms)
+✔ V2 02 untouched-high-above: observed original buy-side liquidity can qualify (0.7602ms)
+✔ V2 03 lower-tf-consumed: H4 strict raid consumes W1 target before W1 closes (0.5715ms)
+✔ V2 04 geometry-without-role: unqualified SNR is not a validated target (0.4301ms)
+✔ V2 05 monthly-fvg-opposing-daily: containment cannot establish bullish narrative (1.5676ms)
+✔ V2 06 monthly-weekly-conflict: lower TF does not outvote monthly (0.6131ms)
+✔ V2 07 local-stop-htf-preserved: entry invalidation is not inherited by HTF narrative (0.4965ms)
+✔ V2 08 gap-before-raid: no inferred causal transition through missing history (0.5144ms)
+✔ V2 09 invalid-bid-ask: selected side and crossed sides are audited independently (10.2828ms)
+✔ V2 10 repeat-replay: identical input produces identical complete analysis (12735.2369ms)
+✔ V2 original low may become bullish structural target only after closed break and later retest (1.5744ms)
+✔ V2 target obstacles and ambiguous structural anchors prevent nearest-level substitution (1.3835ms)
+✔ V2 interval coverage cannot borrow a parent candle closing in the future (0.4208ms)
+✔ V2 exact fractal touch does not consume liquidity; strict wick does (0.4553ms)
+✔ V2 FVG lower-TF breach is not inversion; own-TF close invalidates at its known close (0.5878ms)
+✔ V3 reviewed Bullish/Bearish scenario can confirm without extra VC or forced SOF alignment (20.6699ms)
+✔ V3 containment alone remains Candidate; human review cannot bypass missing data, target, C, range or stale hash (1.6366ms)
+✔ V3 neutral review stays separate from unconfirmed neutral fallback (1.9847ms)
+✔ V3 invalid geometric distractor does not suppress unique eligible target; explicit invalid target never falls back (1.0107ms)
+✔ V3 range returning inside after closed breakout is still invalid; unknown later segment cannot restore it (0.721ms)
+✔ V3 wire dictionary round-trips complete real analysis without dropping rule provenance or evidence (422.2082ms)
+✔ Unknown provenance reference is rejected, not silently replaced by empty evidence (1.2067ms)
+✔ MN1 calendar aggregation preserves each side, year rollover, gaps and forming month (23.4498ms)
+✔ MN1 never hides a missing price side or rejected daily observation (0.4748ms)
+✔ MN1 routes load 60 real calendar months for all seven symbols through bounded DAY windows (3252.7583ms)
+✔ Benchmark gate rejects drafts, tampering, wrong pack and future freeze before engine can run (197.7248ms)
+✔ Precision/Recall never treats unlabeled categories as negatives; exact matching is one-to-one (0.7373ms)
+✔ Blind pack: 18 cases, all closed before as_of, deterministic hashes, no algorithm outputs (279.0731ms)
+✔ Freeze validates human completion, immutable deep copy, case identity and no future annotation (7.617ms)
+✔ Capital CFD schedule handles NY DST, shortened break, Sunday partial bucket and unknown historical maintenance (14.5411ms)
+✔ History overfetch stays bounded; monthly partial Ask does not discard independently valid Bid (2.1154ms)
+✔ Research source persists only market fields and diagnoses rather than fixes crossed prices (2.0605ms)
+✔ Research window rejects future, oversize and unsupported inputs before contacting provider (54.4706ms)
+✔ WebSocket acknowledgements are per epic and never manufacture a tick (2.1162ms)
+✔ WebSocket ticks validate prices and milliseconds, retain receipt time, handle reordering (2.3527ms)
+✔ REST timestamp never derives from HTTP retrieval time or a time-of-day (1.258ms)
+✔ stream lifecycle uses documented URL without session metadata, confirms subscription, records ticks, closes and supports abort (133.8226ms)
+✔ strict fractal needs TWO closed right bars; forming center/right and ties cannot confirm (4.5435ms)
+✔ low fractals mirror high rules; equality on the left also rejects (0.4501ms)
+✔ equal touch by a forming candle is separate from a strict sweep; both timestamps persist (0.919ms)
+✔ low touch is equality; strict penetration sweeps without a close-back requirement (0.3528ms)
+✔ explicit H4 range honors confirmed IDs instead of latest automatic pivots; rejects invalid pairs (1.6147ms)
+✔ ranges use confirmed pivots, exact EQ, provenance, alternatives; missing pivot stays unconfirmed (1.0187ms)
+✔ known validation holes are never bridged into a five-bar fractal or FVG (0.3388ms)
+✔ missing calendar month or incomplete monthly source cannot confirm a monthly fractal (0.3959ms)
+✔ unlocatable invalid timestamps suppress confirmations rather than assume adjacency (0.2282ms)
+✔ bullish FVG tracks progressive wick penetration including forming bar, then full fill (0.4519ms)
+✔ bearish FVG uses upper residual; open third candle is provisional only (0.2513ms)
+✔ EURUSD residual 0.2 pip remains visible but is NOT a material target; settings and ATR apply (0.3151ms)
+✔ nearest D1+ target respects side, swept/filled/material exclusions and intermediate H4 obstacles (0.6785ms)
+✔ cross timeframe checker flags contradictory closed extrema but skips forming snapshots (0.5162ms)
+✔ fresh retrieval cannot substitute a missing/stale/future provider tick timestamp (0.8219ms)
+✔ recorded Capital.com DEMO EURUSD: both sides, exact pivot/EQ/FVG invariants and PNG (193.0316ms)
+✔ recorded Capital.com DEMO NAS100: both sides, exact pivot/EQ/FVG invariants and PNG (116.7934ms)
+✔ recorded Capital.com DEMO EU50: both sides, exact pivot/EQ/FVG invariants and PNG (73.3687ms)
+✔ history retries honor Retry-After and leave long delays to the server cooldown (84.1939ms)
+✔ returns a normal response without retry (1.0799ms)
+✔ retries 429 and 500 responses (2.8923ms)
+✔ does not retry a permanent 400 response (0.5905ms)
+✔ aborts timeout and stops after configured attempts (24.6721ms)
+✔ recognizes an expired session response (0.4128ms)
+✔ a last-good snapshot stays stale when one symbol is unavailable (0.5388ms)
+✔ actionable live requires both an open market and provider freshness (0.5545ms)
+✔ quote quality distinguishes REST retrieval from stale and timestamp-verified data (0.4414ms)
+✔ health self-check accepts only finite bid and offer values (0.5834ms)
+✔ health is degraded only when both Capital.com transports fail (0.3852ms)
+✔ context does not expose unavailable futures or fake yield spreads (0.3355ms)
+✔ unconfirmed requested tenors stay explicitly unavailable (0.2299ms)
+ℹ tests 208
+ℹ suites 0
+ℹ pass 208
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 71982.8031

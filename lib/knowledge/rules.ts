@@ -4,6 +4,7 @@ import { EXAMPLES } from "./examples";
 
 export type RuleStatus = "DOCUMENTED" | "FORMALIZED" | "TESTED" | "VALIDATED";
 export type Rule = {
+  basis?: 'DOCUMENTED' | 'PROJECT_HYPOTHESIS';
   id: string;
   concept: string;
   version: number;
@@ -378,6 +379,7 @@ for(const [name,concept,definition,src] of [
  const base=RULES.find(r=>r.id==='EDGE.NARRATIVE.v1')!;
  RULES.push({...base,id:`EDGE.${name}.v2`,concept,version:2,status:'TESTED',specification:'PARTIAL',source_ids:[source[src],source.tda],definition,formation:['Closed observations must follow level confirmation and precede evaluation; maintain per-level interval coverage.'],confirmation:['Geometric target is not validated until role and path checks pass.'],invalidation:['New role break, liquidity consumption, data gap or source change requires re-evaluation.'],examples:['Named V2 regression cases declare expected outcomes before execution.'],counterexamples:['Old fractal above price is not automatically a bullish target; local raid is not an HTF BOS.'],unresolved:['Role-retest evidence protocol is a conservative project formalization, not a universal author rule.','Delivery and author SOF thresholds remain undefined; no profitability inference.'],validation:{unit:'tests/knowledge-v2.test.ts',golden:'Predeclared synthetic expected outcomes; separate immutable provider snapshots for replay',out_of_sample:'NOT_RUN',profitability:'UNVERIFIED'}});
 }
+RULES.push({...RULES.find(r=>r.id==='EDGE.NARRATIVE.v2')!,id:'EDGE.NARRATIVE.v3',version:3,basis:'PROJECT_HYPOTHESIS',definition:'Evidence-bound HUMAN_REVIEW of qualitative author questions. Directional confirmation requires active A, explicit current HTF DR, eligible D1+ B with clear observed path, and structural C. No mandatory extra VC or universal swing-flow threshold.',implementation:'lib/knowledge/narrative.ts; lib/knowledge/human-review.ts',validation:{unit:'tests/knowledge-v3.test.ts',golden:'Synthetic review gates only; user blind labels pending',out_of_sample:'NOT_RUN',profitability:'UNVERIFIED'}});
 export function rule(id: string) {
   const r = RULES.find((r) => r.id === id);
   if (!r) throw new Error(`Unknown rule ${id}`);
@@ -397,6 +399,7 @@ export function provenance(id: string) {
   const r = rule(id),
     current = r.source_ids.every(sourceCurrent);
   return {
+    basis:r.basis??(/FRACTAL_5|RB|SNR|IRL|STRUCTURE|BOS|CHOCH|COMPRESSION|DISPLACEMENT|STRONG|IDM|LEVEL_STATE|TARGET_ROLE|NARRATIVE/.test(r.id)?'PROJECT_HYPOTHESIS':'DOCUMENTED'),
     rule_id: r.id,
     rule_version: r.version,
     rule_status: current ? r.status : "DOCUMENTED",

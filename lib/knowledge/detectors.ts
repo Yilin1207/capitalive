@@ -385,7 +385,7 @@ export function detectSnr(frame: Frame, context: KeyLevel[]) {
         x.index >= delivery.index &&
         (resistance ? x.close > upper : x.close < lower),
     );
-    if (!breakout) continue;
+    if (!breakout || !knownLevel(kl,breakout,frame)) continue;
     out.push(
       event(
         frame,
@@ -468,12 +468,13 @@ export function detectStrong(
   for (const p of pivots) {
     const raid = raids.find(
       (r) =>
-        r.kind === "RAID" && r.candle_evidence.some((b) => b.index === p.index),
+        r.kind === "RAID" && r.facts.polarity===p.polarity && r.candle_evidence.some((b) => b.index === p.index),
     );
     if (!raid) continue;
     const proof = vc.find(
       (v) =>
         ["RB_TWO_CANDLE", "SNR_CLOSED_BREAK"].includes(v.kind) &&
+        (v.kind==='RB_TWO_CANDLE'?v.facts.direction===(p.polarity==='low'?'bullish':'bearish'):v.facts.proposed_role===(p.polarity==='low'?'support':'resistance')) &&
         v.candle_evidence.some((b) => b.index === p.index) &&
         v.confirmed_at >= raid.confirmed_at,
     );
@@ -622,6 +623,11 @@ export function selectRange(
     ],
     reason: null,
   };
+}
+export function assessRange(frame:Frame,range:Range|null){
+ if(!range)return {state:'UNSELECTED',invalidated_at:null};
+ const broken=frame.bars.find(b=>b.time>=range.confirmed_at&&b.segment===range.segment&&(b.close<range.lower||b.close>range.upper));
+ return {state:broken?'INVALIDATED':range.segment!==frame.bars.at(-1)?.segment?'UNVERIFIED':'ACTIVE',invalidated_at:broken?.end??null};
 }
 export function detectIrl(frame: Frame, pivots: Pivot[], range: Range | null) {
   if (!range) return [];

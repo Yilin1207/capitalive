@@ -1,0 +1,665 @@
+[
+  {
+    "file": "EURUSD-market.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&mode=market",
+    "status": 200,
+    "captured_at": "2026-11-15T13:18:38.660Z",
+    "environment": "demo",
+    "payload_sha256": "bcbacb3f37df318539100e79c0c039ae24056274c47b8ad3efa66501f13cc6f8",
+    "file_sha256": "9935c2627343d9a65d3245bc85b8243403f2141839326f33e9c97a32ab360561",
+    "request": {
+      "mode": "market",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-D1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=D1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:06.252Z",
+    "environment": "demo",
+    "payload_sha256": "51b601114dcc25daaf4e160864cc0924ab055153eefbca24482539c1a2dcd1f8",
+    "file_sha256": "6c9d0f2340e2c9c68f5d0a1c6c8568e1a100656b139871206afef7468a833761",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-W1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=W1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:06.939Z",
+    "environment": "demo",
+    "payload_sha256": "62a352d06a290d740d2af277a72c0c72bf974aa64e07d9eebb06f6753833c826",
+    "file_sha256": "91141c7c7ad2994bbc1b334f072e03e5044ffb63a04ae0e243226df6b115a7a9",
+    "request": {
+      "mode": "prices",
+      "timeframe": "W1",
+      "resolution": "WEEK",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:07.496Z",
+    "environment": "demo",
+    "payload_sha256": "02691920b55aca6c73e91574fc0c1ef1e87cdc9d64f65093fed8dc141e850d44",
+    "file_sha256": "68a26564de9fa07f9016bdd63f00fa4562d32e0316d1b8d5bca22e7afca20dca",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2025-04-12.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2025-01-12T00%3A00%3A00Z&to=2025-04-12T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:08.801Z",
+    "environment": "demo",
+    "payload_sha256": "d2006051395b79cc89052217d35eefc8fc492413438602b81aa84bef783adfbf",
+    "file_sha256": "c193dcaf9e8f669e288f5429729787243d5dc15cd340768303ef77f6f1cd8742",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-01-12T00:00:00Z",
+      "to": "2025-04-12T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2025-07-19.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2025-04-20T00%3A00%3A00Z&to=2025-07-19T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:09.522Z",
+    "environment": "demo",
+    "payload_sha256": "09ce74fe6095ba92d002a86a5f990f8cec3c6b0a7d7fe177805b1232967fdd90",
+    "file_sha256": "4f69a3b4740e52225f900e33e6410b2c7ca6cd717b0d36b624da1cf900d68b0c",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-04-20T00:00:00Z",
+      "to": "2025-07-19T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2025-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2025-08-03T00%3A00%3A00Z&to=2025-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:09.980Z",
+    "environment": "demo",
+    "payload_sha256": "8e43ac40ccf7d5aa36b8be5de6c25b80c8e23aefce229d2d1936b60005000985",
+    "file_sha256": "e4b78e967942108ff23584957651e43d9059f6b8ab3a1236ae04b4139f961a3a",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-08-03T00:00:00Z",
+      "to": "2025-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2026-04-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2026-01-18T00%3A00%3A00Z&to=2026-04-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:10.347Z",
+    "environment": "demo",
+    "payload_sha256": "030eff95a35e832153cab094ddab19d796f00ca9addba6987bd4f5812a8555c0",
+    "file_sha256": "4aee2a31b6b3764d1b5f250707a0730797bc01b3b88ff12ead306e70a73a3266",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-01-18T00:00:00Z",
+      "to": "2026-04-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2026-07-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2026-04-19T00%3A00%3A00Z&to=2026-07-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:10.710Z",
+    "environment": "demo",
+    "payload_sha256": "a9554a0bb9a4f206a13594a905a7bfe5a3f59f168e72fb6cb1c4e7829fe8e8ed",
+    "file_sha256": "fff1f3ceb18ccc3a998b45739627f5dade7ff90cb5f77bcaa78f62aefe0d6c2c",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-04-19T00:00:00Z",
+      "to": "2026-07-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-H4-2026-11-14.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=H4&from=2026-08-16T00%3A00%3A00Z&to=2026-11-14T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:11.168Z",
+    "environment": "demo",
+    "payload_sha256": "aa60e4f786a4cb301e698a9c24bbebcd92ddd33d481d6da27e83e6ee3798a287",
+    "file_sha256": "4be978c6cdc6aff0971781890c02f4965b2b90993086625fab8ebc1a59fef57e",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-08-16T00:00:00Z",
+      "to": "2026-11-14T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-D1-2020-01-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=D1&from=2020-01-01T00%3A00%3A00Z&to=2022-06-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:11.556Z",
+    "environment": "demo",
+    "payload_sha256": "4624f59fe55529a3fc028a885595e72ceec797a60f5a56baeb17830060a4b844",
+    "file_sha256": "1357f590c87e5a7af5fe117ec7fd44c88f65ee2848eb5a4ba26877503c9bc805",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2020-01-01T00:00:00Z",
+      "to": "2022-06-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-D1-2022-06-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=D1&from=2022-06-01T00%3A00%3A00Z&to=2024-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:12.036Z",
+    "environment": "demo",
+    "payload_sha256": "ed26ab889d5062763be58bdcb76eb4d1ecf1a676ca441b5a77f2d30e541e6e81",
+    "file_sha256": "8fb8795ad5ae0f7d78360ba559bbfa0e6d060285a545c72b25537cd71ed65a01",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2022-06-01T00:00:00Z",
+      "to": "2024-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EURUSD-D1-2024-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EURUSD&timeframe=D1&from=2024-11-01T00%3A00%3A00Z&to=2026-11-15T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:12.395Z",
+    "environment": "demo",
+    "payload_sha256": "132a11c3874027f2a76bc6d1514fb5f9220d316e6298e40b39ba147a2f8c17d1",
+    "file_sha256": "656f9dcf46d28a3a92ca0b040392f962ce08ddeca5c1ef5d4d5077e4a8a81c0d",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2024-11-01T00:00:00Z",
+      "to": "2026-11-15T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-market.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&mode=market",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:12.819Z",
+    "environment": "demo",
+    "payload_sha256": "1e35c869d9d968dc2fecc32366b70b70d6caa17c6a4bbf0ec5e6c09882cabfa7",
+    "file_sha256": "4b5f689ca9c1635459dcc2e5ba62b1e3a70a4a36e65b0f5f175444f715d650cf",
+    "request": {
+      "mode": "market",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-D1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=D1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:13.185Z",
+    "environment": "demo",
+    "payload_sha256": "553250bfca0e4e05acdc96bd497396e98bb97ecbc3ab222b96817ccd8c3670a6",
+    "file_sha256": "c7f8863ae27a5f94c495ba37d0e7b8eb3c1c9efc5427ff2dc5a3273b2627f564",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-W1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=W1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:13.655Z",
+    "environment": "demo",
+    "payload_sha256": "8a59209d3d9433585a5ad040c61c926ab87d919a518cceb4d8175416d4810190",
+    "file_sha256": "0cd20ed7ee571d565baeb71cad0aec35bdfd1fad42cd1d166598f96bd074aa99",
+    "request": {
+      "mode": "prices",
+      "timeframe": "W1",
+      "resolution": "WEEK",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:14.232Z",
+    "environment": "demo",
+    "payload_sha256": "e3f64a7894b3826ab425c1a18f09abf11c36af61a069320a8cf4026cb0b448c7",
+    "file_sha256": "1906df342516c85eaa873883755be2486c6a02950d5ba8870cb62d32e191a481",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2025-04-12.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2025-01-12T00%3A00%3A00Z&to=2025-04-12T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:15.786Z",
+    "environment": "demo",
+    "payload_sha256": "700d81a0a3ab2c127c7017f9a4980b6d25914348bdf52a3baeb33cd99657b0a0",
+    "file_sha256": "b6895e97cc4c8af5f951b3977fc06f57258693a45b42fc5ee31d9dea02831d85",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-01-12T00:00:00Z",
+      "to": "2025-04-12T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2025-07-19.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2025-04-20T00%3A00%3A00Z&to=2025-07-19T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:16.444Z",
+    "environment": "demo",
+    "payload_sha256": "cf76b1b2f062045fecd6edc059300be250684ac222618e9bc432b95920c29474",
+    "file_sha256": "15b5171d61f61ea110ae77b5913ba2d41b96b4b43c764b11c1df37947e70188d",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-04-20T00:00:00Z",
+      "to": "2025-07-19T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2025-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2025-08-03T00%3A00%3A00Z&to=2025-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:16.811Z",
+    "environment": "demo",
+    "payload_sha256": "1a24e27d4537899f7b2557b9665ced0af075c67033a5e8e9928432db19982b3f",
+    "file_sha256": "2a0dacbf18c019080a4aa958d2d31b36969990dbd3e096bac9ea75479a45b5bf",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-08-03T00:00:00Z",
+      "to": "2025-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2026-04-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2026-01-18T00%3A00%3A00Z&to=2026-04-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:17.161Z",
+    "environment": "demo",
+    "payload_sha256": "e71d3a38ab07137d8c1a99bc01bb46dc1500f4589808c655f596c108722addb6",
+    "file_sha256": "72587e986d7e147f24b267a571bebe000055834ef7a4e64a6d3d16c4200cf4a4",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-01-18T00:00:00Z",
+      "to": "2026-04-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2026-07-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2026-04-19T00%3A00%3A00Z&to=2026-07-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:17.520Z",
+    "environment": "demo",
+    "payload_sha256": "573ce33210fe5f67e12f0689307fc5b11db211a6a7903b8e41aa24f0213e2c2c",
+    "file_sha256": "41d41564a4238d395f2a3f3127995c8e468a64eee976796de496a5cf2ef7c1f1",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-04-19T00:00:00Z",
+      "to": "2026-07-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-H4-2026-11-14.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=H4&from=2026-08-16T00%3A00%3A00Z&to=2026-11-14T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:17.975Z",
+    "environment": "demo",
+    "payload_sha256": "ec75b5714ea92122ee2f35a870f851b8a1d4ae1b24ba9d5051de79d520fe26e1",
+    "file_sha256": "3cc326be6c50f4b1df8140aafa9e789f55fc0076d126cfeb8554ce6234adf8f6",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-08-16T00:00:00Z",
+      "to": "2026-11-14T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-D1-2020-01-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=D1&from=2020-01-01T00%3A00%3A00Z&to=2022-06-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:18.354Z",
+    "environment": "demo",
+    "payload_sha256": "45491868d51fd6eecfa3e44243041b71c56efdfeb4c61bdf0da93c71ce66f978",
+    "file_sha256": "e438505f931f6a588693df3cc7da83a834b333f4cdfdb004178992971511794f",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2020-01-01T00:00:00Z",
+      "to": "2022-06-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-D1-2022-06-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=D1&from=2022-06-01T00%3A00%3A00Z&to=2024-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:39.477Z",
+    "environment": "demo",
+    "payload_sha256": "bfac0320587993a5421382c42775533830160107715c6a01284816018ffa7bd4",
+    "file_sha256": "4d1c3b750e3d1cfe24a245d8247132f73ff1b9ef29d7141e3cb566ad2ddf5aa7",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2022-06-01T00:00:00Z",
+      "to": "2024-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "NAS100-D1-2024-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=NAS100&timeframe=D1&from=2024-11-01T00%3A00%3A00Z&to=2026-11-15T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:39.940Z",
+    "environment": "demo",
+    "payload_sha256": "35f483756ec3eaa3c998f9b6d619f3157f84d4a5955438f53353df389aedc869",
+    "file_sha256": "a3256fcecd26a59c956cedd44d96c4e1940ab7f708b8f948a259e3d6e4085616",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2024-11-01T00:00:00Z",
+      "to": "2026-11-15T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-market.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&mode=market",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:40.276Z",
+    "environment": "demo",
+    "payload_sha256": "0260d1479b180aa6df46d567918274a5c11d8f55eae8592646ed70b422c08703",
+    "file_sha256": "a1ae79dffec52060653516f9cb0e8e44090f75ef7d587f51db98d1640c1e96e1",
+    "request": {
+      "mode": "market",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-D1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=D1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:40.668Z",
+    "environment": "demo",
+    "payload_sha256": "181877d402c0f9585758a5b390d388260a80c57557d6b9ee8db40e5a04d382bb",
+    "file_sha256": "55e4202a7d92c03c897b6d9498a24e9366f2cbef9863eae03db10d6a85da5f5a",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-W1.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=W1",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:41.218Z",
+    "environment": "demo",
+    "payload_sha256": "a5e10edb677942b17323d443f8485de5a1c38e351942ff642b5ce355704a9a0e",
+    "file_sha256": "474cadee25a6e64c172f84015b31232ca2862ba4d2baaeffafc908b67fb1967a",
+    "request": {
+      "mode": "prices",
+      "timeframe": "W1",
+      "resolution": "WEEK",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:41.783Z",
+    "environment": "demo",
+    "payload_sha256": "aa3a10cf47e09ec467967dd2de21d73d565711b11c22559ee2517feb8c8c479f",
+    "file_sha256": "d3b51edb367754f152c65d4ab81c7faf1b316c2e8d7965912e31ea17653dc37f",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": null,
+      "to": null,
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2025-04-12.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2025-01-12T00%3A00%3A00Z&to=2025-04-12T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:43.241Z",
+    "environment": "demo",
+    "payload_sha256": "c66e757515850f4746fe2d0dde4a2f7d9d3d97b0eba27c4c96f7823a90f8c6de",
+    "file_sha256": "aba0f0611c16339bbf2ddfc5a2fee02075ef860b8eabf72fdabca1df7bf21a1d",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-01-12T00:00:00Z",
+      "to": "2025-04-12T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2025-07-19.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2025-04-20T00%3A00%3A00Z&to=2025-07-19T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:43.821Z",
+    "environment": "demo",
+    "payload_sha256": "98381022ce3d34c3a4d970cedf0b61dd2a5bd9c7d0b1c46ea98a115f1dea7200",
+    "file_sha256": "706c694154f1b4a4172fca984b18673ac73a4cfbdd4320fc8c8245a4aec8c66a",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-04-20T00:00:00Z",
+      "to": "2025-07-19T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2025-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2025-08-03T00%3A00%3A00Z&to=2025-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:44.275Z",
+    "environment": "demo",
+    "payload_sha256": "c7f24046492f408bb872c13d3c84a20dadfa1c53863e34aa3852b0385654935a",
+    "file_sha256": "1f8ea9946a7ae706eec15562a567028902dc99b390ba50dda68f05ec1483f044",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2025-08-03T00:00:00Z",
+      "to": "2025-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2026-04-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2026-01-18T00%3A00%3A00Z&to=2026-04-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:44.627Z",
+    "environment": "demo",
+    "payload_sha256": "fc98a0a38f1621ddcf20362ed8ad78dd47bf3c460786303613457549a1ce10f6",
+    "file_sha256": "c1537109eb0f8f8c65d05dd357ca89882cf0bcccbfec222db9434c516f9eb160",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-01-18T00:00:00Z",
+      "to": "2026-04-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2026-07-18.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2026-04-19T00%3A00%3A00Z&to=2026-07-18T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:45.074Z",
+    "environment": "demo",
+    "payload_sha256": "e7f7b56e6bb4a992894c4e4d71721e52aadba4866634b369e1dee52541132d30",
+    "file_sha256": "e38fadf0f83c1ff1485c6b3375b951230b5902f2ea47ea09bbc6581782e9668d",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-04-19T00:00:00Z",
+      "to": "2026-07-18T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-H4-2026-11-14.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=H4&from=2026-08-16T00%3A00%3A00Z&to=2026-11-14T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:45.521Z",
+    "environment": "demo",
+    "payload_sha256": "2dcd3f8c51248e766d3ee6ae3ab56ff363e07439bba00eedc1334714c67a7735",
+    "file_sha256": "91c92de892ce9dd80802ccedd358923e79b1507a2f97a87b0f09d87e7b692f2f",
+    "request": {
+      "mode": "prices",
+      "timeframe": "H4",
+      "resolution": "HOUR_4",
+      "from": "2026-08-16T00:00:00Z",
+      "to": "2026-11-14T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-D1-2020-01-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=D1&from=2020-01-01T00%3A00%3A00Z&to=2022-06-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:45.928Z",
+    "environment": "demo",
+    "payload_sha256": "6703fb43202b812262bf0d5eff48c75adf83396517f30a2ac1c25eabd4dd7911",
+    "file_sha256": "a75d2c0db915b7e9d55b29f63da5608ec940ce7072041281d4cd4bb4c328b06d",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2020-01-01T00:00:00Z",
+      "to": "2022-06-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-D1-2022-06-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=D1&from=2022-06-01T00%3A00%3A00Z&to=2024-11-01T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:46.400Z",
+    "environment": "demo",
+    "payload_sha256": "55f60d54cfcbb633a20ece22b8e5c4335f38bf4cff7f1060b27bf538c2dff088",
+    "file_sha256": "44d7061a6e1166d1b6eb2cf3729aeec08019a6756afd24c36eb4d6a4a82f27ed",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2022-06-01T00:00:00Z",
+      "to": "2024-11-01T00:00:00Z",
+      "max": 1000
+    }
+  },
+  {
+    "file": "EU50-D1-2024-11-01.json",
+    "url": "https://capitalive-873qhh3id-yilin1207s-projects.vercel.app/api/research-source?symbol=EU50&timeframe=D1&from=2024-11-01T00%3A00%3A00Z&to=2026-11-15T00%3A00%3A00Z",
+    "status": 200,
+    "captured_at": "2026-11-15T13:19:46.851Z",
+    "environment": "demo",
+    "payload_sha256": "1d47644ef7e69ea4dfcc945e539b73898059c1c44fd8524bbd8fe3fc4aca57ed",
+    "file_sha256": "561320aa14a9e31cfb22dac5b776b26fed109b2910ab2badb61449f0ae8bb0ef",
+    "request": {
+      "mode": "prices",
+      "timeframe": "D1",
+      "resolution": "DAY",
+      "from": "2024-11-01T00:00:00Z",
+      "to": "2026-11-15T00:00:00Z",
+      "max": 1000
+    }
+  }
+]

@@ -13,6 +13,7 @@ import {
   detectStrong,
   detectStructure,
   selectRange,
+  assessRange,
   detectIrl,
   measureCompression,
   measureDisplacement,
@@ -28,7 +29,13 @@ import { assessRisk, type RiskPosition, type RiskPolicy } from "./risk";
 import {assessLevel,contextualLevels} from "./level-state";
 import {selectTarget} from "./target-selection";
 import {resolveContext,swingFlow,narrativeAssessment} from "./narrative";
+import {createHash} from 'node:crypto';
+import {canonical} from '../research/blind';
+import {qualityDimensions} from '../research/quality';
+import type {HumanReview} from './human-review';
 export type IntelligenceOptions = {
+  anchor_id?: string;
+  human_review?: HumanReview;
   target_id?: string;
   as_of?: string;
   ranges?: Partial<Record<Timeframe, { high_id: string; low_id: string }>>;
@@ -117,6 +124,7 @@ export function buildIntelligence(
       closed_candles: frame.bars.length,
       findings,
       range: dr.range,
+      range_state:assessRange(frame,dr.range),
       range_blocker: dr.reason,
       session_blocker: sessions.blocked,
       structure_bias: structure.bias,
@@ -127,9 +135,11 @@ export function buildIntelligence(
   const detected=[...allLevels,...contextualLevels(perFrame.flatMap(f=>f.findings))];
   const states=detected.map(l=>assessLevel(l,frames,asOf,through));
   const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...l,role:states.find(s=>s.id===l.id)!.current_role??l.role}));
-  const hierarchy=resolveHierarchy(active,reference),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
+  const hierarchy=resolveHierarchy(active,reference,options.anchor_id),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
   const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id);
   const target=detected.find(l=>l.id===targetSelection.validated_target?.id)??null,a=hierarchy.a;
+  const manualC=options.human_review?.C;
+  const validManualC=!!manualC&&!!a&&manualC.timeframe===a.timeframe&&Number.isFinite(manualC.price)&&(a.role==='support'?manualC.price<=a.lower:manualC.price>=a.upper)&&manualC.condition==='CLOSE_BEYOND'&&!frames[a.timeframe].bars.some(b=>b.time>=a.confirmed_at&&(a.role==='support'?b.close<manualC.price:b.close>manualC.price));
   const c =
     a?.kind === "FVG"
       ? {
@@ -138,7 +148,7 @@ export function buildIntelligence(
           condition: "closed full boundary breach",
           source_id: a.id,
         }
-      : null;
+      : validManualC?{price:manualC!.price,timeframe:manualC!.timeframe,condition:'User specified own-TF closed structural breach',source_id:a!.id}:null;
   const reliable =
     knowledgeCoverage().stale_rules.length === 0 &&
     TF_ORDER.every(
@@ -156,9 +166,10 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable);
+  const evidenceHash=createHash('sha256').update(canonical({as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
   const narrative = {
-    ...provenance("EDGE.NARRATIVE.v2"),
+    ...provenance("EDGE.NARRATIVE.v3"),
     ...assessment,
     ...conclusionEvidence,
     bias: assessment.bias,
@@ -185,6 +196,10 @@ export function buildIntelligence(
     data_status: reliable ? "PARTIAL" : "UNVERIFIED",
     candle_evidence: conclusionEvidence.candle_evidence,
     counterarguments: [
+      ...options.human_review?.counterarguments??[],
+      `HTF conflict: ${hierarchy.conflicts.length} opposing levels; structure and qualitative SOF can disagree.`,
+      `Target/path uncertainty: ${targetSelection.blockers.join(', ')||'No observed obstacle; unobserved prior history still limits inference'}.`,
+      'Data limitation: holiday completeness, historical revisions and Demo/Live equivalence remain unverified.',
       hierarchy.reason,
       ...assessment.blockers,
       ...hierarchy.conflicts.map((l) => `OPPOSING_HTF_KL:${l.id}`),
@@ -197,7 +212,7 @@ export function buildIntelligence(
         "Requires review of HTF A/B/C; local H4 break alone does not cancel narrative",
     },
   };
-  const canPropose = !assessment.review_required && !!a && !!target && !!c;
+  const canPropose = !assessment.review_required && assessment.bias!=='Neutral' && !!a && !!target && !!c;
   const downstream = perFrame.filter(
     (f) => a && TF_ORDER.indexOf(f.timeframe) > TF_ORDER.indexOf(a.timeframe),
   );
@@ -219,6 +234,10 @@ export function buildIntelligence(
     ...provenance("EDGE.EXECUTION.v1"),
     ...conclusionEvidence,
     status: "REVIEW_REQUIRED",
+    entry_status: canPropose?'ENTRY_CONDITIONAL':'REVIEW_REQUIRED',
+    entry_invalidated:assessment.entry_invalidated,
+    KL_invalidated:assessment.KL_invalidated,
+    narrative_invalidated:assessment.narrative_invalidated,
     models: [
       {
         model: "VC_FVG",
@@ -243,17 +262,18 @@ export function buildIntelligence(
       },
       {
         model: "KL_MARKET_LIMIT",
-        available: false,
+        available: canPropose,
         prerequisites_observed: canPropose,
         evidence_ids: a ? [a.id] : [],
         reason:
-          "Reversal context and exact execution/stop selection need review; A/B/C alone is insufficient",
+          "Documented No VC method; conditional research plan only. Exact entry/stop, costs and idea risk still need review; no order or automatic SL/TP.",
       },
       {
         model: "H4_DEALING_RANGE",
         available:
           canPropose &&
           !!h4Range &&
+          perFrame.find(f=>f.timeframe==='H4')?.range_state.state==='ACTIVE' &&
           h4Range.confirmed_at >= a!.confirmed_at &&
           h4Range.lower <= a!.upper &&
           h4Range.upper >= a!.lower,
@@ -274,11 +294,12 @@ export function buildIntelligence(
   );
   return {
     ok: true,
-    schema_version: "edge-knowledge-2",
+    schema_version: "edge-knowledge-3",
     symbol: data.H4.symbol,
     environment: data.H4.environment,
     price_side: side,
     as_of: asOf,
+    selection:{anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{}},
     pipeline: [
       "DATA_QUALITY",
       "MN1",
@@ -302,6 +323,7 @@ export function buildIntelligence(
       conflicts: hierarchy.conflicts.map((l) => l.id),
     },
     data_quality: {
+      dimensions:qualityDimensions(data,quote),
       status: reliable ? "PARTIAL" : "UNVERIFIED",
       closed_only: true,
       as_of_policy: "requested historical cutoff capped at common minimum fetched timestamp",
@@ -337,6 +359,7 @@ export function buildIntelligence(
         profitability_validated: false,
       },
       probability_tp: null,
+      readiness:{research:'PENDING_USER_LABELS_AND_EXPERT_REVIEW',decision_support:'NOT_VALIDATED',live_execution:'DISABLED',metrics:{precision:null,recall:null,false_positives:null,false_negatives:null,narrative_agreement:null,target_agreement:null,reason:'Blind labels not yet frozen or compared'}},
     },
     verdict: {
       ...provenance("EDGE.EVIDENCE.v1"),

@@ -1,0 +1,26 @@
+{
+  "version": "capitalive-research-v3-1",
+  "registered_at": "2026-11-15T13:16:31.104Z",
+  "baseline_commit": "d9a07a24dcca811b8dd273ac56593084a747866b",
+  "registered_before_v3_runtime_changes": true,
+  "symbols": [
+    "EURUSD",
+    "NAS100",
+    "EU50"
+  ],
+  "requested_cutoffs_utc": [
+    "2025-04-12T00:00:00Z",
+    "2025-07-19T00:00:00Z",
+    "2025-11-01T00:00:00Z",
+    "2026-04-18T00:00:00Z",
+    "2026-07-18T00:00:00Z",
+    "2026-11-14T00:00:00Z"
+  ],
+  "sampling": "Calendar dates fixed before V3 changes, never selected by algorithm score or future outcome. Insufficient coverage stays explicit; no invented candles or replacement by successful cases.",
+  "blind_view": "Closed OHLC only through as_of. No algorithm output, future candles, correctness hints or expected labels. Case IDs do not encode a predicted regime.",
+  "labels": "User annotations independent of algorithm predictions; not an independently adjudicated expert benchmark. No labels are available at registration.",
+  "freeze": "Explicit user action validates required annotations and binds labels to case hashes. Export canonical frozen bundle with SHA-256. Predictions and comparisons remain separate. Revisions create a new version, never edit a frozen benchmark silently.",
+  "metrics": "Exact-event precision/recall with labeled completeness scope, TP/FP/FN and explicit null for absent denominator; narrative agreement/confusion, target eligibility agreement, WAIT fraction. Unlabeled cases never count as negatives. No TP probability or profitability claim.",
+  "walk_forward": "Chronological expanding prefixes; parameter fitting disabled. Label freeze must precede comparison. Genuine out-of-sample claim additionally requires untouched non-overlapping evaluation cases and independent review.",
+  "readiness": "Research components assessed separately. Decision Support remains unvalidated until label comparison, adjudication and fresh verified market data. Live Execution is always disabled."
+}

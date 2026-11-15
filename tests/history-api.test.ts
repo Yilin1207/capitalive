@@ -62,7 +62,7 @@ test("real route handlers and shared Capital transport (mock upstream only)", as
         assert.deepEqual(body.candles[0].close, { bid: 105, ask: 108 });
         const url = historyUrls.at(-1)!;
         assert.equal(url.searchParams.get("resolution"), HISTORY[timeframe].resolution);
-        assert.equal(url.searchParams.get("max"), String(HISTORY[timeframe].limit + 10));
+        assert.equal(url.searchParams.get("max"), String({W1:172,D1:280,H4:334}[timeframe]));
         assert.equal(url.pathname, `/api/v1/prices/${body.epic}`);
         assert.doesNotMatch(JSON.stringify(body), /private-|test-key|test-password|test-identifier|account-must-not-leak|CST|SECURITY-TOKEN/);
       }

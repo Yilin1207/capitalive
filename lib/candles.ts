@@ -5,6 +5,7 @@ import { HISTORY, normalizeCandles, type CandleResponse, type Timeframe } from "
 import { HistoryCache, WindowLimit } from "@/lib/history-cache";
 import { historyDiagnostics, type HistoryDiagnostics } from "@/lib/history-diagnostics";
 import { aggregateMonths, monthStart } from "@/lib/monthly-candles";
+import {recoverDaily,type DailyRecovery} from './daily-recovery';
 
 export class HistoryError extends Error {
   constructor(public code: string, message: string, public status: number, public retryAfter = 0, public diagnostics?: HistoryDiagnostics) { super(message); }
@@ -59,13 +60,27 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
         payload = { prices };
         aggregation = { source: "Capital.com DAY", calendar: "UTC", requested_from: new Date(rangeStart).toISOString(), requested_to: new Date(rangeEnd).toISOString(), pages, coverage: "requested_window_fetched", session_completeness: "unknown" };
       } else {
-        payload = await getHistoricalPrices(epic, HISTORY[timeframe].resolution, Math.min(1000, fetchLimit + 10));
+        payload = await getHistoricalPrices(epic, HISTORY[timeframe].resolution, historyFetchReserve(fetchLimit));
       }
       const fetchedAt = Date.now();
       let quality: ReturnType<typeof normalizeCandles>;
       try {
         quality = normalizeCandles(payload, timeframe === "MN1" ? "D1" : timeframe, fetchedAt);
         if (timeframe === "MN1") {
+          // Strict, bounded reconstruction of rejected D1 from actual closed H4.
+          // Original raw capture remains unchanged; each attempt is recorded.
+          const attempts:DailyRecovery[]=[],recovered=new Set<string>();
+          const candidates=[...new Map(quality.rejected.filter(r=>r.reason==='crossed_sides'&&r.time&&Date.parse(r.time)>=rangeStart&&!quality.candles.some(c=>c.time===r.time)).map(r=>[r.time,r])).values()].slice(0,4);
+          for(const rejected of candidates){const day=rejected.time!,wait=upstreamBudget.take('history');
+            if(wait||Date.now()<coolingUntil){attempts.push({day,source:'Capital.com HOUR_4',status:'NOT_RECOVERED',reason:'RECOVERY_REQUEST_BUDGET',input_sha256:null});continue;}
+            try{const raw=(payload as {prices:Record<string,unknown>[]}).prices.find(r=>typeof r.snapshotTimeUTC==='string'&&r.snapshotTimeUTC.slice(0,19)===day.slice(0,19));
+              const detail=await getHistoricalPrices(epic,'HOUR_4',20,undefined,{from:new Date(Date.parse(day)-86400_000).toISOString(),to:new Date(Date.parse(day)+86400_000-1000).toISOString()});
+              const result=recoverDaily(rejected,raw,quality.candles,detail,fetchedAt);attempts.push(result.record);
+              if(result.candle){quality.candles.push(result.candle);recovered.add(day);}
+            }catch(error){attempts.push({day,source:'Capital.com HOUR_4',status:'NOT_RECOVERED',reason:error instanceof CapitalApiError?error.code:'RECOVERY_UNAVAILABLE',input_sha256:null});if(error instanceof CapitalApiError&&error.code==='CAPITAL_RATE_LIMIT')coolingUntil=Date.now()+Math.max(60,error.retryAfter??0)*1000;}
+          }
+          if(attempts.length&&aggregation)aggregation.reconstructions=attempts;
+          quality.rejected=quality.rejected.filter(r=>!r.time||!quality.candles.some(c=>c.time===r.time));
           quality.candles = aggregateMonths(quality.candles.filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd), fetchedAt, quality.rejected.map(row => row.time));
           quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(monthStart(Date.parse(time))).toISOString()))].sort();
         }
@@ -104,3 +119,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
     diagnostics: historyDiagnostics(quality, candles, timeframe, Date.parse(data.fetched_at), Date.now(), TTL_SECONDS),
   } };
 }
+
+// Provider max is a request ceiling, not a promise of that many valid rows.
+// Bounded overfetch replaces the observed 191/200 D1 shortage with older REAL bars.
+export function historyFetchReserve(limit:number){return Math.min(1000,Math.ceil(limit*1.35)+10);}
