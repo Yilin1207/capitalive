@@ -712,3 +712,18 @@ references. The default `/api/market-audit` retains schema 2.1; its optional
 `knowledge=1` embeds the V3 wire object. Compression retains all findings and evidence.
 
 Preview requires the existing Vercel login. Production and its settings are unchanged.
+
+## Research Bridge V1
+
+`GET /api/desk-report?symbol=EURUSD&side=bid` exposes a bounded `desk-report-v1`
+projection for EURUSD, NAS100 and EU50 behind existing Preview SSO. It preserves
+original evidence IDs, confirmation times and Candidate/Confirmed separation,
+with explicit omissions, STALE/ERROR and no full OHLC or personal review text.
+The JSON delivery limit is 64 KiB per asset. THE EDGE calculations are unchanged.
+
+The separate private [report repository](https://github.com/Yilin1207/capitalive-research-bridge)
+updates after nominal UTC H4 closes and through manual GitHub Actions dispatch.
+It uses the portable `scripts/publish-research-bridge.ts` and a strict shared
+contract; it does not contain Capital.com credentials. See
+[RESEARCH_BRIDGE_AUDIT_RU.md](RESEARCH_BRIDGE_AUDIT_RU.md) for real HTTP/publication
+results, limitations, safety controls and ChatGPT connection steps.
