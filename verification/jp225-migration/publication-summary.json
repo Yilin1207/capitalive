@@ -1,0 +1,49 @@
+{
+  "repository": "Yilin1207/capitalive-research-bridge",
+  "private": true,
+  "branch": "verification/jp225-20261116",
+  "commit": "418dd1a9e416ecd86f26f71a2e97585e3db8013b",
+  "source_preview": "https://capitalive-f56a94iqf-yilin1207s-projects.vercel.app",
+  "engine_commit": "e5cf95e0af3164e1a99eec58ed79296d5c4fb986",
+  "main_before": "bfe798e6f56b972ac174e4645550190144f53886",
+  "main_unchanged": true,
+  "bridge_base_url_unchanged": true,
+  "manifest_generated_at": "2026-11-16T08:18:05.160Z",
+  "active_symbols": [
+    "EURUSD",
+    "NAS100",
+    "JP225"
+  ],
+  "reports": [
+    {
+      "symbol": "EURUSD",
+      "status": "PARTIAL",
+      "bytes": 59668,
+      "sha256": "17b57612757e39c5b908cb75c89b6d3716989c3fec4eab98dd48a008e74ce426",
+      "readback_verified": true
+    },
+    {
+      "symbol": "NAS100",
+      "status": "PARTIAL",
+      "bytes": 58356,
+      "sha256": "b378d5cd3823e04818ddd054bdea0a6ddefd590c79e72aa6576aa280061c84de",
+      "readback_verified": true
+    },
+    {
+      "symbol": "JP225",
+      "status": "PARTIAL",
+      "bytes": 49872,
+      "sha256": "5a70bc7aa500a1f8cafb5926ee6301dd3968aa0d0e259f5031286f6c4db08f4e",
+      "readback_verified": true
+    }
+  ],
+  "eu50_latest_absent": true,
+  "eu50_archive_blobs": [
+    {
+      "path": "reports/archive/EU50/73c759a4c1515a4f12b18ea3a1ae832c75cf3582.json",
+      "sha": "73c759a4c1515a4f12b18ea3a1ae832c75cf3582"
+    }
+  ],
+  "scope": "REAL_PUBLICATION_TO_ISOLATED_PRIVATE_BRANCH_NOT_LIVE_MAIN",
+  "checked_at": "2026-11-16T08:18:14.138Z"
+}

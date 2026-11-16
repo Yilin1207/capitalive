@@ -1,0 +1,64 @@
+{
+  "captured_at": "2026-11-16T08:10:48.028Z",
+  "source": "Capital.com /api/v1/markets/J225",
+  "epic": "J225",
+  "environment": "demo",
+  "instrument": {
+    "epic": "J225",
+    "name": "Japan 225",
+    "type": "INDICES",
+    "expiry": "-",
+    "currency": "JPY",
+    "unit": null,
+    "lotSize": 1,
+    "contractSize": null,
+    "pip": null,
+    "tickSize": null,
+    "decimalPlaces": null,
+    "scalingFactor": null,
+    "openingHours": {
+      "zone": "UTC",
+      "mon": [
+        "00:00 - 22:00",
+        "22:05 - 00:00"
+      ],
+      "tue": [
+        "00:00 - 22:00",
+        "22:05 - 00:00"
+      ],
+      "wed": [
+        "00:00 - 22:00",
+        "22:05 - 00:00"
+      ],
+      "thu": [
+        "00:00 - 22:00",
+        "22:05 - 00:00"
+      ],
+      "fri": [
+        "00:00 - 22:00"
+      ],
+      "sat": [],
+      "sun": [
+        "23:00 - 00:00"
+      ]
+    }
+  },
+  "dealing_rules": {
+    "minDealSize": {
+      "unit": "POINTS",
+      "value": 0.1
+    },
+    "maxDealSize": {
+      "unit": "POINTS",
+      "value": 80000
+    },
+    "minStepDistance": {
+      "unit": "POINTS",
+      "value": 0.1
+    }
+  },
+  "provider_payload_sha256": "c67663e2ea96803b651193692575824790a579a4a9317fdd7f99ddb72623c929",
+  "observed_price_decimals": 1,
+  "price_precision_basis": "ALL_CAPTURED_OHLC_AND_QUOTE_NOT_PROVIDER_TICK_SIZE_DECLARATION",
+  "historical_session_completeness": "NOT_VERIFIED"
+}

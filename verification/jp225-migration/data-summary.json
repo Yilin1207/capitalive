@@ -1,0 +1,55 @@
+{
+  "checks": [
+    {
+      "tf": "D1",
+      "closed_matches": 199,
+      "closed_total": 199,
+      "result": "PASS"
+    },
+    {
+      "tf": "W1",
+      "closed_matches": 119,
+      "closed_total": 119,
+      "result": "PASS"
+    },
+    {
+      "tf": "H4",
+      "closed_matches": 239,
+      "closed_total": 239,
+      "result": "PASS"
+    },
+    {
+      "tf": "MN1_FROM_RAW_DAY",
+      "closed_matches": 32,
+      "result": "PASS"
+    }
+  ],
+  "eurusd_nas100_differential": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "engine_identical": true,
+      "report_identical": true
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "engine_identical": true,
+      "report_identical": true
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "engine_identical": true,
+      "report_identical": true
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "engine_identical": true,
+      "report_identical": true
+    }
+  ],
+  "provider_metadata_sha256": "c67663e2ea96803b651193692575824790a579a4a9317fdd7f99ddb72623c929",
+  "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645"
+}

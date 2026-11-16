@@ -9,6 +9,13 @@ import type { MarketQuote } from "../../lib/quote-normalization";
 const fixture = JSON.parse(
   readFileSync("tests/fixtures/htf-EURUSD.json", "utf8"),
 ) as { data: Record<Timeframe, CandleResponse>; quote: MarketQuote };
+
+test('active research selectors use EURUSD NAS100 JP225',async({page})=>{
+ for(const path of ['/','/intelligence']){
+  await page.goto(path);
+  expect(await page.locator('select').first().locator('option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['EURUSD','NAS100','JP225']);
+ }
+});
 test("knowledge catalog searches original summaries and exposes uncertainties", async ({
   page,
 }) => {

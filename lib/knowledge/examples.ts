@@ -5,11 +5,6 @@ export const EXAMPLES: Record<string, [string, string, string]> = {
     "10, 12, 12 or an unfinished right candle do not confirm.",
     "Later strict crossing consumes liquidity, without automatically cancelling KL.",
   ],
-  FRACTAL_5: [
-    "Closed highs 9, 10, 12, 11, 10 confirm the middle high at the fifth close.",
-    "The same centre with only one closed right neighbour is not a five-bar pivot.",
-    "Project variant retained separately; later raid consumes its liquidity.",
-  ],
   FVG: [
     "Outer high 10 and outer low 12 leave a bullish interval; middle body 9 to 13 spans it.",
     "Touching outer wicks or a middle body that does not span the gap reject.",
@@ -46,9 +41,9 @@ export const EXAMPLES: Record<string, [string, string, string]> = {
     "Invalidation of linked VC removes the candidate; exact author boundaries still need review.",
   ],
   BOS_CHOCH: [
-    "First closed crossing of an available high is Bullish BOS; opposite subsequent break is project CHOCH.",
-    "Intrabar crossing or repeated crossing of the same consumed pivot adds no new break.",
-    "An opposite subsequent closed break resets project bias, not automatically HTF narrative.",
+    "Author machine criteria are not specified; no BOS/CHOCH findings or directional votes are emitted.",
+    "A geometric pivot crossing alone does not establish author structure.",
+    "Qualitative structure requires source specification and review.",
   ],
   DR: [
     "Selected confirmed high 12 and low 4 define explicit range [4,12].",

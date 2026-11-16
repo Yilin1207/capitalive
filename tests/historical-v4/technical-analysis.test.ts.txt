@@ -206,7 +206,7 @@ test("fresh retrieval cannot substitute a missing/stale/future provider tick tim
   assert.equal(rest.quote_time, null); assert.equal(evaluateQuote(rest, now).fresh, false);
 });
 
-for (const symbol of ["EURUSD", "NAS100", "EU50"] as AnalysisSymbol[]) test(`recorded Capital.com DEMO ${symbol}: both sides, exact pivot/EQ/FVG invariants and PNG`, async () => {
+for (const symbol of ["EURUSD", "NAS100", "EU50"] as const) test(`recorded Capital.com DEMO ${symbol}: both sides, exact pivot/EQ/FVG invariants and PNG`, async () => {
   const data: CandleResponse = JSON.parse(readFileSync(`tests/fixtures/capital-${symbol}-mn1.json`, "utf8"));
   assert.equal(data.symbol, symbol); assert.equal(data.candles.length, 60); assert.equal(data.candles.at(-1)!.is_closed, false);
   // Specific recorded market observations, not just round-trip assertions.

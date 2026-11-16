@@ -32,7 +32,7 @@ test('V4: closed parent coverage cannot stitch a lower-TF break/retest across a 
  const frames=all([b(0,168,11,12,10,11),b(168,336,11,12,8,9)],336);
  frames.D1=frame([b(168,192,9,9.5,8,9,0),b(216,240,9,10,8,9,1)],'D1',336);
  const state=assessLevel(level(),frames,t(336),t(336));assert.equal(state.coverage,'COMPLETE_OBSERVED_INTERVAL');
- assert.equal(state.state,'UNVERIFIED');assert.equal(state.current_role,null);assert.ok(state.counterarguments.includes('ROLE_SEQUENCE_GAP'));
+ assert.equal(state.state,'CONSUMED');assert.equal(state.current_role,null);assert.deepEqual(state.role_evidence,[]);
 });
 test('V4: SNR cannot retrofit KL delivery after the origin already broke',()=>{
  const rows=[b(0,4,9,11,8,10),b(4,8,10,11,8,9),b(8,12,9,12,9,11),b(12,16,9,10,6,9),b(16,20,9,12,8,11)];

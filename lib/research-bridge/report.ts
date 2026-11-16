@@ -1,3 +1,5 @@
+import {freshnessPolicy} from './freshness';
+import {closedRegularInterval} from '../research/calendars';
 import {createHash} from 'node:crypto';
 import type {buildIntelligence} from '../knowledge/intelligence';
 import {selectRange,assessRange,type Finding,type Pivot} from '../knowledge/detectors';
@@ -5,10 +7,12 @@ import type {CandleResponse, Timeframe} from '../candle-data';
 import type {MarketQuote} from '../quote-normalization';
 import {closedFrame} from '../knowledge/data';
 import {MAX_REPORT_BYTES, validateReport} from './contract.ts';
+import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets.ts';
 
 type Intelligence = ReturnType<typeof buildIntelligence>;
-export const SYMBOLS = ['EURUSD','NAS100','EU50'] as const;
-export type BridgeSymbol = typeof SYMBOLS[number];
+export const SYMBOLS = ACTIVE_RESEARCH_SYMBOLS;
+const REPORT_SYMBOLS = [...SYMBOLS,'EU50'] as const;
+export type BridgeSymbol = typeof REPORT_SYMBOLS[number];
 const TFS: Timeframe[] = ['MN1','W1','D1','H4'];
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const number = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? v : null;
@@ -16,12 +20,12 @@ const date = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse
 const choice = (v: unknown, values: readonly string[]) => typeof v === 'string' && values.includes(v) ? v : null;
 const bias = (v: unknown) => choice(v,['Bullish','Bearish','Neutral']);
 // Only machine reason codes from the engine; never publish human comments, errors or account fields.
-const REASONS=new Set(('PATH_COVERAGE_PARTIAL PATH_COVERAGE_UNKNOWN AMBIGUOUS_STRUCTURAL_TARGETS ANCHOR_LOWER_TF_BREACH ANCHOR_NOT_PROVEN_ACTIVE BOUNDARY_OR_CONTEXT_UNSPECIFIED DIRECTIONAL_ROLE_UNVERIFIED EXPLICIT_CURRENT_HTF_DR_REQUIRED FVG_LOWER_TF_BREACH_REVIEW_REQUIRED GAP_BOUNDARY_NO_PATTERN_STITCHING HTF_STRUCTURE_AND_SWING_FLOW_NOT_ALIGNED HUMAN_REVIEW_REQUIRED LEVEL_CANDIDATE LEVEL_CONSUMED LEVEL_INVALIDATED LEVEL_UNVERIFIED NO_ACTIVE_DIRECTIONAL_ANCHOR NO_ACTIVE_MN1_W1_KL NO_CLOSED_HTF_OR_X_MINUS_1_REACTION NO_DIRECTIONAL_CONTEXT NO_STRUCTURAL_TARGET PARTIAL_AGGREGATION PROVIDER_VALIDATION_LOSS REQUESTED_HISTORY_INCOMPLETE ROLE_NOT_CONFIRMED SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED STRUCTURAL_INVALIDATION_REQUIRED TARGET_HISTORY_UNOBSERVED TARGET_LIQUIDITY_ALREADY_CONSUMED TARGET_UNVERIFIED INPUT_OR_SOURCE_UNVERIFIED REQUESTED_TARGET_UNAVAILABLE TARGET_OUTSIDE_AUTHOR_X_OR_X_MINUS_1 A_TO_B_PATH_HAS_OBSTACLES HTF_RANGE_LOCATION_NOT_SUPPORTIVE CONFLICTING_HTF_KL AMBIGUOUS_HTF_ANCHOR KL_CONTAINMENT_ONLY_NOT_NARRATIVE EXPLICIT_ANCHOR_REQUIRES_REVIEW').split(' '));
+const REASONS=new Set(('AUTHOR_STRUCTURE_REVIEW_REQUIRED PATH_COVERAGE_PARTIAL PATH_COVERAGE_UNKNOWN AMBIGUOUS_STRUCTURAL_TARGETS ANCHOR_LOWER_TF_BREACH ANCHOR_NOT_PROVEN_ACTIVE BOUNDARY_OR_CONTEXT_UNSPECIFIED DIRECTIONAL_ROLE_UNVERIFIED EXPLICIT_CURRENT_HTF_DR_REQUIRED FVG_LOWER_TF_BREACH_REVIEW_REQUIRED GAP_BOUNDARY_NO_PATTERN_STITCHING HTF_STRUCTURE_AND_SWING_FLOW_NOT_ALIGNED HUMAN_REVIEW_REQUIRED LEVEL_CANDIDATE LEVEL_CONSUMED LEVEL_INVALIDATED LEVEL_UNVERIFIED NO_ACTIVE_DIRECTIONAL_ANCHOR NO_ACTIVE_MN1_W1_KL NO_CLOSED_HTF_OR_X_MINUS_1_REACTION NO_DIRECTIONAL_CONTEXT NO_STRUCTURAL_TARGET PARTIAL_AGGREGATION PROVIDER_VALIDATION_LOSS REQUESTED_HISTORY_INCOMPLETE ROLE_NOT_CONFIRMED SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED STRUCTURAL_INVALIDATION_REQUIRED TARGET_HISTORY_UNOBSERVED TARGET_LIQUIDITY_ALREADY_CONSUMED TARGET_UNVERIFIED INPUT_OR_SOURCE_UNVERIFIED REQUESTED_TARGET_UNAVAILABLE TARGET_OUTSIDE_AUTHOR_X_OR_X_MINUS_1 A_TO_B_PATH_HAS_OBSTACLES HTF_RANGE_LOCATION_NOT_SUPPORTIVE CONFLICTING_HTF_KL AMBIGUOUS_HTF_ANCHOR KL_CONTAINMENT_ONLY_NOT_NARRATIVE EXPLICIT_ANCHOR_REQUIRES_REVIEW').split(' '));
 const reasons = (items: string[]) => [...new Set(items.map(v => REASONS.has(v)||/^OPPOSING_(MN1|W1|D1|H4)_(STRUCTURE|SWING_FLOW)$/.test(v)?v:'UNRECOGNIZED_ENGINE_CODE'))].slice(0,24);
 const newest = (a: Finding,b: Finding) => b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id);
 
 export function errorReport(symbol: BridgeSymbol, code: string, now = new Date().toISOString()) {
-  return {schema_version:'desk-report-v1',symbol,status:'ERROR',generated_at:now,as_of:null,
+  return {schema_version:'desk-report-v2',symbol,status:'ERROR',generated_at:now,as_of:null,
     expires_at:now,error:choice(code,['UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE'])??'UPSTREAM_UNAVAILABLE',
     source:null,quote:null,frames:[],scenario:null,evidence:{},rules:{},candle_windows:[],coverage:null,trading_enabled:false};
 }
@@ -29,9 +33,9 @@ export function errorReport(symbol: BridgeSymbol, code: string, now = new Date()
 /** Presentation-only projection. It neither detects patterns nor ranks/validates trading targets. */
 export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleResponse>, quote: MarketQuote, now = new Date().toISOString(), engineCommit: string|null = null, budgetTier=0) {
   const symbol = r.symbol as BridgeSymbol;
-  if(!SYMBOLS.includes(symbol)) throw Error('INVALID_EVIDENCE');
+  if(!REPORT_SYMBOLS.includes(symbol)) throw Error('INVALID_EVIDENCE');
   const cutoff=Date.parse(r.as_of),clock=Date.parse(now);
-  if(!Number.isFinite(cutoff)||!Number.isFinite(clock)||cutoff>clock||r.schema_version!=='edge-knowledge-3') throw Error('INVALID_EVIDENCE');
+  if(!Number.isFinite(cutoff)||!Number.isFinite(clock)||cutoff>clock||r.schema_version!=='edge-knowledge-5') throw Error('INVALID_EVIDENCE');
   const all=r.frames.flatMap(f=>f.findings),byId=new Map(all.map(f=>[f.id,f])),states=new Map(r.levels.states.map(s=>[s.id,s]));
   // Refuse a corrupted upstream object instead of quietly discarding future findings.
   if(byId.size!==all.length||all.some(f=>f.side!==r.price_side||!f.id.startsWith(`${symbol}:${f.timeframe}:${r.price_side}:`)||!date(f.confirmed_at)||Date.parse(f.confirmed_at)>cutoff||!date(f.origin)||f.origin>f.confirmed_at||f.candle_evidence.some(c=>!date(c.closed_at)||c.closed_at>f.confirmed_at||c.time>=c.closed_at)))throw Error('INVALID_EVIDENCE');
@@ -55,7 +59,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     const dependencies:string[]=[];
     for(const key of ['kl_id','pivot_id','poi_id','raid_id','vc_id','source_id'])if(typeof facts[key]==='string')dependencies.push(add(facts[key] as string));
     evidence[ref]={id:f.id,timeframe:f.timeframe,kind:f.kind,origin:f.origin,confirmed_at:f.confirmed_at,
-      lower,upper,variant:facts.variant===3||facts.variant===5?facts.variant:null,polarity:choice(facts.polarity,['high','low']),
+      lower,upper,variant:facts.variant===3?facts.variant:null,polarity:choice(facts.polarity,['high','low']),
       direction:choice(facts.direction,['bullish','bearish','Bullish','Bearish','up','down']),
       detector_state:f.state,data_status:f.data_status,rule:f.rule_id,
       candle_refs:candleRefs,candle_evidence_sha256:hash(f.candle_evidence),dependencies,
@@ -66,7 +70,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   function group(values:Finding[],limit:number){const sorted=[...values].sort(newest),selected=sorted.slice(0,limit);return {items:selected.map(f=>add(f.id)),total:values.length,omitted:values.length-selected.length};}
   const frameRows=r.frames.map(f=>{
     const tf=f.timeframe,bars=closedFrame(data[tf],r.price_side,r.as_of).bars;
-    const fractals=[3,5].flatMap(variant=>['high','low'].map(polarity=>({variant,polarity,...group(f.findings.filter(x=>x.kind==='FRACTAL'&&x.facts.variant===variant&&x.facts.polarity===polarity),budgetTier>=2&&variant===5?0:1)})));
+    const fractals=[3].flatMap(variant=>['high','low'].map(polarity=>({variant,polarity,...group(f.findings.filter(x=>x.kind==='FRACTAL'&&x.facts.variant===variant&&x.facts.polarity===polarity),1)})));
     const range=f.range;
     // A research-only range candidate from the latest confirmed author 3-bar pivots.
     // It is not an explicit selection, a validated HTF dealing range or an entry trigger.
@@ -80,7 +84,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     return {...(f.range_candidates?{range_options:{total:f.range_candidates.candidates.length,omitted:f.range_candidates.candidates.length-(rangeCandidate?1:0),review_required:true}}:{}),timeframe:tf,fetched_at:data[tf].fetched_at,last_closed_at:bars.at(-1)?.end??null,closed_candles:f.closed_candles,
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
-        swing_bias:bias(f.order_flow.bias),swing_basis:'PROJECT_OBSERVATION_NOT_AUTHOR_SOF',swing_evidence:f.order_flow.evidence_ids.map(add)},
+        swing_bias:bias(f.order_flow.bias),swing_basis:'NEEDS_SPECIFICATION',swing_evidence:f.order_flow.evidence_ids.map(add)},
       fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),budgetTier>=1?0:1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1?0:1),
       fvg:group(f.findings.filter(x=>x.kind==='FVG'),1),ifvg:group(f.findings.filter(x=>x.kind==='FVG_CLOSED_BREACH'),0),
       liquidity:{raids:group(f.findings.filter(x=>x.kind==='RAID'),budgetTier>=3?0:1),idm:group(f.findings.filter(x=>x.kind==='IDM_INSIDE_POI'),0),strong:group(f.findings.filter(x=>x.kind==='STRONG_PIVOT_CANDIDATE'),0),irl:group(f.findings.filter(x=>x.kind==='INTERNAL_LIQUIDITY'),1)},
@@ -115,22 +119,27 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   const bid=number(quote.bid),ask=number(quote.ask),validQuote=bid!==null&&ask!==null&&bid>0&&ask>=bid;
   const qAge=qtime?(clock-Date.parse(qtime))/1000:null;
   if(qAge!==null&&qAge<0||qretrieved&&Date.parse(qretrieved)>clock)throw Error('INVALID_EVIDENCE');
-  const staleReasons=[];
+  const policy=freshnessPolicy(process.env);
+  const staleReasons:string[]=[];
+  const marketClosed=quote.market_status==='CLOSED'&&qretrieved!==null&&clock-Date.parse(qretrieved)<=policy.delivery_seconds*1000;
   if(!validQuote)staleReasons.push('QUOTE_UNAVAILABLE');
   if(!qtime)staleReasons.push('QUOTE_PROVIDER_TIME_UNKNOWN');
-  else if(qAge!>300||!quote.fresh)staleReasons.push('QUOTE_STALE');
-  if(clock-cutoff>15*60_000)staleReasons.push('SOURCE_SNAPSHOT_STALE');
+  else if(!marketClosed&&(qAge!>policy.quote_seconds||!quote.fresh))staleReasons.push('QUOTE_STALE');
+  if(TFS.some(tf=>clock-Date.parse(data[tf].fetched_at)>policy.delivery_seconds*1000))staleReasons.push('SOURCE_SNAPSHOT_STALE');
   const h4=frameRows.find(f=>f.timeframe==='H4')?.last_closed_at;
-  if(!h4||clock-Date.parse(h4)>8*3600_000)staleReasons.push('H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED');
+  const expectedH4=Math.floor(clock/14400_000)*14400_000;
+  const h4Delay=h4&&Date.parse(h4)<expectedH4?(clock-(Date.parse(h4)+14400_000))/1000:0;
+  const knownClosure=!!h4&&Date.parse(h4)<expectedH4&&closedRegularInterval(symbol,Date.parse(h4),expectedH4);
+  if(!h4||h4Delay>policy.h4_delay_seconds&&!knownClosure)staleReasons.push('H4_CLOSED_CANDLE_DELAY');
   const errors=frameRows.some(f=>f.closed_candles===0);
-  const result={technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:r.narrative.human_review.evidence_sha256},schema_version:'desk-report-v1',symbol,status:errors?'ERROR':staleReasons.length?'STALE':r.data_quality.status==='UNVERIFIED'?'UNVERIFIED':'PARTIAL',
-    generated_at:now,as_of:r.as_of,expires_at:new Date((Math.floor(clock/14400_000)+1)*14400_000+20*60_000).toISOString(),error:errors?'UPSTREAM_UNAVAILABLE':null,
+  const result={technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:r.narrative.human_review.evidence_sha256},schema_version:'desk-report-v2',symbol,status:errors?'ERROR':staleReasons.length?'STALE':r.data_quality.status==='UNVERIFIED'?'UNVERIFIED':'PARTIAL',
+    published_at:null,freshness:{quote_retrieved_at:qretrieved,quote_status:marketClosed?'MARKET_CLOSED':validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?'FRESH':'STALE',data_quality:r.data_quality.status,stale_reasons:staleReasons,quote_max_seconds:policy.quote_seconds,h4_max_delay_seconds:policy.h4_delay_seconds,h4_delay_seconds:h4Delay,source_age_seconds:Math.max(...TFS.map(tf=>(clock-Date.parse(data[tf].fetched_at))/1000)),delivery_max_seconds:policy.delivery_seconds},generated_at:now,as_of:r.as_of,expires_at:new Date(!marketClosed&&validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?Math.min(clock+policy.delivery_seconds*1000,Date.parse(qtime!)+policy.quote_seconds*1000):clock+policy.delivery_seconds*1000).toISOString(),error:errors?'UPSTREAM_UNAVAILABLE':null,
     source:{provider:'Capital.com',environment:r.environment,analysis_schema:r.schema_version,price_side:r.price_side,
       engine_commit:engineCommit&&/^[a-f0-9]{40}$/.test(engineCommit)?engineCommit:null,evidence_sha256:r.narrative.human_review.evidence_sha256,
       demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
     quote:{bid:validQuote?bid:null,ask:validQuote?ask:null,spread:validQuote?ask!-bid!:null,provider_timestamp:qtime,retrieved_at:qretrieved,
       source_type:choice(quote.source_type,['REST','WEBSOCKET']),market_status:choice(quote.market_status,['TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED']),
-      provider_age_seconds:qAge,fresh:validQuote&&qAge!==null&&qAge>=0&&qAge<=300&&quote.fresh,used_as_closed_evidence:false},
+      provider_age_seconds:qAge,fresh:validQuote&&qAge!==null&&qAge>=0&&qAge<=policy.quote_seconds&&quote.fresh&&!marketClosed,used_as_closed_evidence:false},
     frames:frameRows,
     scenario:{candidate_narrative:bias(r.narrative.candidate_bias),confirmed_narrative:r.narrative.confirmed_narrative,status:r.narrative.status,
       evidence_quality:{status:r.narrative.evidence_confidence.status,human_reviewed:r.narrative.evidence_confidence.human_reviewed,independently_validated:false,probability:null},

@@ -70,15 +70,6 @@ const specs: Spec[] = [
     ["Equality policy is an explicit conservative implementation convention."],
   ],
   [
-    "FRACTAL_5",
-    "Fractal High / Low, Capitalive 5-bar",
-    "fractal",
-    "EXECUTABLE",
-    "Existing five-bar variant kept separate from the author three-bar model.",
-    ["Five valid closed bars; two neighbours each side."],
-    ["Project variant, not attributed to THE EDGE."],
-  ],
-  [
     "FVG",
     "Fair Value Gap geometry",
     "fvg",
@@ -155,11 +146,11 @@ const specs: Spec[] = [
   ],
   [
     "BOS_CHOCH",
-    "Closed structure break, project convention",
+    "Structure requires author review",
     "fractal",
-    "PARTIAL",
-    "First close beyond a known pivot; opposite previous break direction is CHOCH.",
-    ["Chronological pivots; no forming bars."],
+    "NEEDS_SPECIFICATION",
+    "Generic BOS/CHOCH state machine removed; no directional output.",
+    ["No approved author machine rule."],
     [
       "Terminology / bias state machine is a Capitalive convention, not a complete author rule.",
     ],
@@ -399,7 +390,7 @@ export function provenance(id: string) {
   const r = rule(id),
     current = r.source_ids.every(sourceCurrent);
   return {
-    basis:r.basis??(/FRACTAL_5|RB|SNR|IRL|STRUCTURE|BOS|CHOCH|COMPRESSION|DISPLACEMENT|STRONG|IDM|LEVEL_STATE|TARGET_ROLE|NARRATIVE/.test(r.id)?'PROJECT_HYPOTHESIS':'DOCUMENTED'),
+    basis:r.basis??(/RB|SNR|IRL|STRUCTURE|BOS|CHOCH|COMPRESSION|DISPLACEMENT|STRONG|IDM|LEVEL_STATE|TARGET_ROLE|NARRATIVE/.test(r.id)?'PROJECT_HYPOTHESIS':'DOCUMENTED'),
     rule_id: r.id,
     rule_version: r.version,
     rule_status: current ? r.status : "DOCUMENTED",
