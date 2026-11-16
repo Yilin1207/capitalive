@@ -18,7 +18,7 @@ test('V4 publisher accepts technical reports and rejects decision/snapshot contr
  assert.ok(Object.values(output).every(r=>r.status==='PARTIAL'));
 });
 
-test('V4 publisher-first rollout accepts v1.1 payloads and preserves legacy provider failures',async()=>{
+test('V5 migration rejects old sources before publishing incompatible evidence',async()=>{
  const fetcher=async(url:unknown)=>{
   const symbol=new URL(String(url)).searchParams.get('symbol')!;
   const legacy=symbol==='JP225'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
@@ -26,8 +26,8 @@ test('V4 publisher-first rollout accepts v1.1 payloads and preserves legacy prov
  };
  const diagnostics:BridgeDiagnostic[]=[];
  const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',fetcher as typeof fetch,()=>now,[],d=>diagnostics.push(d));
- assert.equal(output.EURUSD.status,'PARTIAL');assert.equal(output.NAS100.status,'PARTIAL');assert.equal(output.JP225.status,'ERROR');
- assert.equal(diagnostics[0].stage,'provider');assert.equal(diagnostics[0].code,'CAPITAL_INVALID_RESPONSE');assert.equal(diagnostics[0].contract_revision,'desk-report-v1.1');
+ assert.ok(Object.values(output).every(r=>r.status==='ERROR'));
+ assert.equal(diagnostics[0].stage,'schema');assert.equal(diagnostics[0].code,'CONTRACT_REVISION_MISMATCH');assert.equal(diagnostics[0].contract_revision,CONTRACT_REVISION);
 });
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
   const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('JP225',iso,'UPSTREAM_UNAVAILABLE'),{status:503});

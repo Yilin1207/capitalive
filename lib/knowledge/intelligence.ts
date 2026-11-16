@@ -66,13 +66,11 @@ export function buildIntelligence(
   const bases = TF_ORDER.map((tf) => {
     const frame = frames[tf],
       pivots = detectFractals(frame, 3),
-      five = detectFractals(frame, 5),
       fvg = detectFvg(frame);
     return {
       tf,
       frame,
       pivots,
-      five,
       fvg,
       levels: [...pivotLevels(pivots), ...fvg.levels],
     };
@@ -90,7 +88,7 @@ export function buildIntelligence(
       };
     }),
   );
-  const perFrame = bases.map(({ tf, frame, pivots, five, fvg }) => {
+  const perFrame = bases.map(({ tf, frame, pivots, fvg }) => {
     const context = allLevels.filter(
       (l) => TF_ORDER.indexOf(l.timeframe) <= TF_ORDER.indexOf(tf),
     );
@@ -98,11 +96,10 @@ export function buildIntelligence(
       rb = detectRejectionBlocks(frame, context),
       snr = detectSnr(frame, context),
       structure = detectStructure(frame, pivots),
-      dr = selectRange(frame, [...pivots, ...five], options.ranges?.[tf]);
+      dr = selectRange(frame, pivots, options.ranges?.[tf]);
     const sessions = detectSessionGaps(frame, options.sessions);
     const findings: Finding[] = [
       ...pivots,
-      ...five,
       ...fvg.findings,
       ...detectInversions(frame, fvg.levels),
       ...raids,
@@ -300,7 +297,7 @@ export function buildIntelligence(
   );
   return {
     ok: true,
-    schema_version: "edge-knowledge-3",
+    schema_version: "edge-knowledge-5",
     symbol: data.H4.symbol,
     environment: data.H4.environment,
     price_side: side,

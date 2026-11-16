@@ -4,13 +4,13 @@ import {readFileSync} from 'node:fs';
 import {buildDeskReport,errorReport} from '../lib/research-bridge/report';
 import {validateReport,MAX_REPORT_BYTES} from '../lib/research-bridge/contract';
 import {deskReportHttp} from '../lib/research-bridge/http';
-import type {buildIntelligence} from '../lib/knowledge/intelligence';
+import {buildIntelligence} from '../lib/knowledge/intelligence';
 import type {CandleResponse,Timeframe} from '../lib/candle-data';
 import type {MarketQuote} from '../lib/quote-normalization';
 type Intelligence=ReturnType<typeof buildIntelligence>;
 const now='2026-11-15T14:00:00.000Z';
 const fixture=(symbol:string)=>JSON.parse(readFileSync(`tests/fixtures/edge-v2/${symbol}.json`,'utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
-const analysis=(symbol:string,side='bid')=>JSON.parse(readFileSync(`verification/capitalive-v3/after/${symbol}-${side}.json`,'utf8')).response as Intelligence;
+const analysis=(symbol:string,side='bid')=>{const input=fixture(symbol);return buildIntelligence(input.data,side as 'bid'|'ask',input.quote);};
 
 test('V4 compact contract rejects contradictory terminal role, impossible fill and range counts',()=>{
  const input=fixture('EURUSD'),report=buildDeskReport(analysis('EURUSD'),input.data,input.quote,now);
@@ -44,7 +44,7 @@ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'])t
   assert.ok(evidence.length>20);for(const e of evidence)assert.equal(e.confirmed_at,r.frames.flatMap(f=>f.findings).find(f=>f.id===e.id)!.confirmed_at);
   assert.equal(report.coverage.findings_included,evidence.length);
   assert.equal(report.coverage.findings_included+report.coverage.findings_omitted,report.coverage.findings_total);
-  for(const f of report.frames){assert.equal(f.fractals.length,4);assert.equal(f.dealing_range,null);assert.equal(f.range_status,'EXPLICIT_SELECTION_REQUIRED');}
+  for(const f of report.frames){assert.equal(f.fractals.length,2);assert.equal(f.dealing_range,null);assert.equal(f.range_status,'EXPLICIT_SELECTION_REQUIRED');}
 });
 test('Bridge rejects future, wrong-side and missing dependency evidence rather than publishing incomplete claims',()=>{
   const input=fixture('EURUSD');
@@ -126,6 +126,7 @@ test('Portable range candidate rejects wrong polarity and false review confirmat
   h4.range_candidate={high:hi,low:lo,lower:low.lower,upper:high.upper,equilibrium:(high.upper+low.lower)/2,
     confirmed_at:high.confirmed_at>low.confirmed_at?high.confirmed_at:low.confirmed_at,
     method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true};
+  h4.range_options={total:1,omitted:0,review_required:true};
   validateReport(edited,'EURUSD');
   h4.range_candidate.review_required=false as never;
   assert.throws(()=>validateReport(edited,'EURUSD'),/contract/);

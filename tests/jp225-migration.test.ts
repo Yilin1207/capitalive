@@ -14,8 +14,8 @@ for(const side of ['bid','ask'] as const)test(`JP225 synthetic ${side}: four-fra
  validateReport(report,'JP225');assert.equal(r.frames.length,4);assert.equal(report.scenario.confirmed_narrative,null);assert.equal(report.scenario.action,'NOT_EVALUATED');assert.ok(Buffer.byteLength(JSON.stringify(report)+'\n')<=65536);
  assert.ok(Object.values(report.evidence).length>0);
  for(const f of r.frames){assert.ok(f.findings.every(x=>x.id.startsWith(`JP225:${f.timeframe}:${side}:`)&&x.confirmed_at<=r.as_of));
-  const full=closedFrame(data[f.timeframe],side),events=[...detectFractals(full),...detectFractals(full,5),...detectFvg(full).findings];
-  for(let n=1;n<=full.bars.length;n++){const prefix={...full,bars:full.bars.slice(0,n),as_of:full.bars[n-1].end};assert.deepEqual([...detectFractals(prefix),...detectFractals(prefix,5),...detectFvg(prefix).findings],events.filter(e=>e.confirmed_at<=prefix.as_of));}
+  const full=closedFrame(data[f.timeframe],side),events=[...detectFractals(full),...detectFvg(full).findings];
+  for(let n=1;n<=full.bars.length;n++){const prefix={...full,bars:full.bars.slice(0,n),as_of:full.bars[n-1].end};assert.deepEqual([...detectFractals(prefix),...detectFvg(prefix).findings],events.filter(e=>e.confirmed_at<=prefix.as_of));}
  }
  const invalid=structuredClone(report);const e=Object.values(invalid.evidence)[0] as {id:string};e.id=e.id.replace('JP225:','EU50:');assert.throws(()=>validateReport(invalid,'JP225'),/INVALID_EVIDENCE_ID/);
 });
