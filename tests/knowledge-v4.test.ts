@@ -27,6 +27,13 @@ test('V4: consumed liquidity and unobserved history cannot assert the original r
  assert.equal(consumed.state,'CONSUMED');assert.equal(consumed.initial_role,'resistance');assert.equal(consumed.current_role,null);
  const missing=assessLevel(level(),all([b(0,168,11,12,10,11)],336),t(336),t(336));assert.equal(missing.state,'UNVERIFIED');assert.equal(missing.current_role,null);
 });
+
+test('V4: closed parent coverage cannot stitch a lower-TF break/retest across a segment gap',()=>{
+ const frames=all([b(0,168,11,12,10,11),b(168,336,11,12,8,9)],336);
+ frames.D1=frame([b(168,192,9,9.5,8,9,0),b(216,240,9,10,8,9,1)],'D1',336);
+ const state=assessLevel(level(),frames,t(336),t(336));assert.equal(state.coverage,'COMPLETE_OBSERVED_INTERVAL');
+ assert.equal(state.state,'UNVERIFIED');assert.equal(state.current_role,null);assert.ok(state.counterarguments.includes('ROLE_SEQUENCE_GAP'));
+});
 test('V4: SNR cannot retrofit KL delivery after the origin already broke',()=>{
  const rows=[b(0,4,9,11,8,10),b(4,8,10,11,8,9),b(8,12,9,12,9,11),b(12,16,9,10,6,9),b(16,20,9,12,8,11)];
  const kl={...level('support','FVG'),timeframe:'H4' as const,confirmed_at:t(0),lower:6,upper:7};

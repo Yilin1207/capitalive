@@ -1,0 +1,200 @@
+{
+  "preview": "https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app",
+  "engine_commit": "71371d2288e612aa69d528d69bc1bbaa7190132c",
+  "checked_at": "2026-11-16T07:48:43.508Z",
+  "production_changed": false,
+  "sso_unauthenticated_http": 302,
+  "sso_setting": "all_except_custom_domains",
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 114497,
+    "png_signature_verified": true
+  },
+  "checks": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59520,
+      "sha256": "f1d9a3705e39e85e8f016fba7f8e0abbd665174af361a32d96c08be8a397d584",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T07:47:02.306Z",
+      "generated_at": "2026-11-16T07:47:07.728Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1378,
+      "findings_omitted": 1324,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 9931,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59294,
+      "sha256": "078fae15623a202c1465dacd72affca52bd702d06e116f444d88a52e0085d5b5",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T07:47:02.306Z",
+      "generated_at": "2026-11-16T07:47:19.721Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1384,
+      "findings_omitted": 1330,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 4431,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58318,
+      "sha256": "438196349ba637a5badc5261a2cd7cbb682ad1831153cafd3517a00e748ce9fe",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T07:47:26.151Z",
+      "generated_at": "2026-11-16T07:47:29.364Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1331,
+      "findings_omitted": 1277,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 4669,
+      "detail": {
+        "http": 200,
+        "interactions": 63,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58300,
+      "sha256": "a7dc989457d0c59b1c58a77830dde68fa99a6befdfc7db2a264cbb7f631f18a2",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T07:47:26.151Z",
+      "generated_at": "2026-11-16T07:47:37.181Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1331,
+      "findings_omitted": 1277,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 3154,
+      "detail": {
+        "http": 200,
+        "interactions": 63,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "EU50",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 50319,
+      "sha256": "f6bd3ab227fbd7cd76873f59ab37a9a4972cae3bd9b7328e6e02393584c53412",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T07:47:41.988Z",
+      "generated_at": "2026-11-16T07:47:46.864Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 48,
+      "findings_total": 1373,
+      "findings_omitted": 1325,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 6355,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "EU50",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 48267,
+      "sha256": "b3f151c641d1116cdde8362f2ed43a89a42a5fef1e0e4a05b0d13a9afed8cc9a",
+      "status": "STALE",
+      "as_of": "2026-11-16T07:47:41.988Z",
+      "generated_at": "2026-11-16T07:47:59.057Z",
+      "expires_at": "2026-11-16T08:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 46,
+      "findings_total": 1374,
+      "findings_omitted": 1328,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 5251,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    }
+  ],
+  "market_audit": {
+    "http": 200,
+    "content_type": "application/json",
+    "schema_version": "2.1",
+    "bytes": 406193,
+    "sha256": "b41b13fadf79c806bace3a6d163f37332bfe3615492afc172859eb23acc2bd93"
+  },
+  "additional_interactions": [
+    {
+      "symbol": "EURUSD",
+      "http": 200,
+      "interactions": 253,
+      "omitted": 0,
+      "snapshot_match": true
+    },
+    {
+      "symbol": "EU50",
+      "http": 200,
+      "interactions": 276,
+      "omitted": 0,
+      "snapshot_match": true
+    }
+  ],
+  "extra_checked_at": "2026-11-16T07:50:23.783Z"
+}

@@ -74,16 +74,18 @@ Bid/Ask, положительные конечные OHLC, high/low, timestamps,
 | EU50 D1 FVG 6346.5–6351.4 | Подтверждён 2026-11-12 00:00 UTC; ACTIVE→UNVERIFIED, а не выдуманная инвалидация |
 | EU50 MN1/W1 | 15-го MN1 bullish/W1 bearish. 16-го W1 break bias уже Bullish, swing bias ещё Bearish; нельзя утверждать, что оба поля всегда bearish |
 
-Проверка `scripts/audit-pa-v4-history.ts` сравнивает formation SHA. Часть совпадает сразу; остальные воспроизводятся **точным SHA после единственного равномерного сдвига index**, без изменения OHLC/time. Это изменение индекса при сдвиге rolling window, а не найденная правка цены. Полного исходного OHLC каждого исторического запуска нет: равенство formation не доказывает равенство всей lifecycle-истории. Новый захват нельзя называть исходным golden snapshot. Отсутствие нового W1 low до его подтверждения — ожидаемый результат.
+Проверка `scripts/audit-pa-v4-history.ts` сравнивает formation SHA: 12 точных совпадений сразу, 16 воспроизводятся **точным SHA после единственного равномерного сдвига index**, без изменения OHLC/time; два ожидаемых отсутствия нового W1 low до подтверждения. Это изменение индекса при сдвиге rolling window, а не найденная правка цены. Полного исходного OHLC каждого исторического запуска нет: равенство formation не доказывает равенство всей lifecycle-истории. Новый захват нельзя называть исходным golden snapshot. Результаты: [history-summary.json](verification/pa-v4/history-summary.json).
 
 ## Проверки и воспроизводимость
 
-- `npm test`: 267 PASS, 0 failed/skipped на локальном финальном коде; включает прежние тесты, причинность, загрязнённые OHLC, неправильный side/identity, пересечение сессий, ложные подтверждения и HTTP detail.
+- `npm test`: финальный локальный прогон **268 PASS, 0 failed/skipped**, включая отдельную регрессию segment-gap. Включены прежние тесты, причинность, загрязнённые OHLC, неправильный side/identity, пересечение сессий, ложные подтверждения и HTTP detail.
 - `node --test tests/research-bridge-publisher.test.ts`: 8 PASS под нативным Node 24, без tsx. Проверены atomic manifest/3 reports, секреты-canary, отказы HTTP/schema/size/expiry/provider/publish, новый контракт и отсутствие повышения Narrative.
 - 22 новых declarative golden cases в `tests/fixtures/pa-v4/golden.json`: позитивные, негативные и boundary примеры, ожидаемые значения записаны вручную до вызова детектора; каждый закрытый префикс проверяется отдельно. Это **не независимая экспертная разметка**: external expert_review=PENDING. Старые тесты дополнительно покрывают DR/IRL, Strong, session gaps, opens и lifecycle.
-- `npm run knowledge:replay:v4`: архив 12 ноября, контроль 15 ноября, новый private capture 16 ноября × EURUSD/NAS100/EU50 × Bid/Ask = 18 запусков. На каждом закрытом префиксе сравниваются устойчивые события Fractal 3/5, FVG, inversion, Raid, RB, SNR, IDM, Strong, BOS/CHOCH с результатом полного ряда, отфильтрованным по времени. Stateful lifecycle проверяется отдельными fixtures и differential; это не доказательство всех возможных рыночных последовательностей.
+- `npm run knowledge:replay:v4`: архив 12 ноября, контроль 15 ноября, новый private capture 16 ноября × EURUSD/NAS100/EU50 × Bid/Ask = 18 запусков, **10 988 закрытых префиксов**. На каждом сравниваются устойчивые события Fractal 3/5, FVG, inversion, Raid, RB, SNR, IDM, Strong, BOS/CHOCH с результатом полного ряда, отфильтрованным по времени. Stateful lifecycle проверяется отдельными fixtures и differential; это не доказательство всех возможных рыночных последовательностей.
 - Differential использует идентичный input SHA и базовый движок b26cdbc (его код совпадает с ccf2c29; различие между коммитами документальное). Удалённый SNR допустим только при доказанном первом break до delivery; Strong — только при удалённом SNR dependency/relinked VC. Изменения ролей классифицируются по новой проверке break, sequence gap, FVG terminal state либо отзыву недоказанной роли при неизменном state. Неизвестное изменение останавливает replay.
-- `npm run lint`, `npm run build` пройдены. Remote CI дополнительно должен выполнить старые replay, UI Chromium и RC HTTP. Итоговые ссылки и результаты приведены ниже после завершения CI.
+- `npm run lint`, `npm run build` пройдены. Remote CI на engine-коммите 71371d2 также успешно выполнил старые replay, новый V4 replay, UI Chromium и RC HTTP; ссылки ниже.
+
+Итог differential: **0 необъяснённых изменений**; удалено 235 ошибочных SNR-выдач суммарно по 18 перекрывающимся запускам (не 235 независимых рыночных событий). Размеры компактных replay-отчётов 48 311–65 182 байта с LF; максимум полной wire Intelligence 3 201 656 байт. Показатели точности/вероятности не вычислялись.
 
 Воспроизведение общедоступной части: `npm ci`, `npm test`, `npm run knowledge:replay:v4`, `npm run lint`, `npm run build`. Без `PA_V4_INPUT_DIR` выполняются 12 архивных комбинаций; без baseline явно записывается BASELINE_NOT_SUPPLIED, а не фиктивный успешный differential.
 
@@ -119,6 +121,32 @@ schema_version остаётся `desk-report-v1`; portable contract/header/manif
 ## Файлы изменений
 
 `lib/candle-data.ts`; `lib/knowledge/{detectors,level-state,target-selection,intelligence,http,interaction-history,range-candidates}.ts`; `lib/research-bridge/{contract,report}.ts`; `app/intelligence/page.tsx`; `scripts/{verify-edge-v2,verify-pa-v4,audit-pa-v4-history,capture-pa-v4-baseline}.ts`; `tests/{knowledge-v4,pa-v4-golden,knowledge-pipeline,knowledge-v2,knowledge-v3,candle-data,history-diagnostics,research-bridge,research-bridge-publisher}.test.ts`; `tests/fixtures/pa-v4/golden.json`; `tests/browser/knowledge.spec.ts`; `package.json`; `.github/workflows/release-checks.yml`; этот отчёт и безопасные metadata в `verification/pa-v4`.
+
+## GitHub, реальная HTTP-проверка и граница релиза
+
+- Основной [PR #5](https://github.com/Yilin1207/capitalive/pull/5), base `feature/the-edge-knowledge`, открыт, не слит. Проверенный engine-коммит `71371d2288e612aa69d528d69bc1bbaa7190132c`.
+- [Release checks 43826112394](https://github.com/Yilin1207/capitalive/actions/runs/43826112394): SUCCESS, включая unit/import/replay/replay-v2/replay-v4/lint/tsc/build/Chromium UI/RC HTTP.
+- Приватный [companion PR #3](https://github.com/Yilin1207/capitalive-research-bridge/pull/3), commit `db011d934b0261a94d185b59e60ec96e0ce5fa21`, открыт, не слит. [CI 43826143626](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43826143626): verify SUCCESS, publish SKIPPED по правилу workflow для PR. Живые отчёты не заменялись V4.
+- Проверенный immutable [V4 Preview](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/intelligence) построен из 71371d2. Последующий commit с тестом/documentation/metadata не меняет runtime engine этого Preview.
+
+Внешние запросы 16 ноября 07:47–07:50 UTC выполнялись с существующим авторизованным обходом защиты, только в памяти процесса. Все шесть прошли strict v1.2 contract, side/engine SHA, ID/dependency/causality/size/secret checks. Подробные SHA-256 и timestamps: [http-summary.json](verification/pa-v4/http-summary.json).
+
+| Symbol | Side | HTTP / Content-Type | Bytes | Data status |
+|---|---|---|---:|---|
+| EURUSD | bid | 200 application/json | 59 520 | PARTIAL |
+| EURUSD | ask | 200 application/json | 59 294 | PARTIAL |
+| NAS100 | bid | 200 application/json | 58 318 | PARTIAL |
+| NAS100 | ask | 200 application/json | 58 300 | PARTIAL |
+| EU50 | bid | 200 application/json | 50 319 | PARTIAL |
+| EU50 | ask | 200 application/json | 48 267 | STALE |
+
+Шесть detail-запросов вернули HTTP 200 и тот же snapshot hash. Дополнительные проверки уровней с взаимодействиями вернули EURUSD 253, NAS100 63 и EU50 276 закрытых observations, omitted=0; это не независимые события разных TF. Нельзя трактовать STALE как свежий поток. EURUSD `/api/market-audit?symbol=EURUSD&view=priority`: HTTP 200, schema 2.1, 406 193 bytes, без неявного knowledge opt-in. `/api/chart?symbol=EURUSD&timeframe=H4`: HTTP 200 image/png, 114 497 bytes, проверена PNG signature.
+
+Работающие защищённые маршруты: [EURUSD desk](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/api/desk-report?symbol=EURUSD&side=bid), [NAS100 desk](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/api/desk-report?symbol=NAS100&side=bid), [EU50 desk](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/api/desk-report?symbol=EU50&side=bid), [EURUSD PNG](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/api/chart?symbol=EURUSD&timeframe=H4). Для Ask замените side. Без Vercel-входа ожидается HTTP 302 на авторизацию; защита не отключена.
+
+Release guards: main=`d7d1ec5ddebdbce2c90bd7f8c86657d00b9ba1c2`, feature=`b26cdbc5d73a575a147bcf4379951e673b09f31e`, PR #2 открыт/не слит; private main=`bfe798e6f56b972ac174e4645550190144f53886`; BRIDGE_BASE_URL по-прежнему `https://capitalive-ogpymvyfo-yilin1207s-projects.vercel.app`; SSO=`all_except_custom_domains`. Без авторизации новый Preview возвращает 302. Результаты сохранены в [release-guards.json](verification/pa-v4/release-guards.json). Production не развёртывался.
+
+После пользовательского review нужны согласованные merge обоих PR и отдельное переключение private BRIDGE_BASE_URL, затем настоящая публикация и повторное чтение нового manifest/трёх JSON с проверкой SHA/bytes. В этой задаче такой cutover намеренно не выполняется. Наличие успешного V4 Preview не означает обновления рабочего Trading Research Desk.
 
 ## Ответ Trading Research Desk
 
