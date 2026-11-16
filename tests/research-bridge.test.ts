@@ -13,7 +13,8 @@ const fixture=(symbol:string)=>JSON.parse(readFileSync(`tests/fixtures/edge-v2/$
 const analysis=(symbol:string,side='bid')=>{const input=fixture(symbol);return buildIntelligence(input.data,side as 'bid'|'ask',input.quote);};
 
 test('V4 compact contract rejects contradictory terminal role, impossible fill and range counts',()=>{
- const input=fixture('EURUSD'),report=buildDeskReport(analysis('EURUSD'),input.data,input.quote,now);
+ const input=fixture('EURUSD'),{research_context,...report}=buildDeskReport(analysis('EURUSD'),input.data,input.quote,now);
+ // This regression isolates the legacy V2 fields; V5.1 cross-field checks have their own tests.
  const e=(Object.values(report.evidence) as {lifecycle:{state:string;invalidated_at:string|null;evaluated_through:string;current_role:string|null;fill:unknown}|null}[]).find(e=>e.lifecycle)!;assert.ok(e);
  e.lifecycle!.state='INVALIDATED';e.lifecycle!.invalidated_at=e.lifecycle!.evaluated_through;e.lifecycle!.current_role='support';
  assert.throws(()=>validateReport(report),/CONTRADICTORY_LIFECYCLE/);e.lifecycle!.current_role=null;

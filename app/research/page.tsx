@@ -1,7 +1,9 @@
 'use client';
 import {useEffect,useState} from 'react';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../../lib/active-research-markets';
-type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null}[]};
+import type {compactResearchContext} from '../../lib/research-bridge/context';
+type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null}[];
+ research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;lifecycle?:{state:string;initial_role:string;fill?:{state:string}}}>};
 export default function ResearchRefresh(){
  const [busy,setBusy]=useState(false),[rows,setRows]=useState<Row[]>([]),[files,setFiles]=useState<Record<string,string>>({});
  const [clock,setClock]=useState(0);
@@ -18,7 +20,7 @@ export default function ResearchRefresh(){
   }setBusy(false);
  }
  function save(symbol:string){const url=URL.createObjectURL(new Blob([files[symbol]+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=symbol+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
- return <main style={{maxWidth:1000,margin:'40px auto',padding:24}}><h1>Capitalive Research V5</h1>
+ return <main style={{maxWidth:1100,margin:'40px auto',padding:24}}><h1>Capitalive Research V5.1</h1>
   <p>Обновление по запросу: EURUSD · NAS100 · JP225. Доступ защищён Vercel SSO. Котировка и закрытые свечи имеют отдельные timestamps.</p>
   <button onClick={refresh} disabled={busy}>{busy?'Получаем данные…':'Получить свежие отчёты'}</button>
   <p>После получения скачайте JSON и приложите к исследованию ChatGPT. GitHub-подключение читает сохранённые файлы и само не запускает этот запрос.</p>
@@ -28,6 +30,23 @@ export default function ResearchRefresh(){
    {expired(row)&&row.status!=='ERROR'&&<p>Срок актуальности истёк. Запросите новый отчёт перед исследованием.</p>}
    <p>Закрытая H4: {row.frames?.find(f=>f.timeframe==='H4')?.last_closed_at??'недоступна'}</p>
    <p>Сформирован: {row.generated_at??'—'} · Проверять срок годности: {row.expires_at??'—'}</p>
+   {row.research_context&&<div>
+    <h3>Наблюдения и авторская структура</h3>
+    <p>Авторская структура: {row.research_context.author_structure.status}. Candidate: {row.research_context.candidate_narrative}. Confirmed: {row.research_context.confirmed_narrative??'не подтверждён'}.</p>
+    <table><thead><tr><th>TF</th><th>Последняя закрытая цена</th><th>Наблюдаемый участок между Fractal 3</th></tr></thead><tbody>{row.research_context.observed_price_behaviour.map(o=><tr key={o.timeframe}><td>{o.timeframe}</td><td>{o.reference_close??'нет данных'}</td><td>{o.last_observed_fractal_leg?`${o.last_observed_fractal_leg.direction} · Δ ${o.last_observed_fractal_leg.price_distance.toFixed(5)}`:'недостаточно данных'}</td></tr>)}</tbody></table>
+    <p>Наблюдаемый участок не подтверждает тренд. Значимость требует ручной оценки.</p>
+    <h3>Ключевые уровни для проверки</h3>
+    <p>Показано {row.research_context.executive_evidence.items.length} из {row.research_context.executive_evidence.total}. Пропущено: {row.research_context.executive_evidence.omitted}. Отсутствие в таблице не доказывает отсутствие препятствий.</p>
+    {row.research_context.executive_evidence.items.map(l=>{const e=row.evidence?.[l.level];return <details key={l.level}><summary>{e?.timeframe} {e?.kind} · {e?.lower}–{e?.upper} · {l.review_status}</summary>
+     <p>Lifecycle: {e?.lifecycle?.state}. Fill: {e?.lifecycle?.fill?.state??'не применимо'}. Исходная геометрия: {e?.lifecycle?.initial_role}. Текущая роль: {l.current_role??'не подтверждена'}.</p>
+     <p>Цена относительно зоны: {l.reference_position}. Причины: {l.relevance_reasons.join(', ')}.</p><p>Неопределённости: {l.uncertainty.join(', ')}.</p>
+     <p>Связанные взаимодействия: {l.interactions.items.length}/{l.interactions.total}; HTF: {l.htf_dependencies.items.length}/{l.htf_dependencies.total}.</p><code>{e?.id}</code></details>;})}
+    <h3>Диапазоны и путь</h3>
+    {row.research_context.dealing_range_reviews.map(f=><p key={f.timeframe}>{f.timeframe}: {f.candidates.total} геометрических DR-кандидатов; {f.candidates.items[0]?.candidate_suitable_for_review?'границы наблюдаемо целы, требуется оценка значимости':'актуальность границ не доказана'}. Действующий DR не подтверждён.</p>)}
+    {row.research_context.paths.length?row.research_context.paths.map(p=><p key={p.target}>Путь к {row.evidence?.[p.target]?.id}: {p.status}; препятствий {p.obstacles.total}, не показано {p.obstacles.omitted}. Свободный путь не доказан.</p>):<p>Нет проверяемого пути A → B. Цель не подставляется автоматически.</p>}
+    {row.research_context.conflicts.length>0&&<p>Конфликты HTF / LTF: {row.research_context.conflicts.length}. Требуется оценка; направление не подтверждено.</p>}
+    <a href={'/api/intelligence?'+new URLSearchParams({symbol:row.symbol,side:'bid',mode:'inspection',as_of:row.research_context.full_inspection.as_of,evidence_sha256:row.research_context.full_inspection.snapshot_sha256,limit:'25'})} target="_blank" rel="noreferrer">Открыть подробную инспекцию этого снимка</a>
+   </div>}
    {files[row.symbol]&&<button onClick={()=>save(row.symbol)}>Скачать {row.symbol}.json</button>}</section>)}
   <p>Это технические наблюдения. Candidate Narrative требует ручной оценки; макроанализ и окончательное решение остаются за пользователем.</p>
  </main>;

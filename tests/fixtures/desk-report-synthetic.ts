@@ -19,3 +19,12 @@ export function syntheticDeskReport(symbol='EURUSD'){
     candle_windows:[[start,'2026-11-15T04:00:00.000Z'],['2026-11-15T04:00:00.000Z','2026-11-15T08:00:00.000Z'],['2026-11-15T08:00:00.000Z',confirmed]],
     coverage:{selection_policy:'RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES',findings_total:2,findings_included:2,findings_omitted:0,selected_evidence_complete:true,all_findings_included:true,stale_reasons:[],raw_ohlc_included:false},trading_enabled:false};
 }
+
+export function syntheticContextReport(symbol='EURUSD'){
+  const r=syntheticDeskReport(symbol);
+  return {...r,research_context:{revision:'context-5.1',review_required:true,author_structure:{status:'NEEDS_SPECIFICATION',reason:'AUTHOR_SIGNIFICANCE_NOT_DEFINED'},candidate_narrative:'Neutral',confirmed_narrative:null,
+    observed_price_behaviour:r.frames.map(f=>({timeframe:f.timeframe,reference_close:null,reference_at:null,last_close_change:null,last_observed_fractal_leg:null,significance:'NOT_ASSESSED',trend_confirmed:false,evidence_ids:[]})),
+    executive_evidence:{items:[],total:0,omitted:0,selection_policy:'SYNTHETIC_EMPTY_CONTEXT'},conflicts:[],
+    dealing_range_reviews:r.frames.map(f=>({timeframe:f.timeframe,selected:null,candidates:{items:[],total:0,omitted:0}})),paths:[],
+    full_inspection:{path:'/api/intelligence',mode:'inspection',snapshot_sha256:r.source.evidence_sha256,as_of:r.as_of,requires_authorization:true}}};
+}

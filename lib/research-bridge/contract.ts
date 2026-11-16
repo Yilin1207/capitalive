@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.0';
+export const CONTRACT_REVISION='desk-report-v2.1';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -52,12 +52,29 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
     path:obj({items:arr(ref,4),total:nullable(num),omitted:nullable(num),completeness:en('UNASSESSED','COMPLETE','PARTIAL')})}),3),total:num,role_eligible:num,omitted:num}),
   C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT','NOT_EVALUATED')});
+const rangeReview=obj({high:nullable(ref),low:nullable(ref),high_state:code,low_state:code,high_consumed:nullable(bool),low_consumed:nullable(bool),
+  observed_boundaries_intact:bool,candidate_suitable_for_review:bool,review_status:en('REVIEW_REQUIRED'),active_dealing_range:en(false),premium_discount:en(null),context_evidence:group,
+  structural_invalidation:obj({condition:en('OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE'),lower:num,upper:num,observed:bool}),requirements:arr(code,10)});
+const researchContext=obj({revision:en('context-5.1'),review_required:en(true),author_structure:obj({status:en('NEEDS_SPECIFICATION'),reason:code}),
+  candidate_narrative:bias,confirmed_narrative:nullable(bias),
+  observed_price_behaviour:arr(obj({timeframe:tf,reference_close:nullable(num),reference_at:nullable(time),
+    last_close_change:nullable(obj({from:time,to:time,delta:num,direction:en('UP','DOWN','FLAT')})),
+    last_observed_fractal_leg:nullable(obj({from_id:ref,to_id:ref,from:time,to:time,confirmed_at:time,price_distance:num,elapsed_seconds:num,direction:en('UP','DOWN','FLAT')})),
+    significance:en('NOT_ASSESSED'),trend_confirmed:en(false),evidence_ids:arr(ref,2)}),4),
+  executive_evidence:obj({items:arr(obj({level:ref,review_status:en('DETECTED','ELIGIBLE_FOR_REVIEW'),human_validated:en(false),
+    current_role:en('support','resistance',null),current_role_status:en('VERIFIED','UNVERIFIED'),role_transition_candidate:en('REVIEW_REQUIRED','NOT_ESTABLISHED'),reference_position:en('ABOVE','BELOW','INSIDE','UNKNOWN'),
+    first_interaction_at:nullable(time),first_interaction_scope:code,structural_relevance:code,reference_transition:obj({from:code,to:code,basis:en('LAST_TWO_CLOSED_H4')}),full_test_status:code,
+    htf_dependencies:group,interactions:group,relevance_reasons:arr(code,8),uncertainty:arr(code,8),lifecycle_reasons:arr(code,12),invalidation:code}),32),total:num,omitted:num,selection_policy:code}),
+  conflicts:arr(obj({level_id:ref,timeframe:tf,kind:en('HTF_GEOMETRY_VS_OBSERVED_LTF_LEG'),evidence_ids:arr(ref,2),review_required:en(true)}),64),
+  dealing_range_reviews:arr(obj({timeframe:tf,selected:nullable(rangeReview),candidates:obj({items:arr(rangeReview,1),total:num,omitted:num})}),4),
+  paths:arr(obj({target:ref,from:nullable(num),to:nullable(num),from_basis:en('ANCHOR_BOUNDARY','LAST_CLOSED_H4'),status:en('COMPLETE','PARTIAL','UNVERIFIED'),obstacles:group,ohlc_coverage:en('COMPLETE','PARTIAL'),free_path_proven:en(false),reasons:arr(code,10)}),3),
+  full_inspection:obj({path:en('/api/intelligence'),mode:en('inspection'),snapshot_sha256:hex,as_of:time,requires_authorization:en(true)})});
 const schema=obj({published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
   error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
   diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','REQUEST_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','CAPITAL_UPSTREAM','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION)})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-5'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
   quote:nullable(obj({bid:nullable(num),ask:nullable(num),spread:nullable(num),provider_timestamp:nullable(time),retrieved_at:nullable(time),source_type:en('REST','WEBSOCKET',null),market_status:en('TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED',null),provider_age_seconds:nullable(num),fresh:bool,used_as_closed_evidence:en(false)})),
-  frames:arr(frame,4),scenario:nullable(scenario),evidence:{type:'object',record:evidence,keyPattern:/^e\d{1,4}$/},
+  research_context:optional(researchContext),frames:arr(frame,4),scenario:nullable(scenario),evidence:{type:'object',record:evidence,keyPattern:/^e\d{1,4}$/},
   rules:{type:'object',keyPattern:/^EDGE\.[A-Z0-9_]+\.v\d+$/,record:obj({version:num,status:code,specification:code,basis:en('DOCUMENTED','PROJECT_HYPOTHESIS',null),source_revisions:arr(obj({id:str(/^[a-f0-9-]{32,36}$/,36),revision:time}),20)})},
   candle_windows:arr(arr(time,2),1000),coverage:nullable(obj({budget_tier:optional(num),selection_policy:en('RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES'),findings_total:num,findings_included:num,findings_omitted:num,selected_evidence_complete:en(true),all_findings_included:bool,stale_reasons:arr(code,10),raw_ohlc_included:en(false)})),trading_enabled:en(false)});
 
@@ -109,6 +126,26 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   const technical=value as {technical_only?:boolean;scenario?:{action:string}|null;details?:{snapshot_sha256:string};source?:{evidence_sha256:string}|null};
   if(technical.technical_only&&technical.scenario?.action!=='NOT_EVALUATED')throw Error('TECHNICAL_RESPONSIBILITY_VIOLATION');
   if(technical.details&&technical.details.snapshot_sha256!==technical.source?.evidence_sha256)throw Error('SNAPSHOT_HASH_MISMATCH');
+  const context=(value as {research_context?:{
+    confirmed_narrative:string|null;observed_price_behaviour:{timeframe:string;last_observed_fractal_leg:{from_id:string;to_id:string;price_distance:number;direction:string;confirmed_at:string}|null}[];
+    executive_evidence:{items:{level:string;current_role:string|null;current_role_status:string;first_interaction_at:string|null}[]};
+    dealing_range_reviews:{timeframe:string;selected:null|{high:string|null;low:string|null;observed_boundaries_intact:boolean;candidate_suitable_for_review:boolean};candidates:{items:{high:string|null;low:string|null;observed_boundaries_intact:boolean;candidate_suitable_for_review:boolean}[]}}[];
+    paths:{status:string;obstacles:{omitted:number};ohlc_coverage:string}[];full_inspection:{snapshot_sha256:string;as_of:string}
+  }}).research_context;
+  if(context){
+    if(context.confirmed_narrative!==r.scenario?.confirmed_narrative||context.full_inspection.snapshot_sha256!==technical.source?.evidence_sha256||context.full_inspection.as_of!==r.as_of)throw Error('CONTEXT_SNAPSHOT_MISMATCH');
+    if(context.observed_price_behaviour.length!==4||new Set(context.observed_price_behaviour.map(o=>o.timeframe)).size!==4)throw Error('INCOMPLETE_CONTEXT');
+    function contextTimes(v:unknown){if(Array.isArray(v))v.forEach(contextTimes);else if(v&&typeof v==='object')Object.values(v).forEach(contextTimes);else if(typeof v==='string'&&time.pattern!.test(v)&&(!r.as_of||v>r.as_of))throw Error('FUTURE_CONTEXT');}contextTimes(context);
+    const es=r.evidence as unknown as Record<string,{kind:string;lower:number;upper:number;confirmed_at:string;timeframe:string;lifecycle:{state:string;role_status:string;current_role:string|null;coverage:string;liquidity_consumed:boolean;evaluated_through:string}|null}>;
+    for(const o of context.observed_price_behaviour){const leg=o.last_observed_fractal_leg;if(!leg)continue;const a=es[leg.from_id],b=es[leg.to_id];
+      if(!a||!b||a.kind!=='FRACTAL'||b.kind!=='FRACTAL'||a.timeframe!==o.timeframe||b.timeframe!==o.timeframe||Math.abs(leg.price_distance-(b.lower-a.lower))>1e-9||leg.direction!==(leg.price_distance>0?'UP':leg.price_distance<0?'DOWN':'FLAT')||leg.confirmed_at!==[a.confirmed_at,b.confirmed_at].sort().at(-1))throw Error('INVALID_OBSERVED_LEG');}
+    for(const l of context.executive_evidence.items){const e=es[l.level];if(!e||!e.lifecycle||l.current_role_status==='UNVERIFIED'&&l.current_role!==null||l.current_role_status==='VERIFIED'&&(e.lifecycle.role_status!=='RETEST_CONFIRMED'||e.lifecycle.current_role!==l.current_role)||l.first_interaction_at&&(l.first_interaction_at<e.confirmed_at||l.first_interaction_at>e.lifecycle.evaluated_through))throw Error('INVALID_ROLE_CONTEXT');}
+    for(const f of context.dealing_range_reviews)for(const v of [...f.candidates.items,...(f.selected?[f.selected]:[])]){
+      const high=v.high?es[v.high]:null,low=v.low?es[v.low]:null;
+      const intact=!!high&&!!low&&[high,low].every(e=>e.kind==='FRACTAL'&&e.timeframe===f.timeframe&&e.lifecycle?.state==='ACTIVE'&&!e.lifecycle.liquidity_consumed&&e.lifecycle.coverage==='COMPLETE_OBSERVED_INTERVAL');
+      if(v.observed_boundaries_intact!==intact||v.candidate_suitable_for_review&&!intact)throw Error('INVALID_RANGE_REVIEW');}
+    for(const p of context.paths)if(p.status==='COMPLETE'&&(p.obstacles.omitted!==0||p.ohlc_coverage!=='COMPLETE'))throw Error('FALSE_PATH_COMPLETENESS');
+  }
   const ids=new Set<string>();
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
