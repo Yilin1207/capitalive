@@ -1,0 +1,20 @@
+{
+  "rows": [
+    {
+      "generated_at": "2026-11-16T18:28:06.604Z",
+      "as_of": "2026-11-16T18:26:02.272Z",
+      "evidence_sha256": "baa47b4925a8ded92b2e6d878500680c261d1214819c4f0d965202c0553b6105",
+      "quote_retrieved_at": "2026-11-16T18:28:06.600Z",
+      "status": "PARTIAL"
+    },
+    {
+      "generated_at": "2026-11-16T18:28:08.228Z",
+      "as_of": "2026-11-16T18:26:02.272Z",
+      "evidence_sha256": "baa47b4925a8ded92b2e6d878500680c261d1214819c4f0d965202c0553b6105",
+      "quote_retrieved_at": "2026-11-16T18:28:08.224Z",
+      "status": "PARTIAL"
+    }
+  ],
+  "closed_analysis_asof_preserved": true,
+  "evidence_hash_preserved": true
+}

@@ -1,0 +1,17 @@
+{
+  "repo": "capitalive-research-bridge",
+  "pr": 5,
+  "head": "40b31f410865271941894fc31ae75b85bac7f8a6",
+  "base": "main",
+  "merge_commit": "50809a3aca4ab56b7176df2ab04e7dd254a21027",
+  "tree": "9e0ef11f730b3e4d8893181aa9602ea47db1c0f5",
+  "head_tree": "31e9ea4a8f95d33cf5ae477ff96d96b300c6ef40",
+  "checked_ci": [
+    {
+      "name": "bridge",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43925276624/job/133502947551",
+      "conclusion": "success"
+    }
+  ],
+  "at": "2026-11-16T18:31:33.740Z"
+}

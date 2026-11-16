@@ -4,15 +4,16 @@ This repository stores compact technical evidence for EURUSD, NAS100 and JP225.
 It is not an order executor. The engine lives in
 [Yilin1207/capitalive](https://github.com/Yilin1207/capitalive).
 
-## Release scope
+## Active release
 
-V5 is prepared in PR #5. Main remains on the previous publisher until coordinated
-merge. Verified V5 reports are on `verification/v5-current`, with a separate
-operator recovery run on `verification/v5-recovery`.
+V5 is integrated into main through PR #5. The working publisher uses
+`desk-report-v2` / `edge-knowledge-5` and publishes to `reports/latest` on main.
+Previous verification branches and archived reports remain historical evidence.
 
 Verified source: `https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app`,
 engine commit `a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1`.
-[Audit, tests, HTTP and publication evidence](https://github.com/Yilin1207/capitalive/blob/feature/v5-realtime-edge-only-20261116/CAPITALIVE_V5_AUDIT_RU.md).
+[Implementation audit](https://github.com/Yilin1207/capitalive/blob/feature/the-edge-knowledge/CAPITALIVE_V5_AUDIT_RU.md).
+Final activation evidence: `CAPITALIVE_V5_FINAL_ACTIVATION_RU.md` in the engine repository.
 
 ## Reading in ChatGPT
 
@@ -26,9 +27,9 @@ Action automatically. Indexed content can lag. To request current research:
 
 1. Open the protected source `/research`, refresh and attach downloaded JSON to ChatGPT; or
 2. Run **Actions → Research Bridge → Run workflow**, wait for successful readback
-   and use that immutable report commit. Before merge, select the V5 branch and
-   provide the verified immutable Preview in `preview_url`; this publishes only
-   to `verification/v5-current`. On main after merge the source is `BRIDGE_BASE_URL`.
+   and use that immutable report commit. Select **main**; leave `preview_url`
+   empty. The source is the repository variable `BRIDGE_BASE_URL`. Branch-only
+   verification still publishes to `verification/v5-current` when explicitly selected.
 
 Expired/unknown data must remain STALE/PARTIAL/ERROR. Never treat old files as a
 fallback success. Candidate Narrative is not Confirmed; qualitative author
@@ -55,13 +56,13 @@ No new token or bypass is created. `--source` selects the verified Preview;
 is main, so use it only after coordinated V5 activation. `--dispatch` merely
 requests the main workflow, it does not prove publication succeeded.
 
-## Coordinated activation
+## Active configuration
 
-Merge the approved source chain and this PR; set `BRIDGE_BASE_URL` to the verified
-immutable V5 Preview, then dispatch main and read all four published files again.
-The previous main workflow hardcodes an old source and ignores that variable.
-The strict V2 publisher rejects V1 payloads, so this is a coordinated migration.
-No Production deployment or secret rotation is necessary.
+`BRIDGE_BASE_URL` points to the verified immutable V5 Preview above. The active
+workflow reads this variable; the old hardcoded source was removed. The strict
+V2 publisher rejects V1 payloads. Always read all four files at the commit named
+by the workflow's `bridge_readback` event, not a mix of changing main refs.
+No Production deployment, SSO weakening or secret rotation was required.
 
 Reports are capped at 65,536 bytes including newline. Manifest and all reports
 use one non-forced Git commit and commit-pinned readback. Errors are sanitized.
