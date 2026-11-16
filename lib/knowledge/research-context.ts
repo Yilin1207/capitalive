@@ -41,7 +41,7 @@ export function levelLifecycleExplanation(s:State,reference:number|null,firstInt
 }
 
 /** Full detected universe, before any compact projection. Significance is not inferred. */
-export function validatePathCompleteness(levels:KeyLevel[],states:State[],frames:Record<Timeframe,Frame>,from:number|null,to:number|null,exclude:string[]=[],shownIds?:string[]) {
+export function validatePathCompleteness(levels:Pick<KeyLevel,'id'|'lower'|'upper'|'timeframe'|'kind'>[],states:Pick<State,'id'|'state'|'coverage'>[],frames:Record<Timeframe,Frame>,from:number|null,to:number|null,exclude:string[]=[],shownIds?:string[]) {
   const observed=from!==null&&to!==null&&from!==to;
   const lower=Math.min(from??0,to??0),upper=Math.max(from??0,to??0),stateMap=new Map(states.map(s=>[s.id,s]));
   const obstacles=observed?levels.filter(l=>!exclude.includes(l.id)&&l.upper>lower&&l.lower<upper).flatMap(l=>{

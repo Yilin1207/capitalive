@@ -79,7 +79,13 @@ test('V5.1 contract rejects future context, false role confirmation and invented
 });
 test('V5.1 inspection pages cover every finding once, expose only closed formation windows',()=>{
   const found=new Set<string>();let cursor:number|null=0;
-  while(cursor!==null){const p=inspectResearch(r,frames,cursor,50);p.findings.forEach(f=>{assert.ok(!found.has(f.id));found.add(f.id);});assert.ok(p.closed_ohlc_windows.every(c=>c.closed_at<=r.as_of));assert.equal(p.publication_allowed,false);cursor=p.next_offset;}
+  let reviewedApproaches=0;
+  while(cursor!==null){const p=inspectResearch(r,frames,cursor,50);p.findings.forEach(f=>{assert.ok(!found.has(f.id));found.add(f.id);});assert.ok(p.closed_ohlc_windows.every(c=>c.closed_at<=r.as_of));assert.equal(p.publication_allowed,false);
+    for(const l of p.level_reviews){const a=l.approach_path;assert.equal(a.free_path_proven,false);
+      if(a.reference_inside){assert.equal(a.validation,null);assert.equal(a.reason,'REFERENCE_ALREADY_INSIDE_ZONE');}
+      else {assert.ok(a.validation);assert.equal(a.validation.from,r.data_quality.reference_price);assert.ok([l.lower,l.upper].includes(a.validation.to!));assert.equal(a.validation.obstacles.some(o=>o.id===l.id),false);assert.equal(a.validation.omitted,0);reviewedApproaches++;}
+    }cursor=p.next_offset;}
+  assert.ok(reviewedApproaches>0);
   assert.equal(found.size,r.frames.flatMap(f=>f.findings).length);assert.throws(()=>inspectResearch(r,frames,0,100));
 });
 test('V5.1 inspection HTTP requires immutable snapshot and rejects changed input',async()=>{
