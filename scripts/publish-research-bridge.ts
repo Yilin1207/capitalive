@@ -69,7 +69,7 @@ export async function publishReports(token:string,reports:Record<string,unknown>
   tree.push({path:'reports/latest/manifest.json',mode:'100644',type:'blob',content:JSON.stringify(manifest,null,2)+'\n'});
   const ref=await api('/git/ref/heads/main'),parent=await api(`/git/commits/${ref.object.sha}`);
   const currentTree=await api(`/git/trees/${parent.tree.sha}?recursive=1`);
-  if(currentTree.truncated)throw Error('INVALID_PUBLICATION');
+  if(currentTree.truncated||!Array.isArray(currentTree.tree))throw Error('INVALID_PUBLICATION');
   const oldEu50=currentTree.tree?.find((entry:{path:string;type:string;sha:string})=>entry.path==='reports/latest/EU50.json'&&entry.type==='blob');
   if(oldEu50){
     // Preserve the exact old blob outside latest before removing its active path.

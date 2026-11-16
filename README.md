@@ -161,7 +161,7 @@ Deployment: `dpl_8J4UM2UtAGDzfoMF3NcVnD7V3g98`.
 See [release evidence and explicit H4 range example](CAPITALIVE_2_RELEASE_RU.md).
 
 Implemented in the existing Next.js application. New analysis is limited to **EURUSD,
-NAS100 and EU50**; older quote/history/archive endpoints retain their instruments and
+NAS100 and JP225**, with EU50 retained for general analysis and historical replay; older quote/history/archive endpoints retain their instruments and
 contracts. See [Russian implementation and verification report](CAPITALIVE_2_AUDIT_RU.md).
 
 ```text
