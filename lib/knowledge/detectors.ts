@@ -35,7 +35,7 @@ export type Pivot = Finding & {
   polarity: "high" | "low";
   index: number;
   segment: number;
-  variant: 3 | 5;
+  variant: 3;
 };
 export type KeyLevel = {
   id: string;
@@ -103,9 +103,10 @@ function event(
         : state,
   };
 }
-export function detectFractals(frame: Frame, variant: 3 | 5 = 3): Pivot[] {
+export function detectFractals(frame: Frame, variant: 3 = 3): Pivot[] {
+  if(variant!==3)throw Error("UNSUPPORTED_FRACTAL_VARIANT");
   const out: Pivot[] = [],
-    n = variant === 3 ? 1 : 2,
+    n = 1,
     bars = frame.bars;
   for (let i = n; i < bars.length - n; i++) {
     const window = bars.slice(i - n, i + n + 1);
@@ -380,12 +381,10 @@ export function detectSnr(frame: Frame, context: KeyLevel[]) {
         interaction(delivery, kl) &&
         kl.role === (resistance ? "support" : "resistance"),
     )!;
-    const breakout = later.find(
-      (x) =>
-        x.index >= delivery.index &&
-        (resistance ? x.close > upper : x.close < lower),
-    );
-    if (!breakout || !knownLevel(kl,breakout,frame)) continue;
+    const breakout = later.find(x => resistance ? x.close > upper : x.close < lower);
+    // Formation order is origin -> KL delivery -> first closed breakout. A later
+    // recross cannot retroactively supply context to an already broken origin.
+    if (!breakout || breakout.index < delivery.index || !knownLevel(kl,breakout,frame)) continue;
     out.push(
       event(
         frame,
@@ -500,56 +499,11 @@ export function detectStrong(
   return out;
 }
 export function detectStructure(frame: Frame, pivots: Pivot[]) {
-  const out: Finding[] = [],
-    used = new Set<string>();
-  let bias = "Neutral",
-    segment = -1;
-  for (const b of frame.bars) {
-    if (segment !== b.segment) {
-      bias = "Neutral";
-      segment = b.segment;
-    }
-    for (const polarity of ["high", "low"] as const) {
-      const p = pivots
-        .filter(
-          (p) =>
-            p.polarity === polarity &&
-            p.segment === b.segment &&
-            p.confirmed_at <= b.time,
-        )
-        .at(-1);
-      if (
-        !p ||
-        used.has(p.id) ||
-        !(polarity === "high" ? b.close > p.price : b.close < p.price)
-      )
-        continue;
-      const direction = polarity === "high" ? "Bullish" : "Bearish",
-        kind = bias !== "Neutral" && bias !== direction ? "CHOCH" : "BOS";
-      used.add(p.id);
-      out.push(
-        event(
-          frame,
-          "BOS_CHOCH",
-          kind,
-          [b],
-          {
-            pivot_id: p.id,
-            price: p.price,
-            direction,
-            previous_bias: bias,
-            convention: "first_closed_break_of_latest_3bar_pivot",
-          },
-          "Opposite later close break resets project bias; not author-validated narrative.",
-          "CANDIDATE",
-          p.id,
-        ),
-      );
-      bias = direction;
-    }
-  }
-  return { findings: out, bias };
+  // Author BOS/CHOCH machine criteria are not established; no generic pivot-break bias.
+  void frame; void pivots;
+  return { findings: [] as Finding[], bias: "Neutral", status: "NEEDS_SPECIFICATION" };
 }
+
 export function selectRange(
   frame: Frame,
   pivots: Pivot[],
@@ -631,6 +585,7 @@ export function assessRange(frame:Frame,range:Range|null){
 }
 export function detectIrl(frame: Frame, pivots: Pivot[], range: Range | null) {
   if (!range) return [];
+  const invalidatedAt=assessRange(frame,range).invalidated_at;
   return pivots
     .filter(
       (p) =>
@@ -639,7 +594,8 @@ export function detectIrl(frame: Frame, pivots: Pivot[], range: Range | null) {
         p.id !== range.low_id &&
         p.price > range.lower &&
         p.price < range.upper &&
-        p.origin >= range.origin,
+        p.origin >= range.origin &&
+        (!invalidatedAt || (p.confirmed_at>range.confirmed_at?p.confirmed_at:range.confirmed_at)<invalidatedAt),
     )
     .map((p) => {
       const end =

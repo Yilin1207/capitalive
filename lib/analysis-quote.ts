@@ -16,7 +16,7 @@ export function evaluateQuote(quote: MarketQuote, now = Date.now()): MarketQuote
     quote_quality: quote.bid === null || quote.ask === null ? "unavailable" : quoteQuality(quote.source_type, age !== null, fresh) };
 }
 
-export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarketSnapshot,getMarketSummaries,liveQuotes}) {
+export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarketSnapshot,getMarketSummaries,liveQuotes}, refresh = false) {
   const environment = capitalEnvironment();
   const scope = createHash("sha256").update([process.env.CAPITAL_API_BASE_URL, process.env.CAPITAL_IDENTIFIER, process.env.CAPITAL_API_KEY, process.env.CAPITAL_API_PASSWORD].join("\n")).digest("hex");
   const { value, hit } = await cache.get(`${scope}:${symbol}`, async () => {
@@ -34,6 +34,6 @@ export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarke
     const quote = ws ?? rest ?? unavailable(symbol, epic);
     return { ...quote, provider_timestamp: quote.quote_time, environment, fetched_at_utc: retrieved,
       rest_fallback_reason: ws ? null : "no_valid_stream_tick_for_analysis" };
-  });
+  }, Date.now(), refresh);
   return { ...evaluateQuote(value), cache_hit: hit, evaluated_at: new Date().toISOString() };
 }

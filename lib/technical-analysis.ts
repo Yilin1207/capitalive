@@ -1,11 +1,15 @@
 import { HISTORY, type Candle, type CandleResponse, type PriceSide, type Timeframe } from "./candle-data";
 
-export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "EU50"] as const;
+// EU50 remains available in the general catalogue and historical regressions.
+export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "JP225", "EU50"] as const;
 export type AnalysisSymbol = typeof ANALYSIS_SYMBOLS[number];
 export const ANALYSIS_TIMEFRAMES = ["MN1", "W1", "D1", "H4"] as const;
 export const INSTRUMENTS = {
   EURUSD: { unit: "pip", unit_size: 0.0001, precision: 5, min_remaining_units: 0.5 },
   NAS100: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
+  // Display precision observed in J225 quote and all four OHLC series, 2026-11-16.
+  // This is not a broker execution tick-size claim.
+  JP225: { unit: "point", unit_size: 1, precision: 1, min_remaining_units: 1 },
   EU50: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
 } as const;
 export type AnalysisSettings = { min_remaining_units: number; atr_fraction: number };
@@ -52,7 +56,7 @@ function range(high: Fractal | null, low: Fractal | null, price: number | null, 
   const eq = valid ? (high!.price + low!.price) / 2 : null;
   return {
     id: `${high?.id ?? "missing-high"}/${low?.id ?? "missing-low"}`,
-    status: valid && high!.status === "confirmed" && low!.status === "confirmed" ? "confirmed" : "unconfirmed",
+    status: "unconfirmed",
     high, low, lower: valid ? low!.price : null, upper: valid ? high!.price : null, equilibrium: eq,
     premium: valid ? [eq!, high!.price] : null, discount: valid ? [low!.price, eq!] : null,
     price_position: !valid || price === null ? "unknown" : price > high!.price ? "above_range" : price < low!.price ? "below_range"
@@ -70,30 +74,31 @@ export function analyzeSeries(data: CandleResponse, symbol: AnalysisSymbol, side
   const validWindow = (start: number, end: number) => data.metadata.discarded_reasons.invalid_time === 0
     && candles.slice(start, end + 1).every(c => usable(c, side))
     && !rejected.some(time => time > candles[start].time && time < candles[end].time)
+    && (tf === "MN1" || candles.slice(start + 1,end + 1).every((c,index)=>Date.parse(c.time)===Date.parse(candles[start+index].time)+HISTORY[tf].seconds*1000))
     && (tf !== "MN1" || candles.slice(start + 1, end + 1).every((c, index) => {
       const previous = new Date(candles[start + index].time);
       return Date.parse(c.time) === Date.UTC(previous.getUTCFullYear(), previous.getUTCMonth() + 1, 1);
     }));
   const fractals: Fractal[] = [];
-  for (let i = 2; i < candles.length; i++) {
-    const end = Math.min(candles.length - 1, i + 2);
-    if (!validWindow(i - 2, end)) continue;
+  for (let i = 1; i < candles.length; i++) {
+    const end = Math.min(candles.length - 1, i + 1);
+    if (!validWindow(i - 1, end)) continue;
     for (const kind of ["high", "low"] as const) {
       const price = candles[i][kind][side]!;
-      const neighbours = candles.slice(i - 2, end + 1).filter(c => c !== candles[i]);
+      const neighbours = candles.slice(i - 1, end + 1).filter(c => c !== candles[i]);
       // Strict inequalities: ties are never fractals, including a tie on an open right bar.
       if (!neighbours.every(c => kind === "high" ? price > c.high[side]! : price < c.low[side]!)) continue;
-      const right = candles.slice(i + 1, i + 3).filter(c => c.is_closed).length;
-      const confirmed = end === i + 2 && candles.slice(i - 2, i + 3).every(c => c.is_closed);
-      const later = confirmed ? candles.slice(i + 3) : [];
+      const right = candles.slice(i + 1, i + 2).filter(c => c.is_closed).length;
+      const confirmed = end === i + 1 && candles.slice(i - 1, i + 2).every(c => c.is_closed);
+      const later = confirmed ? candles.slice(i + 2) : [];
       const touch = later.find(c => c[kind][side] === price);
       const sweep = later.find(c => {
         const p = c[kind][side];
         return p !== null && (kind === "high" ? p > price : p < price);
       });
       fractals.push({ id: `${tf}:${side}:${kind}:${candles[i].time}`, timeframe: tf, side, kind, time: candles[i].time, price,
-        status: confirmed ? "confirmed" : "forming", confirmation_bar_time: confirmed ? candles[i + 2].time : null,
-        confirmed_at: confirmed ? closeTime(candles[i + 2], candles[i + 3], tf) : null,
+        status: confirmed ? "confirmed" : "forming", confirmation_bar_time: confirmed ? candles[i + 1].time : null,
+        confirmed_at: confirmed ? closeTime(candles[i + 1], candles[i + 2], tf) : null,
         right_closed_bars: right, liquidity_status: !confirmed ? "unconfirmed" : sweep ? "swept" : touch ? "touched" : "untouched",
         touched_at: touch?.time ?? null, touched_by_forming_candle: touch ? !touch.is_closed : false,
         swept_at: sweep?.time ?? null, swept_by_forming_candle: sweep ? !sweep.is_closed : false, index: i });
@@ -127,7 +132,7 @@ export function analyzeSeries(data: CandleResponse, symbol: AnalysisSymbol, side
   const potential = forming.map(f => {
     const opposite = confirmed.findLast(p => p.kind !== f.kind && p.time < f.time) ?? null;
     return range(f.kind === "high" ? f : opposite, f.kind === "low" ? f : opposite, current,
-      "Provisional pivot awaiting two closed right candles; not a confirmed dealing range.");
+      "Provisional pivot awaiting one closed right candle; not a confirmed dealing range.");
   });
   const trueRanges: number[] = [];
   candles.forEach((c, i) => {
@@ -137,12 +142,14 @@ export function analyzeSeries(data: CandleResponse, symbol: AnalysisSymbol, side
   });
   const sample = trueRanges.slice(-14);
   const atr = sample.length ? sample.reduce((a, b) => a + b, 0) / sample.length : null;
-  const threshold = Math.max(settings.min_remaining_units, (atr ?? 0) * settings.atr_fraction / instrument.unit_size);
+  const threshold = 0; // No author minimum FVG size or ATR gate.
   const gaps: Gap[] = [];
   for (let i = 2; i < candles.length; i++) {
     if (!validWindow(i - 2, i)) continue;
     const a = candles[i - 2], c = candles[i];
-    const bullish = c.low[side]! > a.high[side]!, bearish = c.high[side]! < a.low[side]!;
+    const middle=candles[i-1],lo=Math.min(middle.open[side]!,middle.close[side]!),hi=Math.max(middle.open[side]!,middle.close[side]!);
+    const bullish = c.low[side]! > a.high[side]! && middle.close[side]!>middle.open[side]! && lo<=a.high[side]! && hi>=c.low[side]!,
+      bearish = c.high[side]! < a.low[side]! && middle.close[side]!<middle.open[side]! && lo<=c.high[side]! && hi>=a.low[side]!;
     if (!bullish && !bearish) continue;
     const lower = bullish ? a.high[side]! : c.high[side]!, upper = bullish ? c.low[side]! : a.low[side]!;
     let remainingLower = lower, remainingUpper = upper, touch: string | null = null;
@@ -169,7 +176,7 @@ export function analyzeSeries(data: CandleResponse, symbol: AnalysisSymbol, side
       material_threshold_units: threshold, index: i });
   }
   const warnings: string[] = [];
-  if (candles.length < 5) warnings.push("INSUFFICIENT_BARS_FOR_FRACTALS");
+  if (candles.length < 3) warnings.push("INSUFFICIENT_BARS_FOR_FRACTALS");
   if (data.metadata.insufficient_history) warnings.push("REQUESTED_HISTORY_INCOMPLETE");
   if (data.metadata.discarded_rows || data.metadata.discarded_sides || candles.some(c => !usable(c, side))) warnings.push("VALIDATION_GAPS_OR_INCOMPLETE_PRICE_SIDE");
   if (data.metadata.discarded_reasons.invalid_time) warnings.push("UNLOCATABLE_REJECTED_ROWS_CONFIRMATIONS_SUPPRESSED");
@@ -187,7 +194,7 @@ export function analyzeSeries(data: CandleResponse, symbol: AnalysisSymbol, side
     fvgs: gaps.filter(g => g.confirmed), forming_fvgs: gaps.filter(g => !g.confirmed),
     materiality: { ...settings, unit: instrument.unit, unit_size: instrument.unit_size, atr, atr_period: 14, atr_samples: sample.length, atr_method: "simple_mean_true_range_closed_bars", threshold_units: threshold },
     warnings,
-    rules: { fractal: "strict_5_bar_two_closed_right", ties: "reject", touch: "exact_equality_of_later_extreme_including_forming_bar",
+    rules: { fractal: "strict_3_bar_one_closed_right", ties: "reject", touch: "exact_equality_of_later_extreme_including_forming_bar",
       sweep: "strict_cross_beyond_level_including_forming_bar_no_close_back_required",
       fvg: "strict_three_bar_wick_gap_closed_bars", fill: "maximum_wick_penetration_after_third_bar_including_forming_bar",
       coverage: "observed_history_only_missing_sessions_may_hide_sweeps_or_fills", range: "confirmed_fractal_high_to_confirmed_fractal_low" },
@@ -210,12 +217,12 @@ export function targetMap(series: SeriesAnalysis[], price: number | null) {
     const sorted = levels.filter(l => above ? l.price > price && l.kind !== "fractal_low" : l.price < price && l.kind !== "fractal_high")
       .sort((a, b) => Math.abs(a.price - price) - Math.abs(b.price - price) || a.source_id.localeCompare(b.source_id));
     const eligible = sorted.filter(l => l.eligible_d1_plus);
-    const nearest = eligible[0] ?? null;
-    return { nearest, alternatives: eligible.slice(1), intermediate_obstacles: nearest ? sorted.filter(l => Math.abs(l.price - price) < Math.abs(nearest.price - price)) : sorted.filter(l => !l.eligible_d1_plus) };
+    const nearest = null as Level|null; // No nearest-price shortcut to author target eligibility.
+    return { nearest, alternatives: eligible, intermediate_obstacles: nearest ? sorted.filter(l => Math.abs(l.price - price) < Math.abs(nearest.price - price)) : sorted.filter(l => !l.eligible_d1_plus) };
   };
   const currentZones = price === null ? [] : series.flatMap(s => s.fvgs.filter(g => g.material && g.remaining_lower! <= price && g.remaining_upper! >= price)
     .map(g => ({ source_id: g.id, timeframe: s.timeframe, lower: g.remaining_lower, upper: g.remaining_upper, eligible_d1_plus: s.timeframe !== "H4" })));
   return { reference_price: price, above: direction(true), below: direction(false), current_zones: currentZones,
-    facts: "Observed levels only; nearest eligible D1/W1/MN1 level per direction. H4 is an intermediate obstacle only.",
+    facts: "REVIEW_REQUIRED: geometric levels only. Use THE EDGE X/X-1/X-2 target analysis in /api/intelligence.",
     hypotheses: [], probability: null, coverage: "loaded_history_only_not_exhaustive" };
 }

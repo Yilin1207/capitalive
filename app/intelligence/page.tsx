@@ -1,4 +1,5 @@
 "use client";
+import {ACTIVE_RESEARCH_SYMBOLS} from "@/lib/active-research-markets";
 import { useState } from "react";
 import type { buildIntelligence } from "@/lib/knowledge/intelligence";
 import "../market-feed.css";
@@ -60,7 +61,7 @@ export default function IntelligencePage() {
             setLow("");
           }}
         >
-          {["EURUSD", "NAS100", "EU50"].map((s) => (
+          {ACTIVE_RESEARCH_SYMBOLS.map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>
@@ -155,7 +156,7 @@ export default function IntelligencePage() {
           </fieldset>
           <h2>Narrative: {audit.narrative.bias}</h2>
           <HumanReviewPanel key={audit.narrative.human_review.evidence_sha256} audit={audit} onAudit={setAudit}/>
-          <p data-testid="narrative-review">{audit.narrative.status} · Контекст кандидата: {audit.narrative.candidate_bias} · {audit.verdict.action}</p>
+          <p data-testid="narrative-review">{audit.narrative.status} · Технический контекст: {audit.narrative.candidate_bias}. Окончательный Narrative и торговое решение — Trading Research Desk.</p>
           <p data-testid="target-status">Цель: {audit.target_selection.status}. Препятствий: {audit.target_selection.obstacles.length}.</p>
           <details><summary>Почему сценарий требует проверки</summary>
             <ul>{audit.narrative.blockers.map(b=><li key={b}>{b}</li>)}</ul>

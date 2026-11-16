@@ -1,7 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';
 import type {Frame,Bar} from '../lib/knowledge/data';import {closedFrame} from '../lib/knowledge/data';
 import {assessLevel,intervalCoverage,type LevelState} from '../lib/knowledge/level-state';
-import {selectTarget} from '../lib/knowledge/target-selection';
+import {selectTarget as targetWithCoverage} from '../lib/knowledge/target-selection';
+// These synthetic tests define the complete finite level universe explicitly.
+const selectTarget=(...args:Parameters<typeof targetWithCoverage>)=>{args[6]??='COMPLETE';return targetWithCoverage(...args);};
 import {resolveContext,narrativeAssessment,assessInvalidations,type NarrativeFrame} from '../lib/knowledge/narrative';
 import {TF_ORDER,type KeyLevel} from '../lib/knowledge/detectors';
 import {provenance} from '../lib/knowledge/rules';import {buildIntelligence} from '../lib/knowledge/intelligence';
@@ -22,7 +24,7 @@ test('V2 04 geometry-without-role: unqualified SNR is not a validated target',()
 test('V2 05 monthly-fvg-opposing-daily: containment cannot establish bullish narrative',()=>{
  const a={...level('support','FVG','MN1','A'),lower:6,upper:9},context=resolveContext([a],8),s={...target(level(),intact()).state,id:'A',state:'ACTIVE' as const};
  const f=TF_ORDER.map(timeframe=>({timeframe,structure_bias:timeframe==='D1'?'Bearish':'Neutral',order_flow:{bias:'Neutral',status:'PROJECT',evidence_ids:[]},range:null,findings:[]})) as NarrativeFrame[];
- const r=narrativeAssessment(context,[s],f,selectTarget([],[],8,'up',a),8,true);assert.equal(r.status,expected('monthly-fvg-opposing-daily'));assert.equal(r.bias,'Neutral');assert.ok(r.blockers.includes('OPPOSING_D1_STRUCTURE'));
+ const r=narrativeAssessment(context,[s],f,selectTarget([],[],8,'up',a),8,true);assert.equal(r.status,expected('monthly-fvg-opposing-daily'));assert.equal(r.bias,'Neutral');assert.ok(r.blockers.includes('AUTHOR_STRUCTURE_REVIEW_REQUIRED'));
 });
 test('V2 06 monthly-weekly-conflict: lower TF does not outvote monthly',()=>{const a={...level('support','FVG','MN1','A'),lower:6,upper:9},w={...a,id:'W',timeframe:'W1' as const,role:'resistance' as const};const r=resolveContext([a,w],8);assert.equal(r.reason,expected('monthly-weekly-conflict'));assert.equal(r.candidate_bias,'Neutral');const assessment=narrativeAssessment(r,[],[{timeframe:'MN1',structure_bias:'Bullish',order_flow:{bias:'Bullish',status:'PROJECT',evidence_ids:[]},range:null,findings:[]}],selectTarget([],[],8,null,a),8,true);assert.ok(!assessment.blockers.some(b=>b.startsWith('OPPOSING_')),'No direction means structure is context, not opposition to a nonexistent bias');});
 test('V2 07 local-stop-htf-preserved: entry invalidation is not inherited by HTF narrative',()=>{const s=target(level(),intact()).state,r=assessInvalidations(s,true);assert.equal(r.entry_invalidated,true);assert.equal(r.narrative_invalidated,expected('local-stop-htf-preserved'));assert.equal(r.KL_invalidated,false);});
@@ -33,9 +35,9 @@ test('V2 09 invalid-bid-ask: selected side and crossed sides are audited indepen
  d.candles[11].open.bid=d.candles[11].open.ask!+1;assert.ok(closedFrame(d,'bid').warnings.includes(String(expected('invalid-bid-ask'))));assert.ok(closedFrame(d,'ask').warnings.includes('INVALID_OHLC'));
 });
 test('V2 10 repeat-replay: identical input produces identical complete analysis',()=>{const f=JSON.parse(readFileSync('tests/fixtures/edge-v2/EURUSD.json','utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};const a=buildIntelligence(f.data,'bid',f.quote),b=buildIntelligence(f.data,'bid',f.quote);assert.equal(JSON.stringify(a)===JSON.stringify(b),expected('repeat-replay'));});
-test('V2 original low may become bullish structural target only after closed break and later retest',()=>{
+test('V5 consumed original low cannot gain an opposite role from generic break/retest',()=>{
  const f=frames([origin(),bar(168,336,9,9.5,7,8),bar(336,504,8,10,7,8)],'W1',504),s=target(level('support'),f,504);
- assert.equal(s.state.liquidity_consumed,true);assert.equal(s.state.current_role,'resistance');assert.equal(s.state.role_status,'RETEST_CONFIRMED');assert.equal(s.result.status,'TARGET_VALIDATED');
+ assert.equal(s.state.liquidity_consumed,true);assert.equal(s.state.current_role,null);assert.equal(s.state.role_status,'UNVERIFIED');assert.equal(s.result.status,'TARGET_UNVERIFIED');
  const prefix=target(level('support'),f,336);assert.equal(prefix.result.status,'TARGET_UNVERIFIED');assert.ok(s.state.role_evidence.every(e=>e.confirmed_at<=at(504)));
 });
 test('V2 target obstacles and ambiguous structural anchors prevent nearest-level substitution',()=>{
@@ -54,5 +56,5 @@ test('V2 FVG lower-TF breach is not inversion; own-TF close invalidates at its k
  const lower=assessLevel(a,f,at(192),at(192));assert.equal(lower.state,'ACTIVE');assert.equal(lower.invalidated_at,null);assert.equal(lower.lower_tf_breach?.confirmed_at,at(192));
  f.W1.bars.push(bar(168,336,8,10,4,8));f.W1.as_of=at(336);
  const held=assessLevel(a,f,at(336),at(336));assert.equal(held.state,'ACTIVE');assert.equal(held.lower_tf_breach,null);
- f.W1.bars[1].close=5;const invalid=assessLevel(a,f,at(336),at(336));assert.equal(invalid.state,'INVALIDATED');assert.equal(invalid.invalidated_at,at(336));assert.equal(invalid.current_role,'support');
+ f.W1.bars[1].close=5;const invalid=assessLevel(a,f,at(336),at(336));assert.equal(invalid.state,'INVALIDATED');assert.equal(invalid.invalidated_at,at(336));assert.equal(invalid.initial_role,'support');assert.equal(invalid.current_role,null);
 });

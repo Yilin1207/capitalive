@@ -33,6 +33,7 @@ import {createHash} from 'node:crypto';
 import {canonical} from '../research/blind';
 import {qualityDimensions} from '../research/quality';
 import type {HumanReview} from './human-review';
+import {rangeCandidates} from './range-candidates';
 export type IntelligenceOptions = {
   anchor_id?: string;
   human_review?: HumanReview;
@@ -53,6 +54,7 @@ export function buildIntelligence(
   quote: MarketQuote,
   options: IntelligenceOptions = {},
 ) {
+  if(TF_ORDER.some(tf=>!data[tf]||data[tf].timeframe!==tf||data[tf].provider!=='Capital.com'||!Number.isFinite(Date.parse(data[tf].fetched_at)))||new Set(TF_ORDER.map(tf=>data[tf].symbol)).size!==1||new Set(TF_ORDER.map(tf=>data[tf].environment)).size!==1)throw Error('INVALID_DATASET_IDENTITY');
   const fetchedAsOf = Object.values(data)
     .map((d) => d.fetched_at)
     .sort()[0];
@@ -64,13 +66,11 @@ export function buildIntelligence(
   const bases = TF_ORDER.map((tf) => {
     const frame = frames[tf],
       pivots = detectFractals(frame, 3),
-      five = detectFractals(frame, 5),
       fvg = detectFvg(frame);
     return {
       tf,
       frame,
       pivots,
-      five,
       fvg,
       levels: [...pivotLevels(pivots), ...fvg.levels],
     };
@@ -88,7 +88,7 @@ export function buildIntelligence(
       };
     }),
   );
-  const perFrame = bases.map(({ tf, frame, pivots, five, fvg }) => {
+  const perFrame = bases.map(({ tf, frame, pivots, fvg }) => {
     const context = allLevels.filter(
       (l) => TF_ORDER.indexOf(l.timeframe) <= TF_ORDER.indexOf(tf),
     );
@@ -96,11 +96,10 @@ export function buildIntelligence(
       rb = detectRejectionBlocks(frame, context),
       snr = detectSnr(frame, context),
       structure = detectStructure(frame, pivots),
-      dr = selectRange(frame, [...pivots, ...five], options.ranges?.[tf]);
+      dr = selectRange(frame, pivots, options.ranges?.[tf]);
     const sessions = detectSessionGaps(frame, options.sessions);
     const findings: Finding[] = [
       ...pivots,
-      ...five,
       ...fvg.findings,
       ...detectInversions(frame, fvg.levels),
       ...raids,
@@ -124,6 +123,7 @@ export function buildIntelligence(
       closed_candles: frame.bars.length,
       findings,
       range: dr.range,
+      range_candidates:rangeCandidates(frame,pivots),
       range_state:assessRange(frame,dr.range),
       range_blocker: dr.reason,
       session_blocker: sessions.blocked,
@@ -136,7 +136,10 @@ export function buildIntelligence(
   const states=detected.map(l=>assessLevel(l,frames,asOf,through));
   const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...l,role:states.find(s=>s.id===l.id)!.current_role??l.role}));
   const hierarchy=resolveHierarchy(active,reference,options.anchor_id),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
-  const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id);
+  // Empty/unknown frames cannot prove an obstacle-free path. Calendar, finite
+  // history and detector boundary limitations remain explicit even if no IDs were truncated.
+  const pathCoverage=TF_ORDER.slice(0,3).some(tf=>frames[tf].status==='UNVERIFIED')?'UNKNOWN':'PARTIAL';
+  const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id,pathCoverage);
   const target=detected.find(l=>l.id===targetSelection.validated_target?.id)??null,a=hierarchy.a;
   const manualC=options.human_review?.C;
   const validManualC=!!manualC&&!!a&&manualC.timeframe===a.timeframe&&Number.isFinite(manualC.price)&&(a.role==='support'?manualC.price<=a.lower:manualC.price>=a.upper)&&manualC.condition==='CLOSE_BEYOND'&&!frames[a.timeframe].bars.some(b=>b.time>=a.confirmed_at&&(a.role==='support'?b.close<manualC.price:b.close>manualC.price));
@@ -294,7 +297,7 @@ export function buildIntelligence(
   );
   return {
     ok: true,
-    schema_version: "edge-knowledge-3",
+    schema_version: "edge-knowledge-5",
     symbol: data.H4.symbol,
     environment: data.H4.environment,
     price_side: side,
@@ -346,7 +349,7 @@ export function buildIntelligence(
     assessment: {
       ...provenance("EDGE.EVIDENCE.v1"),
       ...conclusionEvidence,
-      macro_edge: { status: "UNVALIDATED", context: narrative.bias },
+      macro_edge: { status: "NOT_EVALUATED", context: null },
       trade_quality: {
         status: "INCOMPLETE",
         has_A: !!a,
@@ -364,7 +367,8 @@ export function buildIntelligence(
     verdict: {
       ...provenance("EDGE.EVIDENCE.v1"),
       status: reliable ? "OBSERVATION_ONLY" : "INSUFFICIENT_DATA",
-      action: "WAIT",
+      action: "NOT_EVALUATED",
+      decision_authority: 'EXTERNAL_TRADING_RESEARCH_DESK',
       reasons: [...assessment.blockers,...targetSelection.blockers],
       data_status: reliable ? "PARTIAL" : "UNVERIFIED",
       timeframes: TF_ORDER,

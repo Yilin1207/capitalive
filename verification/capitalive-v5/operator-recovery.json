@@ -1,0 +1,62 @@
+{
+  "requested_at": "2026-11-16T18:05:58.415Z",
+  "commit": "204a6813bf714fe8320b3438c16101965cfe8bcc",
+  "readback_at": "2026-11-16T18:06:13.699Z",
+  "published_at": "2026-11-16T18:06:07.385Z",
+  "reports": [
+    {
+      "symbol": "EURUSD",
+      "bytes": 48222,
+      "sha256": "45fe6c1e4e9f96b30ab8f4a10040f04627476a1d987bed35a17528e223fb14f7",
+      "status": "STALE",
+      "read_status": "STALE",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 48.422,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": null,
+      "provider_timestamp": null,
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    },
+    {
+      "symbol": "NAS100",
+      "bytes": 36935,
+      "sha256": "dd115784a1a20c98ebed8eab60469b1d1d0040ed030c770ea0236f992596b58c",
+      "status": "PARTIAL",
+      "read_status": "PARTIAL",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 47.08,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": 55.653,
+      "provider_timestamp": "2026-11-16T18:05:17.700Z",
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    },
+    {
+      "symbol": "JP225",
+      "bytes": 37536,
+      "sha256": "43fb29fbcb0e0bf63a1ac0ffeb8bfd76b7b6ed4ca21a9de1ff5dc0f5255e92fb",
+      "status": "PARTIAL",
+      "read_status": "PARTIAL",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 45.328,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": 53.89,
+      "provider_timestamp": "2026-11-16T18:05:19.809Z",
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    }
+  ],
+  "git_commit_at": "2026-11-16T18:05:31Z",
+  "branch": "verification/v5-recovery",
+  "clock_note": "Operator clock approximately 39 seconds ahead of Vercel/GitHub HTTP Date; use CI timestamps for cross-service latency."
+}

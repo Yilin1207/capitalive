@@ -2,7 +2,8 @@ import {TF_ORDER,type KeyLevel} from './detectors';
 import type {LevelState} from './level-state';
 import {provenance} from './rules';
 export type Direction='up'|'down';
-export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:number|null,direction:Direction|null,a:KeyLevel|null,requestedId?:string){
+export type PathCompleteness='COMPLETE'|'PARTIAL'|'UNKNOWN';
+export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:number|null,direction:Direction|null,a:KeyLevel|null,requestedId?:string,universeCoverage:PathCompleteness='UNKNOWN'){
  const role=direction==='up'?'resistance':'support';
  const candidates=levels.filter(l=>['MN1','W1','D1'].includes(l.timeframe)&&l.id!==a?.id&&reference!==null&&(direction==='up'?l.lower>reference:direction==='down'?l.upper<reference:false)).map(l=>{
   const s=states.find(s=>s.id===l.id)!;const reasons:string[]=[];
@@ -30,8 +31,13 @@ export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:num
   if(s?.state==='ACTIVE'&&s.current_role!==role)return [];
   return [{id:l.id,timeframe:l.timeframe,kind:l.kind,lower:l.lower,upper:l.upper,current_role:s?.current_role??null,state:s?.state??'UNVERIFIED',certainty:s?.state==='ACTIVE'&&s.current_role===role?'CONFIRMED_OBSTACLE':'POTENTIAL_OBSTACLE_REVIEW_REQUIRED',evidence_id:l.source_finding.id}];
  });
+ const pathCoverage=(choice:typeof candidates[number]):PathCompleteness=>{
+  const observed=path(choice);if(observed.some(o=>states.find(s=>s.id===o.id)?.coverage!=='COMPLETE_OBSERVED_INTERVAL'))return 'PARTIAL';
+  return universeCoverage;
+ };
  const obstacles=chosen?path(chosen):[];
  const blockers=[...(!direction?['NO_DIRECTIONAL_CONTEXT']:[]),...(!chosen?[requestedId?'REQUESTED_TARGET_UNAVAILABLE':pool.length>1?'AMBIGUOUS_STRUCTURAL_TARGETS':'NO_STRUCTURAL_TARGET']:chosen.reasons),...(chosen&&!allowedTfs.includes(chosen.timeframe)?['TARGET_OUTSIDE_AUTHOR_X_OR_X_MINUS_1']:[]),...(obstacles.length?['A_TO_B_PATH_HAS_OBSTACLES']:[])];
+ if(chosen&&pathCoverage(chosen)!=='COMPLETE')blockers.push(`PATH_COVERAGE_${pathCoverage(chosen)}`);
  const validated=chosen&&blockers.length===0?chosen:null;
- return {...provenance('EDGE.TARGET_ROLE.v2'),status:validated?'TARGET_VALIDATED':'TARGET_UNVERIFIED',as_of:states[0]?.as_of??null,selection_policy:requestedId?'EXPLICIT_TARGET_NO_FALLBACK':'UNIQUE_ROLE_ELIGIBLE_STRUCTURAL_TF_NO_DISTANCE_RANKING',requested_id:requestedId??null,target_candidates:candidates,candidate_reviews:candidates.filter(c=>c.role_eligible).map(c=>({id:c.id,role_eligible:c.role_eligible,author_timeframe_eligible:allowedTfs.includes(c.timeframe),path_obstacle_ids:path(c).map(o=>o.id)})),selected_candidate:chosen,validated_target:validated,obstacles,blockers,counterarguments:[...provenance('EDGE.TARGET_ROLE.v2').counterarguments,...blockers],invalidation:'Withdraw when role, continuity, liquidity state or intervening obstacles change. Target validation means observed structural eligibility, not TP probability.'};
+ return {...provenance('EDGE.TARGET_ROLE.v2'),status:validated?'TARGET_VALIDATED':'TARGET_UNVERIFIED',as_of:states[0]?.as_of??null,selection_policy:requestedId?'EXPLICIT_TARGET_NO_FALLBACK':'UNIQUE_ROLE_ELIGIBLE_STRUCTURAL_TF_NO_DISTANCE_RANKING',requested_id:requestedId??null,target_candidates:candidates,candidate_reviews:candidates.filter(c=>c.role_eligible).map(c=>({id:c.id,role_eligible:c.role_eligible,author_timeframe_eligible:allowedTfs.includes(c.timeframe),path_obstacle_ids:path(c).map(o=>o.id),path_completeness:pathCoverage(c)})),selected_candidate:chosen,validated_target:validated,obstacles,path_completeness:chosen?pathCoverage(chosen):'UNKNOWN' as PathCompleteness,blockers,counterarguments:[...provenance('EDGE.TARGET_ROLE.v2').counterarguments,...blockers],invalidation:'Withdraw when role, continuity, liquidity state or intervening obstacles change. Target validation means observed structural eligibility, not TP probability; inspect path_completeness separately.'};
 }

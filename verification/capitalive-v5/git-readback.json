@@ -1,0 +1,60 @@
+{
+  "commit": "a1419454e73f726abcdf4640212545810eb37946",
+  "readback_at": "2026-11-16T18:05:31.752Z",
+  "published_at": "2026-11-16T18:04:20.017Z",
+  "reports": [
+    {
+      "symbol": "EURUSD",
+      "bytes": 48194,
+      "sha256": "835c3e46db28024eb881cb76c9b06b203f3d5b9059293c13700caef6d3574029",
+      "status": "PARTIAL",
+      "read_status": "PARTIAL",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 74.114,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": 83.471,
+      "provider_timestamp": "2026-11-16T18:04:07.453Z",
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    },
+    {
+      "symbol": "NAS100",
+      "bytes": 36935,
+      "sha256": "fe3100a717f967af5543846f76264de1e2b2ab5e55e9f8a9b75d038582ca7faa",
+      "status": "PARTIAL",
+      "read_status": "PARTIAL",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 72.912,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": 81.955,
+      "provider_timestamp": "2026-11-16T18:04:09.460Z",
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    },
+    {
+      "symbol": "JP225",
+      "bytes": 37563,
+      "sha256": "28fbf71462bcd3cb4d97b377af74ab62b189985691446cb24cc3b9f06113c31a",
+      "status": "PARTIAL",
+      "read_status": "PARTIAL",
+      "expired_at_read": false,
+      "delivery": {
+        "age_seconds": 71.805,
+        "status": "FRESH",
+        "reason": null
+      },
+      "provider_age_seconds_at_read": 80.936,
+      "provider_timestamp": "2026-11-16T18:04:10.816Z",
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
+    }
+  ],
+  "branch": "verification/v5-current",
+  "git_commit_at": "2026-11-16T18:04:22Z"
+}

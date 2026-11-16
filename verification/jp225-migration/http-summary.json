@@ -1,0 +1,176 @@
+{
+  "preview": "https://capitalive-f56a94iqf-yilin1207s-projects.vercel.app",
+  "engine_commit": "e5cf95e0af3164e1a99eec58ed79296d5c4fb986",
+  "checked_at": "2026-11-16T08:17:21.496Z",
+  "production_changed": false,
+  "sso_unauthenticated_http": 302,
+  "sso_setting": "all_except_custom_domains",
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 111414,
+    "png_signature_verified": true
+  },
+  "checks": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59667,
+      "sha256": "5bc33bb04fb74022fdb8c0d8d3f82184bfae92d44278a3178a9269f1dfd243f9",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:15:51.018Z",
+      "generated_at": "2026-11-16T08:15:55.144Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1378,
+      "findings_omitted": 1324,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 7017,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59439,
+      "sha256": "79ea99bf96aff584422fe80063431e832a26a01ced6826cea6d1ef71a15598e1",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:15:51.018Z",
+      "generated_at": "2026-11-16T08:16:05.765Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1384,
+      "findings_omitted": 1330,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 3255,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58411,
+      "sha256": "171226bdd5665532f41d7fdd78ccbc877b4afbb18980d17eb10e29339a86005e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:16:10.966Z",
+      "generated_at": "2026-11-16T08:16:14.130Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1336,
+      "findings_omitted": 1282,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 4683,
+      "detail": {
+        "http": 200,
+        "interactions": 63,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58386,
+      "sha256": "57c1e6bd6190de3495f68b5a6353a2999a45ad64d64f292ebc7bd2a5bd45b7e4",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:16:10.966Z",
+      "generated_at": "2026-11-16T08:16:22.314Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 54,
+      "findings_total": 1336,
+      "findings_omitted": 1282,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 3337,
+      "detail": {
+        "http": 200,
+        "interactions": 63,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 49870,
+      "sha256": "b6e34dd50244d65242d184c80da0ea30371eb25711ddea04dfdb71b150950bbb",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:16:27.046Z",
+      "generated_at": "2026-11-16T08:16:29.841Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 47,
+      "findings_total": 1274,
+      "findings_omitted": 1227,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 4386,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 49871,
+      "sha256": "8566ba897bf4e1ac68ff3e99b3ccdaff8dea046a2a961bedbf75ffefb55f17a2",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T08:16:27.046Z",
+      "generated_at": "2026-11-16T08:16:37.180Z",
+      "expires_at": "2026-11-16T12:20:00.000Z",
+      "environment": "demo",
+      "evidence_count": 47,
+      "findings_total": 1275,
+      "findings_omitted": 1228,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 2981,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    }
+  ]
+}

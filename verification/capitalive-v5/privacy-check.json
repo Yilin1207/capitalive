@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "files_scanned": 70,
+  "known_github_and_vercel_secrets_checked": true,
+  "public_artifacts_without_raw_ohlc_or_accounts": true,
+  "sso_setting": "all_except_custom_domains",
+  "production_mutations": false
+}

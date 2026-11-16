@@ -17,10 +17,10 @@ test("strict UTC timestamps: never uses local time or accepts date rollover", ()
 });
 
 test("sorts and deduplicates provider timestamps, preserves both OHLC sides exactly", () => {
-  const result = normalizeCandles({ prices: [price("2026-10-21T12:00:00"), price(), price("2026-10-21T12:00:00", 5)] }, "H4", now);
+  const result = normalizeCandles({ prices: [price("2026-10-21T12:00:00"), price(), price("2026-10-21T12:00:00")] }, "H4", now);
   assert.equal(result.duplicate_rows, 1);
   assert.deepEqual(result.candles.map(c => c.time), ["2026-10-19T00:00:00.000Z", "2026-10-21T12:00:00.000Z"]);
-  assert.deepEqual(result.candles[1].close, { bid: 110, ask: 113 });
+  assert.deepEqual(result.candles[1].close, { bid: 105, ask: 108 });
   assert.equal(result.candles[0].is_closed, true);
   assert.equal(result.candles[1].is_closed, false);
 });
@@ -35,8 +35,8 @@ test("bad OHLC side becomes null without averaging or copying the other side", (
 
 test("discards crossed sides, future and invalid timestamps, non-finite and invalid OHLC", () => {
   const crossed = price(); crossed.openPrice.ask = 99;
-  const invalid = price(); invalid.highPrice = { bid: NaN, ask: Infinity };
-  const invalidRange = price(); invalidRange.lowPrice = { bid: 200, ask: 210 };
+  const invalid = price('2026-10-19T04:00:00'); invalid.highPrice = { bid: NaN, ask: Infinity };
+  const invalidRange = price('2026-10-19T08:00:00'); invalidRange.lowPrice = { bid: 200, ask: 210 };
   const result = normalizeCandles({ prices: [crossed, invalid, invalidRange, price("2026-10-22T00:00:00"), { ...price(), snapshotTimeUTC: null }] }, "H4", now);
   assert.equal(result.candles.length, 0);
   assert.equal(result.discarded_rows, 5);

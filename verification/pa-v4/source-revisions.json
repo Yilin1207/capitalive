@@ -1,0 +1,133 @@
+{
+  "checked_date": "2026-11-16",
+  "sources": [
+    {
+      "id": "419e05dadd188118ba32fc9f0f146cc4",
+      "title": "🧠 Capitalive — Knowledge Operating Manual (THE EDGE)",
+      "revision": "2026-11-15T11:13:46.537Z",
+      "url": "https://app.notion.com/p/419e05dadd188118ba32fc9f0f146cc4",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd188134b279fb543a6ed8fe",
+      "title": "📚 THE EDGE — Key Information",
+      "revision": "2026-11-15T10:44:06.149Z",
+      "url": "https://app.notion.com/p/418e05dadd188134b279fb543a6ed8fe",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "02de05dadd188371823c01c1f58aacc1",
+      "title": "Yerassyl TS",
+      "revision": "2026-08-03T10:00:43.971Z",
+      "url": "https://app.notion.com/p/02de05dadd188371823c01c1f58aacc1",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "419e05dadd18817692d6efb4d9a1db5d",
+      "title": "Fractal High / Low. Inducement",
+      "revision": "2026-11-15T08:56:53.870Z",
+      "url": "https://app.notion.com/p/419e05dadd18817692d6efb4d9a1db5d",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "419e05dadd18817abc57e446cd074bdc",
+      "title": "Fair Value Gap [FVG]",
+      "revision": "2026-11-15T08:46:37.920Z",
+      "url": "https://app.notion.com/p/419e05dadd18817abc57e446cd074bdc",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "419e05dadd1881f68a6bd60a2e1d2cff",
+      "title": "Rejection Block [RB]",
+      "revision": "2026-11-15T08:35:06.009Z",
+      "url": "https://app.notion.com/p/419e05dadd1881f68a6bd60a2e1d2cff",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "419e05dadd1881c6a539fe10cf3ea892",
+      "title": "Support aNd Resistance [SNR]",
+      "revision": "2026-11-15T08:41:30.306Z",
+      "url": "https://app.notion.com/p/419e05dadd1881c6a539fe10cf3ea892",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd1881eb8321c5c4edb17a06",
+      "title": "Алгоритм анализа TDA",
+      "revision": "2026-11-15T09:13:28.831Z",
+      "url": "https://app.notion.com/p/418e05dadd1881eb8321c5c4edb17a06",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd18812aa4e7c5f3fbe3cebe",
+      "title": "Narrative > Entry и как определять направление рынка эффективно?",
+      "revision": "2026-11-15T09:33:15.430Z",
+      "url": "https://app.notion.com/p/418e05dadd18812aa4e7c5f3fbe3cebe",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd18810a8ae7ef1c01be7232",
+      "title": "Методы открытия позиций",
+      "revision": "2026-11-15T09:46:05.303Z",
+      "url": "https://app.notion.com/p/418e05dadd18810a8ae7ef1c01be7232",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd188105b1afc1a536f434e2",
+      "title": "Все про Dealing Range",
+      "revision": "2026-11-15T10:42:22.578Z",
+      "url": "https://app.notion.com/p/418e05dadd188105b1afc1a536f434e2",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd1881dcb88fe1774d0b5f36",
+      "title": "H4 Dealing Range Entry и почему можно не ждать VC?",
+      "revision": "2026-11-15T08:27:21.150Z",
+      "url": "https://app.notion.com/p/418e05dadd1881dcb88fe1774d0b5f36",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd1881a3965bfba58563ff9d",
+      "title": "Логика использования IRL в Dealing Range",
+      "revision": "2026-11-15T10:44:45.750Z",
+      "url": "https://app.notion.com/p/418e05dadd1881a3965bfba58563ff9d",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd18811ba86bc816d4f1d2dc",
+      "title": "Fractal Raid и закрытие свечи в элементах PA",
+      "revision": "2026-11-15T10:44:48.993Z",
+      "url": "https://app.notion.com/p/418e05dadd18811ba86bc816d4f1d2dc",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd188135bf68eb2f9066b094",
+      "title": "Логика Compression | Trendline | LRL",
+      "revision": "2026-11-15T10:44:17.426Z",
+      "url": "https://app.notion.com/p/418e05dadd188135bf68eb2f9066b094",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    },
+    {
+      "id": "418e05dadd18811e8ef0c7981e71cd8b",
+      "title": "Локализация и открытие позиций на основе реакции — H4 Dealing Range",
+      "revision": "2026-11-15T10:42:18.844Z",
+      "url": "https://app.notion.com/p/418e05dadd18811e8ef0c7981e71cd8b",
+      "access": "FETCHED",
+      "review_scope": "TEXT_DEFINITIONS_AND_EXISTING_REVIEWED_REVISION_NO_NEW_VISUAL_REVIEW"
+    }
+  ]
+}

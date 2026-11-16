@@ -19,7 +19,7 @@ for(const set of ['control','archive'])for(const symbol of ['EURUSD','NAS100','E
  const wireBytes=Buffer.byteLength(JSON.stringify(encodeIntelligence(r)));
  assert.equal(r.as_of,before.as_of);assert.ok(wireBytes<4_250_000,'Encoded HTTP response budget');
  assert.equal(r.data_quality.status,before.data_quality.status,'No data quality promotion');
- assert.equal(r.verdict.action,'WAIT');assert.equal(r.execution.order,null);
+ assert.equal(r.verdict.action,'NOT_EVALUATED');assert.equal(r.execution.order,null);
  for(const s of r.levels.states){
   assert.ok(s.confirmed_at<=r.as_of);assert.ok(!s.invalidated_at||s.invalidated_at<=s.evaluated_through);
   for(const e of [s.first_raid,s.last_test,s.reaction,s.lower_tf_breach,...s.role_evidence].filter(e=>e!==null)){
