@@ -1,9 +1,10 @@
 // Node 24 strips TypeScript types. No npm install, broker credentials or engine code required.
 import {createHash} from 'node:crypto';
 import {pathToFileURL} from 'node:url';
+import {ACTIVE_RESEARCH_SYMBOLS} from '../lib/active-research-markets.ts';
 import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,BridgeFailure,diagnostic,classifyFailure,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
 export const TARGET_REPOSITORY='Yilin1207/capitalive-research-bridge';
-const symbols=['EURUSD','NAS100','EU50'] as const;
+const symbols=ACTIVE_RESEARCH_SYMBOLS;
 const sha=(v:string)=>createHash('sha256').update(v).digest('hex');
 export function transportError(symbol:string,now:string,code='TRANSPORT_ERROR',failure?:BridgeDiagnostic){
   return {schema_version:'desk-report-v1',symbol,status:'ERROR',generated_at:now,as_of:null,expires_at:now,error:code,
@@ -66,7 +67,16 @@ export async function publishReports(token:string,reports:Record<string,unknown>
   }
   const manifest={schema_version:'desk-report-manifest-v1',contract_revision:CONTRACT_REVISION,generated_at:new Date(now).toISOString(),reports:rows,privacy:'PRIVATE_REPOSITORY_ONLY',no_raw_ohlc:true,trading_enabled:false};
   tree.push({path:'reports/latest/manifest.json',mode:'100644',type:'blob',content:JSON.stringify(manifest,null,2)+'\n'});
-  const ref=await api('/git/ref/heads/main'),parent=await api(`/git/commits/${ref.object.sha}`),newTree=await api('/git/trees','POST',{base_tree:parent.tree.sha,tree});
+  const ref=await api('/git/ref/heads/main'),parent=await api(`/git/commits/${ref.object.sha}`);
+  const currentTree=await api(`/git/trees/${parent.tree.sha}?recursive=1`);
+  if(currentTree.truncated)throw Error('INVALID_PUBLICATION');
+  const oldEu50=currentTree.tree?.find((entry:{path:string;type:string;sha:string})=>entry.path==='reports/latest/EU50.json'&&entry.type==='blob');
+  if(oldEu50){
+    // Preserve the exact old blob outside latest before removing its active path.
+    tree.push({path:`reports/archive/EU50/${oldEu50.sha}.json`,mode:'100644',type:'blob',sha:oldEu50.sha});
+    tree.push({path:'reports/latest/EU50.json',mode:'100644',type:'blob',sha:null});
+  }
+  const newTree=await api('/git/trees','POST',{base_tree:parent.tree.sha,tree});
   const commit=await api('/git/commits','POST',{message:'Refresh compact research reports',tree:newTree.sha,parents:[ref.object.sha],author:{name:'Capitalive Research Bridge',email:'41898282+github-actions[bot]@users.noreply.github.com'}});
   // Recheck immediately before the atomic ref update. Never force through a concurrent change.
   if((await api('')).private!==true)throw Error('PRIVATE_REPOSITORY_REQUIRED');

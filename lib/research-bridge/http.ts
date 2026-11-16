@@ -10,7 +10,7 @@ import {CONTRACT_REVISION,classifyFailure,diagnostic,type FailureStage} from './
 export async function deskReportHttp(request:Request,deps={getCandles,getAnalysisQuote}){
   const params=new URL(request.url).searchParams,symbol=(params.get('symbol')??'EURUSD').toUpperCase();
   const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','X-Desk-Contract':CONTRACT_REVISION}});
-  if(!SYMBOLS.includes(symbol as BridgeSymbol))return json({error:'INVALID_SYMBOL'},400);
+  if(!SYMBOLS.some(s=>s===symbol))return json({error:'INVALID_SYMBOL'},400);
   const safeSymbol=symbol as BridgeSymbol,side=params.get('side')??'bid';
   if(!['bid','ask'].includes(side))return json(errorReport(safeSymbol,'INVALID_REQUEST'),400);
   let stage:FailureStage='http';

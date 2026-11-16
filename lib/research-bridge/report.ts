@@ -5,10 +5,12 @@ import type {CandleResponse, Timeframe} from '../candle-data';
 import type {MarketQuote} from '../quote-normalization';
 import {closedFrame} from '../knowledge/data';
 import {MAX_REPORT_BYTES, validateReport} from './contract.ts';
+import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets.ts';
 
 type Intelligence = ReturnType<typeof buildIntelligence>;
-export const SYMBOLS = ['EURUSD','NAS100','EU50'] as const;
-export type BridgeSymbol = typeof SYMBOLS[number];
+export const SYMBOLS = ACTIVE_RESEARCH_SYMBOLS;
+const REPORT_SYMBOLS = [...SYMBOLS,'EU50'] as const;
+export type BridgeSymbol = typeof REPORT_SYMBOLS[number];
 const TFS: Timeframe[] = ['MN1','W1','D1','H4'];
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const number = (v: unknown) => typeof v === 'number' && Number.isFinite(v) ? v : null;
@@ -29,7 +31,7 @@ export function errorReport(symbol: BridgeSymbol, code: string, now = new Date()
 /** Presentation-only projection. It neither detects patterns nor ranks/validates trading targets. */
 export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleResponse>, quote: MarketQuote, now = new Date().toISOString(), engineCommit: string|null = null, budgetTier=0) {
   const symbol = r.symbol as BridgeSymbol;
-  if(!SYMBOLS.includes(symbol)) throw Error('INVALID_EVIDENCE');
+  if(!REPORT_SYMBOLS.includes(symbol)) throw Error('INVALID_EVIDENCE');
   const cutoff=Date.parse(r.as_of),clock=Date.parse(now);
   if(!Number.isFinite(cutoff)||!Number.isFinite(clock)||cutoff>clock||r.schema_version!=='edge-knowledge-3') throw Error('INVALID_EVIDENCE');
   const all=r.frames.flatMap(f=>f.findings),byId=new Map(all.map(f=>[f.id,f])),states=new Map(r.levels.states.map(s=>[s.id,s]));

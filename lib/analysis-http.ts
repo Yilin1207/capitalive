@@ -5,7 +5,7 @@ import { type PriceSide } from "./candle-data";
 
 export function analysisParams(params: URLSearchParams): { symbol: AnalysisSymbol; side: PriceSide; settings: AnalysisSettings; selection?: RangeSelection } {
   const symbol = (params.get("symbol") ?? "NAS100").toUpperCase() as AnalysisSymbol;
-  if (!ANALYSIS_SYMBOLS.includes(symbol)) throw new HistoryError("INVALID_SYMBOL", "Analysis supports EURUSD, NAS100, EU50", 400);
+  if (!ANALYSIS_SYMBOLS.includes(symbol)) throw new HistoryError("INVALID_SYMBOL", `Analysis supports ${ANALYSIS_SYMBOLS.join(', ')}`, 400);
   const side = params.get("side") ?? "bid";
   if (side !== "bid" && side !== "ask") throw new HistoryError("INVALID_SIDE", "side must be bid or ask", 400);
   const numeric = (name: string, fallback: number, maximum: number) => {

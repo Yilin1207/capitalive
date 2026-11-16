@@ -34,7 +34,7 @@ const time=str(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,24),hex=str(/^[a-
 const tf=en('MN1','W1','D1','H4'),code=str(/^[A-Z][A-Z0-9_]{0,100}$/,101),bias=en('Bullish','Bearish','Neutral');
 const group=obj({items:arr(ref),total:num,omitted:num});
 const interaction=obj({kind:code,timeframe:tf,candle:num});
-const evidence=obj({id:str(/^(EURUSD|NAS100|EU50):(MN1|W1|D1|H4):(bid|ask):[A-Za-z0-9_.:\-]+$/,1600),timeframe:tf,kind:code,origin:time,confirmed_at:time,
+const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask):[A-Za-z0-9_.:\-]+$/,1600),timeframe:tf,kind:code,origin:time,confirmed_at:time,
   lower:nullable(num),upper:nullable(num),variant:en(3,5,null),polarity:en('high','low',null),direction:en('bullish','bearish','Bullish','Bearish','up','down',null),
   detector_state:en('OBSERVED','CANDIDATE','NEEDS_SPECIFICATION'),data_status:en('PARTIAL','UNVERIFIED'),
   rule:str(/^EDGE\.[A-Z0-9_]+\.v\d+$/,100),candle_refs:arr(num,1000),candle_evidence_sha256:hex,dependencies:arr(ref,20),
@@ -52,7 +52,7 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
     path:obj({items:arr(ref,4),total:nullable(num),omitted:nullable(num),completeness:en('UNASSESSED','COMPLETE','PARTIAL')})}),3),total:num,role_eligible:num,omitted:num}),
   C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT','NOT_EVALUATED')});
-const schema=obj({technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v1'),symbol:en('EURUSD','NAS100','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
+const schema=obj({technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v1'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
   error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
   diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','CAPITAL_UPSTREAM','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION,'desk-report-v1.1')})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-3'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
@@ -100,7 +100,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
     if(!r.source||!e.id.startsWith(`${r.symbol}:${e.timeframe}:${r.source.price_side}:`)||ids.has(e.id))throw Error('INVALID_EVIDENCE_ID');ids.add(e.id);
-    const unknownIdTokens=e.id.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/g,'').replace(/\b(EURUSD|NAS100|EU50|MN1|W1|D1|H4|bid|ask|high|low|FRACTAL|FVG|FVG_CLOSED_BREACH|RB_TWO_CANDLE|SNR_CLOSED_BREAK|RAID|BOS|CHOCH|IDM_INSIDE_POI|STRONG_PIVOT_CANDIDATE|DEALING_RANGE|INTERNAL_LIQUIDITY)\b/g,'').replace(/[:0-9.\-]/g,'');
+    const unknownIdTokens=e.id.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/g,'').replace(/\b(EURUSD|NAS100|JP225|EU50|MN1|W1|D1|H4|bid|ask|high|low|FRACTAL|FVG|FVG_CLOSED_BREACH|RB_TWO_CANDLE|SNR_CLOSED_BREAK|RAID|BOS|CHOCH|IDM_INSIDE_POI|STRONG_PIVOT_CANDIDATE|DEALING_RANGE|INTERNAL_LIQUIDITY)\b/g,'').replace(/[:0-9.\-]/g,'');
     if(unknownIdTokens)throw Error('INVALID_EVIDENCE_ID');
     const end=Date.parse(e.confirmed_at);if(asof===null||!Number.isFinite(end)||end>asof||Date.parse(e.origin)>end)throw Error('FUTURE_EVIDENCE');
     if(!Object.hasOwn(r.rules,e.rule))throw Error('MISSING_RULE');

@@ -1,4 +1,5 @@
 "use client";
+import {ACTIVE_RESEARCH_SYMBOLS} from "@/lib/active-research-markets";
 import { useState } from "react";
 import type { buildIntelligence } from "@/lib/knowledge/intelligence";
 import "../market-feed.css";
@@ -60,7 +61,7 @@ export default function IntelligencePage() {
             setLow("");
           }}
         >
-          {["EURUSD", "NAS100", "EU50"].map((s) => (
+          {ACTIVE_RESEARCH_SYMBOLS.map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>

@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {collectReports,publishReports,transportError,boundedJson,TARGET_REPOSITORY} from '../scripts/publish-research-bridge.ts';
 import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
 import {syntheticDeskReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
-const reports=()=>Object.fromEntries(['EURUSD','NAS100','EU50'].map(s=>[s,transportError(s,iso)]));
+const reports=()=>Object.fromEntries(['EURUSD','NAS100','JP225'].map(s=>[s,transportError(s,iso)]));
 
 test('V4 publisher accepts technical reports and rejects decision/snapshot contradictions',async()=>{
  const report=Object.assign(syntheticDeskReport(),{technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:'0'.repeat(64)}});report.scenario.action='NOT_EVALUATED';
@@ -20,18 +21,18 @@ test('V4 publisher accepts technical reports and rejects decision/snapshot contr
 test('V4 publisher-first rollout accepts v1.1 payloads and preserves legacy provider failures',async()=>{
  const fetcher=async(url:unknown)=>{
   const symbol=new URL(String(url)).searchParams.get('symbol')!;
-  const legacy=symbol==='EU50'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
-  return Response.json(legacy,{status:symbol==='EU50'?503:200,headers:{'x-desk-contract':'desk-report-v1.1'}});
+  const legacy=symbol==='JP225'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
+  return Response.json(legacy,{status:symbol==='JP225'?503:200,headers:{'x-desk-contract':'desk-report-v1.1'}});
  };
  const diagnostics:BridgeDiagnostic[]=[];
  const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',fetcher as typeof fetch,()=>now,[],d=>diagnostics.push(d));
- assert.equal(output.EURUSD.status,'PARTIAL');assert.equal(output.NAS100.status,'PARTIAL');assert.equal(output.EU50.status,'ERROR');
+ assert.equal(output.EURUSD.status,'PARTIAL');assert.equal(output.NAS100.status,'PARTIAL');assert.equal(output.JP225.status,'ERROR');
  assert.equal(diagnostics[0].stage,'provider');assert.equal(diagnostics[0].code,'CAPITAL_INVALID_RESPONSE');assert.equal(diagnostics[0].contract_revision,'desk-report-v1.1');
 });
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
-  const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('EU50',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
+  const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('JP225',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
   const result=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','private-bypass-canary',fetcher as typeof fetch,()=>now);
-  assert.deepEqual(Object.keys(result),['EURUSD','NAS100','EU50']);assert.ok(Object.values(result).every(r=>r.status==='ERROR'));assert.ok(!JSON.stringify(result).includes('private-password'));
+  assert.deepEqual(Object.keys(result),['EURUSD','NAS100','JP225']);assert.ok(Object.values(result).every(r=>r.status==='ERROR'));assert.ok(!JSON.stringify(result).includes('private-password'));
   await assert.rejects(()=>collectReports('https://evil.test','secret',fetcher as typeof fetch),/CONFIGURATION/);
   await assert.rejects(()=>boundedJson(new Response('x'.repeat(MAX_REPORT_BYTES+1),{headers:{'content-type':'application/json'}})),/REPORT_TOO_LARGE/);
 });
@@ -68,21 +69,25 @@ test('Publisher refuses a public repository before uploading any report',async()
   let calls=0;const fetcher=async()=>{calls++;return Response.json({private:false,full_name:TARGET_REPOSITORY,default_branch:'main'});};
   await assert.rejects(()=>publishReports('token-canary',reports(),fetcher as typeof fetch,now),/PRIVATE_REPOSITORY_REQUIRED/);assert.equal(calls,1);
 });
-test('Publisher commits exactly three allowlisted JSON files and manifest in one non-forced ref update',async()=>{
+for(const archiveEu50 of [false,true])test(`Publisher commits exactly three active reports atomically; existing EU50=${archiveEu50}`,async()=>{
   const writes:{path:string;body:Record<string,unknown>}[]=[];
   const fetcher=async(url:unknown,init?:RequestInit)=>{
     const path=String(url).split(TARGET_REPOSITORY)[1];const body=init?.body?JSON.parse(String(init.body)):{};if(init?.method!=='GET')writes.push({path,body});
     if(path==='')return Response.json({private:true,full_name:TARGET_REPOSITORY,default_branch:'main',fork:false});
     if(path==='/git/ref/heads/main')return Response.json({object:{sha:'parent'}});
     if(path==='/git/commits/parent')return Response.json({tree:{sha:'base-tree'}});
+    if(path==='/git/trees/base-tree?recursive=1')return Response.json({tree:archiveEu50?[{path:'reports/latest/EU50.json',type:'blob',sha:'a'.repeat(40)}]:[]});
     if(path==='/git/trees')return Response.json({sha:'new-tree'});
     if(path==='/git/commits')return Response.json({sha:'new-commit'});
     if(path==='/git/refs/heads/main')return Response.json({object:{sha:'new-commit'}});
     throw Error('Unexpected endpoint');
   };
   const result=await publishReports('token-canary',reports(),fetcher as typeof fetch,now);
-  assert.equal(result.commit,'new-commit');const tree=writes.find(w=>w.path==='/git/trees')!.body.tree as {path:string;content:string}[];
-  assert.deepEqual(tree.map(t=>t.path),['reports/latest/EURUSD.json','reports/latest/NAS100.json','reports/latest/EU50.json','reports/latest/manifest.json']);
+  assert.equal(result.commit,'new-commit');const tree=writes.find(w=>w.path==='/git/trees')!.body.tree as {path:string;content?:string;sha?:string|null}[];
+  assert.deepEqual(tree.filter(t=>t.content!==undefined).map(t=>t.path),['reports/latest/EURUSD.json','reports/latest/NAS100.json','reports/latest/JP225.json','reports/latest/manifest.json']);
+  assert.deepEqual(result.manifest.reports.map(r=>r.symbol),['EURUSD','NAS100','JP225']);
+  for(const row of result.manifest.reports){const content=tree.find(t=>t.path===row.path)!.content!;assert.equal(row.bytes,Buffer.byteLength(content));assert.equal(row.sha256,createHash('sha256').update(content).digest('hex'));}
+  if(archiveEu50){assert.equal(tree.find(t=>t.path==='reports/latest/EU50.json')!.sha,null);assert.equal(tree.find(t=>t.path===`reports/archive/EU50/${'a'.repeat(40)}.json`)!.sha,'a'.repeat(40));}
   assert.ok(!JSON.stringify(tree).includes('token-canary'));assert.deepEqual(writes.at(-1),{path:'/git/refs/heads/main',body:{sha:'new-commit',force:false}});
 });
 test('Publisher validates all three reports before the first content upload',async()=>{

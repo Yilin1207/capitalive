@@ -1,11 +1,13 @@
 import { HISTORY, type Candle, type CandleResponse, type PriceSide, type Timeframe } from "./candle-data";
 
-export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "EU50"] as const;
+// EU50 remains available in the general catalogue and historical regressions.
+export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "JP225", "EU50"] as const;
 export type AnalysisSymbol = typeof ANALYSIS_SYMBOLS[number];
 export const ANALYSIS_TIMEFRAMES = ["MN1", "W1", "D1", "H4"] as const;
 export const INSTRUMENTS = {
   EURUSD: { unit: "pip", unit_size: 0.0001, precision: 5, min_remaining_units: 0.5 },
   NAS100: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
+  JP225: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
   EU50: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
 } as const;
 export type AnalysisSettings = { min_remaining_units: number; atr_fraction: number };
