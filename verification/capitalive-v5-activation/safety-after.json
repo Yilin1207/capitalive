@@ -1,0 +1,10 @@
+{
+  "capitalive_main_unchanged": true,
+  "production_deployment_unchanged": true,
+  "production_id": "dpl_B1xyiJwXMrxiXBD1dXH9BbBtNTYM",
+  "sso": "all_except_custom_domains",
+  "private_repository": true,
+  "archives_unchanged": 2,
+  "eu50_latest_absent": true,
+  "pr2_open": true
+}

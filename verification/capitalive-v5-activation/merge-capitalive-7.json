@@ -1,0 +1,17 @@
+{
+  "repo": "capitalive",
+  "pr": 7,
+  "head": "e823b321917fb9e0e19252ce2706d7d57fa0eaa4",
+  "base": "feature/jp225-migration-20261116",
+  "merge_commit": "10d974be5b4afd0c33b1d75dcadd3b2d24b5e0d8",
+  "tree": "809fc7cd28a048f58c6f04ea7b6d31e6ba057464",
+  "head_tree": "809fc7cd28a048f58c6f04ea7b6d31e6ba057464",
+  "checked_ci": [
+    {
+      "name": "verify",
+      "url": "https://github.com/Yilin1207/capitalive/actions/runs/43925333861/job/133503149043",
+      "conclusion": "success"
+    }
+  ],
+  "at": "2026-11-16T18:26:07.309Z"
+}

@@ -4,6 +4,10 @@ Technical research for **EURUSD / NAS100 / JP225**, with explicit Capital.com
 Demo/Live environment and timestamps. No order execution. Macro-EDGE, final
 decisions and aggregate risk remain with the user and ChatGPT.
 
+V5 is active in the private Bridge main, using the protected immutable Preview.
+See [final activation audit](CAPITALIVE_V5_FINAL_ACTIVATION_RU.md) for merged
+commits, real publication/readback, quote timestamps and freshness limits.
+
 ## Current contracts
 
 - `/api/intelligence`: `edge-knowledge-5`; author Fractal 3, FVG, contextual
