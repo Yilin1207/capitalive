@@ -155,7 +155,7 @@ export default function IntelligencePage() {
           </fieldset>
           <h2>Narrative: {audit.narrative.bias}</h2>
           <HumanReviewPanel key={audit.narrative.human_review.evidence_sha256} audit={audit} onAudit={setAudit}/>
-          <p data-testid="narrative-review">{audit.narrative.status} · Контекст кандидата: {audit.narrative.candidate_bias} · {audit.verdict.action}</p>
+          <p data-testid="narrative-review">{audit.narrative.status} · Технический контекст: {audit.narrative.candidate_bias}. Окончательный Narrative и торговое решение — Trading Research Desk.</p>
           <p data-testid="target-status">Цель: {audit.target_selection.status}. Препятствий: {audit.target_selection.obstacles.length}.</p>
           <details><summary>Почему сценарий требует проверки</summary>
             <ul>{audit.narrative.blockers.map(b=><li key={b}>{b}</li>)}</ul>

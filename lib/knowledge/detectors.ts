@@ -380,12 +380,10 @@ export function detectSnr(frame: Frame, context: KeyLevel[]) {
         interaction(delivery, kl) &&
         kl.role === (resistance ? "support" : "resistance"),
     )!;
-    const breakout = later.find(
-      (x) =>
-        x.index >= delivery.index &&
-        (resistance ? x.close > upper : x.close < lower),
-    );
-    if (!breakout || !knownLevel(kl,breakout,frame)) continue;
+    const breakout = later.find(x => resistance ? x.close > upper : x.close < lower);
+    // Formation order is origin -> KL delivery -> first closed breakout. A later
+    // recross cannot retroactively supply context to an already broken origin.
+    if (!breakout || breakout.index < delivery.index || !knownLevel(kl,breakout,frame)) continue;
     out.push(
       event(
         frame,
@@ -631,6 +629,7 @@ export function assessRange(frame:Frame,range:Range|null){
 }
 export function detectIrl(frame: Frame, pivots: Pivot[], range: Range | null) {
   if (!range) return [];
+  const invalidatedAt=assessRange(frame,range).invalidated_at;
   return pivots
     .filter(
       (p) =>
@@ -639,7 +638,8 @@ export function detectIrl(frame: Frame, pivots: Pivot[], range: Range | null) {
         p.id !== range.low_id &&
         p.price > range.lower &&
         p.price < range.upper &&
-        p.origin >= range.origin,
+        p.origin >= range.origin &&
+        (!invalidatedAt || (p.confirmed_at>range.confirmed_at?p.confirmed_at:range.confirmed_at)<invalidatedAt),
     )
     .map((p) => {
       const end =

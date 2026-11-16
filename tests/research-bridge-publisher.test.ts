@@ -5,6 +5,17 @@ import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic}
 import {syntheticDeskReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
 const reports=()=>Object.fromEntries(['EURUSD','NAS100','EU50'].map(s=>[s,transportError(s,iso)]));
+
+test('V4 publisher accepts technical reports and rejects decision/snapshot contradictions',async()=>{
+ const report=Object.assign(syntheticDeskReport(),{technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:'0'.repeat(64)}});report.scenario.action='NOT_EVALUATED';
+ validateReport(report);report.scenario.action='WAIT';assert.throws(()=>validateReport(report),/TECHNICAL_RESPONSIBILITY/);report.scenario.action='NOT_EVALUATED';
+ report.details.snapshot_sha256='1'.repeat(64);assert.throws(()=>validateReport(report),/SNAPSHOT_HASH_MISMATCH/);report.details.snapshot_sha256='0'.repeat(64);
+ const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',async(url)=>{
+  const symbol=new URL(String(url)).searchParams.get('symbol')!;
+  return Response.json({...report,symbol,evidence:Object.fromEntries(Object.entries(report.evidence).map(([key,e])=>[key,{...e,id:e.id.replace('EURUSD',symbol)}]))},{headers:{'x-desk-contract':CONTRACT_REVISION}});
+ },()=>now);
+ assert.ok(Object.values(output).every(r=>r.status==='PARTIAL'));
+});
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
   const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('EU50',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
   const result=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','private-bypass-canary',fetcher as typeof fetch,()=>now);

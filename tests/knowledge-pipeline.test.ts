@@ -28,6 +28,19 @@ const fixture = () =>
     data: Record<Timeframe, CandleResponse>;
     quote: MarketQuote;
   };
+
+test('V4 detail endpoint binds evidence to an as_of snapshot and returns only closed interactions',async()=>{
+  const f=fixture(),deps={getCandles:async(_s:string,tf:Timeframe)=>f.data[tf],getAnalysisQuote:async()=>f.quote};
+  const r=buildIntelligence(f.data,'bid',f.quote),id=r.levels.detected_levels[0].id;
+  const query=new URLSearchParams({symbol:'EURUSD',side:'bid',as_of:r.as_of,level_id:id,evidence_sha256:r.narrative.human_review.evidence_sha256});
+  const response=await intelligenceHttp(new Request(`https://local/api/intelligence?${query}`),deps as never),body=await response.json();
+  assert.equal(response.status,200);assert.equal(body.schema_version,'pa-evidence-v1');assert.equal(body.formation.id,id);
+  assert.equal(body.interactions.omitted,0);assert.equal(body.interactions.total,body.interactions.events.length);
+  for(const e of body.interactions.events){assert.ok(e.time>=body.formation.confirmed_at);assert.ok(e.confirmed_at<=r.as_of);}
+  query.set('evidence_sha256','0'.repeat(64));assert.equal((await intelligenceHttp(new Request(`https://local/api/intelligence?${query}`),deps as never)).status,409);
+  query.delete('evidence_sha256');query.set('level_id','missing');assert.equal((await intelligenceHttp(new Request(`https://local/api/intelligence?${query}`),deps as never)).status,404);
+  query.set('as_of','2099-01-01T00:00:00.000Z');assert.equal((await intelligenceHttp(new Request(`https://local/api/intelligence?${query}`),deps as never)).status,400);
+});
 test("MN1/W1 context cannot be outvoted by H4; conflicting HTF KL stays neutral", () => {
   const { data } = fixture(),
     p = detectFractals(closedFrame(data.W1, "bid"))[0],
@@ -114,10 +127,7 @@ test("incomplete/mixed datasets suppress narrative; Bid/Ask remain separate", ()
   );
   const mixed = fixture();
   mixed.data.D1.symbol = "NAS100";
-  assert.equal(
-    buildIntelligence(mixed.data, "bid", mixed.quote).narrative.bias,
-    "Neutral",
-  );
+  assert.throws(()=>buildIntelligence(mixed.data, "bid", mixed.quote),/INVALID_DATASET_IDENTITY/);
 });
 test("historical prefix does not acquire signals or context from later OHLC", () => {
   const f = fixture(),

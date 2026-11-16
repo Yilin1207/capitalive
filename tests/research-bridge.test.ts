@@ -12,6 +12,25 @@ const now='2026-11-15T14:00:00.000Z';
 const fixture=(symbol:string)=>JSON.parse(readFileSync(`tests/fixtures/edge-v2/${symbol}.json`,'utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
 const analysis=(symbol:string,side='bid')=>JSON.parse(readFileSync(`verification/capitalive-v3/after/${symbol}-${side}.json`,'utf8')).response as Intelligence;
 
+test('V4 compact contract rejects contradictory terminal role, impossible fill and range counts',()=>{
+ const input=fixture('EURUSD'),report=buildDeskReport(analysis('EURUSD'),input.data,input.quote,now);
+ const e=(Object.values(report.evidence) as {lifecycle:{state:string;invalidated_at:string|null;evaluated_through:string;current_role:string|null;fill:unknown}|null}[]).find(e=>e.lifecycle)!;assert.ok(e);
+ e.lifecycle!.state='INVALIDATED';e.lifecycle!.invalidated_at=e.lifecycle!.evaluated_through;e.lifecycle!.current_role='support';
+ assert.throws(()=>validateReport(report),/CONTRADICTORY_LIFECYCLE/);e.lifecycle!.current_role=null;
+ e.lifecycle!.fill={state:'FILLED',max_observed_fraction:.5,first_test_at:null,last_test_at:null};assert.throws(()=>validateReport(report),/INVALID_FILL/);
+ e.lifecycle!.fill=null;validateReport(report);
+ report.frames[0].range_options={total:2,omitted:0,review_required:true};assert.throws(()=>validateReport(report),/INVALID_COVERAGE_COUNTS/);
+});
+
+test('V4 bounded display tiers preserve mandatory selections, counts and technical responsibility',()=>{
+ const input=fixture('EURUSD'),r=analysis('EURUSD'),full=buildDeskReport(r,input.data,input.quote,now),small=buildDeskReport(r,input.data,input.quote,now,null,3);
+ validateReport(small);assert.equal(small.scenario.action,'NOT_EVALUATED');assert.equal(small.technical_only,true);
+ assert.equal(small.coverage.findings_total,full.coverage.findings_total);assert.ok(small.coverage.findings_omitted>=full.coverage.findings_omitted);
+ assert.ok(Buffer.byteLength(JSON.stringify(small)+'\n')<=MAX_REPORT_BYTES);
+ const ids=(report:typeof small)=>[report.scenario.A.selected,report.scenario.B.selected,report.scenario.C?.source].filter(Boolean).map(ref=>(report.evidence[ref!] as {id:string}).id);
+ assert.deepEqual(ids(small),ids(full));assert.equal(small.details.snapshot_sha256,full.details.snapshot_sha256);
+});
+
 for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'])test(`Bridge ${symbol}/${side}: bounded causal projection, exact IDs and unchanged Narrative`,()=>{
   const input=fixture(symbol),r=analysis(symbol,side),before=JSON.stringify(r);
   const report=buildDeskReport(r,input.data,input.quote,now);

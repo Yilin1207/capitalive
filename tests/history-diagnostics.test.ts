@@ -62,11 +62,11 @@ test("weekend intervals are grouped and not filled with synthetic candles", () =
   assert.equal(normalizeCandles({ prices }, "H4", fetched).candles.length, 3);
 });
 
-test("rejected duplicate does not falsely mark an accepted timestamp as missing", () => {
+test("conflicting duplicate stays quarantined even if the last row appears valid", () => {
   const d = diagnose([row("2026-10-21T04:00:00", true), row("2026-10-21T04:00:00")]);
-  assert.equal(d.current_period.status, "present");
-  assert.equal(d.missing_filtered_count, 0);
-  assert.equal(d.rejected_rows.length, 1);
+  assert.equal(d.current_period.status, "filtered_by_validation");
+  assert.equal(d.missing_filtered_count, 1);
+  assert.equal(d.rejected_rows.length, 2);
 });
 
 test("diagnostics stay bounded and focus on the requested window", () => {

@@ -1,7 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {narrativeAssessment,resolveContext,type NarrativeFrame} from '../lib/knowledge/narrative';
 import {REVIEW_QUESTIONS,reviewErrors,type HumanReview} from '../lib/knowledge/human-review';
-import {selectTarget} from '../lib/knowledge/target-selection';
+import {selectTarget as targetWithCoverage} from '../lib/knowledge/target-selection';
+// These synthetic tests define the complete finite level universe explicitly.
+const selectTarget=(...args:Parameters<typeof targetWithCoverage>)=>{args[6]??='COMPLETE';return targetWithCoverage(...args);};
 import {assessLevel} from '../lib/knowledge/level-state';
 import {provenance} from '../lib/knowledge/rules';
 import {TF_ORDER,assessRange,type KeyLevel,type Range} from '../lib/knowledge/detectors';
