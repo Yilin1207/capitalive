@@ -29,7 +29,9 @@ export async function collectReports(baseUrl:string,bypass:string,fetcher:typeof
       status=response.status;contentType=media(response);
       if(![200,503].includes(status)){await response.body?.cancel();throw new BridgeFailure(diagnostic('http',status>=300&&status<400?'HTTP_REDIRECT':'HTTP_STATUS'));}
       const revision=response.headers.get('x-desk-contract');
-      if(revision&&revision!==CONTRACT_REVISION){await response.body?.cancel();throw new BridgeFailure(diagnostic('schema','CONTRACT_REVISION_MISMATCH'));}
+      // v1.2 is an additive validator. Permit the previous pinned source during
+      // a publisher-first rollout; every payload still passes the strict schema.
+      if(revision&&revision!==CONTRACT_REVISION&&revision!=='desk-report-v1.1'){await response.body?.cancel();throw new BridgeFailure(diagnostic('schema','CONTRACT_REVISION_MISMATCH'));}
       const body=await boundedJson(response,MAX_REPORT_BYTES,size=>{bytes=size;});phase='schema';validateReport(body,symbol,clock(),[bypass,...secrets]);
       if(status===503&&body.status!=='ERROR')throw new BridgeFailure(diagnostic('http','HTTP_STATUS'));
       reports[symbol]=body;

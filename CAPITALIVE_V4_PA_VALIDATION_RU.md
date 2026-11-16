@@ -78,8 +78,8 @@ Bid/Ask, положительные конечные OHLC, high/low, timestamps,
 
 ## Проверки и воспроизводимость
 
-- `npm test`: финальный локальный прогон **268 PASS, 0 failed/skipped**, включая отдельную регрессию segment-gap. Включены прежние тесты, причинность, загрязнённые OHLC, неправильный side/identity, пересечение сессий, ложные подтверждения и HTTP detail.
-- `node --test tests/research-bridge-publisher.test.ts`: 8 PASS под нативным Node 24, без tsx. Проверены atomic manifest/3 reports, секреты-canary, отказы HTTP/schema/size/expiry/provider/publish, новый контракт и отсутствие повышения Narrative.
+- `npm test`: финальный локальный прогон **269 PASS, 0 failed/skipped**, включая segment-gap и совместимость publisher-first rollout. Включены прежние тесты, причинность, загрязнённые OHLC, неправильный side/identity, пересечение сессий, ложные подтверждения и HTTP detail.
+- `node --test tests/research-bridge-publisher.test.ts`: 9 PASS под нативным Node 24, без tsx. Проверены atomic manifest/3 reports, секреты-canary, отказы HTTP/schema/size/expiry/provider/publish, новый контракт, переход со старого источника и отсутствие повышения Narrative.
 - 22 новых declarative golden cases в `tests/fixtures/pa-v4/golden.json`: позитивные, негативные и boundary примеры, ожидаемые значения записаны вручную до вызова детектора; каждый закрытый префикс проверяется отдельно. Это **не независимая экспертная разметка**: external expert_review=PENDING. Старые тесты дополнительно покрывают DR/IRL, Strong, session gaps, opens и lifecycle.
 - `npm run knowledge:replay:v4`: архив 12 ноября, контроль 15 ноября, новый private capture 16 ноября × EURUSD/NAS100/EU50 × Bid/Ask = 18 запусков, **10 988 закрытых префиксов**. На каждом сравниваются устойчивые события Fractal 3/5, FVG, inversion, Raid, RB, SNR, IDM, Strong, BOS/CHOCH с результатом полного ряда, отфильтрованным по времени. Stateful lifecycle проверяется отдельными fixtures и differential; это не доказательство всех возможных рыночных последовательностей.
 - Differential использует идентичный input SHA и базовый движок b26cdbc (его код совпадает с ccf2c29; различие между коммитами документальное). Удалённый SNR допустим только при доказанном первом break до delivery; Strong — только при удалённом SNR dependency/relinked VC. Изменения ролей классифицируются по новой проверке break, sequence gap, FVG terminal state либо отзыву недоказанной роли при неизменном state. Неизвестное изменение останавливает replay.
@@ -93,7 +93,7 @@ Bid/Ask, положительные конечные OHLC, high/low, timestamps,
 
 ## Research Bridge и совместимость
 
-schema_version остаётся `desk-report-v1`; portable contract/header/manifest revision становится **desk-report-v1.2**. Изменение обосновано новыми allowlisted-полями initial_role/fill/range_options/details/technical_only/budget_tier и action=NOT_EVALUATED. Новый валидатор принимает старые v1.1 payload-поля; старый строгий publisher **не примет** новые поля. Поэтому приватный companion PR обязателен до переключения источника. Автоматического изменения live workflow/BRIDGE_BASE_URL нет.
+schema_version остаётся `desk-report-v1`; portable contract/header/manifest revision становится **desk-report-v1.2**. Изменение обосновано новыми allowlisted-полями initial_role/fill/range_options/details/technical_only/budget_tier и action=NOT_EVALUATED. Новый валидатор принимает старые v1.1 payload-поля и diagnostics; publisher явно допускает заголовки v1.1/v1.2, сохраняя строгую валидацию каждого payload. Неизвестная версия отклоняется. Это закрывает найденный риск промежуточных SCHEMA_ERROR при publisher-first обновлении. Старый строгий publisher **не примет** новые поля, поэтому приватный companion PR обязателен до переключения источника. Автоматического изменения live workflow/BRIDGE_BASE_URL нет.
 
 Лимит 65 536 байт включает завершающий LF. При превышении последовательно уменьшается только recent display RB/SNR, затем Fractal 5, затем Raid. Counts/omitted сохраняются; mandatory выбранные уровни и их dependencies не удаляются. Если они сами не помещаются — REPORT_TOO_LARGE, не успешный неполный ответ. Полная Intelligence ограничена 4 250 000 байт.
 
@@ -120,14 +120,14 @@ schema_version остаётся `desk-report-v1`; portable contract/header/manif
 
 ## Файлы изменений
 
-`lib/candle-data.ts`; `lib/knowledge/{detectors,level-state,target-selection,intelligence,http,interaction-history,range-candidates}.ts`; `lib/research-bridge/{contract,report}.ts`; `app/intelligence/page.tsx`; `scripts/{verify-edge-v2,verify-pa-v4,audit-pa-v4-history,capture-pa-v4-baseline}.ts`; `tests/{knowledge-v4,pa-v4-golden,knowledge-pipeline,knowledge-v2,knowledge-v3,candle-data,history-diagnostics,research-bridge,research-bridge-publisher}.test.ts`; `tests/fixtures/pa-v4/golden.json`; `tests/browser/knowledge.spec.ts`; `package.json`; `.github/workflows/release-checks.yml`; этот отчёт и безопасные metadata в `verification/pa-v4`.
+`lib/candle-data.ts`; `lib/knowledge/{detectors,level-state,target-selection,intelligence,http,interaction-history,range-candidates}.ts`; `lib/research-bridge/{contract,report}.ts`; `app/intelligence/page.tsx`; `scripts/{verify-edge-v2,verify-pa-v4,audit-pa-v4-history,capture-pa-v4-baseline,publish-research-bridge}.ts`; `tests/{knowledge-v4,pa-v4-golden,knowledge-pipeline,knowledge-v2,knowledge-v3,candle-data,history-diagnostics,research-bridge,research-bridge-publisher}.test.ts`; `tests/fixtures/pa-v4/golden.json`; `tests/browser/knowledge.spec.ts`; `package.json`; `.github/workflows/release-checks.yml`; этот отчёт и безопасные metadata в `verification/pa-v4`.
 
 ## GitHub, реальная HTTP-проверка и граница релиза
 
 - Основной [PR #5](https://github.com/Yilin1207/capitalive/pull/5), base `feature/the-edge-knowledge`, открыт, не слит. Проверенный engine-коммит `71371d2288e612aa69d528d69bc1bbaa7190132c`.
 - [Release checks 43826112394](https://github.com/Yilin1207/capitalive/actions/runs/43826112394): SUCCESS, включая unit/import/replay/replay-v2/replay-v4/lint/tsc/build/Chromium UI/RC HTTP.
-- Приватный [companion PR #3](https://github.com/Yilin1207/capitalive-research-bridge/pull/3), commit `db011d934b0261a94d185b59e60ec96e0ce5fa21`, открыт, не слит. [CI 43826143626](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43826143626): verify SUCCESS, publish SKIPPED по правилу workflow для PR. Живые отчёты не заменялись V4.
-- Проверенный immutable [V4 Preview](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/intelligence) построен из 71371d2. Последующий commit с тестом/documentation/metadata не меняет runtime engine этого Preview.
+- Приватный [companion PR #3](https://github.com/Yilin1207/capitalive-research-bridge/pull/3), финальный commit `87ca176ea78d84542573f59604aa0b01ec7816b8`, открыт, не слит. [CI основного контракта 43826143626](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43826143626) и [CI совместимости 43826948623](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43826948623): verify SUCCESS, publish SKIPPED по правилу workflow для PR. Последняя поправка уточняет TypeScript-тип старой diagnostic revision и проверяет его сохранение; 9 native tests пройдены. Живые отчёты не заменялись V4.
+- Проверенный immutable [V4 Preview](https://capitalive-guy2c6fgp-yilin1207s-projects.vercel.app/intelligence) построен из 71371d2. Последующие изменения не меняют PA/lifecycle/структуру: добавлены тест segment-gap, audit/metadata и совместимость publisher/validator с прежней версией источника.
 
 Внешние запросы 16 ноября 07:47–07:50 UTC выполнялись с существующим авторизованным обходом защиты, только в памяти процесса. Все шесть прошли strict v1.2 contract, side/engine SHA, ID/dependency/causality/size/secret checks. Подробные SHA-256 и timestamps: [http-summary.json](verification/pa-v4/http-summary.json).
 
@@ -146,7 +146,7 @@ schema_version остаётся `desk-report-v1`; portable contract/header/manif
 
 Release guards: main=`d7d1ec5ddebdbce2c90bd7f8c86657d00b9ba1c2`, feature=`b26cdbc5d73a575a147bcf4379951e673b09f31e`, PR #2 открыт/не слит; private main=`bfe798e6f56b972ac174e4645550190144f53886`; BRIDGE_BASE_URL по-прежнему `https://capitalive-ogpymvyfo-yilin1207s-projects.vercel.app`; SSO=`all_except_custom_domains`. Без авторизации новый Preview возвращает 302. Результаты сохранены в [release-guards.json](verification/pa-v4/release-guards.json). Production не развёртывался.
 
-После пользовательского review нужны согласованные merge обоих PR и отдельное переключение private BRIDGE_BASE_URL, затем настоящая публикация и повторное чтение нового manifest/трёх JSON с проверкой SHA/bytes. В этой задаче такой cutover намеренно не выполняется. Наличие успешного V4 Preview не означает обновления рабочего Trading Research Desk.
+После пользовательского review сначала можно обновить приватный publisher: он продолжит строго проверять прежний источник v1.1, включая его provider ERROR. Затем согласованно слить основной PR и отдельно переключить private BRIDGE_BASE_URL на проверенный immutable Preview; выполнить настоящую публикацию и повторно прочитать новый manifest/три JSON с проверкой SHA/bytes. В этой задаче такой cutover намеренно не выполняется. Наличие успешного V4 Preview не означает обновления рабочего Trading Research Desk.
 
 ## Ответ Trading Research Desk
 
