@@ -1,9 +1,12 @@
 'use client';
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../../lib/active-research-markets';
 type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null}[]};
 export default function ResearchRefresh(){
  const [busy,setBusy]=useState(false),[rows,setRows]=useState<Row[]>([]),[files,setFiles]=useState<Record<string,string>>({});
+ const [clock,setClock]=useState(0);
+ useEffect(()=>{setClock(Date.now());const timer=setInterval(()=>setClock(Date.now()),1000);return()=>clearInterval(timer);},[]);
+ const expired=(row:Row)=>!!row.expires_at&&Date.parse(row.expires_at)<=clock;
  async function refresh(){setBusy(true);setRows([]);setFiles({});
   for(const symbol of ACTIVE_RESEARCH_SYMBOLS){
    try{const response=await fetch(`/api/desk-report?symbol=${symbol}&side=bid&refresh=1`,{method:'POST',cache:'no-store',redirect:'error'});
@@ -20,8 +23,9 @@ export default function ResearchRefresh(){
   <button onClick={refresh} disabled={busy}>{busy?'Получаем данные…':'Получить свежие отчёты'}</button>
   <p>После получения скачайте JSON и приложите к исследованию ChatGPT. GitHub-подключение читает сохранённые файлы и само не запускает этот запрос.</p>
   <p><a href="https://github.com/Yilin1207/capitalive-research-bridge/actions/workflows/research-bridge.yml">Обновить приватный GitHub через Run workflow</a></p>
-  {rows.map(row=><section key={row.symbol} style={{borderTop:'1px solid #777',padding:'16px 0'}}><h2>{row.symbol} — {row.status}</h2>
-   <p>Котировка: {row.quote?.provider_timestamp??'недоступна'} · {row.freshness?.quote_status??'не проверено'}</p>
+  {rows.map(row=><section key={row.symbol} style={{borderTop:'1px solid #777',padding:'16px 0'}}><h2>{row.symbol} — {expired(row)&&row.status!=='ERROR'?'STALE':row.status}</h2>
+   <p>Котировка: {row.quote?.provider_timestamp??'недоступна'} · {expired(row)?'STALE':row.freshness?.quote_status??'не проверено'}</p>
+   {expired(row)&&row.status!=='ERROR'&&<p>Срок актуальности истёк. Запросите новый отчёт перед исследованием.</p>}
    <p>Закрытая H4: {row.frames?.find(f=>f.timeframe==='H4')?.last_closed_at??'недоступна'}</p>
    <p>Сформирован: {row.generated_at??'—'} · Проверять срок годности: {row.expires_at??'—'}</p>
    {files[row.symbol]&&<button onClick={()=>save(row.symbol)}>Скачать {row.symbol}.json</button>}</section>)}

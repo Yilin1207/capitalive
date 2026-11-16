@@ -9,6 +9,8 @@ test('protected refresh UI requests new three-market JSON, shows times, and clea
  });
  await page.goto('/research');await page.getByRole('button',{name:'Получить свежие отчёты'}).click();
  await expect(page.getByRole('button',{name:'Скачать JP225.json'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'JP225 — STALE'})).toBeVisible();
+ await expect(page.getByText('Срок актуальности истёк.',{exact:false}).first()).toBeVisible();
  expect(calls).toEqual(['EURUSD','NAS100','JP225']);
  await expect(page.getByText('Котировка: 2026-11-15T14:00:00.000Z',{exact:false}).first()).toBeVisible();
  fail=true;await page.getByRole('button',{name:'Получить свежие отчёты'}).click();
