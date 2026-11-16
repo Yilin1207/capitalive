@@ -49,7 +49,7 @@ export default function AnalysisChart({ data, side }: { data: CandleResponse; si
     {selectionError && <p role="alert">{selectionError}</p>}
     {svg ? <div className="analysis-svg" dangerouslySetInnerHTML={{ __html: svg }} /> : !selectionError && <p role="status">Нет валидных OHLC для выбранной стороны цены.</p>}
     <p className="chart-note">Треугольники — подтверждённые фракталы: янтарные — касание ровно по уровню, серые — снятие с выходом за уровень. Пунктирный янтарный диапазон ещё формируется. Заполнение FVG учитывает текущую свечу. SNR — отдельный снимок HTF; цвета различают таймфреймы, score не является вероятностью.</p>
-    <p>????????? SNR, RB ? HTF-????????: <a href="/intelligence">THE EDGE Research Desk</a>. <a href="/research">???????? ?????? ?????</a>.</p>
+    <p>Авторские SNR, RB и HTF-контекст: <a href="/intelligence">THE EDGE Research Desk</a>. <a href="/research">Получить свежий отчёт</a>.</p>
     {!selectionError && <details><summary>Границы диапазонов и незаполненные FVG</summary>
       <p>Выбор: {selection ? "заданные подтверждённые фракталы" : "последняя пара противоположных подтверждённых фракталов"}. Альтернатив: {analysis.ranges.alternatives.length}. Статус: {analysis.ranges.selected.status}. EQ: <span data-testid="range-eq">{analysis.ranges.selected.equilibrium ?? "—"}</span>.</p>
       <div className="analysis-table-wrap"><table><thead><tr><th>FVG / UTC</th><th>Границы остатка</th><th>Заполнено</th><th>Остаток</th><th>Значимость</th></tr></thead><tbody>

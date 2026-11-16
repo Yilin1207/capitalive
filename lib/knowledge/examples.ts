@@ -41,9 +41,9 @@ export const EXAMPLES: Record<string, [string, string, string]> = {
     "Invalidation of linked VC removes the candidate; exact author boundaries still need review.",
   ],
   BOS_CHOCH: [
-    "First closed crossing of an available high is Bullish BOS; opposite subsequent break is project CHOCH.",
-    "Intrabar crossing or repeated crossing of the same consumed pivot adds no new break.",
-    "An opposite subsequent closed break resets project bias, not automatically HTF narrative.",
+    "Author machine criteria are not specified; no BOS/CHOCH findings or directional votes are emitted.",
+    "A geometric pivot crossing alone does not establish author structure.",
+    "Qualitative structure requires source specification and review.",
   ],
   DR: [
     "Selected confirmed high 12 and low 4 define explicit range [4,12].",

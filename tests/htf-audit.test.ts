@@ -40,14 +40,15 @@ test('V5 legacy ATR SNR is explicitly disabled, not passed off as author evidenc
  const result=buildHtfAudit('NAS100','bid',f.data,analyses,f.quote);
  assert.equal(result.snr.W1.status,'NEEDS_SPECIFICATION');assert.deepEqual(result.snr.W1.zones,[]);assert.equal(result.priority_zones.selected_count,0);
 });
-test('risk returns null without a confirmed structural stop and preserves touched unswept D1 targets', () => {
+test('legacy risk is disabled; touched unswept D1 geometry is retained without declaring author significance', () => {
   const f = fixture('NAS100'); const analyses = ANALYSIS_TIMEFRAMES.map(tf => analyzeSeries(f.data[tf],'NAS100'));
   const pivot = analyses.find(s => s.timeframe === 'D1')!.fractals[0];
   const h4 = analyses.find(s => s.timeframe === 'H4')!;
   const chosen = { ...pivot, price:100, kind:'high' as const, liquidity_status:'touched' as const };
   for (const s of analyses) { s.fractals = s.timeframe === 'D1' ? [chosen] : []; s.fvgs = []; }
   const result = buildHtfAudit('NAS100','bid',f.data,analyses,{ ...f.quote,bid:90,ask:90.2 },90);
-  assert.equal(result.catalog.zones.find(z => z.source_id === chosen.id)!.main_tp_eligible,true);
+  assert.equal(result.catalog.zones.find(z => z.source_id === chosen.id)!.main_tp_eligible,false);
+  assert.equal(result.catalog.zones.find(z => z.source_id === chosen.id)!.significant,false);
   assert.equal(targetMap(analyses,90).above.nearest,null);assert.equal(targetMap(analyses,90).above.alternatives[0].price,100);
   assert.equal(result.risk.long.structural_sl,null); assert.equal(result.risk.long.rr_to_tp,null);
   h4.fractals = [{ ...pivot,id:'synthetic-h4-low',timeframe:'H4',kind:'low',price:85,liquidity_status:'untouched' }];

@@ -9,7 +9,8 @@ export function syntheticDeskReport(symbol='EURUSD'){
     structure:{bias:'Neutral',events:group(),swing_bias:'Neutral',swing_basis:'NEEDS_SPECIFICATION',swing_evidence:[]},fractals:[3].flatMap(variant=>['high','low'].map(polarity=>({variant,polarity,...group()}))),
     snr:group(),rb:group(),fvg:group(),ifvg:group(),liquidity:{raids:group(),idm:group(),strong:group(),irl:group()},dealing_range:null,range_status:'EXPLICIT_SELECTION_REQUIRED',
     range_candidate:timeframe==='H4'?{high:'e0',low:'e1',lower:1.1,upper:1.2,equilibrium:1.15,confirmed_at:confirmed,method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true}:null}));
-  return {schema_version:'desk-report-v2',symbol,status:'PARTIAL',generated_at:now,as_of:now,expires_at:'2026-11-15T16:20:00.000Z',error:null,
+  return {schema_version:'desk-report-v2',symbol,status:'PARTIAL',generated_at:now,as_of:now,expires_at:'2026-11-15T14:02:00.000Z',error:null,published_at:null as string|null,
+    freshness:{quote_retrieved_at:now,quote_status:'FRESH',data_quality:'PARTIAL',stale_reasons:[] as string[],quote_max_seconds:120,h4_max_delay_seconds:600,h4_delay_seconds:0,source_age_seconds:0,delivery_max_seconds:120},
     source:{provider:'Capital.com',environment:'demo',analysis_schema:'edge-knowledge-5',price_side:'bid',engine_commit:null,evidence_sha256:'0'.repeat(64),demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
     quote:{bid:1.15,ask:1.1501,spread:0.0001,provider_timestamp:now,retrieved_at:now,source_type:'REST',market_status:'TRADEABLE',provider_age_seconds:0,fresh:true,used_as_closed_evidence:false},frames,
     scenario:{candidate_narrative:'Neutral',confirmed_narrative:null,status:'REVIEW_REQUIRED',evidence_quality:{status:'PARTIAL',human_reviewed:false,independently_validated:false,probability:null},

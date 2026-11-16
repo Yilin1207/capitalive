@@ -91,6 +91,19 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   if(!Number.isFinite(generated)||!Number.isFinite(Date.parse(r.expires_at))||r.expires_at<r.generated_at||asof!==null&&(!Number.isFinite(asof)||asof>generated)||now!==undefined&&(generated>now+30_000||generated<now-15*60_000))throw Error('INVALID_REPORT_TIME');
   if(now!==undefined&&r.status!=='ERROR'&&Date.parse(r.expires_at)<=now)throw Error('REPORT_EXPIRED');
   if(r.status!=='ERROR'&&(!r.source||!r.as_of||!r.scenario||r.frames.length!==4||new Set(r.frames.map(f=>f.timeframe)).size!==4))throw Error('INCOMPLETE_REPORT');
+  const timing=value as {published_at?:string|null;freshness?:{quote_retrieved_at:string|null;quote_status:string;quote_max_seconds:number;delivery_max_seconds:number;h4_max_delay_seconds:number;stale_reasons:string[]};quote?:{retrieved_at:string|null;provider_timestamp:string|null;provider_age_seconds:number|null;fresh:boolean;market_status:string|null}|null;frames:{fetched_at:string}[]};
+  if(r.status!=='ERROR'){
+    const f=timing.freshness,q=timing.quote;
+    if(!f||!q||!Object.hasOwn(timing,'published_at'))throw Error('MISSING_FRESHNESS');
+    if(f.quote_max_seconds<60||f.quote_max_seconds>120||f.delivery_max_seconds<30||f.delivery_max_seconds>120||f.h4_max_delay_seconds<60||f.h4_max_delay_seconds>600)throw Error('INVALID_FRESHNESS_POLICY');
+    if(f.quote_retrieved_at!==q.retrieved_at||timing.frames.some(x=>Date.parse(x.fetched_at)>generated)||q.retrieved_at&&Date.parse(q.retrieved_at)>generated||timing.published_at&&Date.parse(timing.published_at)<generated)throw Error('INVALID_REPORT_TIME');
+    const age=q.provider_timestamp?(generated-Date.parse(q.provider_timestamp))/1000:null;
+    if(age!==q.provider_age_seconds||age!==null&&age<0)throw Error('INVALID_QUOTE_TIME');
+    if(f.quote_status==='FRESH'&&(!q.fresh||age===null||age>f.quote_max_seconds)||q.fresh&&f.quote_status!=='FRESH')throw Error('FALSE_FRESHNESS');
+    if(f.quote_status==='MARKET_CLOSED'&&(q.market_status!=='CLOSED'||!q.retrieved_at||generated-Date.parse(q.retrieved_at)>f.delivery_max_seconds*1000))throw Error('FALSE_FRESHNESS');
+    if(Date.parse(r.expires_at)>generated+f.delivery_max_seconds*1000||f.quote_status==='FRESH'&&Date.parse(r.expires_at)>Date.parse(q.provider_timestamp!)+f.quote_max_seconds*1000)throw Error('INVALID_EXPIRY');
+    if(f.stale_reasons.length&&r.status!=='STALE')throw Error('FALSE_FRESHNESS');
+  }
   if(r.status==='ERROR'&&!r.error)throw Error('MISSING_ERROR');
   if(r.scenario?.confirmed_narrative!==null&&r.scenario&&!r.scenario.evidence_quality.human_reviewed)throw Error('UNREVIEWED_CONFIRMATION');
   const technical=value as {technical_only?:boolean;scenario?:{action:string}|null;details?:{snapshot_sha256:string};source?:{evidence_sha256:string}|null};
@@ -99,6 +112,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   const ids=new Set<string>();
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
+    if(['BOS','CHOCH','ORDER_BLOCK','BREAKER'].includes((e as {kind?:string}).kind??''))throw Error('UNSUPPORTED_AUTHOR_RULE');
     if(!r.source||!e.id.startsWith(`${r.symbol}:${e.timeframe}:${r.source.price_side}:`)||ids.has(e.id))throw Error('INVALID_EVIDENCE_ID');ids.add(e.id);
     const unknownIdTokens=e.id.replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/g,'').replace(/\b(EURUSD|NAS100|JP225|EU50|MN1|W1|D1|H4|bid|ask|high|low|FRACTAL|FVG|FVG_CLOSED_BREACH|RB_TWO_CANDLE|SNR_CLOSED_BREAK|RAID|BOS|CHOCH|IDM_INSIDE_POI|STRONG_PIVOT_CANDIDATE|DEALING_RANGE|INTERNAL_LIQUIDITY)\b/g,'').replace(/[:0-9.\-]/g,'');
     if(unknownIdTokens)throw Error('INVALID_EVIDENCE_ID');

@@ -29,13 +29,12 @@ export async function collectReports(baseUrl:string,bypass:string,fetcher:typeof
       let response=await fetcher(`${baseUrl}/api/desk-report?symbol=${symbol}&side=bid&refresh=1`,{method:'POST',headers:{'x-vercel-protection-bypass':bypass},redirect:'manual',signal:AbortSignal.timeout(90_000)});
       if(response.status===429){await response.body?.cancel();await new Promise(r=>setTimeout(r,Math.min(60_000,Math.max(1000,Number(response.headers.get('retry-after')??30)*1000))));response=await fetcher(`${baseUrl}/api/desk-report?symbol=${symbol}&side=bid&refresh=1`,{method:'POST',headers:{'x-vercel-protection-bypass':bypass},redirect:'manual',signal:AbortSignal.timeout(90_000)});}
       status=response.status;contentType=media(response);
-      if(![200,503].includes(status)){await response.body?.cancel();throw new BridgeFailure(diagnostic('http',status>=300&&status<400?'HTTP_REDIRECT':'HTTP_STATUS'));}
+      if(![200,429,503].includes(status)){await response.body?.cancel();throw new BridgeFailure(diagnostic('http',status>=300&&status<400?'HTTP_REDIRECT':'HTTP_STATUS'));}
       const revision=response.headers.get('x-desk-contract');
-      // v1.2 is an additive validator. Permit the previous pinned source during
-      // a publisher-first rollout; every payload still passes the strict schema.
+      // The V5 source and publisher must migrate together; old evidence is not reinterpreted.
       if(revision&&revision!==CONTRACT_REVISION){await response.body?.cancel();throw new BridgeFailure(diagnostic('schema','CONTRACT_REVISION_MISMATCH'));}
       const body=await boundedJson(response,MAX_REPORT_BYTES,size=>{bytes=size;});phase='schema';validateReport(body,symbol,clock(),[bypass,...secrets]);
-      if(status===503&&body.status!=='ERROR')throw new BridgeFailure(diagnostic('http','HTTP_STATUS'));
+      if(status!==200&&body.status!=='ERROR')throw new BridgeFailure(diagnostic('http','HTTP_STATUS'));
       reports[symbol]=body;
       if(body.status==='ERROR'){
         const d:BridgeDiagnostic=body.diagnostic??diagnostic(body.error==='REPORT_TOO_LARGE'?'size':'provider',body.error==='REPORT_TOO_LARGE'?'REPORT_TOO_LARGE':'UPSTREAM_UNAVAILABLE');

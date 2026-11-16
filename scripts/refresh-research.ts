@@ -25,6 +25,6 @@ async function main(){
  const publication=await publishReports(token,reports,fetch,Date.now(),option('--branch')??'main');
  const readback=await verifyPublication(token,publication.commit);
  console.log(JSON.stringify({requested_at:requestedAt,...readback}));
- if(readback.reports.some(r=>r.status==='ERROR'||r.delivery.status!=='FRESH'))process.exitCode=1;
+ if(readback.reports.some(r=>r.status==='ERROR'||r.expired_at_read||r.delivery.status!=='FRESH'))process.exitCode=1;
 }
 void main().catch(e=>{console.error(JSON.stringify({event:'refresh_failed',...classifyFailure(e,'publish')}));process.exitCode=1;});
