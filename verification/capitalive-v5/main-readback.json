@@ -1,0 +1,53 @@
+{
+  "commit": "60ea7845830a85f3326b79b4f150dcdb9255d907",
+  "branch": "main",
+  "private": true,
+  "readback_at": "2026-11-16T17:55:38.896Z",
+  "manifest_generated_at": "2026-11-16T17:54:27.198Z",
+  "active_source": "https://capitalive-f56a94iqf-yilin1207s-projects.vercel.app",
+  "configured_variable": "https://capitalive-ogpymvyfo-yilin1207s-projects.vercel.app",
+  "reports": [
+    {
+      "symbol": "EURUSD",
+      "bytes": 59847,
+      "sha256": "19fd16de82a81e9b6d42d2cadf27f0907a8fa37cc94c2d3ba7f234cb3da35f59",
+      "status": "PARTIAL",
+      "generated_at": "2026-11-16T17:54:19.027Z",
+      "as_of": "2026-11-16T17:54:14.466Z",
+      "expires_at": "2026-11-16T20:20:00.000Z",
+      "provider_timestamp": "2026-11-16T17:54:10.850Z",
+      "provider_age_seconds_at_read": 86.873,
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "e5cf95e0af3164e1a99eec58ed79296d5c4fb986",
+      "schema_version": "desk-report-v1"
+    },
+    {
+      "symbol": "NAS100",
+      "bytes": 48963,
+      "sha256": "ba3b16ae5d554391d293b1217d654026d83471bd6162b1dab8edf99b1da9bc8c",
+      "status": "PARTIAL",
+      "generated_at": "2026-11-16T17:54:23.233Z",
+      "as_of": "2026-11-16T17:54:20.146Z",
+      "expires_at": "2026-11-16T20:20:00.000Z",
+      "provider_timestamp": "2026-11-16T17:54:14.413Z",
+      "provider_age_seconds_at_read": 83.826,
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "e5cf95e0af3164e1a99eec58ed79296d5c4fb986",
+      "schema_version": "desk-report-v1"
+    },
+    {
+      "symbol": "JP225",
+      "bytes": 49660,
+      "sha256": "7ca29ec71d3a47d15324e1a0516b0bb758d70b2f721d48cefc42c27c06b42d2a",
+      "status": "PARTIAL",
+      "generated_at": "2026-11-16T17:54:27.043Z",
+      "as_of": "2026-11-16T17:54:23.831Z",
+      "expires_at": "2026-11-16T20:20:00.000Z",
+      "provider_timestamp": "2026-11-16T17:54:18.310Z",
+      "provider_age_seconds_at_read": 80.275,
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "engine_commit": "e5cf95e0af3164e1a99eec58ed79296d5c4fb986",
+      "schema_version": "desk-report-v1"
+    }
+  ]
+}
