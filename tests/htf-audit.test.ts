@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { analyzeSeries, ANALYSIS_TIMEFRAMES, ANALYSIS_SYMBOLS, targetMap } from '../lib/technical-analysis';
+import { analyzeSeries, ANALYSIS_TIMEFRAMES, targetMap } from '../lib/technical-analysis';
 import { buildHtfAudit } from '../lib/htf-audit';
 import { calculateStructuralRisk } from '../lib/htf-zone-catalog';
 import { marketAudit } from '../lib/market-audit';
@@ -12,7 +12,8 @@ import type { MarketQuote } from '../lib/quote-normalization';
 
 function fixture(asset: string) { return JSON.parse(readFileSync(`tests/fixtures/htf-${asset}.json`,'utf8')) as { data: Record<Timeframe,CandleResponse>; quote: MarketQuote }; }
 
-for (const asset of ANALYSIS_SYMBOLS) test(`${asset}: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise`, async () => {
+// Immutable historical captures, not the current active research universe.
+for (const asset of ['EURUSD','NAS100','EU50'] as const) test(`${asset}: all four real HTF candidate sets retained, correct bid/ask, no JSON size surprise`, async () => {
   const f = fixture(asset);
   for (const side of ['bid','ask'] as const) {
     const analyses = ANALYSIS_TIMEFRAMES.map(tf => analyzeSeries(f.data[tf],asset,side,{},f.quote[side]));

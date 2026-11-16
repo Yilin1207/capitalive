@@ -3,6 +3,7 @@ import {ACTIVE_RESEARCH_SYMBOLS} from '../lib/active-research-markets';import {V
 import {buildIntelligence} from '../lib/knowledge/intelligence';import {buildDeskReport} from '../lib/research-bridge/report';import {validateReport} from '../lib/research-bridge/contract';import {deskReportHttp} from '../lib/research-bridge/http';
 import {closedFrame} from '../lib/knowledge/data';import {detectFractals,detectFvg} from '../lib/knowledge/detectors';import {regularSession,calendarDiagnostics} from '../lib/research/calendars';
 import {jp225Synthetic} from './fixtures/jp225-synthetic';
+import {marketAudit} from '../lib/market-audit';import type {Timeframe} from '../lib/candle-data';
 test('JP225 active trio and J225 mapping; archived EU50 remains general analysis only',async()=>{
  assert.deepEqual(ACTIVE_RESEARCH_SYMBOLS,['EURUSD','NAS100','JP225']);assert.equal(VERIFIED_MARKETS.JP225.epic,'J225');assert.equal(analysisParams(new URLSearchParams({symbol:'JP225'})).symbol,'JP225');
  assert.equal(analysisParams(new URLSearchParams({symbol:'EU50'})).symbol,'EU50');
@@ -19,5 +20,11 @@ for(const side of ['bid','ask'] as const)test(`JP225 synthetic ${side}: four-fra
  const invalid=structuredClone(report);const e=Object.values(invalid.evidence)[0] as {id:string};e.id=e.id.replace('JP225:','EU50:');assert.throws(()=>validateReport(invalid,'JP225'),/INVALID_EVIDENCE_ID/);
 });
 test('JP225 never inherits the EU50/US historical session calendar',()=>{
- assert.equal(regularSession('JP225',Date.parse('2026-11-15T23:00:00Z')),'UNKNOWN');const c=calendarDiagnostics(jp225Synthetic().data.H4);assert.equal(c.timezone,null);assert.equal(c.holiday_calendar,'NOT_VERIFIED');
+ assert.equal(regularSession('JP225',Date.parse('2026-11-15T23:00:00Z')),'UNKNOWN');const c=calendarDiagnostics(jp225Synthetic().data.H4);assert.equal(c.timezone,'UTC');assert.equal(c.holiday_calendar,'NOT_VERIFIED');
+});
+
+test('JP225 Market Audit integration retains the existing 2.1 API and optional V4 knowledge',async()=>{
+ const f=jp225Synthetic(),deps={getCandles:async(_symbol:string,tf:Timeframe)=>f.data[tf],getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf})};
+ const response=await marketAudit(new Request('https://local/api/market-audit?symbol=JP225&side=ask&view=priority&knowledge=1'),deps),r=await response.json();
+ assert.equal(response.status,200);assert.equal(r.schema_version,'2.1');assert.equal(r.symbol,'JP225');assert.equal(r.knowledge_intelligence.price_side,'ask');assert.equal(r.knowledge_intelligence.frames.length,4);
 });

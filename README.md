@@ -716,7 +716,7 @@ Preview requires the existing Vercel login. Production and its settings are unch
 ## Research Bridge V1
 
 `GET /api/desk-report?symbol=EURUSD&side=bid` exposes a bounded `desk-report-v1`
-projection for EURUSD, NAS100 and EU50 behind existing Preview SSO. It preserves
+projection for the active EURUSD, NAS100 and JP225 trio behind existing Preview SSO. It preserves
 original evidence IDs, confirmation times and Candidate/Confirmed separation,
 with explicit omissions, STALE/ERROR and no full OHLC or personal review text.
 The JSON delivery limit is 64 KiB per asset. THE EDGE calculations are unchanged.
@@ -727,3 +727,10 @@ It uses the portable `scripts/publish-research-bridge.ts` and a strict shared
 contract; it does not contain Capital.com credentials. See
 [RESEARCH_BRIDGE_AUDIT_RU.md](RESEARCH_BRIDGE_AUDIT_RU.md) for real HTTP/publication
 results, limitations, safety controls and ChatGPT connection steps.
+
+The targeted JP225 migration is described in [CAPITALIVE_JP225_MIGRATION_RU.md](CAPITALIVE_JP225_MIGRATION_RU.md).
+JP225 uses Capital.com `J225` (Japan 225 CFD), not EU50 contract/session parameters.
+EU50 remains readable in the general catalogue and historical regression fixtures.
+The publisher writes exactly EURUSD/NAS100/JP225 in the manifest; an old latest EU50
+blob is moved unchanged to `reports/archive/EU50/<blob-sha>.json` atomically.
+No live cutover or merge is implied by the migration PRs.

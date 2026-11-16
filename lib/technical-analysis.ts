@@ -7,7 +7,9 @@ export const ANALYSIS_TIMEFRAMES = ["MN1", "W1", "D1", "H4"] as const;
 export const INSTRUMENTS = {
   EURUSD: { unit: "pip", unit_size: 0.0001, precision: 5, min_remaining_units: 0.5 },
   NAS100: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
-  JP225: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
+  // Display precision observed in J225 quote and all four OHLC series, 2026-11-16.
+  // This is not a broker execution tick-size claim.
+  JP225: { unit: "point", unit_size: 1, precision: 1, min_remaining_units: 1 },
   EU50: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
 } as const;
 export type AnalysisSettings = { min_remaining_units: number; atr_fraction: number };
