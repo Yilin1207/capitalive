@@ -48,13 +48,13 @@ function level(
     qualified: true,
   };
 }
-test("author three-bar and project five-bar pivots are distinct; ties and missing right bar reject", () => {
+test("author three-bar pivots confirm at third close; ties and missing right bar reject", () => {
   const f = peak();
   assert.equal(
     pa.detectFractals(f, 3).filter((p) => p.polarity === "high").length,
     1,
   );
-  assert.equal(pa.detectFractals(f, 5).length, 0);
+  assert.equal(pa.detectFractals(f)[0].confirmed_at, f.bars[2].end);
   assert.equal(pa.detectFractals({ ...f, bars: f.bars.slice(0, 2) }).length, 0);
   f.bars[2].high = 12;
   assert.equal(pa.detectFractals(f).length, 0);
@@ -65,7 +65,7 @@ test("author three-bar and project five-bar pivots are distinct; ties and missin
     [9, 11, 5, 8],
     [8, 10, 4, 7],
   ]);
-  assert.equal(pa.detectFractals(five, 5)[0].variant, 5);
+  assert.equal(pa.detectFractals(five)[0].variant, 3);
 });
 test("FVG golden geometry requires three closed contiguous bars and body coverage; touching wicks are not gaps", () => {
   const f = frame([
@@ -217,7 +217,7 @@ test("strong pivot needs both raid and contextual two-candle VC, ordinary fracta
   assert.equal(pa.detectStrong(f, [pivot], raids, [{...proof,facts:{direction:'bullish'}}]).length,0);
   assert.equal(pa.detectStrong(f, [pivot], raids, []).length, 0);
 });
-test("BOS/CHOCH uses only pivots confirmed before break; repeated crossing consumed once", () => {
+test("generic pivot break is not an authorized structure rule", () => {
   const f = frame([
       [7, 10, 6, 8],
       [8, 12, 7, 10],
@@ -227,15 +227,15 @@ test("BOS/CHOCH uses only pivots confirmed before break; repeated crossing consu
     ]),
     p = pa.detectFractals(f);
   const result = pa.detectStructure(f, p);
-  assert.equal(result.findings.length, 1);
-  assert.equal(result.findings[0].kind, "BOS");
-  assert.equal(result.bias, "Bullish");
+  assert.equal(result.findings.length, 0);
+  assert.equal(result.status, "NEEDS_SPECIFICATION");
+  assert.equal(result.bias, "Neutral");
   assert.equal(
     pa.detectStructure({ ...f, bars: f.bars.slice(0, 3) }, p).findings.length,
     0,
   );
 });
-test("opposite closed break changes project BOS to CHOCH without inventing a narrative reversal", () => {
+test("opposite closed break cannot create generic CHOCH or directional bias", () => {
   const f = frame([
     [8, 10, 7, 9],
     [9, 12, 8, 10],
@@ -246,10 +246,10 @@ test("opposite closed break changes project BOS to CHOCH without inventing a nar
   const result = pa.detectStructure(f, pa.detectFractals(f));
   assert.deepEqual(
     result.findings.map((e) => e.kind),
-    ["BOS", "CHOCH"],
+    [],
   );
-  assert.equal(result.findings[1].facts.previous_bias, "Bullish");
-  assert.equal(result.bias, "Bearish");
+  assert.equal(result.status, "NEEDS_SPECIFICATION");
+  assert.equal(result.bias, "Neutral");
 });
 test("DR requires explicit IDs, EQ is midpoint, IRL remains internal geometry", () => {
   const f = frame([

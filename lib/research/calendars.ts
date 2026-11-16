@@ -19,7 +19,14 @@ export function regularSession(symbol:string,utc:number):'OPEN_OR_HOLIDAY'|'SCHE
  if(p.weekday!=='Sun'&&minute>=17*60&&minute<17*60+5)return 'SCHEDULED_CLOSED';
  return 'OPEN_OR_HOLIDAY';
 }
+const intervalMemo=new Map<string,boolean>();
 export function closedRegularInterval(symbol:string,from:number,to:number):boolean{
+ const key=symbol+':'+from+':'+to,cached=intervalMemo.get(key);if(cached!==undefined)return cached;
+ const result=checkClosedRegularInterval(symbol,from,to);
+ if(intervalMemo.size>=8192)intervalMemo.delete(intervalMemo.keys().next().value!);
+ intervalMemo.set(key,result);return result;
+}
+function checkClosedRegularInterval(symbol:string,from:number,to:number):boolean{
  if(!Number.isFinite(from)||!Number.isFinite(to)||to<=from||to-from>10*86400_000)return false;
  // All bucket minutes must fall in a known closure. No interpolation of prices.
  for(let t=from;t<to;t+=60_000)if(regularSession(symbol,t)!=='SCHEDULED_CLOSED')return false;

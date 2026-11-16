@@ -17,7 +17,7 @@ const upstreamBudget = new WindowLimit(24, 60_000);
 let activeLoads = 0;
 let coolingUntil = 0;
 
-export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number): Promise<CandleResponse> {
+export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number, refresh = false): Promise<CandleResponse> {
   if (timeframe === "MN1" && limit > 60) throw new HistoryError("INVALID_LIMIT", "MN1 limit must be from 1 to 60", 400);
   const environment = capitalEnvironment();
   const epic = VERIFIED_MARKETS[symbol].epic;
@@ -103,7 +103,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       }
       throw error;
     } finally { activeLoads--; }
-  });
+  }, Date.now(), refresh);
   const { quality, aggregation, ...data } = value;
   const candles = data.candles.slice(-limit);
   return { ...data, candles, metadata: {

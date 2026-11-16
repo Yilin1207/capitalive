@@ -7,7 +7,7 @@ const path=process.env.JP225_INPUT;if(!path)throw Error('JP225_INPUT must name a
 const raw=readFileSync(path),input=JSON.parse(raw.toString()) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
 assert.ok(Object.values(input.data).every(d=>d.symbol==='JP225'&&d.epic==='J225'&&d.provider==='Capital.com'));
 const hash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
-const events=(f:Frame,context:pa.KeyLevel[])=>{const p=pa.detectFractals(f),g=pa.detectFvg(f),raids=pa.detectRaids(f,p),rb=pa.detectRejectionBlocks(f,context),snr=pa.detectSnr(f,context);return [...p,...pa.detectFractals(f,5),...g.findings,...pa.detectInversions(f,g.levels),...raids,...rb,...snr,...pa.detectIdm(f,p,context),...pa.detectStrong(f,p,raids,[...rb,...snr]),...pa.detectStructure(f,p).findings];};
+const events=(f:Frame,context:pa.KeyLevel[])=>{const p=pa.detectFractals(f),g=pa.detectFvg(f),raids=pa.detectRaids(f,p),rb=pa.detectRejectionBlocks(f,context),snr=pa.detectSnr(f,context);return [...p,...g.findings,...pa.detectInversions(f,g.levels),...raids,...rb,...snr,...pa.detectIdm(f,p,context),...pa.detectStrong(f,p,raids,[...rb,...snr]),...pa.detectStructure(f,p).findings];};
 const results=[];for(const side of ['bid','ask'] as const){
  const r=buildIntelligence(input.data,side,input.quote),now=new Date(Math.max(...Object.values(input.data).map(d=>Date.parse(d.fetched_at)),...['retrieved_at','fetched_at_utc','provider_timestamp'].map(k=>Date.parse(String((input.quote as unknown as Record<string,unknown>)[k]))).filter(Number.isFinite))).toISOString();
  const report=buildDeskReport(r,input.data,input.quote,now),text=JSON.stringify(report)+'\n';validateReport(report,'JP225',Date.parse(now));

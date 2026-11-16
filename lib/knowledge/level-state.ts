@@ -2,9 +2,10 @@ import type {Frame,Bar} from './data';
 import {TF_ORDER,type KeyLevel,type Finding} from './detectors';
 import type {Timeframe} from '../candle-data';
 import {provenance} from './rules';
+import {closedRegularInterval} from '../research/calendars';
 export type Role='support'|'resistance';
 export type LevelEvidence={kind:string;timeframe:Timeframe;time:string;confirmed_at:string;index:number;open:number;high:number;low:number;close:number};
-export type LevelState={id:string;kind:KeyLevel['kind'];timeframe:Timeframe;lower:number;upper:number;initial_role:Role;current_role:Role|null;as_of:string;evaluated_through:string;origin:string;confirmed_at:string;invalidated_at:string|null;continuity_end:string;coverage:'COMPLETE_OBSERVED_INTERVAL'|'UNVERIFIED';coverage_gaps:{from:string;to:string}[];state:'ACTIVE'|'CONSUMED'|'INVALIDATED'|'UNVERIFIED'|'CANDIDATE';role_status:'ORIGINAL_GEOMETRY'|'RETEST_CONFIRMED'|'UNVERIFIED';age_days:number;liquidity_consumed:boolean;first_raid:LevelEvidence|null;last_test:LevelEvidence|null;test_episodes:number;reaction:LevelEvidence|null;role_evidence:LevelEvidence[];lower_tf_breach:LevelEvidence|null;counterarguments:string[];rule_id:string;rule_version:number;rule_status:string;specification:string;sources:ReturnType<typeof provenance>['sources'];invalidation:string};
+export type LevelState={id:string;kind:KeyLevel['kind'];timeframe:Timeframe;lower:number;upper:number;initial_role:Role;current_role:Role|null;as_of:string;evaluated_through:string;origin:string;confirmed_at:string;invalidated_at:string|null;continuity_end:string;coverage:'COMPLETE_OBSERVED_INTERVAL'|'UNVERIFIED';coverage_gaps:{from:string;to:string}[];coverage_closures?:{from:string;to:string}[];state:'ACTIVE'|'CONSUMED'|'INVALIDATED'|'UNVERIFIED'|'CANDIDATE';role_status:'ORIGINAL_GEOMETRY'|'RETEST_CONFIRMED'|'UNVERIFIED';age_days:number;liquidity_consumed:boolean;first_raid:LevelEvidence|null;last_test:LevelEvidence|null;test_episodes:number;reaction:LevelEvidence|null;role_evidence:LevelEvidence[];lower_tf_breach:LevelEvidence|null;counterarguments:string[];rule_id:string;rule_version:number;rule_status:string;specification:string;sources:ReturnType<typeof provenance>['sources'];invalidation:string};
 const proof=(kind:string,timeframe:Timeframe,b:Bar):LevelEvidence=>({kind,timeframe,time:b.time,confirmed_at:b.end,index:b.index,open:b.open,high:b.high,low:b.low,close:b.close});
 const intersects=(b:Bar,l:KeyLevel)=>b.high>=l.lower&&b.low<=l.upper;
 const broken=(b:Bar,l:KeyLevel,role:Role)=>role==='support'?b.close<l.lower:b.close>l.upper;
@@ -15,7 +16,12 @@ export function intervalCoverage(frames:Frame[],from:string,to:string){
  let cursor=from;const gaps:{from:string;to:string}[]=[];
  for(const x of intervals){if(x.from>cursor)gaps.push({from:cursor,to:x.from<to?x.from:to});if(x.to>cursor)cursor=x.to;if(cursor>=to)break;}
  if(cursor<to)gaps.push({from:cursor,to});
- return {complete:from<=to&&gaps.length===0,gaps,continuity_end:gaps[0]?.from??to};
+ // Only a documented whole closed interval can fill the coverage timeline.
+ // This does NOT join detector segments or manufacture a price observation.
+ const symbol=frames[0]?.symbol;
+ const scheduled_closures=gaps.filter(g=>frames.every(f=>f.symbol===symbol)&&closedRegularInterval(symbol,Date.parse(g.from),Date.parse(g.to)));
+ const unresolved=gaps.filter(g=>!scheduled_closures.includes(g));
+ return {complete:from<=to&&unresolved.length===0,gaps:unresolved,scheduled_closures,continuity_end:unresolved[0]?.from??to};
 }
 export type FvgFill={state:'UNKNOWN'|'UNTOUCHED'|'TOUCHED'|'PARTIAL'|'FILLED';max_observed_fraction:number;first_test_at:string|null;last_test_at:string|null};
 export function assessLevel(l:KeyLevel,all:Record<Timeframe,Frame>,asOf:string,through:string):LevelState & {fill:FvgFill|null}{
@@ -33,46 +39,28 @@ export function assessLevel(l:KeyLevel,all:Record<Timeframe,Frame>,asOf:string,t
  if(!coverage.complete)reasons.push('UNOBSERVED_INTERVALS_CAN_HIDE_PRIOR_INTERACTIONS');
  if(!origin)reasons.push('ORIGIN_CONFIRMATION_NOT_IN_INPUT');
  if(!l.qualified)reasons.push('DETECTOR_CANDIDATE_NOT_QUALIFIED_KL');
- // Role reversal is a project evidence protocol, NOT a rename after a wick raid.
- // Same TF or X-1 closed break, then a later separate retest from the new side.
- const reversals:{role:Role;evidence:LevelEvidence[]}[]=[];let tests=0,lastTest:LevelEvidence|null=null,reaction:LevelEvidence|null=null,sequenceGapAt:string|null=null;
+ // Observe tests/rejections. A generic break + retest must not turn a consumed
+ // fractal into an automatically qualified opposite-side KL.
+ let tests=0,lastTest:LevelEvidence|null=null,reaction:LevelEvidence|null=null;
  const coverageAt=new Map<string,boolean>();
  const continuousAt=(end:string)=>{if(!coverageAt.has(end))coverageAt.set(end,intervalCoverage(frames,l.confirmed_at,end).complete);return coverageAt.get(end)!;};
- for(const f of frames){let inside=false;for(const b of f.bars){const hit=intersects(b,l);if(hit&&!inside){tests++;if(!lastTest||b.end>lastTest.confirmed_at)lastTest=proof('TEST_EPISODE',f.timeframe,b);}inside=hit;
-   if(TF_ORDER.indexOf(f.timeframe)<=rank+1&&hit&&(l.role==='support'?b.open>=l.upper&&b.close>l.upper:b.open<=l.lower&&b.close<l.lower)&&(!reaction||b.end>reaction.confirmed_at)&&continuousAt(b.end))reaction=proof('CLOSED_REJECTION',f.timeframe,b);
-  }
-  if(!isFractal||TF_ORDER.indexOf(f.timeframe)>rank+1)continue;
-  let role:Role=l.role,pending:Bar|null=null,confirmed:LevelEvidence[]=[];
-  for(const b of f.bars){if(pending&&pending.segment!==b.segment){pending=null;confirmed=[];if(!sequenceGapAt||b.end>sequenceGapAt)sequenceGapAt=b.end;}
-   if(!continuousAt(b.end)){pending=null;confirmed=[];continue;}
-   if(broken(b,l,role)){if(!pending)pending=b;}
-   else if(pending){pending=null;}
-   if(pending&&b.time>=pending.end&&intersects(b,l)&&(role==='support'?b.open<l.lower&&b.close<l.lower:b.open>l.upper&&b.close>l.upper)){
-    confirmed=[proof('CLOSED_ROLE_BREAK',f.timeframe,pending),proof('LATER_ROLE_RETEST',f.timeframe,b)];role=role==='support'?'resistance':'support';pending=null;
-   }
-  }
-  if(confirmed.length&&!pending)reversals.push({role,evidence:confirmed});
- }
- const latest=reversals.sort((a,b)=>b.evidence[1].confirmed_at.localeCompare(a.evidence[1].confirmed_at))[0];
- const conflict=reversals.some(r=>r.role!==latest?.role);if(conflict)reasons.push('ROLE_TIMEFRAME_CONFLICT');
- const roleConfirmed=!!latest&&!conflict&&coverage.complete;
- // An older lower-TF retest cannot survive a newer closed breach on X / X-1.
- const roleBreak=latest?observations.find(({tf,b})=>TF_ORDER.indexOf(tf)<=rank+1&&b.end>latest.evidence[1].confirmed_at&&broken(b,l,latest.role)):undefined;
- const sequenceUnverified=!!sequenceGapAt&&(!latest||latest.evidence[1].confirmed_at<sequenceGapAt);
- if(sequenceGapAt)reasons.push('ROLE_SEQUENCE_GAP');
- if(roleBreak)reasons.push('RETESTED_ROLE_BROKEN_REVIEW_REQUIRED');
+ for(const f of frames){let inside=false;for(const b of f.bars){const hit=intersects(b,l);
+  if(hit&&!inside){tests++;if(!lastTest||b.end>lastTest.confirmed_at)lastTest=proof('TEST_EPISODE',f.timeframe,b);}inside=hit;
+  if(TF_ORDER.indexOf(f.timeframe)<=rank+1&&hit&&(l.role==='support'?b.open>=l.upper&&b.close>l.upper:b.open<=l.lower&&b.close<l.lower)&&(!reaction||b.end>reaction.confirmed_at)&&continuousAt(b.end))reaction=proof('CLOSED_REJECTION',f.timeframe,b);
+ }}
+ const roleConfirmed=false;
  const invalidated=isFvg&&!!ownBreak;
  const fillRows=isFvg?observations.filter(({b})=>(!ownBreak||b.end<=ownBreak.b.end)&&intersects(b,l)):[];
  const maxFill=fillRows.reduce((value,{b})=>Math.max(value,Math.max(0,Math.min(1,l.role==='support'?(l.upper-b.low)/(l.upper-l.lower):(b.high-l.lower)/(l.upper-l.lower)))),0);
  const fill:FvgFill|null=isFvg&&l.upper>l.lower?{state:maxFill===1?'FILLED':!coverage.complete?'UNKNOWN':maxFill>0?'PARTIAL':fillRows.length?'TOUCHED':'UNTOUCHED',max_observed_fraction:maxFill,first_test_at:fillRows[0]?.b.end??null,last_test_at:fillRows.at(-1)?.b.end??null}:null;
  if(isFvg&&lowerPressure)reasons.push('LOWER_TF_CLOSED_BREACH_REQUIRES_HTF_REVIEW');
  if(isFractal&&raid)reasons.push(roleConfirmed?'OLD_LIQUIDITY_CONSUMED_NEW_ROLE_RETESTED':'LIQUIDITY_CONSUMED_NOT_AUTOMATIC_ROLE_REVERSAL');
- const state=invalidated?'INVALIDATED':!coverage.complete||!origin||conflict||roleBreak||sequenceUnverified?'UNVERIFIED':!l.qualified?'CANDIDATE':isFractal&&raid&&!roleConfirmed?'CONSUMED':'ACTIVE';
+ const state=invalidated?'INVALIDATED':!coverage.complete||!origin?'UNVERIFIED':!l.qualified?'CANDIDATE':isFractal&&raid&&!roleConfirmed?'CONSUMED':'ACTIVE';
  // A reaction after invalidation belongs to a different premise, never to this active FVG.
  if(invalidated&&reaction&&reaction.confirmed_at>ownBreak!.b.end)reaction=null;
- const currentRole=state==='INVALIDATED'||state==='UNVERIFIED'||state==='CONSUMED'?null:roleConfirmed?latest.role:l.role;
+ const currentRole=state==='INVALIDATED'||state==='UNVERIFIED'||state==='CONSUMED'?null:l.role;
  return {id:l.id,kind:l.kind,timeframe:l.timeframe,lower:l.lower,upper:l.upper,initial_role:l.role,current_role:currentRole,fill,
-  as_of:asOf,evaluated_through:through,origin:l.source_finding.origin,confirmed_at:l.confirmed_at,invalidated_at:invalidated?ownBreak!.b.end:null,continuity_end:coverage.continuity_end,coverage:coverage.complete?'COMPLETE_OBSERVED_INTERVAL':'UNVERIFIED',coverage_gaps:coverage.gaps,state,role_status:currentRole===null?'UNVERIFIED':roleConfirmed?'RETEST_CONFIRMED':'ORIGINAL_GEOMETRY',age_days:Math.max(0,(Date.parse(asOf)-Date.parse(l.confirmed_at))/86400000),liquidity_consumed:!!raid,first_raid:raid?proof(coverage.complete?'STRICT_RAID':'CROSSING_WITH_UNOBSERVED_HISTORY',raid.tf,raid.b):null,last_test:lastTest,test_episodes:tests,reaction,role_evidence:roleBreak?[...latest!.evidence,proof('RETESTED_ROLE_CLOSED_BREACH',roleBreak.tf,roleBreak.b)]:roleConfirmed?latest.evidence:[],lower_tf_breach:lowerPressure?proof('LOWER_TF_CLOSE_BREACH',lowerPressure.tf,lowerPressure.b):null,
+  as_of:asOf,evaluated_through:through,origin:l.source_finding.origin,confirmed_at:l.confirmed_at,invalidated_at:invalidated?ownBreak!.b.end:null,continuity_end:coverage.continuity_end,coverage:coverage.complete?'COMPLETE_OBSERVED_INTERVAL':'UNVERIFIED',coverage_gaps:coverage.gaps,coverage_closures:coverage.scheduled_closures,state,role_status:currentRole===null?'UNVERIFIED':roleConfirmed?'RETEST_CONFIRMED':'ORIGINAL_GEOMETRY',age_days:Math.max(0,(Date.parse(asOf)-Date.parse(l.confirmed_at))/86400000),liquidity_consumed:!!raid,first_raid:raid?proof(coverage.complete?'STRICT_RAID':'CROSSING_WITH_UNOBSERVED_HISTORY',raid.tf,raid.b):null,last_test:lastTest,test_episodes:tests,reaction,role_evidence:[],lower_tf_breach:lowerPressure?proof('LOWER_TF_CLOSE_BREACH',lowerPressure.tf,lowerPressure.b):null,
   ...provenance('EDGE.LEVEL_STATE.v2'),counterarguments:reasons,invalidation:'FVG: closed own-TF far-boundary breach. Fractal liquidity: strict observed crossing on admissible TF. Reversed role: new closed breach. Missing continuity invalidates claims of untouched status.'};
 }
 /** RB/SNR remain visible obstacles even while their execution boundaries are candidates. */

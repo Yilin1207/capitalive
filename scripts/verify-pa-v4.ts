@@ -4,7 +4,7 @@ import {closedFrame,type Frame} from '../lib/knowledge/data';import * as pa from
 const out=process.env.PA_V4_OUTPUT??'.vercel/v4/replay';mkdirSync(out,{recursive:true});
 const baselineDir=process.env.PA_V4_BASELINE_DIR,privateDir=process.env.PA_V4_INPUT_DIR;
 const digest=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
-function stableEvents(f:Frame,context:pa.KeyLevel[]){const pivots=pa.detectFractals(f),five=pa.detectFractals(f,5),gaps=pa.detectFvg(f),raids=pa.detectRaids(f,pivots),rb=pa.detectRejectionBlocks(f,context),snr=pa.detectSnr(f,context);return [...pivots,...five,...gaps.findings,...pa.detectInversions(f,gaps.levels),...raids,...rb,...snr,...pa.detectIdm(f,pivots,context),...pa.detectStrong(f,pivots,raids,[...rb,...snr]),...pa.detectStructure(f,pivots).findings];}
+function stableEvents(f:Frame,context:pa.KeyLevel[]){const pivots=pa.detectFractals(f),gaps=pa.detectFvg(f),raids=pa.detectRaids(f,pivots),rb=pa.detectRejectionBlocks(f,context),snr=pa.detectSnr(f,context);return [...pivots,...gaps.findings,...pa.detectInversions(f,gaps.levels),...raids,...rb,...snr,...pa.detectIdm(f,pivots,context),...pa.detectStrong(f,pivots,raids,[...rb,...snr]),...pa.detectStructure(f,pivots).findings];}
 const rows=[];
 for(const set of ['archive','control',...(privateDir?['current']:[])])for(const symbol of ['EURUSD','NAS100','EU50']){
  const path=set==='current'?`${privateDir}/input-${symbol}.json`:set==='control'?`tests/fixtures/edge-v2/${symbol}.json`:`tests/fixtures/htf-${symbol}.json`;

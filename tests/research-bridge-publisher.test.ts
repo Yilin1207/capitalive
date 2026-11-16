@@ -1,11 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {collectReports,publishReports,transportError,boundedJson,TARGET_REPOSITORY} from '../scripts/publish-research-bridge.ts';
+import {collectReports,publishReports,verifyPublication,transportError,boundedJson,TARGET_REPOSITORY} from '../scripts/publish-research-bridge.ts';
 import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
 import {syntheticDeskReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
 const reports=()=>Object.fromEntries(['EURUSD','NAS100','JP225'].map(s=>[s,transportError(s,iso)]));
+
+test('V5 rejects missing clocks, fake freshness, extended expiry and unsupported rule outputs',()=>{
+ const r=syntheticDeskReport();validateReport(r);
+ const missing=structuredClone(r);delete (missing as Partial<typeof r>).freshness;assert.throws(()=>validateReport(missing),/MISSING_FRESHNESS/);
+ const stale=structuredClone(r);stale.quote.provider_timestamp='2026-11-15T08:36:00.000Z';stale.quote.provider_age_seconds=19440;assert.throws(()=>validateReport(stale),/FALSE_FRESHNESS/);
+ const expiry=structuredClone(r);expiry.expires_at='2026-11-16T00:00:00.000Z';assert.throws(()=>validateReport(expiry),/INVALID_EXPIRY/);
+ const future=structuredClone(r);future.published_at='2026-11-15T13:59:00.000Z';assert.throws(()=>validateReport(future),/INVALID_REPORT_TIME/);
+ const unsupported=structuredClone(r);unsupported.evidence.e0.kind='BOS';assert.throws(()=>validateReport(unsupported),/UNSUPPORTED_AUTHOR_RULE/);
+});
 
 test('V4 publisher accepts technical reports and rejects decision/snapshot contradictions',async()=>{
  const report=Object.assign(syntheticDeskReport(),{technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:'0'.repeat(64)}});report.scenario.action='NOT_EVALUATED';
@@ -18,7 +27,7 @@ test('V4 publisher accepts technical reports and rejects decision/snapshot contr
  assert.ok(Object.values(output).every(r=>r.status==='PARTIAL'));
 });
 
-test('V4 publisher-first rollout accepts v1.1 payloads and preserves legacy provider failures',async()=>{
+test('V5 migration rejects old sources before publishing incompatible evidence',async()=>{
  const fetcher=async(url:unknown)=>{
   const symbol=new URL(String(url)).searchParams.get('symbol')!;
   const legacy=symbol==='JP225'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
@@ -26,8 +35,8 @@ test('V4 publisher-first rollout accepts v1.1 payloads and preserves legacy prov
  };
  const diagnostics:BridgeDiagnostic[]=[];
  const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',fetcher as typeof fetch,()=>now,[],d=>diagnostics.push(d));
- assert.equal(output.EURUSD.status,'PARTIAL');assert.equal(output.NAS100.status,'PARTIAL');assert.equal(output.JP225.status,'ERROR');
- assert.equal(diagnostics[0].stage,'provider');assert.equal(diagnostics[0].code,'CAPITAL_INVALID_RESPONSE');assert.equal(diagnostics[0].contract_revision,'desk-report-v1.1');
+ assert.ok(Object.values(output).every(r=>r.status==='ERROR'));
+ assert.equal(diagnostics[0].stage,'schema');assert.equal(diagnostics[0].code,'CONTRACT_REVISION_MISMATCH');assert.equal(diagnostics[0].contract_revision,CONTRACT_REVISION);
 });
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
   const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('JP225',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
@@ -94,4 +103,18 @@ test('Publisher validates all three reports before the first content upload',asy
   const input=reports();Object.assign(input.NAS100,{accounts:['private-data']});const writes:string[]=[];
   const fetcher=async(url:unknown,init?:RequestInit)=>{if(init?.method!=='GET')writes.push(String(url));return Response.json({private:true,full_name:TARGET_REPOSITORY,default_branch:'main'});};
   await assert.rejects(()=>publishReports('token-canary',input,fetcher as typeof fetch,now),/contract/);assert.equal(writes.length,0);
+});
+
+test('V5 readback pins all files to one commit, detects tampering and exposes expiry',async()=>{
+ const commit='a'.repeat(40),files:Record<string,Buffer>={},rows=[];
+ for(const symbol of ['EURUSD','NAS100','JP225']){
+  const r={...syntheticDeskReport(symbol),published_at:iso},path=`reports/latest/${symbol}.json`,bytes=Buffer.from(JSON.stringify(r)+'\n');files[path]=bytes;
+  rows.push({symbol,path,status:r.status,generated_at:r.generated_at,as_of:r.as_of,expires_at:r.expires_at,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
+ }
+ files['reports/latest/manifest.json']=Buffer.from(JSON.stringify({schema_version:'desk-report-manifest-v2',contract_revision:CONTRACT_REVISION,published_at:iso,reports:rows}));
+ const fetcher=async(url:unknown)=>{const u=new URL(String(url));assert.equal(u.searchParams.get('ref'),commit);const bytes=files[u.pathname.split('/contents/')[1]];return Response.json({encoding:'base64',content:bytes.toString('base64')});};
+ const current=await verifyPublication('token-canary',commit,fetcher as typeof fetch,()=>now);assert.equal(current.reports.length,3);assert.ok(current.reports.every(r=>!r.expired_at_read));
+ const old=await verifyPublication('token-canary',commit,fetcher as typeof fetch,()=>now+4*3600_000);assert.ok(old.reports.every(r=>r.expired_at_read&&r.read_status==='STALE'));
+ files['reports/latest/NAS100.json']=Buffer.concat([files['reports/latest/NAS100.json'],Buffer.from(' ')]);
+ await assert.rejects(()=>verifyPublication('token-canary',commit,fetcher as typeof fetch,()=>now),/INVALID_PUBLICATION/);
 });
