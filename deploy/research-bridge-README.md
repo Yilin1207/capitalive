@@ -10,8 +10,8 @@ V5 is prepared in PR #5. Main remains on the previous publisher until coordinate
 merge. Verified V5 reports are on `verification/v5-current`, with a separate
 operator recovery run on `verification/v5-recovery`.
 
-Verified source: `https://capitalive-l2umiufiw-yilin1207s-projects.vercel.app`,
-engine commit `cd4c746bda181aca0429faee16fdba4649b0e412`.
+Verified source: `https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app`,
+engine commit `a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1`.
 [Audit, tests, HTTP and publication evidence](https://github.com/Yilin1207/capitalive/blob/feature/v5-realtime-edge-only-20261116/CAPITALIVE_V5_AUDIT_RU.md).
 
 ## Reading in ChatGPT

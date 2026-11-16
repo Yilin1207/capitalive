@@ -1,4 +1,4 @@
-﻿# Capitalive V5 — итоговый аудит
+# Capitalive V5 — итоговый аудит
 
 **Вердикт: READY FOR MERGE.** Проверена связка Capital.com → V5 Preview →
 Publisher → приватный GitHub → повторное чтение трёх JSON. Это готовность
@@ -10,15 +10,15 @@ Production, SSO, секреты и основная система макроа�
 - [Capitalive PR #7](https://github.com/Yilin1207/capitalive/pull/7), ветка
   `feature/v5-realtime-edge-only-20261116`, база `feature/jp225-migration-20261116`.
   Это последовательный PR поверх миграции JP225 (#6); родительские PR автоматически не сливались.
-- Проверенный код движка: `cd4c746bda181aca0429faee16fdba4649b0e412`.
-- [Immutable V5 Preview](https://capitalive-l2umiufiw-yilin1207s-projects.vercel.app/research),
+- Проверенный код движка: `a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1`.
+- [Immutable V5 Preview](https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app/research),
   Vercel READY, target не Production; запрос без авторизации получает HTTP 302.
   Сохранено `all_except_custom_domains`.
 - [Приватный Bridge PR #5](https://github.com/Yilin1207/capitalive-research-bridge/pull/5).
-  Проверенный publisher: `0e4074a90341b5f4c03d7de289285c920c11b697`.
+  Проверенный publisher: `4fe109398923a380dfec5579b3b31dbf20cae895`.
   Последующие коммиты аудита/инструкций не меняют проверенный исполняемый код.
 - V5 публиковалась в **реальную ветку `verification/v5-current` приватного Bridge**.
-  Коммит файлов: `71a4ddd5335a5e3d851ceb87957e16a5dbce1b34`.
+  Коммит файлов: `a1419454e73f726abcdf4640212545810eb37946`.
 - Рабочая `main` также проверена и обновлена отдельно: `60ea7845830a85f3326b79b4f150dcdb9255d907`.
   Там пока **старый `desk-report-v1`**, движок `e5cf95e0af3164e1a99eec58ed79296d5c4fb986`.
   Этот refresh не выдаётся за включение V5.
@@ -79,9 +79,9 @@ market status, data quality и stale reasons. `published_at` означает п
 
 | Актив | Bid: HTTP / байты / статус | Ask: HTTP / байты / статус |
 |---|---|---|
-| EURUSD | 200 / 48 199 / STALE | 200 / 48 086 / STALE |
-| NAS100 | 200 / 36 910 / PARTIAL | 200 / 36 887 / PARTIAL |
-| JP225 | 200 / 37 510 / PARTIAL | 200 / 37 513 / PARTIAL |
+| EURUSD | 200 / 48 200 / STALE | 200 / 48 087 / STALE |
+| NAS100 | 200 / 36 911 / PARTIAL | 200 / 36 890 / PARTIAL |
+| JP225 | 200 / 37 540 / PARTIAL | 200 / 37 540 / PARTIAL |
 
 EURUSD в этом проходе пришёл без проверяемого времени поставщика:
 `QUOTE_PROVIDER_TIME_UNKNOWN`. Оно не было подставлено из retrieval/commit.
@@ -92,7 +92,7 @@ EURUSD в этом проходе пришёл без проверяемого �
 Компактный отчёт содержит выбранные evidence и честные total/omitted, не все находки.
 
 `/api/chart?symbol=JP225&timeframe=H4`: HTTP 200, настоящий `image/png`,
-109 944 байта, сигнатура PNG проверена. Активный desk для EU50: HTTP 400.
+113 688 байта, сигнатура PNG проверена. Активный desk для EU50: HTTP 400.
 Подробная матрица, времена и SHA: [http-matrix.json](verification/capitalive-v5/http-matrix.json).
 
 При шести последовательных принудительных загрузках воспроизведён
@@ -102,7 +102,7 @@ EURUSD в этом проходе пришёл без проверяемого �
 [стресс-проверке](verification/capitalive-v5/http-stress.json).
 Первый сохранённый общий 503 сам по себе не доказывал точный код причины;
 вывод о лимите опирается на последующее воспроизведение с диагностикой.
-Лимит запросов не увеличивался и ошибки не маскировались.
+Лимит запросов не увеличивался и ошибки не маскировались. Входной client limit также возвращает HTTP 429 с отдельным HTTP-stage кодом REQUEST_RATE_LIMIT, не выдаётся за отказ поставщика; добавлена регрессионная проверка.
 
 `markets_batch` — необязательный запрос метаданных котировки; отказ фиксируется
 как optional failure. REST snapshot и stream проверяются отдельно. Наличие этого
@@ -174,13 +174,13 @@ Bullish FVG **27097.8–27419.3**, подтверждение **2026-11-11T00:00
 
 ## 5. Тесты и CI
 
-[Source CI](https://github.com/Yilin1207/capitalive/actions/runs/43923117079): SUCCESS.
-Проверено: **208/208 unit/integration**, lint/typecheck, build,
+[Source CI](https://github.com/Yilin1207/capitalive/actions/runs/43924636856): SUCCESS.
+Проверено: **209/209 unit/integration**, lint/typecheck, build,
 THE EDGE replay, V2 replay, V4 replay; **9/9 Playwright**, **23 HTTP-проверки**
 реального локального Next build на записанном транспорте, два декодированных PNG,
 две страницы snapshot с проверкой SHA. Это не подмена реальных проверок Preview.
 
-[Private CI](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43922648089):
+[Private CI](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43924649181):
 SUCCESS, **12/12** native Node 24 tests без npm-зависимостей.
 Проверяются атомарность, приватность, secret canary, размеры, будущие данные,
 candidate range, подмена файла, отсутствие clocks, false freshness, expiry,
@@ -195,32 +195,35 @@ Precision/Recall, доходность и полностью независим�
 
 ## 6. Публикация, повторное чтение и восстановление
 
-[Финальный workflow](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43923381707): SUCCESS.
-Запрос 17:55:22.058Z, подготовка публикации 17:55:45.634Z,
-Git commit 17:55:47Z, чтение всех файлов завершено 17:55:50.184Z.
+[Финальный workflow](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43924839010): SUCCESS.
+Запрос 18:03:47.536Z, подготовка публикации 18:04:20.017Z,
+Git commit 18:04:22Z, чтение всех файлов завершено 18:04:24.157Z.
 Все значения ниже — 16 ноября 2026, UTC; environment **demo**, side **bid**.
 
 | Актив | Provider time | H4 closed | Quote age при CI readback | Байты | Статус |
 |---|---|---|---:|---:|---|
-| EURUSD | 17:55:35.373 | 16:00:00 | 14.274 s | 48 193 | PARTIAL / quote FRESH |
-| NAS100 | 17:55:36.662 | 16:00:00 | 13.294 s | 36 959 | PARTIAL / quote FRESH |
-| JP225 | 17:55:38.597 | 16:00:00 | 11.587 s | 37 536 | PARTIAL / quote FRESH |
+| EURUSD | 18:04:07.453 | 16:00:00 | 16.204 s | 48 194 | PARTIAL / quote FRESH |
+| NAS100 | 18:04:09.460 | 16:00:00 | 14.5 s | 36 935 | PARTIAL / quote FRESH |
+| JP225 | 18:04:10.816 | 16:00:00 | 13.341 s | 37 563 | PARTIAL / quote FRESH |
 
 SHA-256 опубликованных файлов:
 
-- EURUSD: `7b6f0ed0ef76c04cf12d5de9e1f39598cdf0b8cdf63aad44286b8dfb45fd7913`
-- NAS100: `9e73fd823eeddf91d45c36a9f11f7ed478ad626a58e112f06665ab5636435f73`
-- JP225: `8ee29f9ef192a69e2e89545a0fff37ebf3f8ceb2c46fb74f7902a462b25ad89d`
+- EURUSD: `835c3e46db28024eb881cb76c9b06b203f3d5b9059293c13700caef6d3574029`
+- NAS100: `fe3100a717f967af5543846f76264de1e2b2ab5e55e9f8a9b75d038582ca7faa`
+- JP225: `28fbf71462bcd3cb4d97b377af74ab62b189985691446cb24cc3b9f06113c31a`
 
-Повторное отдельное чтение в 17:56:48.615Z подтвердило те же SHA/размеры и
-срок годности. [Manifest по immutable commit](https://github.com/Yilin1207/capitalive-research-bridge/blob/71a4ddd5335a5e3d851ceb87957e16a5dbce1b34/reports/latest/manifest.json).
+Повторное отдельное чтение в 18:05:31.752Z подтвердило те же SHA/размеры и
+срок годности. [Manifest по immutable commit](https://github.com/Yilin1207/capitalive-research-bridge/blob/a1419454e73f726abcdf4640212545810eb37946/reports/latest/manifest.json).
 После expiry эти же сохранённые файлы уже STALE; успех проверки не делает их
 актуальными навсегда. Это также проверено на предыдущей публикации.
 
 **Резерв без Actions реально выполнен:** операторский refresh опубликовал и
-прочитал три PARTIAL JSON в `verification/v5-recovery`, commit
-`c5600167f3e1930012f5870544acff82e60caca8`. Quote ages при readback 53–56 секунд,
-все SHA/размеры совпали. [Доказательства](verification/capitalive-v5/operator-recovery.json).
+прочитал три JSON в `verification/v5-recovery`, commit
+`204a6813bf714fe8320b3438c16101965cfe8bcc`. NAS100 и JP225 — PARTIAL,
+возраст котировок 53.890 и 55.653 секунды соответственно для JP225 и NAS100.
+EURUSD — STALE: поставщик не дал проверяемый timestamp. Это сохранено явно,
+не заменено временем retrieval. Все SHA/размеры совпали, просроченных файлов нет.
+[Доказательства](verification/capitalive-v5/operator-recovery.json).
 Часы локального оператора примерно на 39 секунд впереди HTTP Date Vercel/GitHub;
 поэтому метрики между сервисами выше рассчитаны по CI. Фактическое время Git
 commit сохранено отдельно; локальное время не используется вместо provider time.
@@ -240,7 +243,7 @@ V5; это ограничение не скрывается свежим руч�
 
 Доступные пути:
 
-1. Открыть [защищённый Research V5](https://capitalive-l2umiufiw-yilin1207s-projects.vercel.app/research),
+1. Открыть [защищённый Research V5](https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app/research),
    нажать обновление, скачать JSON и приложить их в ChatGPT.
 2. Ручной workflow: до merge выбрать V5 branch и указать проверенный Preview;
    после успешного readback читать отчёты по указанному commit.
@@ -254,7 +257,7 @@ Read-only connector может иметь задержку индексации;
 
 Для штатного включения подготовлены PR, но автоматического merge нет.
 Согласованно слить цепочку исходного PR и private PR #5, установить
-`BRIDGE_BASE_URL=https://capitalive-l2umiufiw-yilin1207s-projects.vercel.app`,
+`BRIDGE_BASE_URL=https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app`,
 запустить private workflow на main и повторно прочитать manifest + три отчёта.
 Source и publisher должны переходить на V2 вместе. Production заменять для
 этого не требуется. До такого включения итог — **READY FOR MERGE**.

@@ -1,60 +1,60 @@
 {
-  "commit": "71a4ddd5335a5e3d851ceb87957e16a5dbce1b34",
-  "readback_at": "2026-11-16T17:56:48.615Z",
-  "published_at": "2026-11-16T17:55:45.634Z",
+  "commit": "a1419454e73f726abcdf4640212545810eb37946",
+  "readback_at": "2026-11-16T18:05:31.752Z",
+  "published_at": "2026-11-16T18:04:20.017Z",
   "reports": [
     {
       "symbol": "EURUSD",
-      "bytes": 48193,
-      "sha256": "7b6f0ed0ef76c04cf12d5de9e1f39598cdf0b8cdf63aad44286b8dfb45fd7913",
+      "bytes": 48194,
+      "sha256": "835c3e46db28024eb881cb76c9b06b203f3d5b9059293c13700caef6d3574029",
       "status": "PARTIAL",
       "read_status": "PARTIAL",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 66.745,
+        "age_seconds": 74.114,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 72.419,
-      "provider_timestamp": "2026-11-16T17:55:35.373Z",
+      "provider_age_seconds_at_read": 83.471,
+      "provider_timestamp": "2026-11-16T18:04:07.453Z",
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     },
     {
       "symbol": "NAS100",
-      "bytes": 36959,
-      "sha256": "9e73fd823eeddf91d45c36a9f11f7ed478ad626a58e112f06665ab5636435f73",
+      "bytes": 36935,
+      "sha256": "fe3100a717f967af5543846f76264de1e2b2ab5e55e9f8a9b75d038582ca7faa",
       "status": "PARTIAL",
       "read_status": "PARTIAL",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 65.097,
+        "age_seconds": 72.912,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 71.615,
-      "provider_timestamp": "2026-11-16T17:55:36.662Z",
+      "provider_age_seconds_at_read": 81.955,
+      "provider_timestamp": "2026-11-16T18:04:09.460Z",
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     },
     {
       "symbol": "JP225",
-      "bytes": 37536,
-      "sha256": "8ee29f9ef192a69e2e89545a0fff37ebf3f8ceb2c46fb74f7902a462b25ad89d",
+      "bytes": 37563,
+      "sha256": "28fbf71462bcd3cb4d97b377af74ab62b189985691446cb24cc3b9f06113c31a",
       "status": "PARTIAL",
       "read_status": "PARTIAL",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 63.055,
+        "age_seconds": 71.805,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 70.018,
-      "provider_timestamp": "2026-11-16T17:55:38.597Z",
+      "provider_age_seconds_at_read": 80.936,
+      "provider_timestamp": "2026-11-16T18:04:10.816Z",
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     }
   ],
   "branch": "verification/v5-current",
-  "git_commit_at": "2026-11-16T17:55:47Z"
+  "git_commit_at": "2026-11-16T18:04:22Z"
 }

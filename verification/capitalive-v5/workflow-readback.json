@@ -1,73 +1,73 @@
 {
-  "run": "43923381707",
-  "job": 133496285833,
+  "run": "43924839010",
+  "job": 133501441137,
   "conclusion": "success",
   "events": [
     {
       "event": "bridge_delivery_health",
-      "requested_at": "2026-11-16T17:55:22.058Z",
+      "requested_at": "2026-11-16T18:03:47.536Z",
       "trigger": "ON_DEMAND",
-      "age_seconds": 366.871,
+      "age_seconds": 482.305,
       "status": "STALE",
       "reason": "DELIVERY_DELAY_REFRESH_REQUIRED",
       "scheduler_or_delivery_delay_seconds": 0
     },
     {
       "event": "bridge_readback",
-      "commit": "71a4ddd5335a5e3d851ceb87957e16a5dbce1b34",
-      "readback_at": "2026-11-16T17:55:50.184Z",
-      "published_at": "2026-11-16T17:55:45.634Z",
+      "commit": "a1419454e73f726abcdf4640212545810eb37946",
+      "readback_at": "2026-11-16T18:04:24.157Z",
+      "published_at": "2026-11-16T18:04:20.017Z",
       "reports": [
         {
           "symbol": "EURUSD",
-          "bytes": 48193,
-          "sha256": "7b6f0ed0ef76c04cf12d5de9e1f39598cdf0b8cdf63aad44286b8dfb45fd7913",
+          "bytes": 48194,
+          "sha256": "835c3e46db28024eb881cb76c9b06b203f3d5b9059293c13700caef6d3574029",
           "status": "PARTIAL",
           "read_status": "PARTIAL",
           "expired_at_read": false,
           "delivery": {
-            "age_seconds": 8.6,
+            "age_seconds": 6.847,
             "status": "FRESH",
             "reason": null
           },
-          "provider_age_seconds_at_read": 14.274,
-          "provider_timestamp": "2026-11-16T17:55:35.373Z",
+          "provider_age_seconds_at_read": 16.204,
+          "provider_timestamp": "2026-11-16T18:04:07.453Z",
           "last_closed_h4": "2026-11-16T16:00:00.000Z",
-          "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+          "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
         },
         {
           "symbol": "NAS100",
-          "bytes": 36959,
-          "sha256": "9e73fd823eeddf91d45c36a9f11f7ed478ad626a58e112f06665ab5636435f73",
+          "bytes": 36935,
+          "sha256": "fe3100a717f967af5543846f76264de1e2b2ab5e55e9f8a9b75d038582ca7faa",
           "status": "PARTIAL",
           "read_status": "PARTIAL",
           "expired_at_read": false,
           "delivery": {
-            "age_seconds": 6.776,
+            "age_seconds": 5.457,
             "status": "FRESH",
             "reason": null
           },
-          "provider_age_seconds_at_read": 13.294,
-          "provider_timestamp": "2026-11-16T17:55:36.662Z",
+          "provider_age_seconds_at_read": 14.5,
+          "provider_timestamp": "2026-11-16T18:04:09.460Z",
           "last_closed_h4": "2026-11-16T16:00:00.000Z",
-          "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+          "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
         },
         {
           "symbol": "JP225",
-          "bytes": 37536,
-          "sha256": "8ee29f9ef192a69e2e89545a0fff37ebf3f8ceb2c46fb74f7902a462b25ad89d",
+          "bytes": 37563,
+          "sha256": "28fbf71462bcd3cb4d97b377af74ab62b189985691446cb24cc3b9f06113c31a",
           "status": "PARTIAL",
           "read_status": "PARTIAL",
           "expired_at_read": false,
           "delivery": {
-            "age_seconds": 4.624,
+            "age_seconds": 4.21,
             "status": "FRESH",
             "reason": null
           },
-          "provider_age_seconds_at_read": 11.587,
-          "provider_timestamp": "2026-11-16T17:55:38.597Z",
+          "provider_age_seconds_at_read": 13.341,
+          "provider_timestamp": "2026-11-16T18:04:10.816Z",
           "last_closed_h4": "2026-11-16T16:00:00.000Z",
-          "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+          "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
         }
       ]
     }

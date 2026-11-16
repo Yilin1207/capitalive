@@ -1,10 +1,10 @@
 {
-  "runtime_commit": "cd4c746bda181aca0429faee16fdba4649b0e412",
-  "publisher_commit": "0e4074a90341b5f4c03d7de289285c920c11b697",
-  "source_ci": "https://github.com/Yilin1207/capitalive/actions/runs/43923117079",
-  "publisher_ci": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43922648089",
+  "runtime_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1",
+  "publisher_commit": "4fe109398923a380dfec5579b3b31dbf20cae895",
+  "source_ci": "https://github.com/Yilin1207/capitalive/actions/runs/43924636856",
+  "publisher_ci": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43924649181",
   "unit": {
-    "passed": 208,
+    "passed": 209,
     "failed": 0,
     "skipped": 0
   },

@@ -1,62 +1,62 @@
 {
-  "requested_at": "2026-11-16T17:57:14.108Z",
-  "commit": "c5600167f3e1930012f5870544acff82e60caca8",
-  "readback_at": "2026-11-16T17:57:31.386Z",
-  "published_at": "2026-11-16T17:57:25.169Z",
+  "requested_at": "2026-11-16T18:05:58.415Z",
+  "commit": "204a6813bf714fe8320b3438c16101965cfe8bcc",
+  "readback_at": "2026-11-16T18:06:13.699Z",
+  "published_at": "2026-11-16T18:06:07.385Z",
   "reports": [
     {
       "symbol": "EURUSD",
-      "bytes": 48194,
-      "sha256": "65d2c89200af46f15b2d8d0a3d66b367b2c7061435f4e7357342028642809083",
-      "status": "PARTIAL",
-      "read_status": "PARTIAL",
+      "bytes": 48222,
+      "sha256": "45fe6c1e4e9f96b30ab8f4a10040f04627476a1d987bed35a17528e223fb14f7",
+      "status": "STALE",
+      "read_status": "STALE",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 48.904,
+        "age_seconds": 48.422,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 55.621,
-      "provider_timestamp": "2026-11-16T17:56:34.762Z",
+      "provider_age_seconds_at_read": null,
+      "provider_timestamp": null,
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     },
     {
       "symbol": "NAS100",
-      "bytes": 36962,
-      "sha256": "ea4bfa08be31f31b1a7ae978ccaef80beec7de0f9a812dcfc4bfd2f7b4375c77",
+      "bytes": 36935,
+      "sha256": "dd115784a1a20c98ebed8eab60469b1d1d0040ed030c770ea0236f992596b58c",
       "status": "PARTIAL",
       "read_status": "PARTIAL",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 47.505,
+        "age_seconds": 47.08,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 54.892,
-      "provider_timestamp": "2026-11-16T17:56:36.033Z",
+      "provider_age_seconds_at_read": 55.653,
+      "provider_timestamp": "2026-11-16T18:05:17.700Z",
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     },
     {
       "symbol": "JP225",
       "bytes": 37536,
-      "sha256": "ac01ecfa7f3ac4f021d1613069ffafa37f266b98da0653e0d2c879e188dd9285",
+      "sha256": "43fb29fbcb0e0bf63a1ac0ffeb8bfd76b7b6ed4ca21a9de1ff5dc0f5255e92fb",
       "status": "PARTIAL",
       "read_status": "PARTIAL",
       "expired_at_read": false,
       "delivery": {
-        "age_seconds": 45.221,
+        "age_seconds": 45.328,
         "status": "FRESH",
         "reason": null
       },
-      "provider_age_seconds_at_read": 52.778,
-      "provider_timestamp": "2026-11-16T17:56:38.607Z",
+      "provider_age_seconds_at_read": 53.89,
+      "provider_timestamp": "2026-11-16T18:05:19.809Z",
       "last_closed_h4": "2026-11-16T16:00:00.000Z",
-      "engine_commit": "cd4c746bda181aca0429faee16fdba4649b0e412"
+      "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1"
     }
   ],
-  "git_commit_at": "2026-11-16T17:56:49Z",
+  "git_commit_at": "2026-11-16T18:05:31Z",
   "branch": "verification/v5-recovery",
-  "clock_note": "Operator clock was approximately 39 seconds ahead of Vercel/GitHub HTTP Date; use CI readback for cross-stage latency."
+  "clock_note": "Operator clock approximately 39 seconds ahead of Vercel/GitHub HTTP Date; use CI timestamps for cross-service latency."
 }
