@@ -5,6 +5,7 @@ import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import sharp from 'sharp';
+import {decodeIntelligence} from '../lib/knowledge/wire.ts';
 
 const output=process.env.CAPITALIVE_REVIEW_OUTPUT??'verification/capitalive-v2-1/rc';mkdirSync(output,{recursive:true});
 const origin='http://127.0.0.1:3102';
@@ -20,10 +21,10 @@ try{
   for(let i=0;i<100;i++){if(server.exitCode!==null)throw new Error('Local Next exited');try{await fetch(origin);ready=true;break;}catch{await new Promise(r=>setTimeout(r,100));}}
   assert.ok(ready,'Local server startup');
   const knowledge=(await get('/api/knowledge')).json();assert.equal(knowledge.coverage.imported,85);assert.equal(knowledge.coverage.validated,0);
-  const intelligence=(await get('/api/intelligence?symbol=EURUSD')).json();assert.equal(intelligence.schema_version,'edge-knowledge-5');assert.equal(intelligence.assessment.probability_tp,null);assert.ok(intelligence.frames.flatMap(f=>f.findings).length>0);
+  const intelligence=decodeIntelligence((await get('/api/intelligence?symbol=EURUSD')).json());assert.equal(intelligence.schema_version,'edge-knowledge-5');assert.equal(intelligence.assessment.probability_tp,null);assert.ok(intelligence.frames.flatMap(f=>f.findings).length>0);
   const hp=intelligence.frames.find(f=>f.timeframe==='H4').findings.filter(f=>f.kind==='FRACTAL'&&f.variant===3);
   const hi=hp.find(h=>h.polarity==='high'&&hp.some(l=>l.polarity==='low'&&l.segment===h.segment&&l.price<h.price)),lo=hp.find(l=>l.polarity==='low'&&l.segment===hi.segment&&l.price<hi.price);
-  const selected=(await get(`/api/intelligence?${new URLSearchParams({symbol:'EURUSD',high_id:hi.id,low_id:lo.id})}`)).json();assert.equal(selected.frames.find(f=>f.timeframe==='H4').range.high_id,hi.id);
+  const selected=decodeIntelligence((await get(`/api/intelligence?${new URLSearchParams({symbol:'EURUSD',high_id:hi.id,low_id:lo.id})}`)).json());assert.equal(selected.frames.find(f=>f.timeframe==='H4').range.high_id,hi.id);
   await get('/api/intelligence?symbol=EURUSD&high_id=unknown',400);
   const embedded=(await get('/api/market-audit?symbol=EURUSD&view=priority&knowledge=1')).json();assert.equal(embedded.knowledge_intelligence.schema_version,'edge-knowledge-5');
   for(const asset of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask']){
