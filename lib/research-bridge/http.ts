@@ -33,11 +33,11 @@ export async function deskReportHttp(request:Request,deps={getCandles,getAnalysi
     return json(buildDeskReport(r,data,quote,new Date().toISOString(),process.env.VERCEL_GIT_COMMIT_SHA??null));
   }catch(e){
     const errorCode=e&&typeof e==='object'&&'code'in e?String(e.code):'';
-    const d=stage==='provider'?diagnostic('provider',errorCode.startsWith('CAPITAL_')||['HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE'].includes(errorCode)?errorCode:'UPSTREAM_UNAVAILABLE'):classifyFailure(e,stage);
+    const d=errorCode==='RATE_LIMIT'?diagnostic('http','REQUEST_RATE_LIMIT'):stage==='provider'?diagnostic('provider',errorCode.startsWith('CAPITAL_')||['HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE'].includes(errorCode)?errorCode:'UPSTREAM_UNAVAILABLE'):classifyFailure(e,stage);
     const code=d.stage==='size'?'REPORT_TOO_LARGE':d.stage==='schema'?'INVALID_EVIDENCE':'UPSTREAM_UNAVAILABLE';
     // No upstream message, stack, request URL or credentials leave this boundary.
     console.warn(JSON.stringify({event:'desk_report_failure',symbol:safeSymbol,...d}));
-    const limited=['CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(d.code);
+    const limited=['REQUEST_RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(d.code);
     const retry=e&&typeof e==='object'&&'retryAfter'in e?Number(e.retryAfter):60;
     return json({...errorReport(safeSymbol,code),diagnostic:d},limited?429:503,limited?Math.min(60,Math.max(1,Number.isFinite(retry)?retry:60)):0);
   }

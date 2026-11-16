@@ -143,3 +143,12 @@ test('Portable range candidate rejects wrong polarity and false review confirmat
   h4.range_candidate.high=lo;
   assert.throws(()=>validateReport(edited,'EURUSD'),/INVALID_RANGE_CANDIDATE/);
 });
+
+
+test('V5 client admission limit is HTTP 429 with its own safe stage, not a provider outage',async()=>{
+ const deps={getCandles:async()=>{throw Error('provider must not be called');},getAnalysisQuote:async()=>fixture('EURUSD').quote};
+ let response:Response|undefined;
+ for(let i=0;i<65;i++){response=await deskReportHttp(new Request('https://local/api/desk-report?symbol=EURUSD&high_id=unpaired'),deps as never);if(response.status===429)break;assert.equal(response.status,400);}
+ assert.equal(response!.status,429);assert.ok(Number(response!.headers.get('retry-after'))<=60);
+ const body=await response!.json();assert.equal(body.diagnostic.stage,'http');assert.equal(body.diagnostic.code,'REQUEST_RATE_LIMIT');validateReport(body,'EURUSD');
+});
