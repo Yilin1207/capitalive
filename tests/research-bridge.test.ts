@@ -80,6 +80,15 @@ test('HTTP failures become sanitized ERROR and unsupported requests fail before 
   assert.equal((await deskReportHttp(new Request('https://local/api/desk-report?symbol=BRENT'),deps as never)).status,400);
   assert.equal((await deskReportHttp(new Request('https://local/api/desk-report?symbol=EURUSD&high_id=x'),deps as never)).status,400);
 });
+
+test('V5 provider throttling retains a safe code and bounded retry instead of opaque 503',async()=>{
+  for(const code of ['HISTORY_RATE_LIMIT','HISTORY_BUSY','CAPITAL_RATE_LIMIT']){
+    const deps={getCandles:async()=>{throw Object.assign(Error('private-provider-body'),{code,retryAfter:900});},getAnalysisQuote:async()=>fixture('EURUSD').quote};
+    const response=await deskReportHttp(new Request('https://local/api/desk-report?symbol=NAS100&refresh=1',{method:'POST'}),deps as never);
+    const body=await response.json();assert.equal(response.status,429);assert.equal(response.headers.get('retry-after'),'60');assert.equal(body.diagnostic.code,code);assert.equal(body.status,'ERROR');
+    validateReport(body,'NAS100');assert.ok(!JSON.stringify(body).includes('private-provider-body'));
+  }
+});
 test('Bridge preserves explicit H4 range IDs, confirmation, EQ and invalidation without selecting a new range',()=>{
   const input=fixture('EURUSD'),r=analysis('EURUSD'),h4=r.frames.find(f=>f.timeframe==='H4')!;
   const high=h4.findings.filter(f=>f.kind==='FRACTAL'&&f.facts.variant===3&&f.facts.polarity==='high').at(-1)!;
