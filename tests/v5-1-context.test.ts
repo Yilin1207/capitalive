@@ -42,7 +42,7 @@ test('V5.1 filled ACTIVE FVG below price premise does not become verified resist
 });
 test('V5.1 consumed liquidity is distinct from invalidated zone and no automatic role flip',()=>{
   const x=levelLifecycleExplanation({...states[0],state:'CONSUMED',liquidity_consumed:true},100);
-  assert.equal(x.current_role,null);assert.equal(x.structural_relevance,'HISTORICAL_REVIEW_ONLY');assert.ok(x.reasons.includes('LIQUIDITY_CONSUMED_DOES_NOT_PROVE_ZONE_ROLE_REVERSAL'));
+  assert.equal(x.current_role,null);assert.equal(x.structural_relevance,'ZONE_REVIEW_AFTER_LIQUIDITY_CONSUMPTION');assert.ok(x.reasons.includes('LIQUIDITY_CONSUMED_DOES_NOT_PROVE_ZONE_ROLE_REVERSAL'));
 });
 test('V5.1 DR review exposes consumed boundaries and never fabricates Premium/Discount',()=>{
   const f=r.frames.find(f=>f.range_candidates.candidates.length)!;const range=f.range_candidates.candidates[0] as Range;
@@ -62,6 +62,7 @@ test('V5.1 paths examine all four TF before presentation; omitted obstacles cann
   const p=validatePathCompleteness(levels,states,frames,1,1e9,[],[]);
   assert.ok(p.total>0);assert.equal(p.omitted,p.total);assert.equal(p.status,'PARTIAL');assert.equal(p.free_path_proven,false);
   assert.ok(p.obstacles.some(o=>o.timeframe==='H4'));
+  assert.ok(p.obstacles.some(o=>o.lifecycle==='CONSUMED'),'Consumed liquidity may still require zone review; never declare a clear path from consumption alone');
   const missing={...frames,H4:{...frames.H4,bars:[]}};assert.equal(validatePathCompleteness(levels,states,missing,1,1e9).status,'UNVERIFIED');
   assert.equal(validatePathCompleteness(levels,states,frames,null,100).status,'UNVERIFIED');
 });

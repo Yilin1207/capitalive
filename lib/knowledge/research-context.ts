@@ -37,7 +37,7 @@ export function levelLifecycleExplanation(s:State,reference:number|null,firstInt
     fill:s.fill??null,own_tf_invalidated_at:s.invalidated_at,liquidity_consumed:s.liquidity_consumed,
     original_geometry_role:s.initial_role,current_role:verified?s.current_role:null,
     current_role_status:verified?'VERIFIED':'UNVERIFIED',role_transition_candidate:s.lower_tf_breach?'REVIEW_REQUIRED':'NOT_ESTABLISHED',
-    reference_position:position(reference,s),structural_relevance:terminal(s)?'HISTORICAL_REVIEW_ONLY':'REVIEW_REQUIRED',reasons};
+    reference_position:position(reference,s),structural_relevance:s.state==='INVALIDATED'?'HISTORICAL_REVIEW_ONLY':s.state==='CONSUMED'?'ZONE_REVIEW_AFTER_LIQUIDITY_CONSUMPTION':'REVIEW_REQUIRED',reasons};
 }
 
 /** Full detected universe, before any compact projection. Significance is not inferred. */
@@ -45,7 +45,7 @@ export function validatePathCompleteness(levels:KeyLevel[],states:State[],frames
   const observed=from!==null&&to!==null&&from!==to;
   const lower=Math.min(from??0,to??0),upper=Math.max(from??0,to??0),stateMap=new Map(states.map(s=>[s.id,s]));
   const obstacles=observed?levels.filter(l=>!exclude.includes(l.id)&&l.upper>lower&&l.lower<upper).flatMap(l=>{
-    const s=stateMap.get(l.id);if(s&&terminal(s))return [];
+    const s=stateMap.get(l.id);if(s?.state==='INVALIDATED')return [];
     return [{id:l.id,timeframe:l.timeframe,kind:l.kind,lifecycle:s?.state??'UNVERIFIED',significance:'REVIEW_REQUIRED' as const}];
   }):[];
   const dataComplete=TF_ORDER.every(tf=>frames[tf].bars.length>0&&frames[tf].warnings.length===0);
@@ -84,7 +84,7 @@ export function buildResearchContext(frames:Record<Timeframe,Frame>,findings:Fin
     const firstInteraction=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)).flatMap(tf=>frames[tf].bars.filter(b=>b.time>=l.confirmed_at&&b.end<=s.evaluated_through&&b.high>=l.lower&&b.low<=l.upper).map(b=>b.end)).sort()[0]??null;
     const observation=levelLifecycleExplanation(s,reference,firstInteraction),previous=frames.H4.bars.at(-2)?.close??null;
     return [{id:l.id,timeframe:l.timeframe,pa_type:l.kind,lower:l.lower,upper:l.upper,origin:s.origin,confirmed_at:s.confirmed_at,lifecycle:s.state,
-      review_status:terminal(s)||s.coverage!=='COMPLETE_OBSERVED_INTERVAL'?'DETECTED':'ELIGIBLE_FOR_REVIEW',human_validated:false,
+      review_status:s.state==='INVALIDATED'||s.coverage!=='COMPLETE_OBSERVED_INTERVAL'?'DETECTED':'ELIGIBLE_FOR_REVIEW',human_validated:false,
       lifecycle_explanation:observation,htf_dependencies:overlaps,interactions,
       reference_transition:{from:position(previous,l),to:position(reference,l),basis:'LAST_TWO_CLOSED_H4'},
       full_test_status:s.fill?.state==='FILLED'?'FULL_GEOMETRIC_FILL':'AUTHOR_FULL_TEST_NEEDS_REVIEW',
@@ -96,7 +96,7 @@ export function buildResearchContext(frames:Record<Timeframe,Frame>,findings:Fin
   // Display buckets, not significance weights: containing, linked reaction, then nearest on each side.
   const containingHtf=levelReviews.filter(l=>['MN1','W1'].includes(l.timeframe)&&l.lifecycle==='ACTIVE'&&position(reference,l)==='INSIDE').map(l=>l.id);
   const executiveIds=unique([...containingHtf,...TF_ORDER.flatMap(tf=>{
-    const pool=levelReviews.filter(l=>l.timeframe===tf&&!['INVALIDATED','CONSUMED'].includes(l.lifecycle));
+    const pool=levelReviews.filter(l=>l.timeframe===tf&&l.lifecycle!=='INVALIDATED'&&(l.lifecycle!=='CONSUMED'||l.interactions.length>0));
     const compare=(a:typeof pool[number],b:typeof pool[number])=>Number(position(reference,b)==='INSIDE')-Number(position(reference,a)==='INSIDE')||Number(b.interactions.length>0)-Number(a.interactions.length>0)||distance(a)-distance(b)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id);
     const sides=[pool.filter(l=>reference!==null&&l.lower<=reference).sort(compare)[0],pool.filter(l=>reference!==null&&l.upper>=reference).sort(compare)[0]];
     return unique(sides.filter(x=>!!x).map(x=>x!.id));
