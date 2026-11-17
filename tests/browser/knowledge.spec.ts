@@ -25,11 +25,11 @@ test("knowledge catalog searches original summaries and exposes uncertainties", 
     .getByRole("textbox", { name: "Поиск по материалам и правилам" })
     .fill("EDGE.RB");
   await page.getByRole("button", { name: "Найти", exact: true }).click();
-  await page.locator("summary").filter({ hasText: "EDGE.RB.v1" }).click();
-  await expect(page.getByText(/Reviewed diagrams place the RB reference/)).toBeVisible();
+  await page.locator("summary").filter({ hasText: "EDGE.RB.v2" }).click();
+  await expect(page.getByText(/The user specified first-candle close and FVG-only weakness/)).toBeVisible();
   const response = await page.request.get("/api/knowledge?q=EDGE.RB");
   expect(response.status()).toBe(200);
-  expect((await response.json()).rules[0].id).toBe("EDGE.RB.v1");
+  expect((await response.json()).rules[0].id).toBe("EDGE.RB.v2");
 });
 test("intelligence renders recorded analysis, selects concrete H4 fractals and clears stale data on errors", async ({
   page,

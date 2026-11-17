@@ -21,9 +21,9 @@ export const EXAMPLES: Record<string, [string, string, string]> = {
     "Liquidity is consumed; structural narrative invalidation is a different test.",
   ],
   RB: [
-    "Sell then Buy, both closing outside known support after a strict fractal raid, form a contextual candidate.",
+    "Sell then Buy after a known support raid, or a weaker FVG interaction, form RB at the first close after the second candle closes.",
     "One rejection wick, equality-only touch, absent KL or KL formed later reject.",
-    "Full candidate-envelope breach withdraws local premise; executable author boundary is unresolved.",
+    "RB reference is first close, not the wick envelope or gap band. Subsequent validity and execution still require review.",
   ],
   SNR: [
     "Buy/Sell origin at body junction 12, wick high 13, KL delivery, then close 12.5 proposes resistance-to-support reversal (el02_04 geometry).",

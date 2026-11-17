@@ -103,10 +103,10 @@ const specs: Spec[] = [
     "Two-candle Rejection Block",
     "rb",
     "PARTIAL",
-    "Opposite directional candles interact with a known KL and close back outside it.",
-    ["Sell/Buy at support or Buy/Sell at resistance; explicit KL."],
+    "Two closed opposite candles at a known KL; RB reference is the first candle close, including gaps.",
+    ["Sell/Buy at support or Buy/Sell at resistance; explicit causally known KL.","User clarification 2026-11-17: FVG interaction suffices without closing outside the entire zone; it is materially weaker than a reclaimed strict liquidity raid.","A single rejection does not confirm RB. Formation confirms only at the second close."],
     [
-      "Reviewed diagrams place the RB reference at the body junction outside KL; unequal close/open, stop buffers and full executable zone remain unspecified. Full candle envelope is diagnostic only.",
+      "The user specified first-candle close and FVG-only weakness on 2026-11-17. Relative quality is qualitative, not a measured success probability. Stop buffers, ongoing trade validity and discretionary significance remain unvalidated. Prior liquidity history is limited to observed candles.",
     ],
   ],
   [
@@ -312,9 +312,9 @@ const specs: Spec[] = [
 ];
 export const RULES: Rule[] = specs.map(
   ([name, concept, src, specification, definition, formation, unresolved]) => ({
-    id: `EDGE.${name}.v1`,
+    id: `EDGE.${name}.v${name==='RB'?2:1}`,
     concept,
-    version: 1,
+    version: name==='RB'?2:1,
     status: specification === "NEEDS_SPECIFICATION" ? "DOCUMENTED" : "TESTED",
     specification,
     source_ids: [source[src]],

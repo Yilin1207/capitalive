@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.2';
+export const CONTRACT_REVISION='desk-report-v2.3';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -35,6 +35,7 @@ const tf=en('MN1','W1','D1','H4'),code=str(/^[A-Z][A-Z0-9_]{0,100}$/,101),bias=e
 const group=obj({items:arr(ref),total:num,omitted:num});
 const interaction=obj({kind:code,timeframe:tf,candle:num});
 const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask):[A-Za-z0-9_.:\-]+$/,1600),timeframe:tf,kind:code,origin:time,confirmed_at:time,
+  rb:optional(obj({revision:en('rb-first-close-2'),level_policy:en('FIRST_CANDLE_CLOSE'),level_price:num,formation_confirmed:en(true),basis:en('LIQUIDITY_RAID','FVG_INTERACTION','FVG_AND_LIQUIDITY_RAID'),relative_quality:en('RAID_BACKED','WEAKER_FVG_ONLY'),probability:en(null),significance:en('REVIEW_REQUIRED'),primary_kl:ref,liquidity:nullable(ref),fvg:nullable(ref)})),
   lower:nullable(num),upper:nullable(num),variant:en(3,null),polarity:en('high','low',null),direction:en('bullish','bearish','Bullish','Bearish','up','down',null),
   detector_state:en('OBSERVED','CANDIDATE','NEEDS_SPECIFICATION'),data_status:en('PARTIAL','UNVERIFIED'),
   rule:str(/^EDGE\.[A-Z0-9_]+\.v\d+$/,100),candle_refs:arr(num,1000),candle_evidence_sha256:hex,dependencies:arr(ref,20),
@@ -42,6 +43,7 @@ const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask)
 const frame=obj({range_options:optional(obj({total:num,omitted:num,review_required:en(true)})),timeframe:tf,fetched_at:time,last_closed_at:nullable(time),closed_candles:num,data_status:code,warnings:arr(code,24),discarded_rows:num,
   structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('NEEDS_SPECIFICATION'),swing_evidence:arr(ref,4)}),
   fractals:arr(obj({variant:en(3),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
+  rb_quality:optional(obj({raid_backed:num,fvg_only_weaker:num,counting:en('FINDINGS_PER_PRIMARY_KL')})),
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
   dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
   range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE','KL_REACTION_LOCAL_DR_CANDIDATE'),review_required:en(true)})))});
@@ -166,6 +168,19 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       if(selection.timeframe!==(first?.timeframe??null)||selection.skipped.map(x=>x.timeframe).join(',')!==ordered.slice(0,first?ordered.indexOf(first):4).map(f=>f?.timeframe).join(','))throw Error('INVALID_DR_FALLBACK');}
   }
   const ids=new Set<string>();
+  type RbEvidence={kind:string;rule:string;timeframe:string;direction:string;polarity:string;lower:number;upper:number;confirmed_at:string;candle_refs:number[];dependencies:string[];rb?:{level_price:number;basis:string;relative_quality:string;primary_kl:string;liquidity:string|null;fvg:string|null}};
+  const rbEvidence=r.evidence as unknown as Record<string,RbEvidence>;
+  for(const e of Object.values(rbEvidence)){
+    if(e.rule==='EDGE.RB.v2'&&!e.rb)throw Error('MISSING_RB_METADATA');
+    const b=e.rb;if(!b)continue;
+    const primary=rbEvidence[b.primary_kl],liquidity=b.liquidity?rbEvidence[b.liquidity]:null,fvg=b.fvg?rbEvidence[b.fvg]:null;
+    const first=r.candle_windows[e.candle_refs[0]],second=r.candle_windows[e.candle_refs[1]];
+    if(e.kind!=='RB_TWO_CANDLE'||e.rule!=='EDGE.RB.v2'||e.candle_refs.length!==2||!first||!second||first[1]!==second[0]||second[1]!==e.confirmed_at||e.lower!==b.level_price||e.upper!==b.level_price||!['bullish','bearish'].includes(e.direction))throw Error('INVALID_RB_GEOMETRY');
+    if(!primary||b.primary_kl!==b.liquidity&&b.primary_kl!==b.fvg||!liquidity&&!fvg||liquidity&&liquidity.kind!=='FRACTAL'||fvg&&fvg.kind!=='FVG')throw Error('INVALID_RB_CONTEXT');
+    if(liquidity&&(liquidity.polarity!==(e.direction==='bullish'?'low':'high')||(e.direction==='bullish'?b.level_price<=liquidity.upper:b.level_price>=liquidity.lower))||fvg&&fvg.direction!==e.direction)throw Error('INVALID_RB_DIRECTION');
+    for(const id of [b.primary_kl,b.liquidity,b.fvg].filter((id):id is string=>!!id)){const kl=rbEvidence[id];if(!kl||!e.dependencies.includes(id)||kl.confirmed_at>first[0]||['MN1','W1','D1','H4'].indexOf(kl.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe))throw Error('NONCAUSAL_RB_CONTEXT');}
+    if(b.relative_quality!==(liquidity?'RAID_BACKED':'WEAKER_FVG_ONLY')||b.basis!==(liquidity?(fvg?'FVG_AND_LIQUIDITY_RAID':'LIQUIDITY_RAID'):'FVG_INTERACTION'))throw Error('FALSE_RB_QUALITY');
+  }
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
     if(['BOS','CHOCH','ORDER_BLOCK','BREAKER'].includes((e as {kind?:string}).kind??''))throw Error('UNSUPPORTED_AUTHOR_RULE');
@@ -186,6 +201,8 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       if(fill.first_test_at&&fill.last_test_at&&fill.first_test_at>fill.last_test_at)throw Error('INVALID_FILL');}
   }
   for(const f of r.frames){
+    const rbFrame=f as typeof f&{rb:{total:number};rb_quality?:{raid_backed:number;fvg_only_weaker:number}};
+    if(rbFrame.rb_quality){const q=rbFrame.rb_quality;if(!Number.isInteger(q.raid_backed)||!Number.isInteger(q.fvg_only_weaker)||q.raid_backed<0||q.fvg_only_weaker<0||q.raid_backed+q.fvg_only_weaker!==rbFrame.rb.total)throw Error('INVALID_RB_COUNTS');}
     if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');
     const options=(f as typeof f&{range_options?:{total:number;omitted:number};range_candidate?:unknown}).range_options;
     if(options&&(!Number.isInteger(options.total)||!Number.isInteger(options.omitted)||options.omitted<0||options.total-options.omitted!==((f as {range_candidate?:unknown}).range_candidate?1:0)))throw Error('INVALID_COVERAGE_COUNTS');

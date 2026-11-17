@@ -296,7 +296,7 @@
           "kind": "RB_TWO_CANDLE",
           "confirmed_bar": 1,
           "direction": "bullish",
-          "state": "CANDIDATE"
+          "state": "OBSERVED"
         }
       ]
     },

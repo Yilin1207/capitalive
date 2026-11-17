@@ -135,7 +135,7 @@ test("RB textual golden: two opposite candles with rejection at already-known KL
     kl = level(f),
     r = pa.detectRejectionBlocks(f, [kl]);
   assert.equal(r.length, 1);
-  assert.equal(r[0].facts.author_bounds_verified, false);
+  assert.equal(r[0].facts.author_bounds_verified, true);
   assert.equal(
     pa.detectRejectionBlocks({ ...f, bars: f.bars.slice(0, 1) }, [kl]).length,
     0,
@@ -206,7 +206,7 @@ test("strong pivot needs both raid and contextual two-candle VC, ordinary fracta
   const raids = pa.detectRaids(f, [old]);
   const proof: pa.Finding = {
     ...pivot,
-    ...provenance("EDGE.RB.v1"),
+    ...provenance("EDGE.RB.v2"),
     kind: "RB_TWO_CANDLE",
     candle_evidence: pivot.candle_evidence,
     state: "CANDIDATE",

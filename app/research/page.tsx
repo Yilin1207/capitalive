@@ -2,8 +2,8 @@
 import {useEffect,useState} from 'react';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../../lib/active-research-markets';
 import type {compactResearchContext} from '../../lib/research-bridge/context';
-type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null}[];
- research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;lifecycle?:{state:string;initial_role:string;fill?:{state:string}}}>};
+type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null;rb_quality?:{raid_backed:number;fvg_only_weaker:number}}[];
+ research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;confirmed_at?:string;rb?:{level_price:number;relative_quality:string;basis:string;primary_kl:string;liquidity:string|null;fvg:string|null};lifecycle?:{state:string;initial_role:string;fill?:{state:string}}}>};
 export default function ResearchRefresh(){
  const [busy,setBusy]=useState(false),[rows,setRows]=useState<Row[]>([]),[files,setFiles]=useState<Record<string,string>>({});
  const [clock,setClock]=useState(0);
@@ -21,7 +21,7 @@ export default function ResearchRefresh(){
  }
  function save(symbol:string){const url=URL.createObjectURL(new Blob([files[symbol]+'\n'],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download=symbol+'.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  return <main style={{maxWidth:1100,margin:'40px auto',padding:24}}><h1>Capitalive Research V5.1</h1>
-  <p>Обновление по запросу: EURUSD · NAS100 · JP225. Доступ защищён Vercel SSO. Котировка и закрытые свечи имеют отдельные timestamps.</p>
+  <p>Обновление по запросу: EURUSD · NAS100 · JP225. Публичные исследовательские отчёты. Котировка и закрытые свечи имеют отдельные timestamps.</p>
   <button onClick={refresh} disabled={busy}>{busy?'Получаем данные…':'Получить свежие отчёты'}</button>
   <p>После получения скачайте JSON и приложите к исследованию ChatGPT. GitHub-подключение читает сохранённые файлы и само не запускает этот запрос.</p>
   <p><a href="https://github.com/Yilin1207/capitalive-research-bridge/actions/workflows/research-bridge.yml">Обновить приватный GitHub через Run workflow</a></p>
@@ -41,6 +41,12 @@ export default function ResearchRefresh(){
      <p>Lifecycle: {e?.lifecycle?.state}. Fill: {e?.lifecycle?.fill?.state??'не применимо'}. Исходная геометрия: {e?.lifecycle?.initial_role}. Текущая роль: {l.current_role??'не подтверждена'}.</p>
      <p>Цена относительно зоны: {l.reference_position}. Причины: {l.relevance_reasons.join(', ')}.</p><p>Неопределённости: {l.uncertainty.join(', ')}.</p>
      <p>Связанные взаимодействия: {l.interactions.items.length}/{l.interactions.total}; HTF: {l.htf_dependencies.items.length}/{l.htf_dependencies.total}.</p><code>{e?.id}</code></details>;})}
+    <h3>Rejection Blocks</h3>
+    <p>RB подтверждается второй закрытой свечой. Уровень — закрытие первой свечи, включая гэп. Простой Rejection сам по себе не подтверждает RB.</p>
+    <p>RB только на FVG существенно слабее RB со снятием ликвидности. Это качественное различие, а не вероятность сделки.</p>
+    {row.frames?.filter(f=>f.rb_quality).map(f=><p key={'rb-'+f.timeframe}>{f.timeframe}: со снятием ликвидности — {f.rb_quality!.raid_backed}; только FVG — {f.rb_quality!.fvg_only_weaker}. Подсчёт по исходным KL: одна пара свечей может иметь несколько оснований.</p>)}
+    {Object.values(row.evidence??{}).filter(e=>e.rb).map(e=><p key={e.id}>{e.timeframe} RB: {e.rb!.level_price}; {e.rb!.relative_quality==='RAID_BACKED'?'со снятием ликвидности':'только FVG — слабее'}; подтверждён {e.confirmed_at}. KL: {row.evidence?.[e.rb!.primary_kl]?.id}. <code>{e.id}</code></p>)}
+    <p>Показаны включённые в компактный JSON доказательства. Полный список доступен в инспекции снимка; значимость и торговая применимость требуют проверки.</p>
     <h3>Диапазоны и путь</h3>
     <p>Первый установленный DR сверху вниз: {row.research_context.dealing_range_selection?.timeframe??'ожидание подтверждённой пары'}. Направление DR не подтверждает Narrative.</p>
     {row.research_context.dealing_range_reviews.map(f=>{const d=f.detection;return <details key={f.timeframe} open><summary>{f.timeframe}: {d?.status??'нужна проверка диапазона'} · {d?.direction??'нет направления'}</summary>

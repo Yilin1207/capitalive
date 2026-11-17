@@ -58,11 +58,14 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       return {kind:x.kind,timeframe:x.timeframe,candle:windowRef(x.time,x.confirmed_at)};
     }):[];
     const dependencies:string[]=[];
-    for(const key of ['kl_id','pivot_id','poi_id','raid_id','vc_id','source_id'])if(typeof facts[key]==='string')dependencies.push(add(facts[key] as string));
+    for(const key of ['kl_id','pivot_id','poi_id','raid_id','vc_id','source_id','rb_liquidity_id','rb_fvg_id'])if(typeof facts[key]==='string'){const dependency=add(facts[key] as string);if(!dependencies.includes(dependency))dependencies.push(dependency);}
     evidence[ref]={id:f.id,timeframe:f.timeframe,kind:f.kind,origin:f.origin,confirmed_at:f.confirmed_at,
       lower,upper,variant:facts.variant===3?facts.variant:null,polarity:choice(facts.polarity,['high','low']),
       direction:choice(facts.direction,['bullish','bearish','Bullish','Bearish','up','down']),
       detector_state:f.state,data_status:f.data_status,rule:f.rule_id,
+      ...(f.kind==='RB_TWO_CANDLE'?{rb:{revision:'rb-first-close-2',level_policy:'FIRST_CANDLE_CLOSE',level_price:number(facts.level_price),formation_confirmed:true,
+        basis:facts.basis,relative_quality:facts.relative_quality,probability:null,significance:'REVIEW_REQUIRED',
+        primary_kl:add(String(facts.kl_id)),liquidity:typeof facts.rb_liquidity_id==='string'?add(facts.rb_liquidity_id):null,fvg:typeof facts.rb_fvg_id==='string'?add(facts.rb_fvg_id):null}}:{}),
       candle_refs:candleRefs,candle_evidence_sha256:hash(f.candle_evidence),dependencies,
       lifecycle:s?{state:s.state,initial_role:s.initial_role,fill:s.fill??null,current_role:s.role_status==='RETEST_CONFIRMED'&&!['INVALIDATED','CONSUMED','UNVERIFIED'].includes(s.state)?s.current_role:null,role_status:['INVALIDATED','CONSUMED','UNVERIFIED'].includes(s.state)?'UNVERIFIED':s.role_status,coverage:s.coverage,evaluated_through:s.evaluated_through,
         invalidated_at:s.invalidated_at,liquidity_consumed:s.liquidity_consumed,interactions}:null};
@@ -82,6 +85,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
         swing_bias:bias(f.order_flow.bias),swing_basis:'NEEDS_SPECIFICATION',swing_evidence:f.order_flow.evidence_ids.map(add)},
       fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),budgetTier>=1?0:1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1?0:1),
+      rb_quality:{raid_backed:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='RAID_BACKED').length,fvg_only_weaker:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='WEAKER_FVG_ONLY').length,counting:'FINDINGS_PER_PRIMARY_KL'},
       fvg:group(f.findings.filter(x=>x.kind==='FVG'),budgetTier>=2?0:1),ifvg:group(f.findings.filter(x=>x.kind==='FVG_CLOSED_BREACH'),0),
       liquidity:{raids:group(f.findings.filter(x=>x.kind==='RAID'),budgetTier>=2?0:1),idm:group(f.findings.filter(x=>x.kind==='IDM_INSIDE_POI'),0),strong:group(f.findings.filter(x=>x.kind==='STRONG_PIVOT_CANDIDATE'),0),irl:group(f.findings.filter(x=>x.kind==='INTERNAL_LIQUIDITY'),budgetTier>=2?0:1)},
       dealing_range:range?{high:add(range.high_id),low:add(range.low_id),lower:range.lower,upper:range.upper,equilibrium:range.equilibrium,

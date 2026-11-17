@@ -179,7 +179,7 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
   const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
   const narrative = {
     ...provenance("EDGE.NARRATIVE.v3"),
@@ -271,7 +271,7 @@ export function buildIntelligence(
         prerequisites_observed: canPropose && idm.length > 0,
         evidence_ids: idm.map((v) => v.id),
         reason:
-          "Requires a verified Strong High/Low stop boundary; RB/SNR bounds remain unspecified",
+          "Requires a verified Strong High/Low stop boundary; an established RB reference alone does not specify trade stops or SNR bounds",
       },
       {
         model: "KL_MARKET_LIMIT",
