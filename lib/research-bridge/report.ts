@@ -1,3 +1,4 @@
+import {compactTda} from './tda';
 import {currentBounds} from '../knowledge/fvg-remaining';
 import type {snrFormationContext} from '../knowledge/snr-context';
 import {freshnessPolicy} from './freshness';
@@ -23,7 +24,7 @@ const date = (v: unknown) => typeof v === 'string' && Number.isFinite(Date.parse
 const choice = (v: unknown, values: readonly string[]) => typeof v === 'string' && values.includes(v) ? v : null;
 const bias = (v: unknown) => choice(v,['Bullish','Bearish','Neutral']);
 // Only machine reason codes from the engine; never publish human comments, errors or account fields.
-const REASONS=new Set(('AUTHOR_STRUCTURE_REVIEW_REQUIRED PATH_COVERAGE_PARTIAL PATH_COVERAGE_UNKNOWN AMBIGUOUS_STRUCTURAL_TARGETS ANCHOR_LOWER_TF_BREACH ANCHOR_NOT_PROVEN_ACTIVE BOUNDARY_OR_CONTEXT_UNSPECIFIED DIRECTIONAL_ROLE_UNVERIFIED EXPLICIT_CURRENT_HTF_DR_REQUIRED FVG_LOWER_TF_BREACH_REVIEW_REQUIRED GAP_BOUNDARY_NO_PATTERN_STITCHING HTF_STRUCTURE_AND_SWING_FLOW_NOT_ALIGNED HUMAN_REVIEW_REQUIRED LEVEL_CANDIDATE LEVEL_CONSUMED LEVEL_INVALIDATED LEVEL_TESTED LEVEL_UNVERIFIED NO_ACTIVE_DIRECTIONAL_ANCHOR NO_ACTIVE_MN1_W1_KL NO_CLOSED_HTF_OR_X_MINUS_1_REACTION NO_DIRECTIONAL_CONTEXT NO_STRUCTURAL_TARGET PARTIAL_AGGREGATION PROVIDER_VALIDATION_LOSS REQUESTED_HISTORY_INCOMPLETE ROLE_NOT_CONFIRMED SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED STRUCTURAL_INVALIDATION_REQUIRED TARGET_HISTORY_UNOBSERVED TARGET_LIQUIDITY_ALREADY_CONSUMED TARGET_UNVERIFIED INPUT_OR_SOURCE_UNVERIFIED REQUESTED_TARGET_UNAVAILABLE TARGET_OUTSIDE_AUTHOR_X_OR_X_MINUS_1 A_TO_B_PATH_HAS_OBSTACLES HTF_RANGE_LOCATION_NOT_SUPPORTIVE CONFLICTING_HTF_KL AMBIGUOUS_HTF_ANCHOR KL_CONTAINMENT_ONLY_NOT_NARRATIVE EXPLICIT_ANCHOR_REQUIRES_REVIEW').split(' '));
+const REASONS=new Set(('AUTHOR_STRUCTURE_REVIEW_REQUIRED PATH_COVERAGE_PARTIAL PATH_COVERAGE_UNKNOWN AMBIGUOUS_STRUCTURAL_TARGETS ANCHOR_LOWER_TF_BREACH ANCHOR_NOT_PROVEN_ACTIVE BOUNDARY_OR_CONTEXT_UNSPECIFIED DIRECTIONAL_ROLE_UNVERIFIED EXPLICIT_CURRENT_HTF_DR_REQUIRED FVG_LOWER_TF_BREACH_REVIEW_REQUIRED GAP_BOUNDARY_NO_PATTERN_STITCHING HTF_STRUCTURE_AND_SWING_FLOW_NOT_ALIGNED HUMAN_REVIEW_REQUIRED LEVEL_CANDIDATE LEVEL_CONSUMED LEVEL_INVALIDATED LEVEL_TESTED LEVEL_UNVERIFIED NO_ACTIVE_DIRECTIONAL_ANCHOR NO_ACTIVE_MN1_W1_KL NO_ELIGIBLE_MN1_W1_D1_POI TARGET_PATH_REQUIRES_REVIEW SELECTED_DR_INVALID_OR_OUTSIDE NO_CLOSED_HTF_OR_X_MINUS_1_REACTION NO_DIRECTIONAL_CONTEXT NO_STRUCTURAL_TARGET PARTIAL_AGGREGATION PROVIDER_VALIDATION_LOSS REQUESTED_HISTORY_INCOMPLETE ROLE_NOT_CONFIRMED SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED STRUCTURAL_INVALIDATION_REQUIRED TARGET_HISTORY_UNOBSERVED TARGET_LIQUIDITY_ALREADY_CONSUMED TARGET_UNVERIFIED INPUT_OR_SOURCE_UNVERIFIED REQUESTED_TARGET_UNAVAILABLE TARGET_OUTSIDE_AUTHOR_X_OR_X_MINUS_1 A_TO_B_PATH_HAS_OBSTACLES HTF_RANGE_LOCATION_NOT_SUPPORTIVE CONFLICTING_HTF_KL AMBIGUOUS_HTF_ANCHOR KL_CONTAINMENT_ONLY_NOT_NARRATIVE EXPLICIT_ANCHOR_REQUIRES_REVIEW').split(' '));
 const reasons = (items: string[]) => [...new Set(items.map(v => REASONS.has(v)||/^OPPOSING_(MN1|W1|D1|H4)_(STRUCTURE|SWING_FLOW)$/.test(v)?v:'UNRECOGNIZED_ENGINE_CODE'))].slice(0,24);
 const newest = (a: Finding,b: Finding) => b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id);
 
@@ -104,10 +105,10 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       range_status:f.range?f.range_state.state:automatic.status,range_candidate:rangeCandidate};
   });
   const selectedA=r.narrative.A?.id??null,reference=r.data_quality.reference_price;
-  const anchorAlternatives=r.levels.detected_levels.map(l=>currentBounds(l,states.get(l.id))).filter(l=>['MN1','W1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&reference!==null&&l.lower<=reference&&l.upper>=reference).map(l=>l.id);
+  const anchorAlternatives=r.tda.anchors.filter(a=>['MN1','W1','D1'].includes(a.timeframe)&&a.eligible_as_poi&&a.context!=='AWAITING_DELIVERY').map(a=>a.id);
   // Surface nearby active HTF levels when price is outside all KLs, without inventing an active A.
   const nearbyA=!selectedA&&anchorAlternatives.length===0&&reference!==null?r.levels.detected_levels.map(l=>currentBounds(l,states.get(l.id)))
-    .filter(l=>['MN1','W1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&states.get(l.id)?.role_status!=='UNVERIFIED')
+    .filter(l=>['MN1','W1','D1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&states.get(l.id)?.role_status!=='UNVERIFIED')
     .sort((a,b)=>{
       const distance=(l:typeof a)=>reference<l.lower?l.lower-reference:reference>l.upper?reference-l.upper:0;
       return distance(a)-distance(b)||a.id.localeCompare(b.id);
@@ -152,7 +153,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     quote:{bid:validQuote?bid:null,ask:validQuote?ask:null,spread:validQuote?ask!-bid!:null,provider_timestamp:qtime,retrieved_at:qretrieved,
       source_type:choice(quote.source_type,['REST','WEBSOCKET']),market_status:choice(quote.market_status,['TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED']),
       provider_age_seconds:qAge,fresh:validQuote&&qAge!==null&&qAge>=0&&qAge<=policy.quote_seconds&&quote.fresh&&!marketClosed,used_as_closed_evidence:false},
-    frames:frameRows,research_context:researchContext,
+    frames:frameRows,research_context:researchContext,tda:compactTda(r,add,budgetTier),
     scenario:{candidate_narrative:bias(r.narrative.candidate_bias),confirmed_narrative:r.narrative.confirmed_narrative,status:r.narrative.status,
       evidence_quality:{status:r.narrative.evidence_confidence.status,human_reviewed:r.narrative.evidence_confidence.human_reviewed,independently_validated:false,probability:null},
       A:{selected:selectedA?add(selectedA):null,items:aShown.map(add),total:aIds.length,omitted:aIds.length-aShown.length},

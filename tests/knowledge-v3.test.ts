@@ -23,12 +23,13 @@ test('V3 invalid geometric distractor does not suppress unique eligible target; 
 test('V3 range returning inside after closed breakout is still invalid; unknown later segment cannot restore it',()=>{const f={...all.W1,bars:[bar(0),bar(1,16),bar(2,10)]};assert.equal(assessRange(f,range).state,'INVALIDATED');assert.equal(assessRange({...all.W1,bars:[bar(0),{...bar(1),segment:1}]},range).state,'UNVERIFIED');});
 
 
-test('X/X-1/X-2: MN1 anchor may validate an eligible D1 structural target, without skipping obstacles',()=>{
+test('TDA: MN1 target is X/X-1; D1 X-2 is refinement, not an eligible target',()=>{
   const s=scenario(true);
   const a={...s.a,timeframe:'MN1' as const},b={...s.b,timeframe:'D1' as const};
   const r=selectTarget([a,b],s.states,10,'up',a);
-  assert.equal(r.status,'TARGET_VALIDATED');
-  assert.equal(r.validated_target?.id,'B');
-  assert.equal(r.candidate_reviews.find(x=>x.id==='B')?.author_timeframe_eligible,true);
+  assert.equal(r.status,'TARGET_UNVERIFIED');
+  assert.equal(r.candidate_target,null);
+  assert.equal(r.candidate_reviews.find(x=>x.id==='B')?.author_timeframe_eligible,false);
+  assert.equal(selectTarget([a,{...b,timeframe:'W1'}],s.states,10,'up',a).validated_target?.id,'B');
   assert.equal(selectTarget([a,b],s.states,10,'up',a,'not-found').validated_target,null);
 });
