@@ -1,3 +1,4 @@
+import {compactNarrativeMethod} from './narrative-method';
 import {compactTda} from './tda';
 import {currentBounds} from '../knowledge/fvg-remaining';
 import type {snrFormationContext} from '../knowledge/snr-context';
@@ -94,8 +95,8 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     return {...(f.range_candidates?{range_options:{total:f.range_candidates.candidates.length,omitted:f.range_candidates.candidates.length-(rangeCandidate?1:0),review_required:true}}:{}),timeframe:tf,fetched_at:data[tf].fetched_at,last_closed_at:bars.at(-1)?.end??null,closed_candles:f.closed_candles,
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
-        swing_bias:bias(f.order_flow.bias),swing_basis:'NEEDS_SPECIFICATION',swing_evidence:f.order_flow.evidence_ids.map(add)},
-      fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1&&tf!==[...r.frames].reverse().find(frame=>frame.findings.some(x=>x.kind==='RB_TWO_CANDLE'))?.timeframe?0:1),
+        swing_bias:bias(f.order_flow.bias),swing_basis:f.order_flow.status,swing_evidence:f.order_flow.evidence_ids.map(add)},
+      fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),budgetTier>=6&&tf!==r.narrative.A?.timeframe?0:1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1&&tf!==[...r.frames].reverse().find(frame=>frame.findings.some(x=>x.kind==='RB_TWO_CANDLE'))?.timeframe?0:1),
       snr_quality:{very_strong_candidates:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='VERY_STRONG_FORMATION_CANDIDATE').length,context_conflicts:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='CONTEXT_CONFLICT').length,review_required:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='REVIEW_REQUIRED').length},
       rb_quality:{raid_backed:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='RAID_BACKED').length,fvg_only_weaker:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='WEAKER_FVG_ONLY').length,counting:'FINDINGS_PER_PRIMARY_KL'},
       fvg:group(f.findings.filter(x=>x.kind==='FVG'),budgetTier>=2?0:1),ifvg:group(f.findings.filter(x=>x.kind==='FVG_CLOSED_BREACH'),0),
@@ -144,7 +145,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   const knownClosure=!!h4&&Date.parse(h4)<expectedH4&&closedRegularInterval(symbol,Date.parse(h4),expectedH4);
   if(!h4||h4Delay>policy.h4_delay_seconds&&!knownClosure)staleReasons.push('H4_CLOSED_CANDLE_DELAY');
   const errors=frameRows.some(f=>f.closed_candles===0);
-  const researchContext=compactResearchContext(r,add,budgetTier>=3?0:1,budgetTier>=4);
+  const researchContext=compactResearchContext(r,add,budgetTier>=3?0:1,budgetTier>=4,budgetTier>=5?1:undefined);
   const result={technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:r.narrative.human_review.evidence_sha256},schema_version:'desk-report-v2',symbol,status:errors?'ERROR':staleReasons.length?'STALE':r.data_quality.status==='UNVERIFIED'?'UNVERIFIED':'PARTIAL',
     published_at:null,freshness:{quote_retrieved_at:qretrieved,quote_status:marketClosed?'MARKET_CLOSED':validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?'FRESH':'STALE',data_quality:r.data_quality.status,stale_reasons:staleReasons,quote_max_seconds:policy.quote_seconds,h4_max_delay_seconds:policy.h4_delay_seconds,h4_delay_seconds:h4Delay,source_age_seconds:Math.max(...TFS.map(tf=>(clock-Date.parse(data[tf].fetched_at))/1000)),delivery_max_seconds:policy.delivery_seconds},generated_at:now,as_of:r.as_of,expires_at:new Date(!marketClosed&&validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?Math.min(clock+policy.delivery_seconds*1000,Date.parse(qtime!)+policy.quote_seconds*1000):clock+policy.delivery_seconds*1000).toISOString(),error:errors?'UPSTREAM_UNAVAILABLE':null,
     source:{provider:'Capital.com',environment:r.environment,analysis_schema:r.schema_version,price_side:r.price_side,
@@ -153,20 +154,20 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     quote:{bid:validQuote?bid:null,ask:validQuote?ask:null,spread:validQuote?ask!-bid!:null,provider_timestamp:qtime,retrieved_at:qretrieved,
       source_type:choice(quote.source_type,['REST','WEBSOCKET']),market_status:choice(quote.market_status,['TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED']),
       provider_age_seconds:qAge,fresh:validQuote&&qAge!==null&&qAge>=0&&qAge<=policy.quote_seconds&&quote.fresh&&!marketClosed,used_as_closed_evidence:false},
-    frames:frameRows,research_context:researchContext,tda:compactTda(r,add,budgetTier),
+    narrative_method:compactNarrativeMethod(r,add,budgetTier),frames:frameRows,research_context:researchContext,tda:compactTda(r,add,budgetTier),
     scenario:{candidate_narrative:bias(r.narrative.candidate_bias),confirmed_narrative:r.narrative.confirmed_narrative,status:r.narrative.status,
       evidence_quality:{status:r.narrative.evidence_confidence.status,human_reviewed:r.narrative.evidence_confidence.human_reviewed,independently_validated:false,probability:null},
       A:{selected:selectedA?add(selectedA):null,items:aShown.map(add),total:aIds.length,omitted:aIds.length-aShown.length},
       B:{selected:ts.selected_candidate?add(ts.selected_candidate.id):null,validated:ts.validated_target?add(ts.validated_target.id):null,
         status:ts.status,items:bRows,total:candidates.length,role_eligible:eligible.length,omitted:candidates.length-bRows.length},
-      C:C?{source:add(C.source_id),timeframe:C.timeframe,price:C.price,condition:C.condition==='closed full boundary breach'?'OWN_TF_CLOSE_BEYOND_FVG':'MANUAL_OWN_TF_CLOSE_BEYOND'}:null,
+      C:C?{source:add(C.source_id),timeframe:C.timeframe,price:C.price,condition:C.condition==='closed full boundary breach'?'OWN_TF_CLOSE_BEYOND_FVG':C.condition==='Research method own-TF structural boundary breach'?'OWN_TF_CLOSE_BEYOND_STRUCTURE':'MANUAL_OWN_TF_CLOSE_BEYOND'}:null,
       invalidations:{entry:r.narrative.entry_invalidated,KL:r.narrative.KL_invalidated,narrative:r.narrative.narrative_invalidated},
       blockers:reasons([...new Set([...r.narrative.blockers,...ts.blockers])]),action:'NOT_EVALUATED'},
     evidence,rules,candle_windows:windows,coverage:{budget_tier:budgetTier,selection_policy:'RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES',
       findings_total:all.length,findings_included:refById.size,findings_omitted:all.length-refById.size,selected_evidence_complete:true,
       all_findings_included:refById.size===all.length,stale_reasons:staleReasons,raw_ohlc_included:false},trading_enabled:false};
   if(Buffer.byteLength(JSON.stringify(result))+1>MAX_REPORT_BYTES){
-    if(budgetTier<4)return buildDeskReport(r,data,quote,now,engineCommit,budgetTier+1);
+    if(budgetTier<6)return buildDeskReport(r,data,quote,now,engineCommit,budgetTier+1);
     throw Error('REPORT_TOO_LARGE');
   }
   validateReport(result,symbol);

@@ -2,10 +2,10 @@ import type {buildIntelligence} from '../knowledge/intelligence';
 type Intelligence=ReturnType<typeof buildIntelligence>;
 
 /** Bounded presentation; all omissions are counted and recoverable by snapshot inspection. */
-export function compactResearchContext(r:Intelligence,add:(id:string)=>string,contextLimit=1,reduced=false){
+export function compactResearchContext(r:Intelligence,add:(id:string)=>string,contextLimit=1,reduced=false,executiveLimit?:number){
   const c=r.research_context;
   const group=(ids:string[],limit=contextLimit)=>({items:ids.slice(0,limit).map(add),total:ids.length,omitted:Math.max(0,ids.length-limit)});
-  const levels=c.executive_ids.slice(0,reduced?4:32).map(id=>c.levels.find(l=>l.id===id)!);
+  const levels=c.executive_ids.slice(0,executiveLimit??(reduced?4:32)).map(id=>c.levels.find(l=>l.id===id)!);
   const targetIds=[...new Set([...(r.target_selection.selected_candidate?[r.target_selection.selected_candidate.id]:[]),...r.target_selection.target_candidates.filter(t=>t.role_eligible).sort((a,b)=>{
     const f=(id:string)=>r.frames.flatMap(f=>f.findings).find(f=>f.id===id)?.confirmed_at??'';
     return f(b.id).localeCompare(f(a.id))||a.id.localeCompare(b.id);

@@ -1,3 +1,4 @@
+import {buildNarrativeMethod} from './narrative-method';
 import {tdaRelationships,tdaAnchorLevels} from './tda';
 import {intervalCoverage} from './level-state';
 import {fvgTestTimeline,currentBounds} from './fvg-remaining';
@@ -147,29 +148,26 @@ export function buildIntelligence(
     candidates:f.range_candidates.candidates.filter(range=>range.basis==='KL_REACTION_LOCAL_DR_REQUIRES_REVIEW').map(range=>({range,validation:validateDealingRangeEvidence(range,states,frames[f.timeframe],detected)}))}));
   const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...currentBounds(l,states.find(s=>s.id===l.id)),role:states.find(s=>s.id===l.id)!.current_role??l.role}));
   const tda=tdaRelationships(frames,perFrame.flatMap(f=>f.findings),detected,states,perFrame.map(f=>({timeframe:f.timeframe,range:f.range??f.dr_detection.current,state:f.range?f.range_state.state:f.dr_detection.status==='ESTABLISHED'?'ACTIVE':f.dr_detection.status})),reference);
+  const narrativeMethod=buildNarrativeMethod(frames,perFrame.flatMap(f=>f.findings),detected,states,perFrame.map(f=>({timeframe:f.timeframe,range:f.range??f.dr_detection.current,active:f.range?f.range_state.state==='ACTIVE':f.dr_detection.status==='ESTABLISHED'})),reference);
   const pois=tdaAnchorLevels(detected,tda).map(l=>currentBounds(l,states.find(s=>s.id===l.id)));
   const reactionIds=tda.anchors.filter(a=>a.eligible_as_poi&&a.context!=='AWAITING_DELIVERY').map(a=>a.id);
-  const hierarchy=resolveHierarchy(pois,reference,options.anchor_id,reactionIds),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
+  const hierarchy=resolveHierarchy(pois,reference,options.anchor_id??(pois.some(p=>p.id===narrativeMethod.selected_id)?narrativeMethod.selected_id!:undefined),reactionIds),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
   // Empty/unknown frames cannot prove an obstacle-free path. Calendar, finite
   // history and detector boundary limitations remain explicit even if no IDs were truncated.
   const relevantTfs=TF_ORDER; // Higher-TF obstacles also require observed coverage.
   const pathCoverage=relevantTfs.some(tf=>frames[tf].status==='UNVERIFIED'||!frames[tf].bars.length)?'UNKNOWN':relevantTfs.every(tf=>frames[tf].warnings.length===0&&intervalCoverage([frames[tf]],frames[tf].bars[0].time,frames[tf].bars.at(-1)!.end).complete)?'COMPLETE':'PARTIAL';
-  const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id,pathCoverage);
+  const selectedMethod=narrativeMethod.candidates.find(x=>x.id===hierarchy.a?.id);
+  const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id??selectedMethod?.B?.id,pathCoverage);
   const researchPaths=targetSelection.target_candidates.filter(c=>c.role_eligible).map(c=>({target_id:c.id,
     from_basis:hierarchy.a?'ANCHOR_BOUNDARY':'LAST_CLOSED_H4',
     ...validatePathCompleteness(detected,states,frames,hierarchy.a?(direction==='up'?hierarchy.a.upper:hierarchy.a.lower):reference,c.price,[c.id,...(hierarchy.a?[hierarchy.a.id]:[])])}));
   const targetLevel=detected.find(l=>l.id===targetSelection.candidate_target?.id),target=targetLevel?currentBounds(targetLevel,states.find(s=>s.id===targetLevel.id)):null,a=hierarchy.a;
   const manualC=options.human_review?.C;
   const validManualC=!!manualC&&!!a&&manualC.timeframe===a.timeframe&&Number.isFinite(manualC.price)&&(a.role==='support'?manualC.price<=a.lower:manualC.price>=a.upper)&&manualC.condition==='CLOSE_BEYOND'&&!frames[a.timeframe].bars.some(b=>b.time>=a.confirmed_at&&(a.role==='support'?b.close<manualC.price:b.close>manualC.price));
-  const c =
-    a?.kind === "FVG"
-      ? {
-          price: a.role === "support" ? a.lower : a.upper,
-          timeframe: a.timeframe,
-          condition: "closed full boundary breach",
-          source_id: a.id,
-        }
-      : validManualC?{price:manualC!.price,timeframe:manualC!.timeframe,condition:'User specified own-TF closed structural breach',source_id:a!.id}:null;
+  const methodC=selectedMethod?.C&&selectedMethod.C.close_breached===false?selectedMethod.C:null;
+  const c=validManualC?{price:manualC!.price,timeframe:manualC!.timeframe,condition:'User specified own-TF closed structural breach',source_id:a!.id}:
+    methodC?{price:methodC.price,timeframe:methodC.timeframe,condition:'Research method own-TF structural boundary breach',source_id:methodC.source_ids.find(id=>{const l=detected.find(l=>l.id===id);return l&&(a!.role==='support'?l.lower:l.upper)===methodC.price;})??methodC.source_ids[0]}:
+    a?.kind==='FVG'?{price:a.role==='support'?a.lower:a.upper,timeframe:a.timeframe,condition:'closed full boundary breach',source_id:a.id}:null;
   const reliable =
     knowledgeCoverage().stale_rules.length === 0 &&
     TF_ORDER.every(
@@ -187,10 +185,10 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',fvg_revision:'fvg-unfilled-1',tda_revision:'tda-notion-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',fvg_revision:'fvg-unfilled-1',narrative_method_revision:'narrative-method-1',tda_revision:'tda-notion-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
   const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c,tda.anchors.some(x=>x.id===a?.id&&x.eligible_as_poi));
   const narrative = {
-    ...provenance("EDGE.NARRATIVE.v4"),
+    ...provenance("EDGE.NARRATIVE.v5"),
     ...assessment,
     ...conclusionEvidence,
     bias: assessment.bias,
@@ -320,6 +318,7 @@ export function buildIntelligence(
     as_of: asOf,
     selection:{anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{}},
     tda,
+    narrative_method:narrativeMethod,
     pipeline: [
       "DATA_QUALITY",
       "MN1",
