@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.3';
+export const CONTRACT_REVISION='desk-report-v2.4';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -35,6 +35,10 @@ const tf=en('MN1','W1','D1','H4'),code=str(/^[A-Z][A-Z0-9_]{0,100}$/,101),bias=e
 const group=obj({items:arr(ref),total:num,omitted:num});
 const interaction=obj({kind:code,timeframe:tf,candle:num});
 const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask):[A-Za-z0-9_.:\-]+$/,1600),timeframe:tf,kind:code,origin:time,confirmed_at:time,
+  snr:optional(obj({revision:en('snr-formation-context-2'),level_policy:en('FIRST_CANDLE_CLOSE'),level_price:num,formation_confirmed:en(true),origin_confirmed_at:time,delivery_at:time,breakout_at:time,
+    waiting_bars:num,formation_seconds:num,failed_test_bars:num,failed_test_episodes:num,test_windows:arr(num,1000),breakout_body:num,breakout_body_fraction:num,prior_body_sample:num,body_to_prior_median:nullable(num),
+    impulse_leg_bars:num,impulse_leg_body_to_median:nullable(num),impulse_leg_efficiency:num,impulse_detected:bool,impulse_evidence:en('MEASURED_EXPANSION','MEASURED_EXPANSION_AND_X1_FVG','X1_FVG_AT_BREAK','BODY_METRICS_ONLY'),
+    relative_strength:en('VERY_STRONG_FORMATION_CANDIDATE','CONTEXT_CONFLICT','REVIEW_REQUIRED'),strength_policy:en('REPEATED_EPISODES_AND_IMPULSE_FVG_OPTIONAL'),impulse_policy:en('PRIOR20_MEDIAN_2X_LEG_EFFICIENCY_060_MIN5_OR_X1_FVG'),probability:en(null),review_required:en(true),primary_kl:ref,x1_fvg:nullable(ref),opposing_kl:nullable(ref)})),
   rb:optional(obj({revision:en('rb-first-close-2'),level_policy:en('FIRST_CANDLE_CLOSE'),level_price:num,formation_confirmed:en(true),basis:en('LIQUIDITY_RAID','FVG_INTERACTION','FVG_AND_LIQUIDITY_RAID'),relative_quality:en('RAID_BACKED','WEAKER_FVG_ONLY'),probability:en(null),significance:en('REVIEW_REQUIRED'),primary_kl:ref,liquidity:nullable(ref),fvg:nullable(ref)})),
   lower:nullable(num),upper:nullable(num),variant:en(3,null),polarity:en('high','low',null),direction:en('bullish','bearish','Bullish','Bearish','up','down',null),
   detector_state:en('OBSERVED','CANDIDATE','NEEDS_SPECIFICATION'),data_status:en('PARTIAL','UNVERIFIED'),
@@ -43,6 +47,7 @@ const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask)
 const frame=obj({range_options:optional(obj({total:num,omitted:num,review_required:en(true)})),timeframe:tf,fetched_at:time,last_closed_at:nullable(time),closed_candles:num,data_status:code,warnings:arr(code,24),discarded_rows:num,
   structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('NEEDS_SPECIFICATION'),swing_evidence:arr(ref,4)}),
   fractals:arr(obj({variant:en(3),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
+  snr_quality:optional(obj({very_strong_candidates:num,context_conflicts:num,review_required:num})),
   rb_quality:optional(obj({raid_backed:num,fvg_only_weaker:num,counting:en('FINDINGS_PER_PRIMARY_KL')})),
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
   dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
@@ -168,7 +173,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       if(selection.timeframe!==(first?.timeframe??null)||selection.skipped.map(x=>x.timeframe).join(',')!==ordered.slice(0,first?ordered.indexOf(first):4).map(f=>f?.timeframe).join(','))throw Error('INVALID_DR_FALLBACK');}
   }
   const ids=new Set<string>();
-  type RbEvidence={kind:string;rule:string;timeframe:string;direction:string;polarity:string;lower:number;upper:number;confirmed_at:string;candle_refs:number[];dependencies:string[];rb?:{level_price:number;basis:string;relative_quality:string;primary_kl:string;liquidity:string|null;fvg:string|null}};
+  type RbEvidence={kind:string;rule:string;timeframe:string;direction:string;polarity:string;lower:number;upper:number;origin:string;confirmed_at:string;candle_refs:number[];dependencies:string[];rb?:{level_price:number;basis:string;relative_quality:string;primary_kl:string;liquidity:string|null;fvg:string|null}};
   const rbEvidence=r.evidence as unknown as Record<string,RbEvidence>;
   for(const e of Object.values(rbEvidence)){
     if(e.rule==='EDGE.RB.v2'&&!e.rb)throw Error('MISSING_RB_METADATA');
@@ -180,6 +185,23 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
     if(liquidity&&(liquidity.polarity!==(e.direction==='bullish'?'low':'high')||(e.direction==='bullish'?b.level_price<=liquidity.upper:b.level_price>=liquidity.lower))||fvg&&fvg.direction!==e.direction)throw Error('INVALID_RB_DIRECTION');
     for(const id of [b.primary_kl,b.liquidity,b.fvg].filter((id):id is string=>!!id)){const kl=rbEvidence[id];if(!kl||!e.dependencies.includes(id)||kl.confirmed_at>first[0]||['MN1','W1','D1','H4'].indexOf(kl.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe))throw Error('NONCAUSAL_RB_CONTEXT');}
     if(b.relative_quality!==(liquidity?'RAID_BACKED':'WEAKER_FVG_ONLY')||b.basis!==(liquidity?(fvg?'FVG_AND_LIQUIDITY_RAID':'LIQUIDITY_RAID'):'FVG_INTERACTION'))throw Error('FALSE_RB_QUALITY');
+  }
+  type SnrMeta={level_price:number;origin_confirmed_at:string;delivery_at:string;breakout_at:string;waiting_bars:number;formation_seconds:number;failed_test_bars:number;failed_test_episodes:number;test_windows:number[];breakout_body:number;breakout_body_fraction:number;prior_body_sample:number;body_to_prior_median:number|null;impulse_leg_bars:number;impulse_leg_body_to_median:number|null;impulse_leg_efficiency:number;impulse_detected:boolean;impulse_evidence:string;relative_strength:string;primary_kl:string;x1_fvg:string|null;opposing_kl:string|null};
+  const snrs=r.evidence as unknown as Record<string,RbEvidence&{snr?:SnrMeta}>;
+  for(const e of Object.values(snrs)){
+    if(e.rule==='EDGE.SNR.v2'&&!e.snr)throw Error('MISSING_SNR_METADATA');const s=e.snr;if(!s)continue;
+    const cw=e.candle_refs.map(i=>r.candle_windows[i]),kl=snrs[s.primary_kl],x1=s.x1_fvg?snrs[s.x1_fvg]:null,opposing=s.opposing_kl?snrs[s.opposing_kl]:null;
+    if(e.kind!=='SNR_CLOSED_BREAK'||e.rule!=='EDGE.SNR.v2'||cw.length!==4||cw.some(w=>!w)||cw[0][1]!==cw[1][0]||cw[1][1]!==s.origin_confirmed_at||cw[2][1]!==s.delivery_at||cw[3][1]!==s.breakout_at||s.breakout_at!==e.confirmed_at||cw[2][0]<s.origin_confirmed_at||s.delivery_at>s.breakout_at||e.lower!==s.level_price||e.upper!==s.level_price||!['bullish','bearish'].includes(e.direction))throw Error('INVALID_SNR_GEOMETRY');
+    if(!kl||!['FRACTAL','FVG'].includes(kl.kind)||!e.dependencies.includes(s.primary_kl)||kl.confirmed_at>cw[2][0]||['MN1','W1','D1','H4'].indexOf(kl.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe))throw Error('NONCAUSAL_SNR_CONTEXT');
+    if(kl.kind==='FRACTAL'?kl.polarity!==(e.direction==='bullish'?'low':'high'):kl.direction!==e.direction)throw Error('INVALID_SNR_DIRECTION');
+    if([s.waiting_bars,s.failed_test_bars,s.failed_test_episodes,s.prior_body_sample,s.impulse_leg_bars].some(n=>!Number.isInteger(n)||n<0)||s.failed_test_episodes>s.failed_test_bars||s.failed_test_bars>s.waiting_bars||s.failed_test_bars!==s.test_windows.length||s.prior_body_sample>20||s.impulse_leg_bars>s.waiting_bars+1||s.formation_seconds!==(Date.parse(s.breakout_at)-Date.parse(s.origin_confirmed_at))/1000||s.breakout_body<0||s.breakout_body_fraction<0||s.breakout_body_fraction>1||s.impulse_leg_efficiency<0||s.impulse_leg_efficiency>1||s.body_to_prior_median!==null&&s.body_to_prior_median<0||s.impulse_leg_body_to_median!==null&&s.impulse_leg_body_to_median<0)throw Error('INVALID_SNR_METRICS');
+    let episodes=0,last:string|null=null;for(const i of s.test_windows){const w=r.candle_windows[i];if(!Number.isInteger(i)||!w||w[0]<s.origin_confirmed_at||w[1]>cw[3][0]||last&&w[0]<last)throw Error('NONCAUSAL_SNR_TEST');if(w[0]!==last)episodes++;last=w[1];}if(episodes!==s.failed_test_episodes)throw Error('INVALID_SNR_TEST_EPISODES');
+    for(const id of [s.x1_fvg,s.opposing_kl].filter((id):id is string=>!!id)){if(!snrs[id]||!e.dependencies.includes(id)||snrs[id].confirmed_at>e.confirmed_at)throw Error('NONCAUSAL_SNR_CONTEXT');}
+    if(s.x1_fvg&&(!x1||x1.kind!=='FVG'||x1.direction!==e.direction||['MN1','W1','D1','H4'].indexOf(x1.timeframe)!==['MN1','W1','D1','H4'].indexOf(e.timeframe)+1||x1.confirmed_at<cw[3][0]||x1.origin<(last??cw[2][0])||x1.lower>s.level_price||x1.upper<s.level_price))throw Error('INVALID_SNR_X1');
+    if(s.opposing_kl&&(!opposing||opposing.confirmed_at>cw[3][0]||['MN1','W1','D1','H4'].indexOf(opposing.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe)||(e.direction==='bullish'?opposing.lower<=s.level_price:opposing.upper>=s.level_price)))throw Error('INVALID_SNR_OPPOSING');
+    if(opposing&&(opposing.kind==='FRACTAL'?opposing.polarity!==(e.direction==='bullish'?'high':'low'):opposing.kind!=='FVG'||opposing.direction===(e.direction)))throw Error('INVALID_SNR_OPPOSING_ROLE');
+    const measured=s.prior_body_sample>=5&&s.impulse_leg_body_to_median!==null&&s.impulse_leg_body_to_median>=2&&s.impulse_leg_efficiency>=0.6&&s.impulse_leg_bars>0,impulse=measured||!!x1;
+    if(s.impulse_detected!==impulse||s.impulse_evidence!==(measured?(x1?'MEASURED_EXPANSION_AND_X1_FVG':'MEASURED_EXPANSION'):x1?'X1_FVG_AT_BREAK':'BODY_METRICS_ONLY')||s.relative_strength!==(opposing?'CONTEXT_CONFLICT':s.failed_test_episodes>=2&&impulse?'VERY_STRONG_FORMATION_CANDIDATE':'REVIEW_REQUIRED'))throw Error('FALSE_SNR_STRENGTH');
   }
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
@@ -201,6 +223,8 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       if(fill.first_test_at&&fill.last_test_at&&fill.first_test_at>fill.last_test_at)throw Error('INVALID_FILL');}
   }
   for(const f of r.frames){
+    const snrFrame=f as typeof f&{snr:{total:number};snr_quality?:{very_strong_candidates:number;context_conflicts:number;review_required:number}};
+    if(snrFrame.snr_quality){const counts=Object.values(snrFrame.snr_quality);if(counts.some(n=>!Number.isInteger(n)||n<0)||counts.reduce((a,b)=>a+b,0)!==snrFrame.snr.total)throw Error('INVALID_SNR_COUNTS');}
     const rbFrame=f as typeof f&{rb:{total:number};rb_quality?:{raid_backed:number;fvg_only_weaker:number}};
     if(rbFrame.rb_quality){const q=rbFrame.rb_quality;if(!Number.isInteger(q.raid_backed)||!Number.isInteger(q.fvg_only_weaker)||q.raid_backed<0||q.fvg_only_weaker<0||q.raid_backed+q.fvg_only_weaker!==rbFrame.rb.total)throw Error('INVALID_RB_COUNTS');}
     if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');

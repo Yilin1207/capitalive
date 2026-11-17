@@ -2,6 +2,7 @@ import type { Frame, Bar } from "./data";
 import { contiguous } from "./data";
 import type { Timeframe } from "../candle-data";
 import { provenance } from "./rules";
+import {snrFormationContext} from "./snr-context";
 export const TF_ORDER: Timeframe[] = ["MN1", "W1", "D1", "H4"];
 export type Finding = {
   id: string;
@@ -90,15 +91,15 @@ function event(
       low: b.low,
       close: b.close,
     })),
-    ...provenance(`EDGE.${name}.v${name==='RB'?2:1}`),
+    ...provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`),
     counterarguments: [
-      ...provenance(`EDGE.${name}.v${name==='RB'?2:1}`).counterarguments,
+      ...provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`).counterarguments,
       ...frame.warnings,
     ],
     invalidation,
     facts,
     state:
-      provenance(`EDGE.${name}.v${name==='RB'?2:1}`).specification === "NEEDS_SPECIFICATION"
+      provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`).specification === "NEEDS_SPECIFICATION"
         ? "NEEDS_SPECIFICATION"
         : state,
   };
@@ -354,63 +355,28 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
   }
   return out;
 }
-export function detectSnr(frame: Frame, context: KeyLevel[]) {
+export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLevel[] = []) {
   const out: Finding[] = [];
-  for (let i = 1; i < frame.bars.length; i++) {
-    const a = frame.bars[i - 1],
-      b = frame.bars[i];
-    if (!contiguous([a, b])) continue;
-    const resistance = a.close > a.open && b.close < b.open,
-      support = a.close < a.open && b.close > b.open;
-    if (!resistance && !support) continue;
-    // Author diagrams mark the body junction, not the full wick envelope.
-    // Unequal close/open becomes an explicit conservative band, without a guessed tolerance.
-    const lower = Math.min(a.close, b.open),
-      upper = Math.max(a.close, b.open);
-    const later = frame.bars
-      .slice(i + 1)
-      .filter((x) => x.segment === a.segment);
-    const delivery = later.find((x) =>
-      context.some(
-        (kl) =>
-          knownLevel(kl, x, frame) &&
-          interaction(x, kl) &&
-          kl.role === (resistance ? "support" : "resistance"),
-      ),
-    );
-    if (!delivery) continue;
-    const kl = context.find(
-      (kl) =>
-        knownLevel(kl, delivery, frame) &&
-        interaction(delivery, kl) &&
-        kl.role === (resistance ? "support" : "resistance"),
-    )!;
-    const breakout = later.find(x => resistance ? x.close > upper : x.close < lower);
-    // Formation order is origin -> KL delivery -> first closed breakout. A later
-    // recross cannot retroactively supply context to an already broken origin.
-    if (!breakout || breakout.index < delivery.index || !knownLevel(kl,breakout,frame)) continue;
-    out.push(
-      event(
-        frame,
-        "SNR",
-        "SNR_CLOSED_BREAK",
-        [a, b, delivery, breakout],
-        {
-          kl_id: kl.id,
-          lower,
-          upper,
-          old_role: resistance ? "resistance" : "support",
-          proposed_role: resistance ? "support" : "resistance",
-          fvg_required: false,
-          bounds_policy: "body_junction_band_unequal_prices_project_convention",
-          schematic_reference:
-            "el02_01/el02_02/el02_04: closed crossing of body junction",
-        },
-        "Counter-close through the body-junction band withdraws the proposed role; a break alone does not prove a successful retest.",
-        "CANDIDATE",
-        `${a.time}:${kl.id}`,
-      ),
-    );
+  for (let i=1;i<frame.bars.length;i++) {
+    const a=frame.bars[i-1],b=frame.bars[i];
+    if(!contiguous([a,b])||b.end>frame.as_of)continue;
+    const resistance=a.close>a.open&&b.close<b.open,support=a.close<a.open&&b.close>b.open;
+    if(!resistance&&!support)continue;
+    const lower=a.close,upper=a.close;
+    const later=frame.bars.slice(i+1).filter(x=>x.segment===a.segment&&x.end<=frame.as_of);
+    const breakout=later.find(x=>resistance?x.close>upper:x.close<lower);
+    if(!breakout)continue;
+    const eligible=(kl:KeyLevel,x:Bar)=>['FRACTAL','FVG'].includes(kl.kind)&&knownLevel(kl,x,frame)&&(!kl.invalidated_at||kl.invalidated_at>breakout.end)&&knownLevel(kl,breakout,frame)&&interaction(x,kl)&&kl.role===(resistance?'support':'resistance');
+    const delivery=later.find(x=>x.index<=breakout.index&&context.some(kl=>eligible(kl,x)));
+    if(!delivery)continue;
+    const kl=context.filter(kl=>eligible(kl,delivery)).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
+    const formation=snrFormationContext(frame,a,b,delivery,breakout,lower,resistance,context,lowerLevels);
+    out.push(event(frame,'SNR','SNR_CLOSED_BREAK',[a,b,delivery,breakout],{
+      kl_id:kl.id,lower,upper,direction:resistance?'bullish':'bearish',old_role:resistance?'resistance':'support',proposed_role:resistance?'support':'resistance',
+      fvg_required:false,bounds_policy:'FIRST_CANDLE_CLOSE',formation,
+      ...(formation.x1_fvg_id?{snr_x1_fvg_id:formation.x1_fvg_id}:{}),...(formation.opposing_kl_id?{snr_opposing_kl_id:formation.opposing_kl_id}:{}),
+      schematic_reference:'el02_01/el02_02/el02_04; user 2026-11-17: repeated failed tests, impulse and formation location matter',
+    },'Own-TF counter-close withdraws the proposed role; formation strength is contextual and does not confirm Narrative or a successful retest.','CANDIDATE',a.time+':'+kl.id));
   }
   return out;
 }
