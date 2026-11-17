@@ -63,7 +63,7 @@ export function assessLevel(l:KeyLevel,all:Record<Timeframe,Frame>,asOf:string,t
   as_of:asOf,evaluated_through:through,origin:l.source_finding.origin,confirmed_at:l.confirmed_at,invalidated_at:invalidated?ownBreak!.b.end:null,continuity_end:coverage.continuity_end,coverage:coverage.complete?'COMPLETE_OBSERVED_INTERVAL':'UNVERIFIED',coverage_gaps:coverage.gaps,coverage_closures:coverage.scheduled_closures,state,role_status:currentRole===null?'UNVERIFIED':roleConfirmed?'RETEST_CONFIRMED':'ORIGINAL_GEOMETRY',age_days:Math.max(0,(Date.parse(asOf)-Date.parse(l.confirmed_at))/86400000),liquidity_consumed:!!raid,first_raid:raid?proof(coverage.complete?'STRICT_RAID':'CROSSING_WITH_UNOBSERVED_HISTORY',raid.tf,raid.b):null,last_test:lastTest,test_episodes:tests,reaction,role_evidence:[],lower_tf_breach:lowerPressure?proof('LOWER_TF_CLOSE_BREACH',lowerPressure.tf,lowerPressure.b):null,
   ...provenance('EDGE.LEVEL_STATE.v2'),counterarguments:reasons,invalidation:'FVG: closed own-TF far-boundary breach. Fractal liquidity: strict observed crossing on admissible TF. Reversed role: new closed breach. Missing continuity invalidates claims of untouched status.'};
 }
-/** RB/SNR remain visible obstacles even while their execution boundaries are candidates. */
+/** RB's first-close reference is established; trade eligibility and SNR boundaries still require review. */
 export function contextualLevels(findings:Finding[]):KeyLevel[]{return findings.flatMap(f=>{
  if(!['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(f.kind))return [];
  const junction=f.kind==='RB_TWO_CANDLE'?f.facts.junction as {lower:number;upper:number}|undefined:{lower:Number(f.facts.lower),upper:Number(f.facts.upper)};

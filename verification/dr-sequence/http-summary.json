@@ -1,0 +1,1370 @@
+{
+  "preview": "https://capitalive-i4q6z87dq-yilin1207s-projects.vercel.app",
+  "engine_commit": "a050b1a0f9e5d67c961aed41469d683910587114",
+  "checked_at": "2026-11-17T10:36:25.502Z",
+  "production_changed": false,
+  "sso_unauthenticated_http": 302,
+  "sso_setting": "all_except_custom_domains",
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 105841,
+    "png_signature_verified": true
+  },
+  "checks": [
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e2",
+          "low": "e3",
+          "lower": 1.01772,
+          "upper": 1.20824,
+          "equilibrium": 1.1129799999999999,
+          "start_at": "2025-01-01T00:00:00.000Z",
+          "end_at": "2026-01-01T00:00:00.000Z",
+          "confirmed_at": "2026-03-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 2,
+            "omitted": 2
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 10,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_NEW_EXTREME",
+          "reason": "CLOSED_BOUNDARY_BREAK_WAIT_FOR_CONFIRMED_EXTREME",
+          "direction": "Bearish",
+          "high": "e6",
+          "low": "e5",
+          "lower": 1.1104,
+          "upper": 1.17115,
+          "equilibrium": 1.140775,
+          "start_at": "2026-08-17T00:00:00.000Z",
+          "end_at": "2026-10-26T00:00:00.000Z",
+          "confirmed_at": "2026-11-09T00:00:00.000Z",
+          "close_break_at": "2026-11-16T00:00:00.000Z",
+          "last_wick_raid_at": "2026-11-16T00:00:00.000Z",
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 5,
+            "omitted": 5
+          },
+          "parent_ranges": 10,
+          "internal_fractals": 4,
+          "local_candidates": 0,
+          "transitions": 16,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 1.09846,
+          "upper": 1.10303,
+          "equilibrium": 1.1007449999999999,
+          "start_at": "2026-11-16T08:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:34:55 GMT",
+      "received_at": "2026-11-17T10:35:36.326Z",
+      "requested_at": "2026-11-17T10:35:31.322Z",
+      "bid": 1.09955,
+      "ask": 1.09962,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 3,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:34:54.809Z",
+      "quote_retrieved_at": "2026-11-17T10:34:55.197Z",
+      "provider_age_seconds": 1.389,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:34:55.197Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 2.167,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 57069,
+      "sha256": "3d2f0916c0636fafffbad088b53ac0599a95ed5ef9d3f0faf1a63e7b9d8e557f",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:34:54.031Z",
+      "generated_at": "2026-11-17T10:34:56.198Z",
+      "expires_at": "2026-11-17T10:36:54.809Z",
+      "environment": "demo",
+      "evidence_count": 33,
+      "findings_total": 1200,
+      "findings_omitted": 1167,
+      "budget_tier": 3,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 5004,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e2",
+          "low": "e3",
+          "lower": 1.01778,
+          "upper": 1.20834,
+          "equilibrium": 1.11306,
+          "start_at": "2025-01-01T00:00:00.000Z",
+          "end_at": "2026-01-01T00:00:00.000Z",
+          "confirmed_at": "2026-03-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 2,
+            "omitted": 2
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 10,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_NEW_EXTREME",
+          "reason": "CLOSED_BOUNDARY_BREAK_WAIT_FOR_CONFIRMED_EXTREME",
+          "direction": "Bearish",
+          "high": "e6",
+          "low": "e5",
+          "lower": 1.11047,
+          "upper": 1.17122,
+          "equilibrium": 1.140845,
+          "start_at": "2026-08-17T00:00:00.000Z",
+          "end_at": "2026-10-26T00:00:00.000Z",
+          "confirmed_at": "2026-11-09T00:00:00.000Z",
+          "close_break_at": "2026-11-16T00:00:00.000Z",
+          "last_wick_raid_at": "2026-11-16T00:00:00.000Z",
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 5,
+            "omitted": 5
+          },
+          "parent_ranges": 10,
+          "internal_fractals": 4,
+          "local_candidates": 0,
+          "transitions": 16,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 1.09853,
+          "upper": 1.1031,
+          "equilibrium": 1.1008149999999999,
+          "start_at": "2026-11-16T08:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:35:02 GMT",
+      "received_at": "2026-11-17T10:35:43.643Z",
+      "requested_at": "2026-11-17T10:35:41.340Z",
+      "bid": 1.09955,
+      "ask": 1.09962,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 3,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:35:01.609Z",
+      "quote_retrieved_at": "2026-11-17T10:35:02.542Z",
+      "provider_age_seconds": 1.499,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:35:02.542Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 9.077,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 57046,
+      "sha256": "33f2de2ba01234d8affa672a7ab0191992dcca51d831e80f2b515233f9c425fb",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:34:54.031Z",
+      "generated_at": "2026-11-17T10:35:03.108Z",
+      "expires_at": "2026-11-17T10:37:01.609Z",
+      "environment": "demo",
+      "evidence_count": 33,
+      "findings_total": 1206,
+      "findings_omitted": 1173,
+      "budget_tier": 3,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 2303,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e4",
+          "lower": 22779.3,
+          "upper": 30758.3,
+          "equilibrium": 26768.8,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": "2026-11-01T00:00:00.000Z",
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e32"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e5",
+          "low": "e6",
+          "lower": 26255.2,
+          "upper": 30015.8,
+          "equilibrium": 28135.5,
+          "start_at": "2026-10-26T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e33"
+            ],
+            "total": 2,
+            "omitted": 1
+          },
+          "parent_ranges": 7,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 15,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e15",
+          "low": "e16",
+          "lower": 27094.8,
+          "upper": 27411.2,
+          "equilibrium": 27253,
+          "start_at": "2026-11-16T20:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 1,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:35:07 GMT",
+      "received_at": "2026-11-17T10:35:47.980Z",
+      "requested_at": "2026-11-17T10:35:44.440Z",
+      "bid": 27113.7,
+      "ask": 27115.5,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 120,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:35:05.790Z",
+      "quote_retrieved_at": "2026-11-17T10:35:07.209Z",
+      "provider_age_seconds": 2.174,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:35:07.209Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 2.337,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 60011,
+      "sha256": "1229c359e73b1f166a37e5eed4e971525883864ca13c165e4741594ad0f1d86b",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:35:05.627Z",
+      "generated_at": "2026-11-17T10:35:07.964Z",
+      "expires_at": "2026-11-17T10:37:05.790Z",
+      "environment": "demo",
+      "evidence_count": 38,
+      "findings_total": 1113,
+      "findings_omitted": 1075,
+      "budget_tier": 1,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 3540,
+      "detail": {
+        "http": 200,
+        "interactions": 59,
+        "snapshot_match": true
+      }
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e4",
+          "lower": 22781.1,
+          "upper": 30760.1,
+          "equilibrium": 26770.6,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": "2026-11-01T00:00:00.000Z",
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e32"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e5",
+          "low": "e6",
+          "lower": 26257,
+          "upper": 30017.6,
+          "equilibrium": 28137.3,
+          "start_at": "2026-10-26T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e33"
+            ],
+            "total": 2,
+            "omitted": 1
+          },
+          "parent_ranges": 7,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 15,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e15",
+          "low": "e16",
+          "lower": 27096.6,
+          "upper": 27413,
+          "equilibrium": 27254.8,
+          "start_at": "2026-11-16T20:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 1,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:35:11 GMT",
+      "received_at": "2026-11-17T10:35:52.036Z",
+      "requested_at": "2026-11-17T10:35:51.096Z",
+      "bid": 27113.7,
+      "ask": 27115.5,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 120,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:35:05.790Z",
+      "quote_retrieved_at": "2026-11-17T10:35:07.209Z",
+      "provider_age_seconds": 6.144,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:35:07.209Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 6.307,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59983,
+      "sha256": "4d13b87eb0360e5a96b169e72320d1a4aae14e965643c1b957b0a065abb88df5",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:35:05.627Z",
+      "generated_at": "2026-11-17T10:35:11.934Z",
+      "expires_at": "2026-11-17T10:37:05.790Z",
+      "environment": "demo",
+      "evidence_count": 38,
+      "findings_total": 1113,
+      "findings_omitted": 1075,
+      "budget_tier": 1,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 941,
+      "detail": {
+        "http": 200,
+        "interactions": 59,
+        "snapshot_match": true
+      }
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e8",
+          "lower": 50394.8,
+          "upper": 73635.5,
+          "equilibrium": 62015.15,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e37"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 5,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 9,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 56431.1,
+          "upper": 71358.2,
+          "equilibrium": 63894.649999999994,
+          "start_at": "2026-10-05T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e38"
+            ],
+            "total": 3,
+            "omitted": 2
+          },
+          "parent_ranges": 12,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 22,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e23",
+          "low": "e24",
+          "lower": 58714.1,
+          "upper": 60049.1,
+          "equilibrium": 59381.6,
+          "start_at": "2026-11-16T16:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e7"
+            ],
+            "total": 4,
+            "omitted": 3
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:35:14 GMT",
+      "received_at": "2026-11-17T10:35:55.309Z",
+      "requested_at": "2026-11-17T10:35:52.618Z",
+      "bid": 58728.9,
+      "ask": 58738.9,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:35:12.936Z",
+      "quote_retrieved_at": "2026-11-17T10:35:14.914Z",
+      "provider_age_seconds": 2.294,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:35:14.914Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.113,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 62867,
+      "sha256": "3cbdbb236b12af9ff0271a57ce8b23c97962d83eaef746c91302a571a6bf3a7d",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:35:14.117Z",
+      "generated_at": "2026-11-17T10:35:15.230Z",
+      "expires_at": "2026-11-17T10:37:12.936Z",
+      "environment": "demo",
+      "evidence_count": 41,
+      "findings_total": 1077,
+      "findings_omitted": 1036,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 2692,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e8",
+          "lower": 50404.8,
+          "upper": 73645.5,
+          "equilibrium": 62025.15,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e37"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 5,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 9,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 56441.1,
+          "upper": 71368.2,
+          "equilibrium": 63904.649999999994,
+          "start_at": "2026-10-05T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e38"
+            ],
+            "total": 3,
+            "omitted": 2
+          },
+          "parent_ranges": 12,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 22,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e23",
+          "low": "e24",
+          "lower": 58724.1,
+          "upper": 60059.1,
+          "equilibrium": 59391.6,
+          "start_at": "2026-11-16T16:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e7"
+            ],
+            "total": 4,
+            "omitted": 3
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "attempts": [],
+      "server_date": "Tue, 17 Nov 2026 10:35:18 GMT",
+      "received_at": "2026-11-17T10:36:01.151Z",
+      "requested_at": "2026-11-17T10:35:58.188Z",
+      "bid": 58728.9,
+      "ask": 58738.9,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-17T10:35:12.936Z",
+      "quote_retrieved_at": "2026-11-17T10:35:14.914Z",
+      "provider_age_seconds": 5.92,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:35:14.914Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 4.739,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-17T08:00:00.000Z",
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 62866,
+      "sha256": "20effc8015b8e10b523b694b0a8f5d4d49e167877dae1f22c3d08e85da148242",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T10:35:14.117Z",
+      "generated_at": "2026-11-17T10:35:18.856Z",
+      "expires_at": "2026-11-17T10:37:12.936Z",
+      "environment": "demo",
+      "evidence_count": 41,
+      "findings_total": 1078,
+      "findings_omitted": 1037,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 2963,
+      "detail": {
+        "http": 200,
+        "interactions": 0,
+        "snapshot_match": true
+      }
+    }
+  ]
+}

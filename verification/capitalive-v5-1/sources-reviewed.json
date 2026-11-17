@@ -1,0 +1,95 @@
+{
+  "scope": "TARGETED_REVIEW_NOT_ALL_85_MATERIALS",
+  "sources": [
+    {
+      "id": "419e05dadd18817692d6efb4d9a1db5d",
+      "title": "Fractal High / Low. Inducement",
+      "url": "https://app.notion.com/p/419e05dadd18817692d6efb4d9a1db5d",
+      "revision": "2026-11-15T08:56:53.870Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 1
+    },
+    {
+      "id": "419e05dadd18817abc57e446cd074bdc",
+      "title": "Fair Value Gap [FVG]",
+      "url": "https://app.notion.com/p/419e05dadd18817abc57e446cd074bdc",
+      "revision": "2026-11-15T08:46:37.920Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 1
+    },
+    {
+      "id": "419e05dadd1881f68a6bd60a2e1d2cff",
+      "title": "Rejection Block [RB]",
+      "url": "https://app.notion.com/p/419e05dadd1881f68a6bd60a2e1d2cff",
+      "revision": "2026-11-15T08:35:06.009Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 1
+    },
+    {
+      "id": "419e05dadd1881c6a539fe10cf3ea892",
+      "title": "Support aNd Resistance [SNR]",
+      "url": "https://app.notion.com/p/419e05dadd1881c6a539fe10cf3ea892",
+      "revision": "2026-11-15T08:41:30.306Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 1
+    },
+    {
+      "id": "418e05dadd1881859e3fede4f73af3a6",
+      "title": "Fractal Raid — глубина, закрытие телом, логика использования.",
+      "url": "https://app.notion.com/p/418e05dadd1881859e3fede4f73af3a6",
+      "revision": "2026-11-15T08:28:49.390Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd188105b1afc1a536f434e2",
+      "title": "Все про Dealing Range",
+      "url": "https://app.notion.com/p/418e05dadd188105b1afc1a536f434e2",
+      "revision": "2026-11-15T10:42:22.578Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd1881a3965bfba58563ff9d",
+      "title": "Логика использования IRL в Dealing Range",
+      "url": "https://app.notion.com/p/418e05dadd1881a3965bfba58563ff9d",
+      "revision": "2026-11-15T10:44:45.750Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd188135bf68eb2f9066b094",
+      "title": "Логика Compression | Trendline | LRL",
+      "url": "https://app.notion.com/p/418e05dadd188135bf68eb2f9066b094",
+      "revision": "2026-11-15T10:44:17.426Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd1881eb8321c5c4edb17a06",
+      "title": "Алгоритм анализа TDA",
+      "url": "https://app.notion.com/p/418e05dadd1881eb8321c5c4edb17a06",
+      "revision": "2026-11-15T09:13:28.831Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd18812aa4e7c5f3fbe3cebe",
+      "title": "Narrative > Entry и как определять направление рынка эффективно?",
+      "url": "https://app.notion.com/p/418e05dadd18812aa4e7c5f3fbe3cebe",
+      "revision": "2026-11-15T09:33:15.430Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 0
+    },
+    {
+      "id": "418e05dadd18811e8ef0c7981e71cd8b",
+      "title": "Локализация и открытие позиций на основе реакции — H4 Dealing Range",
+      "url": "https://app.notion.com/p/418e05dadd18811e8ef0c7981e71cd8b",
+      "revision": "2026-11-15T10:42:18.844Z",
+      "text_scope": "FORMATION_CONTEXT_AND_LIMITATIONS",
+      "diagrams_inspected": 1
+    }
+  ],
+  "fxcm_screenshots_available": false,
+  "independent_expert_labels_available": false
+}

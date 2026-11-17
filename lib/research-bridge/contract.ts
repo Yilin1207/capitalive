@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.0';
+export const CONTRACT_REVISION='desk-report-v2.3';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -35,6 +35,7 @@ const tf=en('MN1','W1','D1','H4'),code=str(/^[A-Z][A-Z0-9_]{0,100}$/,101),bias=e
 const group=obj({items:arr(ref),total:num,omitted:num});
 const interaction=obj({kind:code,timeframe:tf,candle:num});
 const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask):[A-Za-z0-9_.:\-]+$/,1600),timeframe:tf,kind:code,origin:time,confirmed_at:time,
+  rb:optional(obj({revision:en('rb-first-close-2'),level_policy:en('FIRST_CANDLE_CLOSE'),level_price:num,formation_confirmed:en(true),basis:en('LIQUIDITY_RAID','FVG_INTERACTION','FVG_AND_LIQUIDITY_RAID'),relative_quality:en('RAID_BACKED','WEAKER_FVG_ONLY'),probability:en(null),significance:en('REVIEW_REQUIRED'),primary_kl:ref,liquidity:nullable(ref),fvg:nullable(ref)})),
   lower:nullable(num),upper:nullable(num),variant:en(3,null),polarity:en('high','low',null),direction:en('bullish','bearish','Bullish','Bearish','up','down',null),
   detector_state:en('OBSERVED','CANDIDATE','NEEDS_SPECIFICATION'),data_status:en('PARTIAL','UNVERIFIED'),
   rule:str(/^EDGE\.[A-Z0-9_]+\.v\d+$/,100),candle_refs:arr(num,1000),candle_evidence_sha256:hex,dependencies:arr(ref,20),
@@ -42,9 +43,10 @@ const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask)
 const frame=obj({range_options:optional(obj({total:num,omitted:num,review_required:en(true)})),timeframe:tf,fetched_at:time,last_closed_at:nullable(time),closed_candles:num,data_status:code,warnings:arr(code,24),discarded_rows:num,
   structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('NEEDS_SPECIFICATION'),swing_evidence:arr(ref,4)}),
   fractals:arr(obj({variant:en(3),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
+  rb_quality:optional(obj({raid_backed:num,fvg_only_weaker:num,counting:en('FINDINGS_PER_PRIMARY_KL')})),
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
   dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
-  range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE'),review_required:en(true)})))});
+  range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE','KL_REACTION_LOCAL_DR_CANDIDATE'),review_required:en(true)})))});
 const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nullable(bias),status:code,
   evidence_quality:obj({status:code,human_reviewed:bool,independently_validated:en(false),probability:en(null)}),
   A:obj({selected:nullable(ref),items:arr(ref,3),total:num,omitted:num}),
@@ -52,12 +54,30 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
     path:obj({items:arr(ref,4),total:nullable(num),omitted:nullable(num),completeness:en('UNASSESSED','COMPLETE','PARTIAL')})}),3),total:num,role_eligible:num,omitted:num}),
   C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT','NOT_EVALUATED')});
+const rangeReview=obj({high:nullable(ref),low:nullable(ref),high_state:code,low_state:code,high_consumed:nullable(bool),low_consumed:nullable(bool),
+  observed_boundaries_intact:bool,candidate_suitable_for_review:bool,review_status:en('REVIEW_REQUIRED'),active_dealing_range:bool,premium_discount:en(null,'PREMIUM','DISCOUNT','EQUILIBRIUM'),context_evidence:group,
+  structural_invalidation:obj({condition:en('OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE'),lower:num,upper:num,observed:bool}),requirements:arr(code,10)});
+const researchContext=obj({revision:en('context-5.1'),review_required:en(true),author_structure:obj({status:en('NEEDS_SPECIFICATION'),reason:code}),
+  dealing_range_selection:optional(obj({timeframe:nullable(tf),reason:code,skipped:arr(obj({timeframe:tf,reason:code}),4),narrative_confirmed:en(false)})),
+  candidate_narrative:bias,confirmed_narrative:nullable(bias),
+  observed_price_behaviour:arr(obj({timeframe:tf,reference_close:nullable(num),reference_at:nullable(time),
+    last_close_change:nullable(obj({from:time,to:time,delta:num,direction:en('UP','DOWN','FLAT')})),
+    last_observed_fractal_leg:nullable(obj({from_id:ref,to_id:ref,from:time,to:time,confirmed_at:time,price_distance:num,elapsed_seconds:num,direction:en('UP','DOWN','FLAT')})),
+    significance:en('NOT_ASSESSED'),trend_confirmed:en(false),evidence_ids:arr(ref,2)}),4),
+  executive_evidence:obj({items:arr(obj({level:ref,review_status:en('DETECTED','ELIGIBLE_FOR_REVIEW'),human_validated:en(false),
+    current_role:en('support','resistance',null),current_role_status:en('VERIFIED','UNVERIFIED'),role_transition_candidate:en('REVIEW_REQUIRED','NOT_ESTABLISHED'),reference_position:en('ABOVE','BELOW','INSIDE','UNKNOWN'),
+    first_interaction_at:nullable(time),first_interaction_scope:code,structural_relevance:code,reference_transition:obj({from:code,to:code,basis:en('LAST_TWO_CLOSED_H4')}),full_test_status:code,
+    htf_dependencies:group,interactions:group,relevance_reasons:arr(code,8),uncertainty:arr(code,8),lifecycle_reasons:arr(code,12),invalidation:code}),32),total:num,omitted:num,selection_policy:code}),
+  conflicts:arr(obj({level_id:ref,timeframe:tf,kind:en('HTF_GEOMETRY_VS_OBSERVED_LTF_LEG'),evidence_ids:arr(ref,2),review_required:en(true)}),64),
+  dealing_range_reviews:arr(obj({timeframe:tf,detection:optional(obj({revision:en('dr-sequence-1'),status:en('ESTABLISHED','AWAITING_CONFIRMED_PAIR','AWAITING_NEW_EXTREME'),reason:code,direction:en('Bullish','Bearish',null),high:nullable(ref),low:nullable(ref),lower:nullable(num),upper:nullable(num),equilibrium:nullable(num),start_at:nullable(time),end_at:nullable(time),confirmed_at:nullable(time),close_break_at:nullable(time),last_wick_raid_at:nullable(time),premium_discount:en('PREMIUM','DISCOUNT','EQUILIBRIUM',null),origin_context:group,parent_ranges:num,internal_fractals:num,local_candidates:num,transitions:num,internal_classification:en('INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM'),significance:en('REVIEW_REQUIRED'),narrative_confirmed:en(false)})),selected:nullable(rangeReview),candidates:obj({items:arr(rangeReview,1),total:num,omitted:num})}),4),
+  paths:arr(obj({target:ref,from:nullable(num),to:nullable(num),from_basis:en('ANCHOR_BOUNDARY','LAST_CLOSED_H4'),status:en('COMPLETE','PARTIAL','UNVERIFIED'),obstacles:group,ohlc_coverage:en('COMPLETE','PARTIAL'),free_path_proven:en(false),reasons:arr(code,10)}),3),
+  full_inspection:obj({path:en('/api/intelligence'),mode:en('inspection'),snapshot_sha256:hex,as_of:time,requires_authorization:bool})});
 const schema=obj({published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
   error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
   diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','REQUEST_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','CAPITAL_UPSTREAM','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION)})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-5'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
   quote:nullable(obj({bid:nullable(num),ask:nullable(num),spread:nullable(num),provider_timestamp:nullable(time),retrieved_at:nullable(time),source_type:en('REST','WEBSOCKET',null),market_status:en('TRADEABLE','CLOSED','EDITS_ONLY','OFFLINE','ON_AUCTION','ON_AUCTION_NO_EDITS','SUSPENDED',null),provider_age_seconds:nullable(num),fresh:bool,used_as_closed_evidence:en(false)})),
-  frames:arr(frame,4),scenario:nullable(scenario),evidence:{type:'object',record:evidence,keyPattern:/^e\d{1,4}$/},
+  research_context:optional(researchContext),frames:arr(frame,4),scenario:nullable(scenario),evidence:{type:'object',record:evidence,keyPattern:/^e\d{1,4}$/},
   rules:{type:'object',keyPattern:/^EDGE\.[A-Z0-9_]+\.v\d+$/,record:obj({version:num,status:code,specification:code,basis:en('DOCUMENTED','PROJECT_HYPOTHESIS',null),source_revisions:arr(obj({id:str(/^[a-f0-9-]{32,36}$/,36),revision:time}),20)})},
   candle_windows:arr(arr(time,2),1000),coverage:nullable(obj({budget_tier:optional(num),selection_policy:en('RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES'),findings_total:num,findings_included:num,findings_omitted:num,selected_evidence_complete:en(true),all_findings_included:bool,stale_reasons:arr(code,10),raw_ohlc_included:en(false)})),trading_enabled:en(false)});
 
@@ -109,7 +129,58 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   const technical=value as {technical_only?:boolean;scenario?:{action:string}|null;details?:{snapshot_sha256:string};source?:{evidence_sha256:string}|null};
   if(technical.technical_only&&technical.scenario?.action!=='NOT_EVALUATED')throw Error('TECHNICAL_RESPONSIBILITY_VIOLATION');
   if(technical.details&&technical.details.snapshot_sha256!==technical.source?.evidence_sha256)throw Error('SNAPSHOT_HASH_MISMATCH');
+  const context=(value as {research_context?:{
+    confirmed_narrative:string|null;observed_price_behaviour:{timeframe:string;last_observed_fractal_leg:{from_id:string;to_id:string;price_distance:number;direction:string;confirmed_at:string}|null}[];
+    executive_evidence:{items:{level:string;current_role:string|null;current_role_status:string;first_interaction_at:string|null}[]};
+    dealing_range_reviews:{timeframe:string;selected:null|{high:string|null;low:string|null;observed_boundaries_intact:boolean;candidate_suitable_for_review:boolean};candidates:{items:{high:string|null;low:string|null;observed_boundaries_intact:boolean;candidate_suitable_for_review:boolean}[]}}[];
+    paths:{status:string;obstacles:{omitted:number};ohlc_coverage:string}[];full_inspection:{snapshot_sha256:string;as_of:string}
+  }}).research_context;
+  if(context){
+    if(context.confirmed_narrative!==r.scenario?.confirmed_narrative||context.full_inspection.snapshot_sha256!==technical.source?.evidence_sha256||context.full_inspection.as_of!==r.as_of)throw Error('CONTEXT_SNAPSHOT_MISMATCH');
+    if(context.observed_price_behaviour.length!==4||new Set(context.observed_price_behaviour.map(o=>o.timeframe)).size!==4)throw Error('INCOMPLETE_CONTEXT');
+    function contextTimes(v:unknown){if(Array.isArray(v))v.forEach(contextTimes);else if(v&&typeof v==='object')Object.values(v).forEach(contextTimes);else if(typeof v==='string'&&time.pattern!.test(v)&&(!r.as_of||v>r.as_of))throw Error('FUTURE_CONTEXT');}contextTimes(context);
+    const es=r.evidence as unknown as Record<string,{kind:string;lower:number;upper:number;confirmed_at:string;timeframe:string;lifecycle:{state:string;role_status:string;current_role:string|null;coverage:string;liquidity_consumed:boolean;evaluated_through:string}|null}>;
+    for(const o of context.observed_price_behaviour){const leg=o.last_observed_fractal_leg;if(!leg)continue;const a=es[leg.from_id],b=es[leg.to_id];
+      if(!a||!b||a.kind!=='FRACTAL'||b.kind!=='FRACTAL'||a.timeframe!==o.timeframe||b.timeframe!==o.timeframe||Math.abs(leg.price_distance-(b.lower-a.lower))>1e-9||leg.direction!==(leg.price_distance>0?'UP':leg.price_distance<0?'DOWN':'FLAT')||leg.confirmed_at!==[a.confirmed_at,b.confirmed_at].sort().at(-1))throw Error('INVALID_OBSERVED_LEG');}
+    for(const l of context.executive_evidence.items){const e=es[l.level];if(!e||!e.lifecycle||l.current_role_status==='UNVERIFIED'&&l.current_role!==null||l.current_role_status==='VERIFIED'&&(e.lifecycle.role_status!=='RETEST_CONFIRMED'||e.lifecycle.current_role!==l.current_role)||l.first_interaction_at&&(l.first_interaction_at<e.confirmed_at||l.first_interaction_at>e.lifecycle.evaluated_through))throw Error('INVALID_ROLE_CONTEXT');}
+    for(const f of context.dealing_range_reviews)for(const v of [...f.candidates.items,...(f.selected?[f.selected]:[])]){
+      const high=v.high?es[v.high]:null,low=v.low?es[v.low]:null;
+      const intact=!!high&&!!low&&[high,low].every(e=>e.kind==='FRACTAL'&&e.timeframe===f.timeframe&&e.lifecycle?.state==='ACTIVE'&&!e.lifecycle.liquidity_consumed&&e.lifecycle.coverage==='COMPLETE_OBSERVED_INTERVAL');
+      if(v.observed_boundaries_intact!==intact||v.candidate_suitable_for_review&&!intact)throw Error('INVALID_RANGE_REVIEW');}
+    for(const p of context.paths)if(p.status==='COMPLETE'&&(p.obstacles.omitted!==0||p.ohlc_coverage!=='COMPLETE'))throw Error('FALSE_PATH_COMPLETENESS');
+    type Detection={status:string;direction:string|null;high:string|null;low:string|null;lower:number|null;upper:number|null;equilibrium:number|null;start_at:string|null;end_at:string|null;confirmed_at:string|null;close_break_at:string|null;premium_discount:string|null};
+    const reviews=context.dealing_range_reviews as (typeof context.dealing_range_reviews[number]&{detection?:Detection;selected:null|{high:string|null;low:string|null;active_dealing_range?:boolean;premium_discount?:string|null}})[];
+    for(const f of reviews){const d=f.detection;if(!d){if(f.selected?.active_dealing_range)throw Error('FALSE_DR_CONFIRMATION');continue;}
+      if(d.status==='AWAITING_CONFIRMED_PAIR'){if(d.high!==null||d.low!==null||d.premium_discount!==null)throw Error('UNCONFIRMED_DR');continue;}
+      const h=d.high?es[d.high]:null,l=d.low?es[d.low]:null;
+      if(!h||!l||h.kind!=='FRACTAL'||l.kind!=='FRACTAL'||h.timeframe!==f.timeframe||l.timeframe!==f.timeframe||d.lower!==l.lower||d.upper!==h.upper||d.lower!>=d.upper!||d.equilibrium!==(d.lower!+d.upper!)/2||!d.start_at||!d.end_at||d.start_at>=d.end_at||d.confirmed_at!==[h.confirmed_at,l.confirmed_at].sort().at(-1))throw Error('INVALID_DIRECTIONAL_DR');
+      const evidence=r.evidence as unknown as Record<string,{candle_refs:number[];polarity:string}>;
+      const highAt=r.candle_windows[evidence[d.high!].candle_refs[1]]?.[0],lowAt=r.candle_windows[evidence[d.low!].candle_refs[1]]?.[0];
+      if(evidence[d.high!].polarity!=='high'||evidence[d.low!].polarity!=='low'||d.direction!==(lowAt<highAt?'Bullish':'Bearish')||d.start_at!==[highAt,lowAt].sort()[0]||d.end_at!==[highAt,lowAt].sort()[1])throw Error('INVALID_DR_ORDER');
+      const active=d.status==='ESTABLISHED';
+      const observation=context.observed_price_behaviour.find(o=>o.timeframe===f.timeframe) as {reference_close?:number|null}|undefined;
+      if(active&&(observation?.reference_close==null||observation.reference_close<d.lower!||observation.reference_close>d.upper!||d.premium_discount!==(observation.reference_close<d.equilibrium!?'DISCOUNT':observation.reference_close>d.equilibrium!?'PREMIUM':'EQUILIBRIUM')))throw Error('INVALID_DR_POSITION');
+      if(active&&d.close_break_at!==null||!active&&d.premium_discount!==null||active&&d.premium_discount===null||d.close_break_at&&d.close_break_at<d.confirmed_at!)throw Error('INVALID_DR_STATE');
+      if(f.selected?.active_dealing_range&&(f.selected.high!==d.high||f.selected.low!==d.low||!active||f.selected.premium_discount!==d.premium_discount))throw Error('FALSE_DR_CONFIRMATION');
+    }
+    const selection=(context as typeof context&{dealing_range_selection?:{timeframe:string|null;skipped:{timeframe:string;reason:string}[]}}).dealing_range_selection;
+    if(selection){const ordered=['MN1','W1','D1','H4'].map(tf=>reviews.find(f=>f.timeframe===tf)),first=ordered.find(f=>f?.detection?.status==='ESTABLISHED');
+      if(selection.timeframe!==(first?.timeframe??null)||selection.skipped.map(x=>x.timeframe).join(',')!==ordered.slice(0,first?ordered.indexOf(first):4).map(f=>f?.timeframe).join(','))throw Error('INVALID_DR_FALLBACK');}
+  }
   const ids=new Set<string>();
+  type RbEvidence={kind:string;rule:string;timeframe:string;direction:string;polarity:string;lower:number;upper:number;confirmed_at:string;candle_refs:number[];dependencies:string[];rb?:{level_price:number;basis:string;relative_quality:string;primary_kl:string;liquidity:string|null;fvg:string|null}};
+  const rbEvidence=r.evidence as unknown as Record<string,RbEvidence>;
+  for(const e of Object.values(rbEvidence)){
+    if(e.rule==='EDGE.RB.v2'&&!e.rb)throw Error('MISSING_RB_METADATA');
+    const b=e.rb;if(!b)continue;
+    const primary=rbEvidence[b.primary_kl],liquidity=b.liquidity?rbEvidence[b.liquidity]:null,fvg=b.fvg?rbEvidence[b.fvg]:null;
+    const first=r.candle_windows[e.candle_refs[0]],second=r.candle_windows[e.candle_refs[1]];
+    if(e.kind!=='RB_TWO_CANDLE'||e.rule!=='EDGE.RB.v2'||e.candle_refs.length!==2||!first||!second||first[1]!==second[0]||second[1]!==e.confirmed_at||e.lower!==b.level_price||e.upper!==b.level_price||!['bullish','bearish'].includes(e.direction))throw Error('INVALID_RB_GEOMETRY');
+    if(!primary||b.primary_kl!==b.liquidity&&b.primary_kl!==b.fvg||!liquidity&&!fvg||liquidity&&liquidity.kind!=='FRACTAL'||fvg&&fvg.kind!=='FVG')throw Error('INVALID_RB_CONTEXT');
+    if(liquidity&&(liquidity.polarity!==(e.direction==='bullish'?'low':'high')||(e.direction==='bullish'?b.level_price<=liquidity.upper:b.level_price>=liquidity.lower))||fvg&&fvg.direction!==e.direction)throw Error('INVALID_RB_DIRECTION');
+    for(const id of [b.primary_kl,b.liquidity,b.fvg].filter((id):id is string=>!!id)){const kl=rbEvidence[id];if(!kl||!e.dependencies.includes(id)||kl.confirmed_at>first[0]||['MN1','W1','D1','H4'].indexOf(kl.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe))throw Error('NONCAUSAL_RB_CONTEXT');}
+    if(b.relative_quality!==(liquidity?'RAID_BACKED':'WEAKER_FVG_ONLY')||b.basis!==(liquidity?(fvg?'FVG_AND_LIQUIDITY_RAID':'LIQUIDITY_RAID'):'FVG_INTERACTION'))throw Error('FALSE_RB_QUALITY');
+  }
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
   for(const e of Object.values(r.evidence)){
     if(['BOS','CHOCH','ORDER_BLOCK','BREAKER'].includes((e as {kind?:string}).kind??''))throw Error('UNSUPPORTED_AUTHOR_RULE');
@@ -130,10 +201,14 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       if(fill.first_test_at&&fill.last_test_at&&fill.first_test_at>fill.last_test_at)throw Error('INVALID_FILL');}
   }
   for(const f of r.frames){
+    const rbFrame=f as typeof f&{rb:{total:number};rb_quality?:{raid_backed:number;fvg_only_weaker:number}};
+    if(rbFrame.rb_quality){const q=rbFrame.rb_quality;if(!Number.isInteger(q.raid_backed)||!Number.isInteger(q.fvg_only_weaker)||q.raid_backed<0||q.fvg_only_weaker<0||q.raid_backed+q.fvg_only_weaker!==rbFrame.rb.total)throw Error('INVALID_RB_COUNTS');}
     if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');
     const options=(f as typeof f&{range_options?:{total:number;omitted:number};range_candidate?:unknown}).range_options;
     if(options&&(!Number.isInteger(options.total)||!Number.isInteger(options.omitted)||options.omitted<0||options.total-options.omitted!==((f as {range_candidate?:unknown}).range_candidate?1:0)))throw Error('INVALID_COVERAGE_COUNTS');
-    const candidate=(f as typeof f&{range_candidate?:{high:string;low:string;lower:number;upper:number;equilibrium:number;confirmed_at:string;review_required:boolean}}).range_candidate;
+    type Pair={high:string;low:string;lower:number;upper:number;equilibrium:number;confirmed_at:string};
+    const pairs=f as typeof f&{range_candidate?:Pair|null;dealing_range?:Pair|null};
+    for(const candidate of [pairs.range_candidate,pairs.dealing_range]){
     if(!candidate)continue;
     const levels=r.evidence as unknown as Record<string,{kind:string;variant:number|null;polarity:string|null;timeframe:string;lower:number|null;upper:number|null;confirmed_at:string}>;
     const high=levels[candidate.high],low=levels[candidate.low];
@@ -142,6 +217,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       high.upper!==candidate.upper||low.lower!==candidate.lower||candidate.lower>=candidate.upper||
       candidate.confirmed_at!==(high.confirmed_at>low.confirmed_at?high.confirmed_at:low.confirmed_at)||
       Math.abs(candidate.equilibrium-(candidate.lower+candidate.upper)/2)>1e-10*Math.max(1,Math.abs(candidate.equilibrium)))throw Error('INVALID_RANGE_CANDIDATE');
+    }
   }
   function refs(v:unknown):void{if(typeof v==='string'&&/^e\d{1,4}$/.test(v)&&!Object.hasOwn(r.evidence,v))throw Error('MISSING_EVIDENCE');if(Array.isArray(v))v.forEach(refs);else if(v&&typeof v==='object')Object.values(v).forEach(refs);}refs(value);
   function counts(v:unknown):void{if(Array.isArray(v)){v.forEach(counts);return;}if(!v||typeof v!=='object')return;const x=v as Record<string,unknown>;

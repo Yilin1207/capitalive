@@ -13,6 +13,7 @@ import {reviewErrors,type HumanReview} from './human-review';
 import {encodeIntelligence} from './wire';
 import { TF_ORDER } from "./detectors";
 import {closedFrame,type Frame} from './data';import {interactionHistory} from './interaction-history';
+import {inspectResearch} from './inspection';
 export async function intelligenceHttp(
   request: Request,
   dependencies = { getCandles, getAnalysisQuote },
@@ -25,6 +26,10 @@ export async function intelligenceHttp(
     const evidenceHash=params.get('evidence_sha256');
     if(evidenceHash!==null&&!/^[a-f0-9]{64}$/.test(evidenceHash))throw new HistoryError('INVALID_EVIDENCE_HASH','Expected SHA-256',400);
     const requestedAsOf=params.get('as_of');
+    const inspection=params.get('mode')==='inspection';
+    if(params.has('mode')&&!inspection)throw new HistoryError('INVALID_INSPECTION','Unknown mode',400);
+    const offset=Number(params.get('offset')??0),limit=Number(params.get('limit')??25),inspectionTf=params.get('inspection_tf');
+    if(inspection&&(!evidenceHash||!requestedAsOf||!Number.isSafeInteger(offset)||offset<0||!Number.isSafeInteger(limit)||limit<1||limit>50||inspectionTf&&!TF_ORDER.includes(inspectionTf as Timeframe)))throw new HistoryError('INVALID_INSPECTION','Snapshot hash, as_of and bounded page are required',400);
     if(requestedAsOf!==null&&(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(requestedAsOf)||!Number.isFinite(Date.parse(requestedAsOf))||Date.parse(requestedAsOf)>Date.now()))throw new HistoryError('INVALID_AS_OF','Expected historical UTC timestamp',400);
     let review:HumanReview|undefined;
     if(request.method==='POST'){
@@ -68,6 +73,12 @@ export async function intelligenceHttp(
       });
     if(review&&body.narrative.human_review.evidence_sha256!==review.evidence_sha256)throw new HistoryError('STALE_REVIEW_EVIDENCE','Closed data, selections or source revisions changed; reload and review again',409);
     if(evidenceHash&&body.narrative.human_review.evidence_sha256!==evidenceHash)throw new HistoryError('SNAPSHOT_CHANGED','Evidence belongs to another snapshot; do not combine the responses',409);
+    if(inspection){
+      const frames=Object.fromEntries(TF_ORDER.map(tf=>[tf,closedFrame(data[tf],side,body.as_of)])) as Record<Timeframe,Frame>;
+      const result=inspectResearch(body,frames,offset,limit,inspectionTf as Timeframe|undefined??undefined);
+      if(Buffer.byteLength(JSON.stringify(result))>1_000_000)throw new HistoryError('INSPECTION_TOO_LARGE','Reduce page limit',413);
+      return historyJson(result);
+    }
     for(const tf of TF_ORDER)if(ranges[tf]&&body.frames.find(f=>f.timeframe===tf)?.range_blocker)throw new HistoryError('INVALID_RANGE_SELECTION',`Invalid closed ${tf} pivot pair`,400);
     if(anchor&&body.narrative.A?.id!==anchor)throw new HistoryError('INVALID_ANCHOR_SELECTION','Selected A must be an active qualified MN1/W1 level',400);
     if (high && body.frames.find((f) => f.timeframe === "H4")?.range_blocker)

@@ -6,6 +6,7 @@ import {
   resolveHierarchy,
 } from "../lib/knowledge/intelligence";
 import { intelligenceHttp } from "../lib/knowledge/http";
+import {encodeIntelligence,decodeIntelligence} from '../lib/knowledge/wire';
 import { GET } from "../app/api/intelligence/route";
 import { marketAudit } from "../lib/market-audit";
 import catalog from "../knowledge/the-edge/catalog.json";
@@ -100,7 +101,10 @@ test("recorded provider data: closed provenance, separate evidence/quality/risk,
     assert.ok(e.confirmed_at <= r.as_of);
     assert.ok(e.candle_evidence.every((c) => c.closed_at <= e.confirmed_at));
   }
-  assert.ok(Buffer.byteLength(JSON.stringify(r)) < 4_250_000);
+  // The HTTP limit applies to the lossless wire representation, including V5.1 context.
+  const wire=encodeIntelligence(r);
+  assert.ok(Buffer.byteLength(JSON.stringify(wire)) < 4_250_000);
+  assert.deepEqual(decodeIntelligence(wire),r);
   const noQuote = buildIntelligence(
     f.data,
     "bid",

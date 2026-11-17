@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-11-16T19:28:31.917Z",
+  "capitalive_main": "d7d1ec5ddebdbce2c90bd7f8c86657d00b9ba1c2",
+  "production_id": "dpl_B1xyiJwXMrxiXBD1dXH9BbBtNTYM",
+  "production_unchanged": true,
+  "sso": "all_except_custom_domains",
+  "bridge_private": true,
+  "bridge_base_url": "https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app",
+  "bridge_variable_unchanged": true,
+  "bridge_main_before": "9b4f037f357cf258d497e45fef75aae7c5fe1dcc",
+  "bridge_main_after": "9b4f037f357cf258d497e45fef75aae7c5fe1dcc",
+  "bridge_main_changed_files": [],
+  "bridge_main_code_unchanged": true,
+  "prs": [
+    {
+      "repo": "capitalive",
+      "number": 2,
+      "state": "open",
+      "merged": false,
+      "head": "f75adfa3d062e745152049c7af960b7b4c02d634",
+      "base": "main",
+      "url": "https://github.com/Yilin1207/capitalive/pull/2"
+    },
+    {
+      "repo": "capitalive",
+      "number": 9,
+      "state": "open",
+      "merged": false,
+      "head": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+      "base": "feature/the-edge-knowledge",
+      "url": "https://github.com/Yilin1207/capitalive/pull/9"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "number": 7,
+      "state": "open",
+      "merged": false,
+      "head": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+      "base": "main",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/pull/7"
+    }
+  ]
+}

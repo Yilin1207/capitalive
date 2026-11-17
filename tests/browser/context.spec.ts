@@ -1,0 +1,20 @@
+import {test,expect} from '@playwright/test';
+import {readFileSync} from 'node:fs';
+import {buildIntelligence} from '../../lib/knowledge/intelligence';
+import {buildDeskReport} from '../../lib/research-bridge/report';
+test('V5.1 research separates observations, unverified roles, DR review and snapshot inspection',async({page})=>{
+ const i=JSON.parse(readFileSync('tests/fixtures/edge-v2/NAS100.json','utf8'));
+ const r=buildDeskReport(buildIntelligence(i.data,'bid',i.quote),i.data,i.quote,'2026-11-15T14:00:00.000Z');
+ await page.route('**/api/desk-report?**',route=>{const symbol=new URL(route.request().url()).searchParams.get('symbol');return route.fulfill({json:{...r,symbol}});});
+ await page.goto('/research');await page.getByRole('button',{name:'Получить свежие отчёты'}).click();
+ await expect(page.getByRole('heading',{name:'Наблюдения и авторская структура'})).toHaveCount(3);
+ await expect(page.getByRole('heading',{name:'Rejection Blocks',exact:true})).toHaveCount(3);
+ await expect(page.getByText('RB только на FVG существенно слабее RB со снятием ликвидности.',{exact:false})).toHaveCount(3);
+ await expect(page.getByText('Первый установленный DR сверху вниз:',{exact:false})).toHaveCount(3);
+ await expect(page.getByText('Положение:',{exact:false}).first()).toBeVisible();
+ await expect(page.getByText('Confirmed: не подтверждён.',{exact:false}).first()).toBeVisible();
+ await page.locator('details').first().locator('summary').click();
+ await expect(page.getByText('Текущая роль: не подтверждена.',{exact:false}).first()).toBeVisible();
+ await expect(page.getByRole('link',{name:'Открыть подробную инспекцию этого снимка'}).first()).toHaveAttribute('href',/mode=inspection.*evidence_sha256=/);
+ await page.screenshot({path:'test-results/v5-1-research.png',fullPage:true});
+});

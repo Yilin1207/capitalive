@@ -90,15 +90,15 @@ function event(
       low: b.low,
       close: b.close,
     })),
-    ...provenance(`EDGE.${name}.v1`),
+    ...provenance(`EDGE.${name}.v${name==='RB'?2:1}`),
     counterarguments: [
-      ...provenance(`EDGE.${name}.v1`).counterarguments,
+      ...provenance(`EDGE.${name}.v${name==='RB'?2:1}`).counterarguments,
       ...frame.warnings,
     ],
     invalidation,
     facts,
     state:
-      provenance(`EDGE.${name}.v1`).specification === "NEEDS_SPECIFICATION"
+      provenance(`EDGE.${name}.v${name==='RB'?2:1}`).specification === "NEEDS_SPECIFICATION"
         ? "NEEDS_SPECIFICATION"
         : state,
   };
@@ -299,27 +299,20 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
   for (let i = 1; i < frame.bars.length; i++) {
     const a = frame.bars[i - 1],
       b = frame.bars[i];
-    if (!contiguous([a, b])) continue;
-    for (const kl of context) {
-      if (
-        !knownLevel(kl, a, frame) ||
-        !["FRACTAL", "FVG"].includes(kl.kind) ||
-        !(interaction(a, kl) || interaction(b, kl))
-      )
-        continue;
-      const up = kl.role === "support";
-      if (
-        !(up
-          ? a.close < a.open &&
-            b.close > b.open &&
-            a.close > kl.upper &&
-            Math.min(b.open, b.close) > kl.upper
-          : a.close > a.open &&
-            b.close < b.open &&
-            a.close < kl.lower &&
-            Math.max(b.open, b.close) < kl.lower)
-      )
-        continue;
+    if (!contiguous([a, b]) || b.end>frame.as_of) continue;
+    const up=a.close<a.open&&b.close>b.open,down=a.close>a.open&&b.close<b.open;
+    if(!up&&!down)continue; // Doji and a lone rejection do not form RB.
+    const eligible=context.filter(kl=>knownLevel(kl,a,frame)&&knownLevel(kl,b,frame)&&
+      (!kl.invalidated_at||kl.invalidated_at>b.end)&&['FRACTAL','FVG'].includes(kl.kind)&&
+      kl.role===(up?'support':'resistance')&&(interaction(a,kl)||interaction(b,kl))&&
+      (kl.kind==='FVG'||((up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower)&&
+        !frame.bars.slice(0,i-1).some(c=>c.time>=kl.confirmed_at&&interaction(c,kl)))))
+      .sort((x,y)=>TF_ORDER.indexOf(x.timeframe)-TF_ORDER.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
+    // User clarification 2026-11-17: FVG interaction is sufficient, even when
+    // bodies remain inside the zone. A strict, reclaimed liquidity raid is stronger.
+    const raid=eligible.find(l=>l.kind==='FRACTAL'),fvg=eligible.find(l=>l.kind==='FVG');
+    for (const kl of eligible) {
+      const liquidity=kl.kind==='FRACTAL'?kl:raid,inefficiency=kl.kind==='FVG'?kl:fvg;
       out.push(
         event(
           frame,
@@ -328,21 +321,32 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
           [a, b],
           {
             kl_id: kl.id,
+            ...(liquidity?{rb_liquidity_id:liquidity.id}:{}),
+            ...(inefficiency?{rb_fvg_id:inefficiency.id}:{}),
+            revision:'rb-first-close-2',
+            formation_confirmed:true,
+            level_price:a.close,
+            level_policy:'FIRST_CANDLE_CLOSE',
+            basis:liquidity?(inefficiency?'FVG_AND_LIQUIDITY_RAID':'LIQUIDITY_RAID'):'FVG_INTERACTION',
+            relative_quality:liquidity?'RAID_BACKED':'WEAKER_FVG_ONLY',
+            quality_is_probability:false,
+            significance:'REVIEW_REQUIRED',
+            liquidity_history:liquidity?'NO_PRIOR_CROSSING_IN_OBSERVED_FRAME':'NOT_APPLICABLE',
             direction: up ? "bullish" : "bearish",
             envelope: {
               lower: Math.min(a.low, b.low),
               upper: Math.max(a.high, b.high),
             },
-            author_bounds_verified: false,
+            author_bounds_verified: true,
             junction: {
-              lower: Math.min(a.close, b.open),
-              upper: Math.max(a.close, b.open),
+              lower: a.close,
+              upper: a.close,
             },
             schematic_reference:
-              "el01_03/el01_04/el01_06: junction outside KL, either wick can raid",
+              "el01_03/el01_04; user clarification 2026-11-17: first close, weaker FVG-only interaction; either wick can raid",
           },
-          "Closed full zone breach; exact executable boundary awaits specification.",
-          "CANDIDATE",
+          "Formation is observed; subsequent trade validity and stop placement require review, not automatic Narrative confirmation.",
+          "OBSERVED",
           kl.id,
         ),
       );

@@ -1,0 +1,124 @@
+{
+  "as_of": "2026-11-16T07:17:59.382Z",
+  "cases": [
+    {
+      "timeframe": "MN1",
+      "range": {
+        "high_id": "NAS100:MN1:bid:FRACTAL:2026-07-01T00:00:00.000Z:3:high:2026-06-01T00:00:00.000Z",
+        "low_id": "NAS100:MN1:bid:FRACTAL:2026-08-01T00:00:00.000Z:3:low:2026-07-01T00:00:00.000Z",
+        "lower": 26980.6,
+        "upper": 30758.3,
+        "equilibrium": 28869.449999999997,
+        "confirmed_at": "2026-09-01T00:00:00.000Z",
+        "origin": "2026-05-01T00:00:00.000Z",
+        "timeframe": "MN1",
+        "segment": 2,
+        "review_required": true,
+        "basis": "CONFIRMED_FRACTAL3_GEOMETRY_NOT_AUTHOR_SIGNIFICANCE"
+      },
+      "validation": {
+        "high": {
+          "id": "NAS100:MN1:bid:FRACTAL:2026-07-01T00:00:00.000Z:3:high:2026-06-01T00:00:00.000Z",
+          "origin": "2026-05-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "state": "CONSUMED",
+          "consumed": true,
+          "raid_at": "2026-09-22T20:00:00.000Z",
+          "coverage": "COMPLETE_OBSERVED_INTERVAL"
+        },
+        "low": {
+          "id": "NAS100:MN1:bid:FRACTAL:2026-08-01T00:00:00.000Z:3:low:2026-07-01T00:00:00.000Z",
+          "origin": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-09-01T00:00:00.000Z",
+          "state": "CONSUMED",
+          "consumed": true,
+          "raid_at": "2026-11-05T16:00:00.000Z",
+          "coverage": "COMPLETE_OBSERVED_INTERVAL"
+        },
+        "geometry_valid": true,
+        "observed_boundaries_intact": false,
+        "candidate_suitable_for_review": false,
+        "review_status": "REVIEW_REQUIRED",
+        "active_dealing_range": false,
+        "premium_discount": null,
+        "geometric_equilibrium": 28869.449999999997,
+        "context_evidence_ids": [
+          "NAS100:MN1:bid:FVG:2026-05-01T00:00:00.000Z:"
+        ],
+        "structural_invalidation": {
+          "condition": "OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE",
+          "lower": 26980.6,
+          "upper": 30758.3,
+          "observed": false
+        },
+        "requirements": [
+          "AUTHOR_SIGNIFICANCE",
+          "IMPULSE_ORIGIN",
+          "RANGE_EXPANSION_VS_NEW_RANGE",
+          "HTF_CONTEXT",
+          "BOUNDARY_CONSUMED_OR_UNVERIFIED"
+        ]
+      }
+    },
+    {
+      "timeframe": "W1",
+      "range": {
+        "high_id": "NAS100:W1:bid:FRACTAL:2026-11-02T00:00:00.000Z:3:high:2026-10-26T00:00:00.000Z",
+        "low_id": "NAS100:W1:bid:FRACTAL:2026-11-09T00:00:00.000Z:3:low:2026-11-02T00:00:00.000Z",
+        "lower": 26255.2,
+        "upper": 30015.8,
+        "equilibrium": 28135.5,
+        "confirmed_at": "2026-11-16T00:00:00.000Z",
+        "origin": "2026-10-19T00:00:00.000Z",
+        "timeframe": "W1",
+        "segment": 0,
+        "review_required": true,
+        "basis": "CONFIRMED_FRACTAL3_GEOMETRY_NOT_AUTHOR_SIGNIFICANCE"
+      },
+      "validation": {
+        "high": {
+          "id": "NAS100:W1:bid:FRACTAL:2026-11-02T00:00:00.000Z:3:high:2026-10-26T00:00:00.000Z",
+          "origin": "2026-10-19T00:00:00.000Z",
+          "confirmed_at": "2026-11-09T00:00:00.000Z",
+          "state": "ACTIVE",
+          "consumed": false,
+          "raid_at": null,
+          "coverage": "COMPLETE_OBSERVED_INTERVAL"
+        },
+        "low": {
+          "id": "NAS100:W1:bid:FRACTAL:2026-11-09T00:00:00.000Z:3:low:2026-11-02T00:00:00.000Z",
+          "origin": "2026-10-26T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "state": "ACTIVE",
+          "consumed": false,
+          "raid_at": null,
+          "coverage": "COMPLETE_OBSERVED_INTERVAL"
+        },
+        "geometry_valid": true,
+        "observed_boundaries_intact": true,
+        "candidate_suitable_for_review": true,
+        "review_status": "REVIEW_REQUIRED",
+        "active_dealing_range": false,
+        "premium_discount": null,
+        "geometric_equilibrium": 28135.5,
+        "context_evidence_ids": [
+          "NAS100:MN1:bid:FVG:2026-05-01T00:00:00.000Z:",
+          "NAS100:W1:bid:FVG:2026-04-20T00:00:00.000Z:",
+          "NAS100:W1:bid:FVG:2026-09-28T00:00:00.000Z:"
+        ],
+        "structural_invalidation": {
+          "condition": "OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE",
+          "lower": 26255.2,
+          "upper": 30015.8,
+          "observed": false
+        },
+        "requirements": [
+          "AUTHOR_SIGNIFICANCE",
+          "IMPULSE_ORIGIN",
+          "RANGE_EXPANSION_VS_NEW_RANGE",
+          "HTF_CONTEXT"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "checked_at": "2026-11-17T11:15:22.966Z",
+  "ssoProtection": null,
+  "production": {
+    "id": "dpl_FJ8LtsSMBeYeX1NztGrV2o3aowCi",
+    "commit": "430a36fec8122bbb9b45237e1fb5ad1020f75c51"
+  },
+  "main": "d7d1ec5ddebdbce2c90bd7f8c86657d00b9ba1c2",
+  "bridge_base_url": "https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app",
+  "private_main_changes_since_start": [],
+  "prs": [
+    {
+      "repo": "capitalive",
+      "number": 2,
+      "state": "open",
+      "merged": false,
+      "base": "main"
+    },
+    {
+      "repo": "capitalive",
+      "number": 9,
+      "state": "open",
+      "merged": false,
+      "base": "feature/the-edge-knowledge"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "number": 7,
+      "state": "open",
+      "merged": false,
+      "base": "main"
+    }
+  ]
+}

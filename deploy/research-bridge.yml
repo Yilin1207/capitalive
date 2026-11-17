@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       preview_url:
-        description: 'Optional immutable V5 Preview for verification branch only'
+        description: 'Optional immutable V5.1 Preview for verification branch only'
         required: false
         type: string
   pull_request:
@@ -40,5 +40,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           BRIDGE_BASE_URL: ${{ github.ref == 'refs/heads/main' && vars.BRIDGE_BASE_URL || inputs.preview_url }}
-          BRIDGE_PUBLISH_BRANCH: ${{ github.ref == 'refs/heads/main' && 'main' || 'verification/v5-current' }}
+          BRIDGE_PUBLISH_BRANCH: ${{ github.ref == 'refs/heads/main' && 'main' || 'verification/v5-1-context' }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

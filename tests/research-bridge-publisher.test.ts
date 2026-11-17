@@ -3,9 +3,17 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {collectReports,publishReports,verifyPublication,transportError,boundedJson,TARGET_REPOSITORY} from '../scripts/publish-research-bridge.ts';
 import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
-import {syntheticDeskReport} from './fixtures/desk-report-synthetic.ts';
+import {syntheticDeskReport,syntheticContextReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
 const reports=()=>Object.fromEntries(['EURUSD','NAS100','JP225'].map(s=>[s,transportError(s,iso)]));
+
+test('V5.1 portable publisher accepts context and rejects false trend or mismatched inspection snapshot',async()=>{
+ const report=syntheticContextReport();validateReport(report);
+ const future=structuredClone(report);future.research_context.observed_price_behaviour[0].trend_confirmed=true;assert.throws(()=>validateReport(future));
+ const mismatch=structuredClone(report);mismatch.research_context.full_inspection.snapshot_sha256='1'.repeat(64);assert.throws(()=>validateReport(mismatch),/CONTEXT_SNAPSHOT_MISMATCH/);
+ const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',async(url)=>Response.json(syntheticContextReport(new URL(String(url)).searchParams.get('symbol')!),{headers:{'x-desk-contract':CONTRACT_REVISION}}),()=>now);
+ for(const [symbol,r]of Object.entries(output)){validateReport(r,symbol,now);assert.equal(r.status,'PARTIAL');}
+});
 
 test('V5 rejects missing clocks, fake freshness, extended expiry and unsupported rule outputs',()=>{
  const r=syntheticDeskReport();validateReport(r);
