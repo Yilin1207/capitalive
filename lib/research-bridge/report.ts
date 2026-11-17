@@ -2,7 +2,7 @@ import {freshnessPolicy} from './freshness';
 import {closedRegularInterval} from '../research/calendars';
 import {createHash} from 'node:crypto';
 import type {buildIntelligence} from '../knowledge/intelligence';
-import {selectRange,assessRange,type Finding,type Pivot} from '../knowledge/detectors';
+import {type Finding} from '../knowledge/detectors';
 import type {CandleResponse, Timeframe} from '../candle-data';
 import type {MarketQuote} from '../quote-normalization';
 import {closedFrame} from '../knowledge/data';
@@ -72,16 +72,11 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   const frameRows=r.frames.map(f=>{
     const tf=f.timeframe,bars=closedFrame(data[tf],r.price_side,r.as_of).bars;
     const fractals=[3].flatMap(variant=>['high','low'].map(polarity=>({variant,polarity,...group(f.findings.filter(x=>x.kind==='FRACTAL'&&x.facts.variant===variant&&x.facts.polarity===polarity),1)})));
-    const range=f.range;
-    // A research-only range candidate from the latest confirmed author 3-bar pivots.
-    // It is not an explicit selection, a validated HTF dealing range or an entry trigger.
-    const recentHigh=f.findings.filter((x):x is Pivot=>x.kind==='FRACTAL'&&x.facts.variant===3&&x.facts.polarity==='high').sort(newest)[0];
-    const recentLow=f.findings.filter((x):x is Pivot=>x.kind==='FRACTAL'&&x.facts.variant===3&&x.facts.polarity==='low').sort(newest)[0];
-    const proposed=recentHigh&&recentLow?selectRange(closedFrame(data[tf],r.price_side,r.as_of),[recentHigh,recentLow],{high_id:recentHigh.id,low_id:recentLow.id}).range:null;
-    const lastClose=bars.at(-1)?.close;
-    const usableProposal=proposed&&[states.get(proposed.high_id),states.get(proposed.low_id)].every(s=>s?.state==='ACTIVE'&&!s.liquidity_consumed&&s.coverage==='COMPLETE_OBSERVED_INTERVAL')&&assessRange(closedFrame(data[tf],r.price_side,r.as_of),proposed).state==='ACTIVE'&&lastClose!==undefined&&lastClose>=proposed.lower&&lastClose<=proposed.upper;
-    const rangeCandidate=!range&&proposed&&usableProposal?{high:add(proposed.high_id),low:add(proposed.low_id),lower:proposed.lower,upper:proposed.upper,
-      equilibrium:proposed.equilibrium,confirmed_at:proposed.confirmed_at,method:'LATEST_FRACTAL3_PROJECT_CANDIDATE',review_required:true}:null;
+    const automatic=f.dr_detection,range=f.range??automatic.current;
+    const proposed=automatic.local_candidates.at(-1)?.range??null;
+    const rangeCandidate=!range&&proposed?{high:add(proposed.high_id),low:add(proposed.low_id),lower:proposed.lower,upper:proposed.upper,
+      equilibrium:proposed.equilibrium,confirmed_at:proposed.confirmed_at,method:'KL_REACTION_LOCAL_DR_CANDIDATE',review_required:true}:null;
+    const rangeState=f.range?f.range_state:{state:automatic.status==='ESTABLISHED'?'ACTIVE':'AWAITING_NEW_EXTREME',invalidated_at:automatic.close_break_at};
     return {...(f.range_candidates?{range_options:{total:f.range_candidates.candidates.length,omitted:f.range_candidates.candidates.length-(rangeCandidate?1:0),review_required:true}}:{}),timeframe:tf,fetched_at:data[tf].fetched_at,last_closed_at:bars.at(-1)?.end??null,closed_candles:f.closed_candles,
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
@@ -90,8 +85,8 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       fvg:group(f.findings.filter(x=>x.kind==='FVG'),budgetTier>=2?0:1),ifvg:group(f.findings.filter(x=>x.kind==='FVG_CLOSED_BREACH'),0),
       liquidity:{raids:group(f.findings.filter(x=>x.kind==='RAID'),budgetTier>=2?0:1),idm:group(f.findings.filter(x=>x.kind==='IDM_INSIDE_POI'),0),strong:group(f.findings.filter(x=>x.kind==='STRONG_PIVOT_CANDIDATE'),0),irl:group(f.findings.filter(x=>x.kind==='INTERNAL_LIQUIDITY'),budgetTier>=2?0:1)},
       dealing_range:range?{high:add(range.high_id),low:add(range.low_id),lower:range.lower,upper:range.upper,equilibrium:range.equilibrium,
-        confirmed_at:range.confirmed_at,state:f.range_state.state,invalidated_at:f.range_state.invalidated_at}:null,
-      range_status:range?f.range_state.state:'EXPLICIT_SELECTION_REQUIRED',range_candidate:rangeCandidate};
+        confirmed_at:range.confirmed_at,state:rangeState.state,invalidated_at:rangeState.invalidated_at}:null,
+      range_status:f.range?f.range_state.state:automatic.status,range_candidate:rangeCandidate};
   });
   const selectedA=r.narrative.A?.id??null,reference=r.data_quality.reference_price;
   const anchorAlternatives=r.levels.detected_levels.filter(l=>['MN1','W1'].includes(l.timeframe)&&['FRACTAL','FVG'].includes(l.kind)&&states.get(l.id)?.state==='ACTIVE'&&reference!==null&&l.lower<=reference&&l.upper>=reference).map(l=>l.id);

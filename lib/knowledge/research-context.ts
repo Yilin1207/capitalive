@@ -57,7 +57,7 @@ export function validatePathCompleteness(levels:Pick<KeyLevel,'id'|'lower'|'uppe
     reasons:unique([...(observed?[]:['PATH_ENDPOINTS_UNAVAILABLE']),...(!dataComplete?['OHLC_COVERAGE_NOT_VERIFIED']:[]),...(!historyComplete?['LEVEL_HISTORY_NOT_VERIFIED']:[]),...(omitted?['OBSTACLES_OMITTED']:[]),'SIGNIFICANCE_REQUIRES_REVIEW'])};
 }
 
-export function validateDealingRangeEvidence(range:Range,states:State[],frame:Frame,levels:KeyLevel[]) {
+export function validateDealingRangeEvidence(range:Range,states:State[],frame:Frame,levels:KeyLevel[],establishedBySequence=false) {
   const high=states.find(s=>s.id===range.high_id),low=states.find(s=>s.id===range.low_id),last=frame.bars.at(-1);
   const boundary=(s:State|undefined)=>({id:s?.id??null,origin:s?.origin??null,confirmed_at:s?.confirmed_at??null,state:s?.state??'UNVERIFIED',consumed:s?.liquidity_consumed??null,raid_at:s?.first_raid?.confirmed_at??null,coverage:s?.coverage??'UNVERIFIED'});
   const intact=[high,low].every(s=>s&&s.state==='ACTIVE'&&!s.liquidity_consumed&&s.coverage==='COMPLETE_OBSERVED_INTERVAL');
@@ -65,8 +65,8 @@ export function validateDealingRangeEvidence(range:Range,states:State[],frame:Fr
   const context=levels.filter(l=>TF_ORDER.indexOf(l.timeframe)<=TF_ORDER.indexOf(frame.timeframe)&&l.confirmed_at<=range.confirmed_at&&
     [high,low].some(s=>s&&l.id!==s.id&&l.confirmed_at<=s.origin&&l.lower<=s.lower&&l.upper>=s.upper)).map(l=>l.id);
   return {high:boundary(high),low:boundary(low),geometry_valid:range.lower<range.upper,observed_boundaries_intact:intact,
-    candidate_suitable_for_review:intact&&inside,review_status:'REVIEW_REQUIRED',active_dealing_range:false,
-    premium_discount:null,geometric_equilibrium:(range.lower+range.upper)/2,context_evidence_ids:unique(context),
+    candidate_suitable_for_review:intact&&inside,review_status:'REVIEW_REQUIRED',active_dealing_range:establishedBySequence&&inside,
+    premium_discount:establishedBySequence&&inside&&last?(last.close<range.equilibrium?'DISCOUNT':last.close>range.equilibrium?'PREMIUM':'EQUILIBRIUM'):null,geometric_equilibrium:(range.lower+range.upper)/2,context_evidence_ids:unique(context),
     structural_invalidation:{condition:'OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE',lower:range.lower,upper:range.upper,observed:!inside},
     requirements:unique(['AUTHOR_SIGNIFICANCE','IMPULSE_ORIGIN','RANGE_EXPANSION_VS_NEW_RANGE','HTF_CONTEXT',...(!intact?['BOUNDARY_CONSUMED_OR_UNVERIFIED']:[]),...(!inside?['PRICE_OUTSIDE_RANGE']:[])])};
 }

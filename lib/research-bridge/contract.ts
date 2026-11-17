@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.1';
+export const CONTRACT_REVISION='desk-report-v2.2';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -44,7 +44,7 @@ const frame=obj({range_options:optional(obj({total:num,omitted:num,review_requir
   fractals:arr(obj({variant:en(3),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
   liquidity:obj({raids:group,idm:group,strong:group,irl:group}),
   dealing_range:nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,state:code,invalidated_at:nullable(time)})),range_status:code,
-  range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE'),review_required:en(true)})))});
+  range_candidate:optional(nullable(obj({high:ref,low:ref,lower:num,upper:num,equilibrium:num,confirmed_at:time,method:en('LATEST_FRACTAL3_PROJECT_CANDIDATE','KL_REACTION_LOCAL_DR_CANDIDATE'),review_required:en(true)})))});
 const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nullable(bias),status:code,
   evidence_quality:obj({status:code,human_reviewed:bool,independently_validated:en(false),probability:en(null)}),
   A:obj({selected:nullable(ref),items:arr(ref,3),total:num,omitted:num}),
@@ -53,9 +53,10 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
   C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT','NOT_EVALUATED')});
 const rangeReview=obj({high:nullable(ref),low:nullable(ref),high_state:code,low_state:code,high_consumed:nullable(bool),low_consumed:nullable(bool),
-  observed_boundaries_intact:bool,candidate_suitable_for_review:bool,review_status:en('REVIEW_REQUIRED'),active_dealing_range:en(false),premium_discount:en(null),context_evidence:group,
+  observed_boundaries_intact:bool,candidate_suitable_for_review:bool,review_status:en('REVIEW_REQUIRED'),active_dealing_range:bool,premium_discount:en(null,'PREMIUM','DISCOUNT','EQUILIBRIUM'),context_evidence:group,
   structural_invalidation:obj({condition:en('OWN_TF_CLOSE_OUTSIDE_SELECTED_RANGE'),lower:num,upper:num,observed:bool}),requirements:arr(code,10)});
 const researchContext=obj({revision:en('context-5.1'),review_required:en(true),author_structure:obj({status:en('NEEDS_SPECIFICATION'),reason:code}),
+  dealing_range_selection:optional(obj({timeframe:nullable(tf),reason:code,skipped:arr(obj({timeframe:tf,reason:code}),4),narrative_confirmed:en(false)})),
   candidate_narrative:bias,confirmed_narrative:nullable(bias),
   observed_price_behaviour:arr(obj({timeframe:tf,reference_close:nullable(num),reference_at:nullable(time),
     last_close_change:nullable(obj({from:time,to:time,delta:num,direction:en('UP','DOWN','FLAT')})),
@@ -66,7 +67,7 @@ const researchContext=obj({revision:en('context-5.1'),review_required:en(true),a
     first_interaction_at:nullable(time),first_interaction_scope:code,structural_relevance:code,reference_transition:obj({from:code,to:code,basis:en('LAST_TWO_CLOSED_H4')}),full_test_status:code,
     htf_dependencies:group,interactions:group,relevance_reasons:arr(code,8),uncertainty:arr(code,8),lifecycle_reasons:arr(code,12),invalidation:code}),32),total:num,omitted:num,selection_policy:code}),
   conflicts:arr(obj({level_id:ref,timeframe:tf,kind:en('HTF_GEOMETRY_VS_OBSERVED_LTF_LEG'),evidence_ids:arr(ref,2),review_required:en(true)}),64),
-  dealing_range_reviews:arr(obj({timeframe:tf,selected:nullable(rangeReview),candidates:obj({items:arr(rangeReview,1),total:num,omitted:num})}),4),
+  dealing_range_reviews:arr(obj({timeframe:tf,detection:optional(obj({revision:en('dr-sequence-1'),status:en('ESTABLISHED','AWAITING_CONFIRMED_PAIR','AWAITING_NEW_EXTREME'),reason:code,direction:en('Bullish','Bearish',null),high:nullable(ref),low:nullable(ref),lower:nullable(num),upper:nullable(num),equilibrium:nullable(num),start_at:nullable(time),end_at:nullable(time),confirmed_at:nullable(time),close_break_at:nullable(time),last_wick_raid_at:nullable(time),premium_discount:en('PREMIUM','DISCOUNT','EQUILIBRIUM',null),origin_context:group,parent_ranges:num,internal_fractals:num,local_candidates:num,transitions:num,internal_classification:en('INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM'),significance:en('REVIEW_REQUIRED'),narrative_confirmed:en(false)})),selected:nullable(rangeReview),candidates:obj({items:arr(rangeReview,1),total:num,omitted:num})}),4),
   paths:arr(obj({target:ref,from:nullable(num),to:nullable(num),from_basis:en('ANCHOR_BOUNDARY','LAST_CLOSED_H4'),status:en('COMPLETE','PARTIAL','UNVERIFIED'),obstacles:group,ohlc_coverage:en('COMPLETE','PARTIAL'),free_path_proven:en(false),reasons:arr(code,10)}),3),
   full_inspection:obj({path:en('/api/intelligence'),mode:en('inspection'),snapshot_sha256:hex,as_of:time,requires_authorization:en(true)})});
 const schema=obj({published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
@@ -145,6 +146,24 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       const intact=!!high&&!!low&&[high,low].every(e=>e.kind==='FRACTAL'&&e.timeframe===f.timeframe&&e.lifecycle?.state==='ACTIVE'&&!e.lifecycle.liquidity_consumed&&e.lifecycle.coverage==='COMPLETE_OBSERVED_INTERVAL');
       if(v.observed_boundaries_intact!==intact||v.candidate_suitable_for_review&&!intact)throw Error('INVALID_RANGE_REVIEW');}
     for(const p of context.paths)if(p.status==='COMPLETE'&&(p.obstacles.omitted!==0||p.ohlc_coverage!=='COMPLETE'))throw Error('FALSE_PATH_COMPLETENESS');
+    type Detection={status:string;direction:string|null;high:string|null;low:string|null;lower:number|null;upper:number|null;equilibrium:number|null;start_at:string|null;end_at:string|null;confirmed_at:string|null;close_break_at:string|null;premium_discount:string|null};
+    const reviews=context.dealing_range_reviews as (typeof context.dealing_range_reviews[number]&{detection?:Detection;selected:null|{high:string|null;low:string|null;active_dealing_range?:boolean;premium_discount?:string|null}})[];
+    for(const f of reviews){const d=f.detection;if(!d){if(f.selected?.active_dealing_range)throw Error('FALSE_DR_CONFIRMATION');continue;}
+      if(d.status==='AWAITING_CONFIRMED_PAIR'){if(d.high!==null||d.low!==null||d.premium_discount!==null)throw Error('UNCONFIRMED_DR');continue;}
+      const h=d.high?es[d.high]:null,l=d.low?es[d.low]:null;
+      if(!h||!l||h.kind!=='FRACTAL'||l.kind!=='FRACTAL'||h.timeframe!==f.timeframe||l.timeframe!==f.timeframe||d.lower!==l.lower||d.upper!==h.upper||d.lower!>=d.upper!||d.equilibrium!==(d.lower!+d.upper!)/2||!d.start_at||!d.end_at||d.start_at>=d.end_at||d.confirmed_at!==[h.confirmed_at,l.confirmed_at].sort().at(-1))throw Error('INVALID_DIRECTIONAL_DR');
+      const evidence=r.evidence as unknown as Record<string,{candle_refs:number[];polarity:string}>;
+      const highAt=r.candle_windows[evidence[d.high!].candle_refs[1]]?.[0],lowAt=r.candle_windows[evidence[d.low!].candle_refs[1]]?.[0];
+      if(evidence[d.high!].polarity!=='high'||evidence[d.low!].polarity!=='low'||d.direction!==(lowAt<highAt?'Bullish':'Bearish')||d.start_at!==[highAt,lowAt].sort()[0]||d.end_at!==[highAt,lowAt].sort()[1])throw Error('INVALID_DR_ORDER');
+      const active=d.status==='ESTABLISHED';
+      const observation=context.observed_price_behaviour.find(o=>o.timeframe===f.timeframe) as {reference_close?:number|null}|undefined;
+      if(active&&(observation?.reference_close==null||observation.reference_close<d.lower!||observation.reference_close>d.upper!||d.premium_discount!==(observation.reference_close<d.equilibrium!?'DISCOUNT':observation.reference_close>d.equilibrium!?'PREMIUM':'EQUILIBRIUM')))throw Error('INVALID_DR_POSITION');
+      if(active&&d.close_break_at!==null||!active&&d.premium_discount!==null||active&&d.premium_discount===null||d.close_break_at&&d.close_break_at<d.confirmed_at!)throw Error('INVALID_DR_STATE');
+      if(f.selected?.active_dealing_range&&(f.selected.high!==d.high||f.selected.low!==d.low||!active||f.selected.premium_discount!==d.premium_discount))throw Error('FALSE_DR_CONFIRMATION');
+    }
+    const selection=(context as typeof context&{dealing_range_selection?:{timeframe:string|null;skipped:{timeframe:string;reason:string}[]}}).dealing_range_selection;
+    if(selection){const ordered=['MN1','W1','D1','H4'].map(tf=>reviews.find(f=>f.timeframe===tf)),first=ordered.find(f=>f?.detection?.status==='ESTABLISHED');
+      if(selection.timeframe!==(first?.timeframe??null)||selection.skipped.map(x=>x.timeframe).join(',')!==ordered.slice(0,first?ordered.indexOf(first):4).map(f=>f?.timeframe).join(','))throw Error('INVALID_DR_FALLBACK');}
   }
   const ids=new Set<string>();
   for(const w of r.candle_windows)if(w.length!==2||w[0]>=w[1]||!r.as_of||w[1]>r.as_of)throw Error('FUTURE_CANDLE');
@@ -170,7 +189,9 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
     if(f.last_closed_at&&(!r.as_of||f.last_closed_at>r.as_of))throw Error('FUTURE_FRAME');
     const options=(f as typeof f&{range_options?:{total:number;omitted:number};range_candidate?:unknown}).range_options;
     if(options&&(!Number.isInteger(options.total)||!Number.isInteger(options.omitted)||options.omitted<0||options.total-options.omitted!==((f as {range_candidate?:unknown}).range_candidate?1:0)))throw Error('INVALID_COVERAGE_COUNTS');
-    const candidate=(f as typeof f&{range_candidate?:{high:string;low:string;lower:number;upper:number;equilibrium:number;confirmed_at:string;review_required:boolean}}).range_candidate;
+    type Pair={high:string;low:string;lower:number;upper:number;equilibrium:number;confirmed_at:string};
+    const pairs=f as typeof f&{range_candidate?:Pair|null;dealing_range?:Pair|null};
+    for(const candidate of [pairs.range_candidate,pairs.dealing_range]){
     if(!candidate)continue;
     const levels=r.evidence as unknown as Record<string,{kind:string;variant:number|null;polarity:string|null;timeframe:string;lower:number|null;upper:number|null;confirmed_at:string}>;
     const high=levels[candidate.high],low=levels[candidate.low];
@@ -179,6 +200,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
       high.upper!==candidate.upper||low.lower!==candidate.lower||candidate.lower>=candidate.upper||
       candidate.confirmed_at!==(high.confirmed_at>low.confirmed_at?high.confirmed_at:low.confirmed_at)||
       Math.abs(candidate.equilibrium-(candidate.lower+candidate.upper)/2)>1e-10*Math.max(1,Math.abs(candidate.equilibrium)))throw Error('INVALID_RANGE_CANDIDATE');
+    }
   }
   function refs(v:unknown):void{if(typeof v==='string'&&/^e\d{1,4}$/.test(v)&&!Object.hasOwn(r.evidence,v))throw Error('MISSING_EVIDENCE');if(Array.isArray(v))v.forEach(refs);else if(v&&typeof v==='object')Object.values(v).forEach(refs);}refs(value);
   function counts(v:unknown):void{if(Array.isArray(v)){v.forEach(counts);return;}if(!v||typeof v!=='object')return;const x=v as Record<string,unknown>;

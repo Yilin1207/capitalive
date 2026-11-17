@@ -63,9 +63,9 @@ test('V4: FVG touch, partial fill, full wick fill and closed invalidation are di
  assert.equal(evaluate(8,11).fill?.state,'FILLED');assert.equal(evaluate(8,11).state,'ACTIVE');
  assert.equal(evaluate(7,7.5).state,'INVALIDATED');assert.equal(evaluate(7,7.5).current_role,null);
 });
-test('V4: range candidates keep all admissible pairs without automatically choosing significance',()=>{
+test('DR correction: candidates follow the chronological outer range instead of arbitrary pairs',()=>{
  const f=frame([b(0,4,7,10,6,8),b(4,8,8,12,7,10),b(8,12,10,11,5,8),b(12,16,8,10,4,9),b(16,20,9,11,6,10),b(20,24,10,13,7,11),b(24,28,11,12,6,10)],'H4',28);
- const result=rangeCandidates(f,detectFractals(f));assert.ok(result.candidates.length>=2);assert.equal(result.selected,null);assert.equal(result.automatic_selection,false);assert.equal(result.status,'REVIEW_REQUIRED');
+ const result=rangeCandidates(f,detectFractals(f));assert.equal(result.candidates.length,1);assert.equal(result.candidates[0].lower,4);assert.equal(result.candidates[0].upper,13);assert.equal(result.selected,null);assert.equal(result.automatic_selection,false);assert.equal(result.status,'REVIEW_REQUIRED');
  for(const range of result.candidates){assert.ok(range.confirmed_at<=f.as_of);assert.equal(range.equilibrium,(range.lower+range.upper)/2);assert.equal(range.review_required,true);}
 });
 test('V4: unknown obstacle universe never validates an apparently unobstructed target',()=>{

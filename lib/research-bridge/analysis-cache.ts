@@ -13,7 +13,7 @@ export class ClosedAnalysisCache {
   constructor(private capacity=12){}
   get(data:Record<Timeframe,CandleResponse>,side:PriceSide,quote:MarketQuote,options:IntelligenceOptions={},build=buildIntelligence){
     const asOf=frames.map(tf=>data[tf].fetched_at).sort()[0];
-    const key=createHash('sha256').update(JSON.stringify({side,options,revision:knowledgeCoverage().catalog_revision,
+    const key=createHash('sha256').update(JSON.stringify({dr_revision:'dr-sequence-1',side,options,revision:knowledgeCoverage().catalog_revision,
       frames:frames.map(tf=>{const f=closedFrame(data[tf],side,asOf);return {symbol:f.symbol,environment:data[tf].environment,tf,bars:f.bars,status:f.status,warnings:f.warnings,validation:data[tf].metadata.validation_gaps};})})).digest('hex');
     const saved=this.entries.get(key);
     if(saved){this.entries.delete(key);this.entries.set(key,saved);return {result:saved,hit:true};}

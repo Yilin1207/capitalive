@@ -13,7 +13,9 @@ commits, real publication/readback, quote timestamps and freshness limits.
 This branch also contains **V5.1 Preview**, not activated in the working Bridge.
 See [V5.1 audit](CAPITALIVE_V5_1_AUDIT_RU.md) and
 [compatibility notes](BRIDGE_V5_1_COMPATIBILITY.md): context/lifecycle review,
-lossless full inspection, `desk-report-v2.1` header and `context-5.1`.
+lossless full inspection, `desk-report-v2.2` header and `context-5.1`.
+The [DR sequence update](DR_SEQUENCE_AUDIT_RU.md) implements chronological
+Fractal 3 ranges, retained parent ranges, KL-linked local origins and MN1→H4 fallback.
 The V5 contracts below describe the active Bridge source; do not point its old
 publisher at V5.1 without a coordinated, separately authorized upgrade.
 

@@ -77,6 +77,13 @@ test('V5.1 contract rejects future context, false role confirmation and invented
   const b=structuredClone(report);b.research_context.full_inspection.as_of='2099-01-01T00:00:00.000Z';assert.throws(()=>validateReport(b));
   const c=structuredClone(report);c.research_context.observed_price_behaviour.find(o=>o.last_observed_fractal_leg)!.last_observed_fractal_leg!.price_distance+=5;assert.throws(()=>validateReport(c));
 });
+test('DR portable contract rejects reversed chronology, false position and wrong top-down fallback',()=>{
+  const a=structuredClone(report),d=a.research_context.dealing_range_reviews.find(f=>f.detection.status==='ESTABLISHED')!.detection;
+  d.direction=d.direction==='Bullish'?'Bearish':'Bullish';assert.throws(()=>validateReport(a),/INVALID_DR_ORDER/);
+  const b=structuredClone(report),e=b.research_context.dealing_range_reviews.find(f=>f.detection.status==='ESTABLISHED')!.detection;e.premium_discount=e.premium_discount==='PREMIUM'?'DISCOUNT':'PREMIUM';assert.throws(()=>validateReport(b),/INVALID_DR_POSITION/);
+  const c=structuredClone(report);c.research_context.dealing_range_selection.timeframe=null;assert.throws(()=>validateReport(c),/INVALID_DR_FALLBACK/);
+  const f=structuredClone(report),q=f.frames.find(x=>x.dealing_range)!.dealing_range!;q.lower-=1;assert.throws(()=>validateReport(f),/INVALID_RANGE_CANDIDATE/);
+});
 test('V5.1 inspection pages cover every finding once, expose only closed formation windows',()=>{
   const found=new Set<string>();let cursor:number|null=0;
   let reviewedApproaches=0;

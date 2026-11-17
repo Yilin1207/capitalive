@@ -45,7 +45,7 @@ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'])t
   assert.ok(evidence.length>20);for(const e of evidence)assert.equal(e.confirmed_at,r.frames.flatMap(f=>f.findings).find(f=>f.id===e.id)!.confirmed_at);
   assert.equal(report.coverage.findings_included,evidence.length);
   assert.equal(report.coverage.findings_included+report.coverage.findings_omitted,report.coverage.findings_total);
-  for(const f of report.frames){assert.equal(f.fractals.length,2);assert.equal(f.dealing_range,null);assert.equal(f.range_status,'EXPLICIT_SELECTION_REQUIRED');}
+  for(const f of report.frames){assert.equal(f.fractals.length,2);const d=r.frames.find(x=>x.timeframe===f.timeframe)!.dr_detection;assert.equal(f.range_status,d.status);if(d.current){assert.equal(f.dealing_range!.lower,d.current.lower);assert.equal(f.dealing_range!.upper,d.current.upper);assert.equal(f.dealing_range!.state,d.status==='ESTABLISHED'?'ACTIVE':'AWAITING_NEW_EXTREME');}else assert.equal(f.dealing_range,null);}
 });
 test('Bridge rejects future, wrong-side and missing dependency evidence rather than publishing incomplete claims',()=>{
   const input=fixture('EURUSD');
@@ -103,11 +103,11 @@ test('Bridge preserves explicit H4 range IDs, confirmation, EQ and invalidation 
 });
 
 
-test('Bridge offers provisional H4 range only with linked 3-bar fractals; not a confirmed Narrative',()=>{
+test('Bridge reports chronological H4 DR without confirming Narrative',()=>{
   for(const symbol of ['EURUSD','NAS100','EU50']){
     const input=fixture(symbol),report=buildDeskReport(analysis(symbol),input.data,input.quote,now);
     const h4=report.frames.find(f=>f.timeframe==='H4')!;
-    assert.equal(h4.dealing_range,null,'a candidate must not silently become a selected range');
+    if(h4.dealing_range){assert.ok(h4.dealing_range.lower<h4.dealing_range.upper);assert.ok(['ACTIVE','AWAITING_NEW_EXTREME'].includes(h4.dealing_range.state));}
     assert.equal(report.scenario!.confirmed_narrative,null);
     if(h4.range_candidate){
       const {high,low,review_required,method,lower,upper,equilibrium}=h4.range_candidate;
@@ -115,7 +115,7 @@ test('Bridge offers provisional H4 range only with linked 3-bar fractals; not a 
       const lo=report.evidence[low] as {kind:string;variant:number;polarity:string};
       assert.deepEqual([hi.kind,hi.variant,hi.polarity],['FRACTAL',3,'high']);
       assert.deepEqual([lo.kind,lo.variant,lo.polarity],['FRACTAL',3,'low']);
-      assert.equal(review_required,true);assert.equal(method,'LATEST_FRACTAL3_PROJECT_CANDIDATE');
+      assert.equal(review_required,true);assert.equal(method,'KL_REACTION_LOCAL_DR_CANDIDATE');
       assert.ok(lower<upper&&equilibrium>lower&&equilibrium<upper);
     }
     validateReport(report,symbol);

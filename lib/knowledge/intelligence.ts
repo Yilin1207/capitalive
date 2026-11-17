@@ -34,6 +34,7 @@ import {canonical} from '../research/blind';
 import {qualityDimensions} from '../research/quality';
 import type {HumanReview} from './human-review';
 import {rangeCandidates} from './range-candidates';
+import {detectDealingRange,selectTopDownRange} from './dealing-range';
 import {buildResearchContext,validateDealingRangeEvidence,validatePathCompleteness} from './research-context';
 export type IntelligenceOptions = {
   anchor_id?: string;
@@ -124,7 +125,8 @@ export function buildIntelligence(
       closed_candles: frame.bars.length,
       findings,
       range: dr.range,
-      range_candidates:rangeCandidates(frame,pivots),
+      dr_detection:detectDealingRange(frame,pivots,context),
+      range_candidates:rangeCandidates(frame,pivots,context),
       range_state:assessRange(frame,dr.range),
       range_blocker: dr.reason,
       session_blocker: sessions.blocked,
@@ -137,8 +139,8 @@ export function buildIntelligence(
   const states=detected.map(l=>assessLevel(l,frames,asOf,through));
   const researchContext=buildResearchContext(frames,perFrame.flatMap(f=>f.findings),detected,states,reference);
   const dealingRangeReviews=perFrame.map(f=>({timeframe:f.timeframe,
-    selected:f.range?validateDealingRangeEvidence(f.range,states,frames[f.timeframe],detected):null,
-    candidates:f.range_candidates.candidates.map(range=>({range,validation:validateDealingRangeEvidence(range,states,frames[f.timeframe],detected)}))}));
+    selected:(f.range??f.dr_detection.current)?validateDealingRangeEvidence((f.range??f.dr_detection.current)!,states,frames[f.timeframe],detected,!f.range&&f.dr_detection.status==='ESTABLISHED'):null,
+    candidates:f.range_candidates.candidates.filter(range=>range.basis==='KL_REACTION_LOCAL_DR_REQUIRES_REVIEW').map(range=>({range,validation:validateDealingRangeEvidence(range,states,frames[f.timeframe],detected)}))}));
   const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...l,role:states.find(s=>s.id===l.id)!.current_role??l.role}));
   const hierarchy=resolveHierarchy(active,reference,options.anchor_id),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
   // Empty/unknown frames cannot prove an obstacle-free path. Calendar, finite
@@ -177,7 +179,7 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
   const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
   const narrative = {
     ...provenance("EDGE.NARRATIVE.v3"),
@@ -308,7 +310,7 @@ export function buildIntelligence(
     schema_version: "edge-knowledge-5",
     research_revision:'5.1',
     research_context:{...researchContext,candidate_narrative:hierarchy.candidate_bias,confirmed_narrative:narrative.confirmed_narrative,
-      dealing_range_reviews:dealingRangeReviews,paths:researchPaths},
+      dealing_range_reviews:dealingRangeReviews,dealing_range_selection:selectTopDownRange(perFrame),paths:researchPaths},
     symbol: data.H4.symbol,
     environment: data.H4.environment,
     price_side: side,

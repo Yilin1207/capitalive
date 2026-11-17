@@ -13,6 +13,7 @@ export function inspectResearch(r:ReturnType<typeof buildIntelligence>,frames:Re
     return frames[tf].bars.filter(b=>times.has(b.time)&&b.end<=r.as_of).map(b=>({timeframe:tf,time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close}));});
   return {schema_version:'research-inspection-v1',symbol:r.symbol,environment:r.environment,provider:'Capital.com',price_side:r.price_side,as_of:r.as_of,evidence_sha256:r.narrative.human_review.evidence_sha256,
     source_revision:r.knowledge.catalog_revision,offset,limit,total:universe.length,returned:findings.length,next_offset:offset+findings.length<universe.length?offset+findings.length:null,
+    dealing_ranges:r.frames.filter(f=>!timeframe||f.timeframe===timeframe).map(f=>({timeframe:f.timeframe,...f.dr_detection})),
     findings,level_reviews:r.research_context.levels.filter(l=>ids.has(l.id)).map(l=>{
       const from=r.data_quality.reference_price,inside=from!==null&&from>=l.lower&&from<=l.upper;
       const to=from===null?null:from<l.lower?l.lower:from>l.upper?l.upper:from;
