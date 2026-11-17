@@ -1,0 +1,32 @@
+{
+  "unit_tests": 261,
+  "browser_tests": 10,
+  "historical_prefixes": 7290,
+  "private_tests": 13,
+  "runs": [
+    {
+      "repo": "capitalive",
+      "id": 44100788669,
+      "url": "https://github.com/Yilin1207/capitalive/actions/runs/44100788669",
+      "head": "f45f81cfee441b6479e593354d25c90851397f28",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "id": 44100110378,
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44100110378",
+      "head": "402d476610343b6660df9a00cbb1d0392ee81d24",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "id": 44101659252,
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44101659252",
+      "head": "6f82c4d5c6beff92a6d49a4bbd6d69f3cecff861",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}
