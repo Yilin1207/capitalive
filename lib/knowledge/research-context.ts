@@ -75,16 +75,17 @@ export function validateDealingRangeEvidence(range:Range,states:State[],frame:Fr
 
 export function buildResearchContext(frames:Record<Timeframe,Frame>,findings:Finding[],levels:KeyLevel[],states:State[],reference:number|null) {
   const stateMap=new Map(states.map(s=>[s.id,s]));
+  const originalLevels=new Map(levels.map(l=>[l.id,l]));
   levels=levels.map(l=>currentBounds(l,stateMap.get(l.id)));
   const observed=TF_ORDER.map(tf=>observedPriceBehaviour(frames[tf],findings.filter(f=>f.timeframe===tf)));
   const levelReviews=levels.flatMap(l=>{
     const s=stateMap.get(l.id);if(!s)return [];
     const lowerTfs=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)+1,TF_ORDER.indexOf(l.timeframe)+3);
     const interactions=findings.filter(f=>lowerTfs.includes(f.timeframe)&&f.confirmed_at>l.confirmed_at&&['RB_TWO_CANDLE','SNR_CLOSED_BREAK','FVG','RAID'].includes(f.kind)&&
-      (f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>c.time>=l.confirmed_at&&c.high>=l.lower&&c.low<=l.upper)))
+      (f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>{const historical=levelAt(originalLevels.get(l.id)!,c.time);return historical&&c.time>=historical.confirmed_at&&c.high>=historical.lower&&c.low<=historical.upper;})))
       .map(f=>({id:f.id,timeframe:f.timeframe,confirmed_at:f.confirmed_at,relationship:f.facts.kl_id===l.id||f.facts.pivot_id===l.id?'EXPLICIT_DETECTOR_DEPENDENCY':'CLOSED_INTERACTION_WITH_FORMATION',qualification:f.state==='OBSERVED'?'OBSERVED':'CANDIDATE'}));
     const overlaps=levels.filter(o=>o.id!==l.id&&TF_ORDER.indexOf(o.timeframe)<TF_ORDER.indexOf(l.timeframe)&&intersects(l,o)&&stateMap.get(o.id)?.state==='ACTIVE').map(o=>o.id);
-    const firstInteraction=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)).flatMap(tf=>frames[tf].bars.filter(b=>b.time>=l.confirmed_at&&b.end<=s.evaluated_through&&b.high>=l.lower&&b.low<=l.upper).map(b=>b.end)).sort()[0]??null;
+    const firstInteraction=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)).flatMap(tf=>frames[tf].bars.filter(b=>b.time>=l.confirmed_at&&b.end<=s.evaluated_through&&b.high>=s.lower&&b.low<=s.upper).map(b=>b.end)).sort()[0]??null;
     const observation=levelLifecycleExplanation(s,reference,firstInteraction),previous=frames.H4.bars.at(-2)?.close??null;
     return [{id:l.id,timeframe:l.timeframe,pa_type:l.kind,lower:l.lower,upper:l.upper,origin:s.origin,confirmed_at:s.confirmed_at,lifecycle:s.state,
       review_status:['INVALIDATED','TESTED'].includes(s.state)||s.coverage!=='COMPLETE_OBSERVED_INTERVAL'?'DETECTED':'ELIGIBLE_FOR_REVIEW',human_validated:false,

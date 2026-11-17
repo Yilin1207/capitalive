@@ -22,7 +22,7 @@
     },
     "previous_filled_active": 4,
     "report_bytes": 63832,
-    "wire_bytes": 2831547,
+    "wire_bytes": 2801445,
     "evidence_causality": "PASS",
     "result": "PASS"
   },
@@ -48,8 +48,8 @@
       "TESTED": 4
     },
     "previous_filled_active": 4,
-    "report_bytes": 59432,
-    "wire_bytes": 2833969,
+    "report_bytes": 55103,
+    "wire_bytes": 2803230,
     "evidence_causality": "PASS",
     "result": "PASS"
   },
@@ -78,7 +78,7 @@
     },
     "previous_filled_active": 5,
     "report_bytes": 61248,
-    "wire_bytes": 2796591,
+    "wire_bytes": 2739110,
     "evidence_causality": "PASS",
     "result": "PASS"
   },
@@ -107,7 +107,7 @@
     },
     "previous_filled_active": 5,
     "report_bytes": 61223,
-    "wire_bytes": 2796641,
+    "wire_bytes": 2739160,
     "evidence_causality": "PASS",
     "result": "PASS"
   },
@@ -135,7 +135,7 @@
     },
     "previous_filled_active": 7,
     "report_bytes": 62135,
-    "wire_bytes": 2614725,
+    "wire_bytes": 2564782,
     "evidence_causality": "PASS",
     "result": "PASS"
   },
@@ -163,7 +163,7 @@
     },
     "previous_filled_active": 7,
     "report_bytes": 62135,
-    "wire_bytes": 2618037,
+    "wire_bytes": 2567959,
     "evidence_causality": "PASS",
     "result": "PASS"
   }

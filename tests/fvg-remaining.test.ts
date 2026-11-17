@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {assessLevel} from '../lib/knowledge/level-state';
+import {buildResearchContext} from '../lib/knowledge/research-context';
 import {levelAt,fvgTestTimeline} from '../lib/knowledge/fvg-remaining';
 import {selectTarget} from '../lib/knowledge/target-selection';
 import {buildIntelligence} from '../lib/knowledge/intelligence';
@@ -38,6 +39,13 @@ test('No pre-confirmation, forming or nonintersecting gap candle manufactures a 
 });
 test('Historical FVG context uses only the residual known before the observation',()=>{
  const {l,frames}=setup('support',[bar(0,106,114,112),bar(4,100,114,112)]);l.fvg_test_steps=fvgTestTimeline(l,Object.values(frames));assert.equal(l.fvg_test_steps.length,2);assert.equal(levelAt(l,at(0))?.upper,110);assert.equal(levelAt(l,at(4))?.upper,106);assert.equal(levelAt(l,at(8)),null);assert.equal(levelAt(l,at(4))?.upper,106);assert.equal(l.upper,110);
+});
+test('A deeper later test does not move the original first-interaction timestamp',()=>{
+ const {l,frames,evaluate}=setup('support',[bar(0,109,114,112),bar(4,106,114,112)]);
+ const r=buildResearchContext(frames,[],[l],[evaluate()],112);
+ const review=r.levels.find(x=>x.id===l.id)!;
+ assert.equal(review.lifecycle_explanation.first_interaction_at,at(4));
+ assert.equal(review.upper,106);
 });
 test('Target eligibility and target price use residual boundaries, fully tested FVG is ineligible',()=>{
  const {l,evaluate}=setup('resistance',[bar(0,96,104,98)]),s=evaluate();l.timeframe='D1';s.timeframe='D1';const t=selectTarget([l],[s],102,'up',null);assert.equal(t.target_candidates[0].price,104);assert.equal(t.target_candidates[0].role_eligible,true);

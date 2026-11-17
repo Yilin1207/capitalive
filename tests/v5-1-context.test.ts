@@ -56,7 +56,16 @@ test('V5.1 HTF/LTF links are closed, causal, scoped to X-1/X-2 and trace real so
   for(const l of r.research_context.levels)for(const link of l.interactions){const f=byId.get(link.id)!;
     assert.ok(TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)+1,TF_ORDER.indexOf(l.timeframe)+3).includes(link.timeframe));
     assert.ok(link.confirmed_at>l.confirmed_at&&link.confirmed_at<=r.as_of);
-    assert.ok(f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>c.time>=l.confirmed_at&&c.high>=l.lower&&c.low<=l.upper));}
+    const source=levels.find(s=>s.id===l.id)!;
+    assert.ok(f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>{
+      let lower=source.lower,upper=source.upper;
+      if(source.kind==='FVG'){
+        const prior=TF_ORDER.slice(TF_ORDER.indexOf(source.timeframe)).flatMap(tf=>frames[tf].bars.filter(b=>b.time>=source.confirmed_at&&b.end<=c.time&&b.low<=source.upper&&b.high>=source.lower));
+        if(source.role==='support')upper=Math.min(upper,...prior.map(b=>b.low));else lower=Math.max(lower,...prior.map(b=>b.high));
+        if(lower>=upper)return false;
+      }
+      return c.time>=source.confirmed_at&&c.high>=lower&&c.low<=upper;
+    }));}
 });
 test('V5.1 paths examine all four TF before presentation; omitted obstacles cannot be COMPLETE',()=>{
   const p=validatePathCompleteness(levels,states,frames,1,1e9,[],[]);
