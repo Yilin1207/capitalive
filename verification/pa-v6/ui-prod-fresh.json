@@ -1,0 +1,16 @@
+{
+  "origin": "https://capitalive.vercel.app",
+  "http": 200,
+  "authenticated": false,
+  "report_source": "live-prod-fresh.json",
+  "report_engine": "6230dcd9752525a099ba0713b21fe4dae5de64bb",
+  "replay_clock": "2026-11-17T17:52:17.961Z",
+  "clock_policy": "Replay of recorded real HTTP responses inside their common expiry interval; not a current freshness assertion",
+  "markets": 3,
+  "pa_sections": 3,
+  "public_api_links": 3,
+  "forecast_headings": 0,
+  "page_errors": 0,
+  "mobile_document_overflow": false,
+  "checked_at": "2026-11-17T17:53:08.987Z"
+}
