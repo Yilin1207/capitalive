@@ -4,9 +4,9 @@ Technical research for **EURUSD / NAS100 / JP225**, with explicit Capital.com
 Demo/Live environment and timestamps. No order execution. Macro-EDGE, final
 decisions and aggregate risk remain with the user and ChatGPT.
 
-V5.1 with sequential DR, first-close RB and contextual SNR is active on the public Production
+V5.1 with sequential DR, first-close RB, contextual SNR, remaining FVG, TDA and scored Narrative A/B/C is active on the public Production
 site. Private Bridge main uses the same immutable Production deployment.
-See [current SNR audit](SNR_FORMATION_CONTEXT_AUDIT_RU.md) for runtime,
+See [current Narrative audit](NARRATIVE_METHOD_AUDIT_RU.md) for runtime,
 publication/readback, timestamps and remaining access limitations. Earlier V5
 activation audits describe historical deployments.
 
@@ -24,7 +24,7 @@ Stable public site: https://capitalive.vercel.app/research . Direct research JSO
 without a login redirect. The stable domain returned no `X-Robots-Tag: noindex`;
 `robots.txt` returned 404, not a robots exclusion policy.
 
-Production now includes SNR context, DR and RB from `e5064c7`; the user explicitly authorized
+Production now runs Narrative method v1 from `a291ec8`; the user explicitly authorized
 activation on 17 November 2026. Use the stable public URL above for current
 research. Historical Preview links are release evidence, not the current source.
 The built-in web retrieval tool returned an internal accessibility error despite
@@ -38,7 +38,7 @@ Existing provider rate limits still apply. See
 **V5.1 is activated in Production and the working Bridge.**
 See [V5.1 audit](CAPITALIVE_V5_1_AUDIT_RU.md) and
 [compatibility notes](BRIDGE_V5_1_COMPATIBILITY.md): context/lifecycle review,
-lossless full inspection, `desk-report-v2.4` header and `context-5.1`.
+lossless full inspection and `context-5.1`. The current portable header is `desk-report-v2.7`.
 The [DR sequence update](DR_SEQUENCE_AUDIT_RU.md) implements chronological
 Fractal 3 ranges, retained parent ranges, KL-linked local origins and MN1→H4 fallback.
 The [RB v2 update](RB_V2_AUDIT_RU.md) uses the first candle close, permits weaker
@@ -47,12 +47,18 @@ The [SNR update](SNR_FORMATION_CONTEXT_AUDIT_RU.md) uses first-close levels,
 pre-break failed tests, waiting time, impulse measurements and HTF context.
 FVG is optional even for very-strong formation candidates; numeric impulse
 thresholds are explicit project assumptions, not calibrated probabilities.
+The [FVG update](FVG_REMAINING_AUDIT_RU.md) preserves only the untested remainder.
+The [TDA update](TDA_NOTION_AUDIT_RU.md) uses Fractal-only triggers and explicit X/X-1 relationships.
+The [Narrative specification](NARRATIVE_METHOD_SPEC_RU.md) defines MN1 priority,
+W1 conflict penalties, separate 1-5 level and precontact delivery grades, confirmed
+HH/HL trends, X/X-1 targets, and separate entry stops versus structural close invalidation.
+Grades are explicit project criteria, not probabilities; missing evidence stays unknown.
 The source and companion publisher now both use the following contracts.
 
 - `/api/intelligence`: `edge-knowledge-5`; author Fractal 3, FVG, contextual
   RB/SNR, Raid/IDM, explicit DR, candidate Narrative and evidence IDs.
 - `/api/desk-report?symbol=EURUSD&side=bid`: `desk-report-v2`, header
-  `X-Desk-Contract: desk-report-v2.4`, maximum 65,536 UTF-8 bytes including newline.
+  `X-Desk-Contract: desk-report-v2.7`, maximum 65,536 UTF-8 bytes including newline.
 - `POST /api/desk-report?symbol=EURUSD&side=bid&refresh=1`: new provider request,
   separate quote and closed-candle analysis. Browser refresh is same-origin;
   automation uses the existing Vercel protection header, never a URL secret.
