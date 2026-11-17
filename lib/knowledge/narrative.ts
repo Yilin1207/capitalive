@@ -4,16 +4,16 @@ import type {Timeframe} from '../candle-data';
 import type {LevelState} from './level-state';
 import type {selectTarget} from './target-selection';
 import {REVIEW_QUESTIONS,reviewErrors,type HumanReview} from './human-review';
+import {fractalTrend} from './narrative-method';
 export function resolveContext(levels:KeyLevel[],reference:number|null,requestedId?:string,reactionIds:string[]=[]){
- const hits=reference===null?[]:levels.filter(l=>['MN1','W1','D1'].includes(l.timeframe)&&l.qualified&&(reference>=l.lower&&reference<=l.upper||reactionIds.includes(l.id))).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||a.id.localeCompare(b.id));
- const top=hits.filter(l=>l.timeframe===hits[0]?.timeframe),a=requestedId?levels.find(l=>l.id===requestedId&&['MN1','W1','D1'].includes(l.timeframe)&&l.qualified)??null:top.length===1?top[0]:null;
- const conflicts=hits.filter(l=>l.role!==hits[0]?.role);
+ const hits=reference===null?[]:levels.filter(l=>TF_ORDER.includes(l.timeframe)&&l.qualified&&(reference>=l.lower&&reference<=l.upper||reactionIds.includes(l.id))).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||a.id.localeCompare(b.id));
+ const top=hits.filter(l=>l.timeframe===hits[0]?.timeframe),a=requestedId?levels.find(l=>l.id===requestedId&&TF_ORDER.includes(l.timeframe)&&l.qualified)??null:top.length===1?top[0]:null;
+ const conflicts=hits.filter(l=>l.role!==hits[0]?.role&&(l.timeframe!=='H4'||hits[0]?.timeframe==='H4'));
  return {bias:'Neutral' as const,candidate_bias:!a||conflicts.length&&!requestedId?'Neutral':a.role==='support'?'Bullish':'Bearish',a,conflicts,alternatives:top.map(l=>l.id),reason:requestedId&&!a?'REQUESTED_ANCHOR_UNAVAILABLE':conflicts.length?'CONFLICTING_HTF_KL':top.length>1&&!requestedId?'AMBIGUOUS_HTF_ANCHOR':a?requestedId?'EXPLICIT_ANCHOR_REQUIRES_REVIEW':'KL_CONTAINMENT_ONLY_NOT_NARRATIVE':'NO_ELIGIBLE_MN1_W1_D1_POI'};
 }
 export function swingFlow(frame:Frame,pivots:Pivot[]){
- // No approved author HH/HL-count shortcut for qualitative SOF.
- void frame; void pivots;
- return {bias:'Neutral',status:'NEEDS_SPECIFICATION',evidence_ids:[] as string[]};
+ const trend=fractalTrend(frame,pivots);
+ return {bias:trend.bias,status:trend.status,evidence_ids:trend.evidence_ids};
 }
 
 export type NarrativeFrame={timeframe:Timeframe;structure_bias:string;order_flow:ReturnType<typeof swingFlow>;range:Range|null;range_state?:{state:string;invalidated_at:string|null};dr_detection?:{status:string;current:Range|null};findings:{id:string;kind:string;facts:Record<string,unknown>;confirmed_at:string}[]};

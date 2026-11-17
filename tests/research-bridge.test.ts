@@ -121,9 +121,9 @@ test('Bridge reports chronological H4 DR without confirming Narrative',()=>{
     validateReport(report,symbol);
   }
 });
-test('Bridge records nearby active HTF A alternatives without asserting a selected A',()=>{
+test('Bridge preserves A alternatives and keeps scored selection distinct from confirmed Narrative',()=>{
   const input=fixture('EU50'),report=buildDeskReport(analysis('EU50'),input.data,input.quote,now);
-  assert.equal(report.scenario!.A.selected,null);
+  if(report.scenario!.A.selected)assert.equal(report.narrative_method.selection_status,'CANDIDATE_SELECTED');
   assert.ok(report.scenario!.A.items.length>0,'show candidate HTF levels rather than misleading empty A');
   assert.equal(report.scenario!.confirmed_narrative,null);
 });

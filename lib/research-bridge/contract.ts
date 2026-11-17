@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.6';
+export const CONTRACT_REVISION='desk-report-v2.7';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -45,7 +45,7 @@ const evidence=obj({id:str(/^(EURUSD|NAS100|JP225|EU50):(MN1|W1|D1|H4):(bid|ask)
   rule:str(/^EDGE\.[A-Z0-9_]+\.v\d+$/,100),candle_refs:arr(num,1000),candle_evidence_sha256:hex,dependencies:arr(ref,20),
   lifecycle:nullable(obj({state:code,initial_role:optional(en('support','resistance')),fill:optional(nullable(obj({state:en('UNKNOWN','UNTOUCHED','TOUCHED','PARTIAL','FILLED'),max_observed_fraction:num,first_test_at:nullable(time),last_test_at:nullable(time),revision:optional(en('fvg-unfilled-1')),remaining:optional(nullable(obj({lower:num,upper:num}))),fully_tested_at:optional(nullable(time))}))),current_role:en('support','resistance',null),role_status:code,coverage:code,evaluated_through:time,invalidated_at:nullable(time),liquidity_consumed:bool,interactions:arr(interaction,20)}))});
 const frame=obj({range_options:optional(obj({total:num,omitted:num,review_required:en(true)})),timeframe:tf,fetched_at:time,last_closed_at:nullable(time),closed_candles:num,data_status:code,warnings:arr(code,24),discarded_rows:num,
-  structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('NEEDS_SPECIFICATION'),swing_evidence:arr(ref,4)}),
+  structure:obj({bias:nullable(bias),events:group,swing_bias:nullable(bias),swing_basis:en('NEEDS_SPECIFICATION','OBSERVED_FRACTAL_SEQUENCE','INSUFFICIENT_CONFIRMED_PIVOTS'),swing_evidence:arr(ref,4)}),
   fractals:arr(obj({variant:en(3),polarity:en('high','low'),items:arr(ref,1),total:num,omitted:num}),4),snr:group,rb:group,fvg:group,ifvg:group,
   snr_quality:optional(obj({very_strong_candidates:num,context_conflicts:num,review_required:num})),
   rb_quality:optional(obj({raid_backed:num,fvg_only_weaker:num,counting:en('FINDINGS_PER_PRIMARY_KL')})),
@@ -57,7 +57,7 @@ const scenario=obj({candidate_narrative:nullable(bias),confirmed_narrative:nulla
   A:obj({selected:nullable(ref),items:arr(ref,3),total:num,omitted:num}),
   B:obj({selected:nullable(ref),validated:nullable(ref),status:code,items:arr(obj({level:ref,role_eligible:bool,author_timeframe_eligible:nullable(bool),reasons:arr(code,24),
     path:obj({items:arr(ref,4),total:nullable(num),omitted:nullable(num),completeness:en('UNASSESSED','COMPLETE','PARTIAL')})}),3),total:num,role_eligible:num,omitted:num}),
-  C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND')})),
+  C:nullable(obj({source:ref,timeframe:tf,price:num,condition:en('OWN_TF_CLOSE_BEYOND_FVG','MANUAL_OWN_TF_CLOSE_BEYOND','OWN_TF_CLOSE_BEYOND_STRUCTURE')})),
   invalidations:obj({entry:nullable(bool),KL:nullable(bool),narrative:nullable(bool)}),blockers:arr(code,24),action:en('WAIT','NOT_EVALUATED')});
 const rangeReview=obj({high:nullable(ref),low:nullable(ref),high_state:code,low_state:code,high_consumed:nullable(bool),low_consumed:nullable(bool),
   observed_boundaries_intact:bool,candidate_suitable_for_review:bool,review_status:en('REVIEW_REQUIRED'),active_dealing_range:bool,premium_discount:en(null,'PREMIUM','DISCOUNT','EQUILIBRIUM'),context_evidence:group,
@@ -85,7 +85,17 @@ const tda=obj({revision:en('tda-notion-1'),scope:en('SWING_MN1_TO_H4'),target_po
  range_pois:arr(obj({timeframe:tf,high:ref,low:ref,confirmed_at:time,directional_anchor:en(false),triggers:group,review_required:en(true)}),4),
  potential_target:nullable(ref),target_status:en('POTENTIAL_TARGET_IDENTIFIED','TARGET_NOT_SELECTED'),path_completeness:en('COMPLETE','PARTIAL','UNKNOWN'),free_path_proven:en(false),probability:en(null)});
 
-const schema=obj({tda:optional(tda),published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
+
+const position=en('PREMIUM','DISCOUNT','EQUILIBRIUM','OUTSIDE','UNVERIFIED');
+const methodBoundary=nullable(obj({evaluated_through:time,price:num,timeframe:tf,source_ids:arr(ref,2),known_at:time,kind:en('DR_BOUNDARY','FVG_FAR_BOUNDARY','RAID_BACKED_PA_EXTREME','H4_DR_BOUNDARY'),wick_breached:nullable(bool),wick_at:nullable(time),close_breached:nullable(bool),close_at:nullable(time),coverage:en('COMPLETE','UNVERIFIED')}));
+const methodScore=nullable(en(1,2,3,4,5));
+const narrativeMethod=obj({revision:en('narrative-method-1'),score_policy:en('QUALITY_1_TO_5_NOT_PROBABILITY'),delivery_policy:en('PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15'),primary_context:nullable(tf),mn1_w1_conflict:bool,contexts:arr(obj({timeframe:tf,position}),4),selection_status:en('AMBIGUOUS_TOP_SCORE','CANDIDATE_SELECTED','NO_CURRENT_SCORED_REACTION'),automatic_confirmation:en(false),probability:en(null),
+candidates:obj({items:arr(obj({selected:bool,A:obj({kind:en('FRACTAL','FVG','RB','SNR','DR_EQ'),timeframe:tf,lower:num,upper:num,entry:num,confirmed_at:time,source_ids:arr(ref,2)}),direction:en('Bullish','Bearish'),current_reaction:bool,
+quality:obj({score:methodScore,factors:arr(obj({code:en('BASE','HTF_PRIORITY','FAVORABLE_LOCATION','REPEATED_HOLDS','RAID_BACKED','MN1_W1_CONFLICT','TREND_CONFLICT','OPPOSING_HTF_POI'),delta:en(-1,0,1,2)}),8),hold_episodes:num,anchor_position:position}),
+delivery:nullable(obj({score:methodScore,timeframe:tf,from:nullable(time),through:nullable(time),contact_at:nullable(time),bars:num,efficiency:nullable(num),body_ratio:nullable(num),opposing:group,reason:en('INSUFFICIENT_APPROACH_HISTORY','NOT_APPROACHING_POI','IMPULSIVE_APPROACH','OPPOSING_PA_ON_APPROACH','WEAK_APPROACH','MIXED_APPROACH')})),
+B:nullable(obj({level:ref,timeframe:tf,price:num,confirmed_at:time})),target_count:num,obstacles:group,C:methodBoundary,entry_stop:methodBoundary,rr:nullable(obj({risk:num,reward:num,ratio:num,costs_included:en(false),minimum_required:en(null)})),entry_status:en('NOT_ENTERED'),narrative_status:en('CANDIDATE'),confirmed_narrative:en(null),review_required:en(true)}),2),total:num,omitted:num})});
+
+const schema=obj({narrative_method:optional(narrativeMethod),tda:optional(tda),published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
   error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
   diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','REQUEST_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','CAPITAL_UPSTREAM','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION)})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-5'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
@@ -266,6 +276,39 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
     Object.values(x).forEach(counts);
   }counts(value);
   validateTdaRelations(value);
+  validateNarrativeMethod(value);
+}
+
+function validateNarrativeMethod(value:unknown){
+ type E={kind:string;timeframe:string;lower:number;upper:number;confirmed_at:string;polarity:string;direction:string;lifecycle:{state:string;liquidity_consumed:boolean;fill?:{remaining?:{lower:number;upper:number}|null}}|null};
+ type Boundary={evaluated_through:string;price:number;timeframe:string;source_ids:string[];known_at:string;kind:string;wick_breached:boolean|null;wick_at:string|null;close_breached:boolean|null;close_at:string|null;coverage:string};
+ type Candidate={selected:boolean;direction:string;current_reaction:boolean;A:{kind:string;timeframe:string;lower:number;upper:number;entry:number;confirmed_at:string;source_ids:string[]};quality:{score:number|null;factors:{code:string;delta:number}[];hold_episodes:number;anchor_position:string};delivery:null|{score:number|null;from:string|null;through:string|null;contact_at:string|null;bars:number;efficiency:number|null;body_ratio:number|null;opposing:{total:number};reason:string};B:null|{level:string;timeframe:string;price:number;confirmed_at:string};C:Boundary|null;entry_stop:Boundary|null;rr:null|{risk:number;reward:number;ratio:number}};
+ const r=value as {as_of:string;evidence:Record<string,E>;frames:{timeframe:string;structure:{swing_basis:string;swing_bias:string;swing_evidence:string[]}}[];narrative_method?:{contexts:{timeframe:string;position:string}[];primary_context:string|null;mn1_w1_conflict:boolean;selection_status:string;candidates:{items:Candidate[]}}};
+ const m=r.narrative_method;if(!m)return;const order=['MN1','W1','D1','H4'],get=(id:string)=>{const e=r.evidence[id];if(!e)throw Error('MISSING_METHOD_EVIDENCE');return e;},clip=(n:number)=>Math.max(1,Math.min(5,n));
+ if(m.contexts.map(c=>c.timeframe).join(',')!==order.join(',')||m.primary_context!==(m.contexts.slice(0,3).find(c=>c.position!=='UNVERIFIED')?.timeframe??null))throw Error('INVALID_CONTEXT_PRIORITY');
+ const [mn,w]=m.contexts,conflict=m.primary_context==='MN1'&&['PREMIUM','DISCOUNT'].includes(mn.position)&&['PREMIUM','DISCOUNT'].includes(w.position)&&mn.position!==w.position;if(conflict!==m.mn1_w1_conflict)throw Error('INVALID_CONTEXT_CONFLICT');
+ for(const f of r.frames){const s=f.structure,es=s.swing_evidence.map(get);if(es.some(e=>e.kind!=='FRACTAL'||e.timeframe!==f.timeframe))throw Error('INVALID_TREND_EVIDENCE');
+  const h=es.filter(e=>e.polarity==='high'),l=es.filter(e=>e.polarity==='low');if(s.swing_basis==='OBSERVED_FRACTAL_SEQUENCE'){
+   if(h.length!==2||l.length!==2||h[0].confirmed_at>h[1].confirmed_at||l[0].confirmed_at>l[1].confirmed_at)throw Error('INVALID_TREND_SEQUENCE');
+   const bias=h[1].upper>h[0].upper&&l[1].lower>l[0].lower?'Bullish':h[1].upper<h[0].upper&&l[1].lower<l[0].lower?'Bearish':'Neutral';if(s.swing_bias!==bias)throw Error('FALSE_FRACTAL_TREND');
+  }else if(s.swing_basis==='INSUFFICIENT_CONFIRMED_PIVOTS'&&(s.swing_bias!=='Neutral'||h.length===2&&l.length===2))throw Error('FALSE_FRACTAL_TREND');
+ }
+ for(const c of m.candidates.items){const a=c.A,up=c.direction==='Bullish';if(a.lower>a.upper||a.entry!==(up?a.upper:a.lower)||a.confirmed_at>r.as_of||!a.source_ids.length)throw Error('INVALID_METHOD_A');
+  const sources=a.source_ids.map(get);if(sources.some(e=>e.confirmed_at>a.confirmed_at))throw Error('FUTURE_METHOD_A');
+  if(a.kind==='DR_EQ'){const h=sources.find(e=>e.polarity==='high'),l=sources.find(e=>e.polarity==='low');if(a.timeframe!=='H4'||sources.length!==2||!h||!l||sources.some(e=>e.kind!=='FRACTAL'||e.timeframe!=='H4')||a.entry!==(h.upper+l.lower)/2||a.lower!==a.upper)throw Error('INVALID_EQ_FALLBACK');}
+  else {const e=sources[0];if(sources.length!==1||e.timeframe!==a.timeframe||e.confirmed_at!==a.confirmed_at||e.kind!==({RB:'RB_TWO_CANDLE',SNR:'SNR_CLOSED_BREAK'}[a.kind]??a.kind)||a.lower<e.lower||a.upper>e.upper||e.kind==='FVG'&&e.lifecycle?.state!=='ACTIVE')throw Error('INVALID_METHOD_A');}
+  const q=c.quality;if(q.factors.map(f=>f.code).join(',')!=='BASE,HTF_PRIORITY,FAVORABLE_LOCATION,REPEATED_HOLDS,RAID_BACKED,MN1_W1_CONFLICT,TREND_CONFLICT,OPPOSING_HTF_POI'||q.factors[5].delta!==(conflict?-1:0)||!Number.isInteger(q.hold_episodes)||q.hold_episodes<0)throw Error('INVALID_SCORE_FACTORS');
+  const known=m.primary_context!==null&&['PREMIUM','DISCOUNT','EQUILIBRIUM'].includes(q.anchor_position),computed=clip(clip(q.factors.slice(0,5).reduce((n,f)=>n+f.delta,0))+q.factors.slice(5).reduce((n,f)=>n+f.delta,0));if(q.score!==(known?computed:null))throw Error('FALSE_QUALITY_SCORE');
+  const d=c.delivery;if(d){if(d.from&&d.through&&(d.from>d.through||d.through>r.as_of||d.contact_at&&d.through>d.contact_at)||d.contact_at&&d.contact_at>r.as_of||d.efficiency!==null&&(d.efficiency<0||d.efficiency>1)||d.body_ratio!==null&&d.body_ratio<0)throw Error('FUTURE_APPROACH_EVIDENCE');
+   if(d.score!==null){if(d.bars<3||d.bars>6||d.efficiency===null||d.body_ratio===null||!d.from||!d.through)throw Error('UNSUPPORTED_APPROACH_SCORE');const strong=d.efficiency>=0.7&&d.body_ratio>=1.5,weak=d.efficiency<=0.35&&d.body_ratio<=1,score=strong?(d.opposing.total?1:2):d.opposing.total?2:weak?5:d.body_ratio<=1?4:3;if(d.score!==score||['INSUFFICIENT_APPROACH_HISTORY','NOT_APPROACHING_POI'].includes(d.reason))throw Error('FALSE_APPROACH_SCORE');}
+  }
+  for(const b of [c.C,c.entry_stop])if(b){if(!b.source_ids.length||b.known_at<a.confirmed_at||b.known_at>r.as_of||b.evaluated_through>r.as_of||b.source_ids.map(get).some(e=>e.confirmed_at>b.known_at)||[b.wick_at,b.close_at].some(t=>t&&(t<b.known_at||t>b.evaluated_through))||b.wick_breached!==(b.wick_at?true:b.coverage==='COMPLETE'?false:null)||b.close_breached!==(b.close_at?true:b.coverage==='COMPLETE'?false:null))throw Error('INVALID_METHOD_C');}
+  if(c.entry_stop&&(c.entry_stop.wick_breached!==false||!(up?c.entry_stop.price<a.entry:c.entry_stop.price>a.entry)))throw Error('INVALID_ENTRY_STOP');
+  if(c.B){const b=get(c.B.level),bounds=b.lifecycle?.fill?.remaining??b; if(c.B.price!==(up?bounds.lower:bounds.upper)||b.kind==='FRACTAL'&&b.polarity!==(up?'high':'low')||b.kind==='FVG'&&b.direction!==(up?'bearish':'bullish'))throw Error('INVALID_TARGET_GEOMETRY');if(!['FRACTAL','FVG'].includes(b.kind)||b.timeframe!==c.B.timeframe||b.confirmed_at!==c.B.confirmed_at||b.lifecycle?.state!=='ACTIVE'||b.lifecycle.liquidity_consumed||!order.slice(order.indexOf(a.timeframe),order.indexOf(a.timeframe)+2).includes(b.timeframe)||!(up?c.B.price>a.entry:c.B.price<a.entry))throw Error('INVALID_METHOD_B');}
+  if(c.rr){if(!c.B||!c.entry_stop||!c.C||c.C.close_breached!==false)throw Error('RR_WITHOUT_ABC');const risk=up?a.entry-c.entry_stop.price:c.entry_stop.price-a.entry,reward=up?c.B.price-a.entry:a.entry-c.B.price;if(risk<=0||reward<=0||c.rr.risk!==risk||c.rr.reward!==reward||Math.abs(c.rr.ratio-reward/risk)>1e-10)throw Error('INVALID_RISK_REWARD');}
+  if(c.selected&&(!c.current_reaction||q.score===null||c.C?.close_breached===true||m.selection_status!=='CANDIDATE_SELECTED'))throw Error('FALSE_METHOD_SELECTION');
+ }
+ if(m.candidates.items.filter(c=>c.selected).length!==(m.selection_status==='CANDIDATE_SELECTED'?1:0))throw Error('MISSING_METHOD_SELECTION');
 }
 
 /** Cross-field checks shared with the publisher, beyond JSON shape validation. */

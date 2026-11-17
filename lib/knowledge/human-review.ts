@@ -3,7 +3,7 @@ export const REVIEW_QUESTIONS=[
  {id:'range',question:'Какие конкретные фракталы образуют актуальный DR? Где цена относительно Premium/Discount и почему это поддерживает сценарий?'},
  {id:'delivery',question:'Как цена подошла к A: сжатие, некорректированная экспансия или иначе? Укажите время и наблюдения; числовой порог автора не задан.'},
  {id:'reaction',question:'Какая закрытая реакция, raid или displacement поддерживает идею? Если VC не нужен, обоснуйте No VC без выдуманного сигнала.'},
- {id:'order_flow',question:'Какой документированный контекст Order Flow использован? HH/HL — проектное наблюдение, не авторский SOF. Если SOF не определён, явно укажите это.'},
+ {id:'order_flow',question:'Как соотносятся последние два подтверждённых максимума и минимума: HH/HL, LH/LL или смешанная последовательность? Учтите каждый TF; внутренний IDM не отменяет внешний DR автоматически.'},
  {id:'target',question:'Почему выбран B (Fractal/FVG на X или X−1)? Как учтены роль, снятая ликвидность, промежуточные препятствия, неполнота пути и инвалидация C?'},
 ] as const;
 export type HumanReview={evidence_sha256:string;as_of:string;reviewer:string;decision:'Bullish'|'Bearish'|'Neutral';answers:Record<string,string>;counterarguments:string[];C?:{price:number;timeframe:'MN1'|'W1'|'D1'|'H4';condition:'CLOSE_BEYOND';reason:string}};
