@@ -81,4 +81,47 @@ TypeScript прошёл. V4 replay: 12 случаев, 7290 закрытых п�
 Capital.com не выдаются за воспроизведение именно этих графиков. Это техническая
 регрессия, не независимая экспертная оценка торговой эффективности.
 
-Ссылки CI, HTTP и результат активации добавляются после фактических проверок.
+## Проверенная активация
+
+Основной сайт: https://capitalive.vercel.app/research . Runtime:
+`e5064c7956d7529cc6bfc8476b3fb4d859cc6f36`.
+Production `dpl_5KQBJS2vtzXqktBmawicWM6ctUSp`, READY, новая сборка с Production
+environment. Публичный доступ сохранён, SSO=null, без пароля.
+PR #11 слит в feature/the-edge-knowledge, приватный Bridge PR #8 — в main.
+Основной PR #2 не слит. [Состояние](verification/snr-v2/safety.json).
+
+[Финальный CI](https://github.com/Yilin1207/capitalive/actions/runs/44096631675)
+успешен: 251 unit, 10 browser, сборка, TypeScript, recorded HTTP, replay.
+[Companion CI](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44095937668)
+успешен, 13 publisher tests. Контракт в обоих репозиториях побайтно совпал.
+
+[Preview HTTP](verification/snr-v2/preview-http.json): шесть JSON, три полных
+Intelligence с проверкой SNR/RB и PNG прошли. Затем
+[Production HTTP](verification/snr-v2/production-http.json): шесть
+EURUSD/NAS100/JP225 × Bid/Ask — 200 application/json без авторизации,
+58411–64943 байта; H4 chart — 200 PNG с проверенной сигнатурой.
+Во всех отчётах есть SNR и RB, source commit совпадает, quote_status=FRESH,
+Confirmed Narrative=null. HTTP no-store и ограничения свежести сохранены.
+
+Рабочий Bridge теперь обращается к immutable Production:
+https://capitalive-49advwxpn-yilin1207s-projects.vercel.app .
+[Публикация 44097306935](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44097306935)
+успешна; атомарный commit `5df13b89e4867ad51eb3f3043ed1eb2d30f54ff2` в private main.
+Manifest и все три файла повторно прочитаны по этому commit; SHA-256, размеры,
+git blobs, timestamps, SNR/RB/DR metadata и source revision проверены.
+
+| Актив | Размер JSON | Статус | Верхняя граница возраста котировки при чтении |
+|---|---:|---|---:|
+| EURUSD | 58512 | PARTIAL / FRESH quote | 31.609 с |
+| NAS100 | 61402 | PARTIAL / FRESH quote | 31.361 с |
+| JP225 | 64965 | PARTIAL / FRESH quote | 30.194 с |
+
+Все прочитаны до expires_at. [Полное доказательство](verification/snr-v2/publication-readback.json).
+PARTIAL сохраняет ограничения полноты истории и сокращения отчёта; это не
+маскировка ошибки. GitHub snapshot истекает: актуальный анализ требует нового
+GET сайта или обновления публикации. Ранее обнаруженная недоступность домена
+во встроенном веб-инструменте ChatGPT не объявляется устранённой этими HTTP-тестами.
+
+Вердикт: **READY — SNR активирован в Production и рабочем Bridge**.
+Численные критерии импульса и оценки силы остаются явно обозначенными проектными
+допущениями для дальнейшего экспертного уточнения.

@@ -1,0 +1,476 @@
+{
+  "preview": "https://capitalive-amzu66qb4-yilin1207s-projects.vercel.app",
+  "engine_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+  "authenticated": false,
+  "checked_at": "2026-11-17T13:51:40.719Z",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58490,
+      "sha256": "e903f64394deaea50e33d8c0401efb9439c44b36bd128bbaab387b93062778b2",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:32.130Z",
+      "generated_at": "2026-11-17T13:50:36.087Z",
+      "expires_at": "2026-11-17T13:52:26.063Z",
+      "evidence_count": 31,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 13
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 19
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 20,
+          "fvg_only_weaker": 17,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 9,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 31,
+          "fvg_only_weaker": 63,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58410,
+      "sha256": "de5b61a1f78d3125fa3908bd8a50a21b9e2876eb72c94d532000fe05056bafae",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:32.130Z",
+      "generated_at": "2026-11-17T13:50:37.350Z",
+      "expires_at": "2026-11-17T13:52:26.063Z",
+      "evidence_count": 31,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 16,
+          "review_required": 11
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 42,
+          "review_required": 22
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 20,
+          "fvg_only_weaker": 17,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 9,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 32,
+          "fvg_only_weaker": 63,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61407,
+      "sha256": "da24bafc870e12f82c0aa080513cf621d558ce5dd5440b376b5d816ab52cfa6a",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:38.978Z",
+      "generated_at": "2026-11-17T13:50:41.369Z",
+      "expires_at": "2026-11-17T13:52:29.446Z",
+      "evidence_count": 32,
+      "rb_included": 5,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 35,
+          "review_required": 6
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 9,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 44,
+          "review_required": 19
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 5,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 19,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 30,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 31,
+          "fvg_only_weaker": 70,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61390,
+      "sha256": "6acfa6d6dc2a6be3ad11b9e8c939e1ecb92a0e0043be55291813fea69c7294db",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:38.978Z",
+      "generated_at": "2026-11-17T13:50:42.296Z",
+      "expires_at": "2026-11-17T13:52:29.446Z",
+      "evidence_count": 32,
+      "rb_included": 5,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 35,
+          "review_required": 6
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 9,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 44,
+          "review_required": 19
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 5,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 19,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 30,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 31,
+          "fvg_only_weaker": 70,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64969,
+      "sha256": "ae77c0337dccc2056f53f5d538554fd21105b6adb83a8278aae7930d44cf660e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:43.140Z",
+      "generated_at": "2026-11-17T13:50:44.410Z",
+      "expires_at": "2026-11-17T13:52:33.842Z",
+      "evidence_count": 38,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 9,
+          "review_required": 5
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 30,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 8
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 57,
+          "review_required": 14
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 14,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 21,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 21,
+          "fvg_only_weaker": 53,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64970,
+      "sha256": "88f7511f205c273f7169af0461dbbf3acf26b500f49728e7a83b0d6d18f71bc8",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T13:50:43.140Z",
+      "generated_at": "2026-11-17T13:50:45.285Z",
+      "expires_at": "2026-11-17T13:52:33.842Z",
+      "evidence_count": 38,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 9,
+          "review_required": 5
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 30,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 8
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 57,
+          "review_required": 14
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 14,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 21,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 21,
+          "fvg_only_weaker": 53,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.4",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    }
+  ],
+  "full": [
+    {
+      "symbol": "EURUSD",
+      "http": 200,
+      "bytes": 3588010,
+      "snr": 155,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 172,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "http": 200,
+      "bytes": 3290685,
+      "snr": 140,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 184,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "http": 200,
+      "bytes": 2907305,
+      "snr": 141,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 156,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    }
+  ],
+  "throttles": [],
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112343,
+    "png_signature": true
+  }
+}
