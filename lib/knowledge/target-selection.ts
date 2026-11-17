@@ -1,9 +1,11 @@
+import {currentBounds} from './fvg-remaining';
 import {TF_ORDER,type KeyLevel} from './detectors';
 import type {LevelState} from './level-state';
 import {provenance} from './rules';
 export type Direction='up'|'down';
 export type PathCompleteness='COMPLETE'|'PARTIAL'|'UNKNOWN';
 export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:number|null,direction:Direction|null,a:KeyLevel|null,requestedId?:string,universeCoverage:PathCompleteness='UNKNOWN'){
+ levels=levels.map(l=>currentBounds(l,states.find(s=>s.id===l.id)));
  const role=direction==='up'?'resistance':'support';
  const candidates=levels.filter(l=>['MN1','W1','D1'].includes(l.timeframe)&&l.id!==a?.id&&reference!==null&&(direction==='up'?l.lower>reference:direction==='down'?l.upper<reference:false)).map(l=>{
   const s=states.find(s=>s.id===l.id)!;const reasons:string[]=[];
@@ -25,7 +27,7 @@ export function selectTarget(levels:KeyLevel[],states:LevelState[],reference:num
  const pool=requestedId?candidates.filter(c=>c.id===requestedId):qualified.filter(c=>c.timeframe===structuralTf);
  const chosen=pool.length===1?pool[0]:null;
  const path=(choice:typeof candidates[number])=>levels.filter(l=>l.id!==choice.id&&l.id!==a?.id&&['MN1','W1','D1'].includes(l.timeframe)&&(direction==='up'?l.upper>reference!&&l.lower<choice.price:l.lower<reference!&&l.upper>choice.price)).flatMap(l=>{
-  const s=states.find(s=>s.id===l.id);if(s?.state==='INVALIDATED')return [];
+  const s=states.find(s=>s.id===l.id);if(s?.state==='INVALIDATED'||s?.state==='TESTED')return [];
   // Consumed original fractal liquidity is not reused as a confirmed obstacle.
   if(s?.state==='CONSUMED'&&s.role_status!=='RETEST_CONFIRMED')return [];
   if(s?.state==='ACTIVE'&&s.current_role!==role)return [];

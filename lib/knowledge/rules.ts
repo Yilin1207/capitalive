@@ -386,6 +386,7 @@ export function sourceCurrent(id: string) {
     (reviewedRevisions as Record<string, string>)[id] === d.revision
   );
 }
+RULES.push({...RULES.find(r=>r.id==='EDGE.LEVEL_STATE.v2')!,id:'EDGE.LEVEL_STATE.v3',version:3,definition:'FVG retains only the untested residual; full wick-depth fill is TESTED and never ACTIVE. Own-TF close invalidation remains separate.',unresolved:['Closed OHLC wick-depth is not tick-volume coverage. Missing history cannot prove an untouched residual. Full fill does not prove IFVG or a new role.']});
 export function provenance(id: string) {
   const r = rule(id),
     current = r.source_ids.every(sourceCurrent);

@@ -23,6 +23,13 @@ test('RB v2 combines FVG and reclaimed raid evidence, without turning FVG touch 
  const r=detectRejectionBlocks(frame(bull),[level('FVG'),level()]);assert.equal(r.length,2);assert.ok(r.every(x=>x.facts.basis==='FVG_AND_LIQUIDITY_RAID'&&x.facts.rb_liquidity_id===level().id&&x.facts.rb_fvg_id===level('FVG').id));
  const equal=detectRejectionBlocks(frame([[13,14,10,11],[11,15,10.5,14]]),[level('FVG'),level()]);assert.equal(equal.length,1);assert.equal(equal[0].facts.relative_quality,'WEAKER_FVG_ONLY');
 });
+test('RB v2 uses the FVG residual known before the pair, never a future fill or an already tested zone',()=>{
+ const l=level('FVG');
+ const f=frame([[11.8,12,10.5,11],[11,11.9,10.8,11.6]]);
+ assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(2),fraction:1}]}]).length,1);
+ assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(0),fraction:1}]}]).length,0);
+ assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(0),fraction:.8}]}]).length,0,'Pair only touches the already filled part above 10.4');
+});
 test('RB v2 permits either wick to raid but does not require a third fractal-confirming candle',()=>{
  const r=detectRejectionBlocks(frame([[13,14,10.5,11],[11,15,9,14]]),[level()]);assert.equal(r.length,1);assert.equal(r[0].candle_evidence.length,2);assert.equal(r[0].confirmed_at,at(2));
 });
@@ -53,5 +60,5 @@ test('RB compact report retains basis and evidence and rejects forged quality, l
 });
 test('RB-rich archived NAS100 stays below 64 KiB with honest counted omissions',()=>{
  const i=JSON.parse(readFileSync('tests/fixtures/htf-NAS100.json','utf8'));
- for(const side of ['bid','ask'] as const){const r=buildIntelligence(i.data,side,i.quote),now=new Date(Math.max(...Object.values(i.data as Record<string,{fetched_at:string}>).map(d=>Date.parse(d.fetched_at)),...['retrieved_at','fetched_at_utc','provider_timestamp','evaluated_at'].map(k=>Date.parse(i.quote[k])).filter(Number.isFinite))).toISOString();const report=buildDeskReport(r,i.data,i.quote,now);validateReport(report);assert.ok(Buffer.byteLength(JSON.stringify(report)+'\n')<=65536);assert.ok(report.coverage.budget_tier>=4);assert.ok(report.research_context.executive_evidence.omitted>0);for(const p of report.research_context.paths)if(p.obstacles.omitted)assert.notEqual(p.status,'COMPLETE');assert.ok(report.frames.every(f=>f.rb_quality.raid_backed+f.rb_quality.fvg_only_weaker===f.rb.total));}
+ for(const side of ['bid','ask'] as const){const r=buildIntelligence(i.data,side,i.quote),now=new Date(Math.max(...Object.values(i.data as Record<string,{fetched_at:string}>).map(d=>Date.parse(d.fetched_at)),...['retrieved_at','fetched_at_utc','provider_timestamp','evaluated_at'].map(k=>Date.parse(i.quote[k])).filter(Number.isFinite))).toISOString();const report=buildDeskReport(r,i.data,i.quote,now);validateReport(report);assert.ok(Buffer.byteLength(JSON.stringify(report)+'\n')<=65536);assert.ok(Number.isInteger(report.coverage.budget_tier)&&report.coverage.budget_tier>=0);assert.ok(report.research_context.executive_evidence.omitted>0);for(const p of report.research_context.paths)if(p.obstacles.omitted)assert.notEqual(p.status,'COMPLETE');assert.ok(report.frames.every(f=>f.rb_quality.raid_backed+f.rb_quality.fvg_only_weaker===f.rb.total));}
 });

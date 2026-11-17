@@ -34,10 +34,10 @@ test('V5.1 last closed movement is not stitched across a gap or replaced by a qu
   assert.equal(observedPriceBehaviour(f,[]).last_close_change,null);
   const other=buildIntelligence(i.data,'bid',{...i.quote,bid:1,ask:2});assert.deepEqual(other.research_context,r.research_context);
 });
-test('V5.1 filled ACTIVE FVG below price premise does not become verified resistance or support',()=>{
-  const s={...states.find(s=>s.kind==='FVG')!,state:'ACTIVE' as const,initial_role:'support' as const,current_role:'support' as const,role_status:'ORIGINAL_GEOMETRY' as const,
+test('FVG full test is historical and does not become verified resistance or support',()=>{
+  const s={...states.find(s=>s.kind==='FVG')!,state:'TESTED' as const,initial_role:'support' as const,current_role:'support' as const,role_status:'ORIGINAL_GEOMETRY' as const,
     lower:100,upper:110,fill:{state:'FILLED' as const,max_observed_fraction:1,first_test_at:null,last_test_at:null}};
-  const x=levelLifecycleExplanation(s,95);assert.equal(x.current_role,null);assert.equal(x.reference_position,'BELOW');assert.equal(x.original_geometry_role,'support');assert.ok(x.reasons.includes('FULL_FILL_IS_NOT_OWN_TF_INVALIDATION'));
+  const x=levelLifecycleExplanation(s,95);assert.equal(x.current_role,null);assert.equal(x.reference_position,'BELOW');assert.equal(x.original_geometry_role,'support');assert.ok(x.reasons.includes('FULL_FILL_TESTED_NOT_ACTIVE'));
   assert.equal(x.current_role_status,'UNVERIFIED');
 });
 test('V5.1 consumed liquidity is distinct from invalidated zone and no automatic role flip',()=>{
@@ -56,7 +56,16 @@ test('V5.1 HTF/LTF links are closed, causal, scoped to X-1/X-2 and trace real so
   for(const l of r.research_context.levels)for(const link of l.interactions){const f=byId.get(link.id)!;
     assert.ok(TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe)+1,TF_ORDER.indexOf(l.timeframe)+3).includes(link.timeframe));
     assert.ok(link.confirmed_at>l.confirmed_at&&link.confirmed_at<=r.as_of);
-    assert.ok(f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>c.time>=l.confirmed_at&&c.high>=l.lower&&c.low<=l.upper));}
+    const source=levels.find(s=>s.id===l.id)!;
+    assert.ok(f.facts.kl_id===l.id||f.facts.pivot_id===l.id||f.candle_evidence.some(c=>{
+      let lower=source.lower,upper=source.upper;
+      if(source.kind==='FVG'){
+        const prior=TF_ORDER.slice(TF_ORDER.indexOf(source.timeframe)).flatMap(tf=>frames[tf].bars.filter(b=>b.time>=source.confirmed_at&&b.end<=c.time&&b.low<=source.upper&&b.high>=source.lower));
+        if(source.role==='support')upper=Math.min(upper,...prior.map(b=>b.low));else lower=Math.max(lower,...prior.map(b=>b.high));
+        if(lower>=upper)return false;
+      }
+      return c.time>=source.confirmed_at&&c.high>=lower&&c.low<=upper;
+    }));}
 });
 test('V5.1 paths examine all four TF before presentation; omitted obstacles cannot be COMPLETE',()=>{
   const p=validatePathCompleteness(levels,states,frames,1,1e9,[],[]);

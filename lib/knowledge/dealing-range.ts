@@ -1,3 +1,4 @@
+import {levelAt} from './fvg-remaining';
 import type {Frame} from './data';
 import {TF_ORDER,selectRange,type Pivot,type KeyLevel,type Range} from './detectors';
 
@@ -22,7 +23,7 @@ export function detectDealingRange(frame:Frame,pivots:Pivot[],levels:KeyLevel[]=
     .sort((a,b)=>a.confirmed_at.localeCompare(b.confirmed_at)||pivotAt(a).localeCompare(pivotAt(b))||a.id.localeCompare(b.id));
   let seed:Pivot|null=null,current:DirectionalRange|null=null;
   const byId=new Map(eligible.map(p=>[p.id,p]));
-  const originContext=(p:Pivot)=>levels.filter(l=>l.qualified&&TF_ORDER.indexOf(l.timeframe)<=TF_ORDER.indexOf(frame.timeframe)&&l.confirmed_at<=pivotAt(p)&&
+  const originContext=(p:Pivot)=>levels.map(l=>levelAt(l,p.candle_evidence[0]?.time??p.origin)).filter((l):l is KeyLevel=>!!l).filter(l=>l.qualified&&TF_ORDER.indexOf(l.timeframe)<=TF_ORDER.indexOf(frame.timeframe)&&l.confirmed_at<=pivotAt(p)&&
     (!l.invalidated_at||l.invalidated_at>p.confirmed_at)&&l.source_finding.id!==p.id&&
     l.role===(p.polarity==='low'?'support':'resistance')&&p.candle_evidence.some(c=>c.time>=l.confirmed_at&&c.high>=l.lower&&c.low<=l.upper)&&
     (p.polarity==='low'?p.candle_evidence.at(-1)!.close>l.upper:p.candle_evidence.at(-1)!.close<l.lower)&&

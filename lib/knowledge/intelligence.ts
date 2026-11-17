@@ -1,3 +1,4 @@
+import {fvgTestTimeline,currentBounds} from './fvg-remaining';
 import type { CandleResponse, PriceSide, Timeframe } from "../candle-data";
 import type { MarketQuote } from "../quote-normalization";
 import { closedFrame, type Frame } from "./data";
@@ -90,6 +91,7 @@ export function buildIntelligence(
       };
     }),
   );
+  for(const l of allLevels)if(l.kind==='FVG')Object.assign(l,{fvg_test_steps:fvgTestTimeline(l,Object.values(frames))});
   const perFrame = bases.map(({ tf, frame, pivots, fvg }) => {
     const context = allLevels.filter(
       (l) => TF_ORDER.indexOf(l.timeframe) <= TF_ORDER.indexOf(tf),
@@ -141,7 +143,7 @@ export function buildIntelligence(
   const dealingRangeReviews=perFrame.map(f=>({timeframe:f.timeframe,
     selected:(f.range??f.dr_detection.current)?validateDealingRangeEvidence((f.range??f.dr_detection.current)!,states,frames[f.timeframe],detected,!f.range&&f.dr_detection.status==='ESTABLISHED'):null,
     candidates:f.range_candidates.candidates.filter(range=>range.basis==='KL_REACTION_LOCAL_DR_REQUIRES_REVIEW').map(range=>({range,validation:validateDealingRangeEvidence(range,states,frames[f.timeframe],detected)}))}));
-  const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...l,role:states.find(s=>s.id===l.id)!.current_role??l.role}));
+  const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...currentBounds(l,states.find(s=>s.id===l.id)),role:states.find(s=>s.id===l.id)!.current_role??l.role}));
   const hierarchy=resolveHierarchy(active,reference,options.anchor_id),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
   // Empty/unknown frames cannot prove an obstacle-free path. Calendar, finite
   // history and detector boundary limitations remain explicit even if no IDs were truncated.
@@ -179,7 +181,7 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',fvg_revision:'fvg-unfilled-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
   const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
   const narrative = {
     ...provenance("EDGE.NARRATIVE.v3"),
@@ -353,7 +355,7 @@ export function buildIntelligence(
       },
       quote_used_as_closed_evidence: false,
     },
-    levels: {state_rule:provenance('EDGE.LEVEL_STATE.v2'),test_episodes_policy:'Sum of per-timeframe episodes; overlapping TF observations are not independent tests',detected_levels:detected.map(l=>({id:l.id,kind:l.kind,timeframe:l.timeframe,lower:l.lower,upper:l.upper,initial_role:l.role,confirmed_at:l.confirmed_at,source_finding_id:l.source_finding.id})),active_level_ids:active.map(l=>l.id),states:states.map(({sources,rule_status,specification,invalidation,...state})=>state)},
+    levels: {state_rule:provenance('EDGE.LEVEL_STATE.v3'),test_episodes_policy:'Sum of per-timeframe episodes; overlapping TF observations are not independent tests',detected_levels:detected.map(l=>({id:l.id,kind:l.kind,timeframe:l.timeframe,lower:l.lower,upper:l.upper,initial_role:l.role,confirmed_at:l.confirmed_at,source_finding_id:l.source_finding.id})),active_level_ids:active.map(l=>l.id),states:states.map(({sources,rule_status,specification,invalidation,...state})=>state)},
     target_selection: targetSelection,
     frames: perFrame,
     narrative,
