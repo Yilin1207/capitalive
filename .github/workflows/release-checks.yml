@@ -24,6 +24,7 @@ jobs:
       - run: npm run knowledge:replay
       - run: npm run knowledge:replay:v2
       - run: npm run knowledge:replay:v4
+      - run: node --conditions=react-server --import tsx scripts/verify-pa-v6.ts
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm run build

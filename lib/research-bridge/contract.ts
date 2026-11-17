@@ -1,6 +1,7 @@
+import {validatePaReport} from '../pa-engine/contract.ts';
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.7';
+export const CONTRACT_REVISION='pa-engine-v6.1';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -123,6 +124,7 @@ function check(v:unknown,s:Spec,path='report'):void {
 
 /** Unknown keys, raw OHLC, free text and unresolved evidence refs fail closed before publication. */
 export function validateReport(value:unknown,symbol?:string,now?:number,secrets:string[]=[]):void {
+  if(value&&typeof value==='object'&&'schema_version'in value&&value.schema_version==='pa-engine-v6'){validatePaReport(value,symbol,now,secrets);return;}
   const serialized=JSON.stringify(value);
   if(Buffer.byteLength(serialized)+1>MAX_REPORT_BYTES)throw Error('REPORT_TOO_LARGE');
   if(secrets.some(s=>s.length>=8&&serialized.includes(s))||/gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,}|Bearer\s+[A-Za-z0-9._-]{20,}/.test(serialized))throw Error('SECRET_IN_REPORT');

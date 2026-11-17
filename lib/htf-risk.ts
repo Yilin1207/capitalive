@@ -12,8 +12,8 @@ export function calculateStructuralRisk(analyses: SeriesAnalysis[], catalog: Ret
   const scenario=(direction:'long'|'short')=>({direction,entry:null,entry_side:direction==='long'?'ask':'bid',exit_side:direction==='long'?'bid':'ask',
     structural_sl:null,setup:null,distance_to_sl:null,first_obstacle:null,first_opposing_obstacle:null,distance_to_first_obstacle:null,
     principal_tp:null,distance_to_tp:null,rr_to_obstacle:null,rr_to_tp:null,obstacles_before_tp:[] as ReturnType<typeof classifyObstacles>['before_tp'],current_zones:[] as ReturnType<typeof classifyObstacles>['current_zones'],uncertain_zones:[],obstacles_at_or_beyond_tp:[],
-    obstacle_policy:'Author A-to-B evidence is available in /api/intelligence; legacy heuristic risk disabled.',reason:'NEEDS_SPECIFICATION'});
+    obstacle_policy:'PA_ONLY: technical evidence is available in /api/desk-report; automatic scenario and risk interpretation are disabled.',reason:'NEEDS_SPECIFICATION'});
   return {hypothetical_entry:entry,entry_reference_side:context?.side??null,spread,spread_status:spread===null?'UNVERIFIED':'OBSERVED_SNAPSHOT',
     quote_fresh:q?.fresh??false,long:scenario('long'),short:scenario('short'),
-    assumptions:'No inferred protected-swing stop, principal TP, order execution, position sizing or aggregate risk decision. Author technical invalidation is exposed separately by intelligence.'};
+    mode:'PA_ONLY',automatic_selection:'DISABLED',assumptions:'No inferred entry, stop, TP, RR, order execution, position sizing or aggregate risk decision. Only externally supplied hypothetical entry may be echoed for compatibility.'};
 }
