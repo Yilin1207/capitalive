@@ -1,0 +1,494 @@
+[
+  {
+    "set": "archive",
+    "symbol": "EURUSD",
+    "side": "bid",
+    "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+    "as_of": "2026-11-12T09:53:10.052Z",
+    "closed_prefixes": 606,
+    "findings": 1044,
+    "report_bytes": 62132,
+    "report_sha256": "828ea7257d2a6d04238fe74a202fba1007d150440d65efadccf73f7ff2c36af8",
+    "budget_tier": 2,
+    "wire_bytes": 2756642,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 2
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 1
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4565
+  },
+  {
+    "set": "archive",
+    "symbol": "EURUSD",
+    "side": "ask",
+    "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+    "as_of": "2026-11-12T09:53:10.052Z",
+    "closed_prefixes": 606,
+    "findings": 1047,
+    "report_bytes": 64452,
+    "report_sha256": "288aebeae1ab85e63af2cb24d759771be1a6ac757dc9a55f572edc5a4b0ae8f2",
+    "budget_tier": 2,
+    "wire_bytes": 2755041,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 2
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 1
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4116
+  },
+  {
+    "set": "archive",
+    "symbol": "NAS100",
+    "side": "bid",
+    "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+    "as_of": "2026-11-12T09:53:06.051Z",
+    "closed_prefixes": 607,
+    "findings": 1080,
+    "report_bytes": 61475,
+    "report_sha256": "3515b4c7a54ccb986fcfebf1742951c05fa15b77baa118bd1699b6649aafa37b",
+    "budget_tier": 3,
+    "wire_bytes": 2763437,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 0
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 1
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4787
+  },
+  {
+    "set": "archive",
+    "symbol": "NAS100",
+    "side": "ask",
+    "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+    "as_of": "2026-11-12T09:53:06.051Z",
+    "closed_prefixes": 607,
+    "findings": 1080,
+    "report_bytes": 61420,
+    "report_sha256": "5d9c30014c6c0966ee67e4a74dd4806d3be45fc4709cde986de7773f4a6e6b92",
+    "budget_tier": 3,
+    "wire_bytes": 2763319,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 0
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 1
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4445
+  },
+  {
+    "set": "archive",
+    "symbol": "EU50",
+    "side": "bid",
+    "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+    "as_of": "2026-11-12T09:53:12.708Z",
+    "closed_prefixes": 608,
+    "findings": 1075,
+    "report_bytes": 60418,
+    "report_sha256": "3e82a96442015eb90a571c9b2937a3ee66d86fabafe1ca8b22ad6691ab142c93",
+    "budget_tier": 3,
+    "wire_bytes": 2934194,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 1
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 0
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4962
+  },
+  {
+    "set": "archive",
+    "symbol": "EU50",
+    "side": "ask",
+    "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+    "as_of": "2026-11-12T09:53:12.708Z",
+    "closed_prefixes": 608,
+    "findings": 1070,
+    "report_bytes": 60404,
+    "report_sha256": "7b0b633b8a5f697d2599a61cbc65696f3f5f1e10a5932c7eeadd76690a0cd5f8",
+    "budget_tier": 3,
+    "wire_bytes": 2912516,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 1
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 0
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4711
+  },
+  {
+    "set": "control",
+    "symbol": "EURUSD",
+    "side": "bid",
+    "input_sha256": "6ed370edcd83a11aa8273eae738a859b36351a707b63f4560dbb406d4acd7421",
+    "as_of": "2026-11-15T12:36:56.840Z",
+    "closed_prefixes": 607,
+    "findings": 1052,
+    "report_bytes": 60020,
+    "report_sha256": "309b954dadfa63b072a531c093838e22a294d705d1c45fc164965dbf10c193c6",
+    "budget_tier": 3,
+    "wire_bytes": 2771210,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 2
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 0
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4075
+  },
+  {
+    "set": "control",
+    "symbol": "EURUSD",
+    "side": "ask",
+    "input_sha256": "6ed370edcd83a11aa8273eae738a859b36351a707b63f4560dbb406d4acd7421",
+    "as_of": "2026-11-15T12:36:56.840Z",
+    "closed_prefixes": 607,
+    "findings": 1058,
+    "report_bytes": 59986,
+    "report_sha256": "994f7dd50c4cb482ed840aba12880b2650b5245cd729435013448d930def2c9e",
+    "budget_tier": 3,
+    "wire_bytes": 2778536,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 2
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 0
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4114
+  },
+  {
+    "set": "control",
+    "symbol": "NAS100",
+    "side": "bid",
+    "input_sha256": "7acae3d4b60889e618248e316d5653541eb53b1886e02b131846bdbdd133258a",
+    "as_of": "2026-11-15T12:36:56.861Z",
+    "closed_prefixes": 608,
+    "findings": 1092,
+    "report_bytes": 65326,
+    "report_sha256": "536c5df1ceadcbdff3e60641ee963d403a803024dc420531cb00d357554ff454",
+    "budget_tier": 3,
+    "wire_bytes": 2801205,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 0
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 2
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4473
+  },
+  {
+    "set": "control",
+    "symbol": "NAS100",
+    "side": "ask",
+    "input_sha256": "7acae3d4b60889e618248e316d5653541eb53b1886e02b131846bdbdd133258a",
+    "as_of": "2026-11-15T12:36:56.861Z",
+    "closed_prefixes": 608,
+    "findings": 1092,
+    "report_bytes": 65292,
+    "report_sha256": "331f21b8583806db655f06164cb25b26cd90a9ac3e848255f454a9a0c5fbd78f",
+    "budget_tier": 3,
+    "wire_bytes": 2801218,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 0
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 2
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4617
+  },
+  {
+    "set": "control",
+    "symbol": "EU50",
+    "side": "bid",
+    "input_sha256": "52dc2063d156fe52a7adc4e854349a6381e84fa49ae6cd82eb2c6af44ad6ebc5",
+    "as_of": "2026-11-15T12:36:57.919Z",
+    "closed_prefixes": 609,
+    "findings": 1078,
+    "report_bytes": 63301,
+    "report_sha256": "0fc6168e7b73cac2a81c16e27ce840aea0dd350b001b8ad6e46d2139f226a909",
+    "budget_tier": 3,
+    "wire_bytes": 2934852,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 1
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 2
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 5046
+  },
+  {
+    "set": "control",
+    "symbol": "EU50",
+    "side": "ask",
+    "input_sha256": "52dc2063d156fe52a7adc4e854349a6381e84fa49ae6cd82eb2c6af44ad6ebc5",
+    "as_of": "2026-11-15T12:36:57.919Z",
+    "closed_prefixes": 609,
+    "findings": 1075,
+    "report_bytes": 61461,
+    "report_sha256": "5c52dce1c235e1f609a7f86c06e51b780ae42dcb4d351c8876fdba7ef685aef9",
+    "budget_tier": 3,
+    "wire_bytes": 2917900,
+    "range_candidates": [
+      {
+        "tf": "MN1",
+        "total": 1
+      },
+      {
+        "tf": "W1",
+        "total": 1
+      },
+      {
+        "tf": "D1",
+        "total": 0
+      },
+      {
+        "tf": "H4",
+        "total": 2
+      }
+    ],
+    "differential": {
+      "status": "BASELINE_NOT_SUPPLIED",
+      "removed": {},
+      "added": {},
+      "changed_findings": 0,
+      "changed_states": {},
+      "unexplained": 0
+    },
+    "result": "PASS",
+    "duration_ms": 4807
+  }
+]

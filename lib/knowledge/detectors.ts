@@ -1,3 +1,4 @@
+import {levelAt,type FvgTestStep} from './fvg-remaining';
 import type { Frame, Bar } from "./data";
 import { contiguous } from "./data";
 import type { Timeframe } from "../candle-data";
@@ -51,6 +52,7 @@ export type KeyLevel = {
   continuity_end?: string;
   source_finding: Finding;
   qualified: boolean;
+  fvg_test_steps?: FvgTestStep[];
 };
 export type Range = {
   high_id: string;
@@ -303,7 +305,7 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
     if (!contiguous([a, b]) || b.end>frame.as_of) continue;
     const up=a.close<a.open&&b.close>b.open,down=a.close>a.open&&b.close<b.open;
     if(!up&&!down)continue; // Doji and a lone rejection do not form RB.
-    const eligible=context.filter(kl=>knownLevel(kl,a,frame)&&knownLevel(kl,b,frame)&&
+    const eligible=context.map(l=>levelAt(l,a.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>knownLevel(kl,a,frame)&&knownLevel(kl,b,frame)&&
       (!kl.invalidated_at||kl.invalidated_at>b.end)&&['FRACTAL','FVG'].includes(kl.kind)&&
       kl.role===(up?'support':'resistance')&&(interaction(a,kl)||interaction(b,kl))&&
       (kl.kind==='FVG'||((up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower)&&
@@ -367,9 +369,9 @@ export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLev
     const breakout=later.find(x=>resistance?x.close>upper:x.close<lower);
     if(!breakout)continue;
     const eligible=(kl:KeyLevel,x:Bar)=>['FRACTAL','FVG'].includes(kl.kind)&&knownLevel(kl,x,frame)&&(!kl.invalidated_at||kl.invalidated_at>breakout.end)&&knownLevel(kl,breakout,frame)&&interaction(x,kl)&&kl.role===(resistance?'support':'resistance');
-    const delivery=later.find(x=>x.index<=breakout.index&&context.some(kl=>eligible(kl,x)));
+    const delivery=later.find(x=>x.index<=breakout.index&&context.some(l=>{const kl=levelAt(l,x.time);return kl&&eligible(kl,x);}));
     if(!delivery)continue;
-    const kl=context.filter(kl=>eligible(kl,delivery)).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
+    const kl=context.map(l=>levelAt(l,delivery.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>eligible(kl,delivery)).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
     const formation=snrFormationContext(frame,a,b,delivery,breakout,lower,resistance,context,lowerLevels);
     out.push(event(frame,'SNR','SNR_CLOSED_BREAK',[a,b,delivery,breakout],{
       kl_id:kl.id,lower,upper,direction:resistance?'bullish':'bearish',old_role:resistance?'resistance':'support',proposed_role:resistance?'support':'resistance',
@@ -383,7 +385,8 @@ export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLev
 export function detectIdm(frame: Frame, pivots: Pivot[], pois: KeyLevel[]) {
   const out: Finding[] = [];
   for (const p of pivots)
-    for (const poi of pois) {
+    for (const sourcePoi of pois) {
+      const poi=levelAt(sourcePoi,p.candle_evidence[0]?.time??p.origin);if(!poi)continue;
       const gap =
         TF_ORDER.indexOf(frame.timeframe) - TF_ORDER.indexOf(poi.timeframe);
       if (
@@ -600,7 +603,7 @@ export function measureCompression(
 ) {
   const last = frame.bars.at(-1);
   if (!last) return [];
-  const active = context.filter((l) => knownLevel(l, last, frame)),
+  const active = context.map(l=>levelAt(l,last.time)).filter((l):l is KeyLevel=>!!l).filter((l) => knownLevel(l, last, frame)),
     sequence = pivots.filter(
       (p) => p.variant === 3 && p.segment === last.segment,
     );

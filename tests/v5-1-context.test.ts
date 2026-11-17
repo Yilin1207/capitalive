@@ -34,10 +34,10 @@ test('V5.1 last closed movement is not stitched across a gap or replaced by a qu
   assert.equal(observedPriceBehaviour(f,[]).last_close_change,null);
   const other=buildIntelligence(i.data,'bid',{...i.quote,bid:1,ask:2});assert.deepEqual(other.research_context,r.research_context);
 });
-test('V5.1 filled ACTIVE FVG below price premise does not become verified resistance or support',()=>{
-  const s={...states.find(s=>s.kind==='FVG')!,state:'ACTIVE' as const,initial_role:'support' as const,current_role:'support' as const,role_status:'ORIGINAL_GEOMETRY' as const,
+test('FVG full test is historical and does not become verified resistance or support',()=>{
+  const s={...states.find(s=>s.kind==='FVG')!,state:'TESTED' as const,initial_role:'support' as const,current_role:'support' as const,role_status:'ORIGINAL_GEOMETRY' as const,
     lower:100,upper:110,fill:{state:'FILLED' as const,max_observed_fraction:1,first_test_at:null,last_test_at:null}};
-  const x=levelLifecycleExplanation(s,95);assert.equal(x.current_role,null);assert.equal(x.reference_position,'BELOW');assert.equal(x.original_geometry_role,'support');assert.ok(x.reasons.includes('FULL_FILL_IS_NOT_OWN_TF_INVALIDATION'));
+  const x=levelLifecycleExplanation(s,95);assert.equal(x.current_role,null);assert.equal(x.reference_position,'BELOW');assert.equal(x.original_geometry_role,'support');assert.ok(x.reasons.includes('FULL_FILL_TESTED_NOT_ACTIVE'));
   assert.equal(x.current_role_status,'UNVERIFIED');
 });
 test('V5.1 consumed liquidity is distinct from invalidated zone and no automatic role flip',()=>{

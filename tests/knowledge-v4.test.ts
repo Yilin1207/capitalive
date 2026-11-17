@@ -60,7 +60,7 @@ test('V4: FVG touch, partial fill, full wick fill and closed invalidation are di
  const l={...level('support','FVG'),lower:8,upper:10};
  const evaluate=(low:number,close:number)=>assessLevel(l,all([b(0,168,11,12,10,11),b(168,336,11,12,low,close)],336),t(336),t(336));
  assert.equal(evaluate(10,11).fill?.state,'TOUCHED');assert.equal(evaluate(9,11).fill?.max_observed_fraction,.5);
- assert.equal(evaluate(8,11).fill?.state,'FILLED');assert.equal(evaluate(8,11).state,'ACTIVE');
+ assert.equal(evaluate(8,11).fill?.state,'FILLED');assert.equal(evaluate(8,11).state,'TESTED');
  assert.equal(evaluate(7,7.5).state,'INVALIDATED');assert.equal(evaluate(7,7.5).current_role,null);
 });
 test('DR correction: candidates follow the chronological outer range instead of arbitrary pairs',()=>{

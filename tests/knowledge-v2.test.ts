@@ -53,8 +53,8 @@ test('V2 exact fractal touch does not consume liquidity; strict wick does',()=>{
 });
 test('V2 FVG lower-TF breach is not inversion; own-TF close invalidates at its known close',()=>{
  const a={...level('support','FVG'),lower:6,upper:9},f=frames([origin()],'W1',192);f.D1.bars=[bar(168,192,8,9,4,5)];
- const lower=assessLevel(a,f,at(192),at(192));assert.equal(lower.state,'ACTIVE');assert.equal(lower.invalidated_at,null);assert.equal(lower.lower_tf_breach?.confirmed_at,at(192));
+ const lower=assessLevel(a,f,at(192),at(192));assert.equal(lower.state,'TESTED');assert.equal(lower.invalidated_at,null);assert.equal(lower.lower_tf_breach?.confirmed_at,at(192));
  f.W1.bars.push(bar(168,336,8,10,4,8));f.W1.as_of=at(336);
- const held=assessLevel(a,f,at(336),at(336));assert.equal(held.state,'ACTIVE');assert.equal(held.lower_tf_breach,null);
+ const held=assessLevel(a,f,at(336),at(336));assert.equal(held.state,'TESTED');assert.equal(held.lower_tf_breach,null);
  f.W1.bars[1].close=5;const invalid=assessLevel(a,f,at(336),at(336));assert.equal(invalid.state,'INVALIDATED');assert.equal(invalid.invalidated_at,at(336));assert.equal(invalid.initial_role,'support');assert.equal(invalid.current_role,null);
 });
