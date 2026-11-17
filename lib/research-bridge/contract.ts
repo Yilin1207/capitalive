@@ -1,6 +1,6 @@
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
 export const MAX_REPORT_BYTES=65_536;
-export const CONTRACT_REVISION='desk-report-v2.5';
+export const CONTRACT_REVISION='desk-report-v2.6';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
 export type BridgeDiagnostic={stage:FailureStage;code:string;http_status:number|null;response_bytes:number|null;media_type:'json'|'html'|'other'|null;contract_revision:typeof CONTRACT_REVISION};
 export class BridgeFailure extends Error {
@@ -77,7 +77,15 @@ const researchContext=obj({revision:en('context-5.1'),review_required:en(true),a
   dealing_range_reviews:arr(obj({timeframe:tf,detection:optional(obj({revision:en('dr-sequence-1'),status:en('ESTABLISHED','AWAITING_CONFIRMED_PAIR','AWAITING_NEW_EXTREME'),reason:code,direction:en('Bullish','Bearish',null),high:nullable(ref),low:nullable(ref),lower:nullable(num),upper:nullable(num),equilibrium:nullable(num),start_at:nullable(time),end_at:nullable(time),confirmed_at:nullable(time),close_break_at:nullable(time),last_wick_raid_at:nullable(time),premium_discount:en('PREMIUM','DISCOUNT','EQUILIBRIUM',null),origin_context:group,parent_ranges:num,internal_fractals:num,local_candidates:num,transitions:num,internal_classification:en('INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM'),significance:en('REVIEW_REQUIRED'),narrative_confirmed:en(false)})),selected:nullable(rangeReview),candidates:obj({items:arr(rangeReview,1),total:num,omitted:num})}),4),
   paths:arr(obj({target:ref,from:nullable(num),to:nullable(num),from_basis:en('ANCHOR_BOUNDARY','LAST_CLOSED_H4'),status:en('COMPLETE','PARTIAL','UNVERIFIED'),obstacles:group,ohlc_coverage:en('COMPLETE','PARTIAL'),free_path_proven:en(false),reasons:arr(code,10)}),3),
   full_inspection:obj({path:en('/api/intelligence'),mode:en('inspection'),snapshot_sha256:hex,as_of:time,requires_authorization:bool})});
-const schema=obj({published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
+const tda=obj({revision:en('tda-notion-1'),scope:en('SWING_MN1_TO_H4'),target_policy:en('X_OR_X_MINUS_1'),trigger_policy:en('FRACTAL_ONLY'),automatic_narrative_confirmation:en(false),selected_anchor:nullable(ref),unavailable_timeframes:arr(en('H1','M15'),2),
+ anchors:obj({items:arr(obj({level:ref,eligible_as_poi:en(true),liquidity_available:nullable(bool),context:en('PRICE_AT_POI','REACTION_HISTORY','AWAITING_DELIVERY'),last_contact_at:nullable(time),review_required:en(true),vc:group,vc_timeframe:nullable(tf),vc_status:en('LOWER_TIMEFRAME_UNAVAILABLE','VC_OBSERVED','AWAITING_VC'),triggers:group,
+ refinements:obj({items:arr(obj({trigger:ref,confirmed_at:time,vc:group,vc_timeframe:nullable(tf),status:en('LOWER_TIMEFRAME_UNAVAILABLE','VC_OBSERVED','AWAITING_VC'),parent_confirmation_required:en(false)}),2),total:num,omitted:num}),
+ range:nullable(obj({timeframe:tf,high:ref,low:ref,confirmed_at:time})),premium_discount:en('DISCOUNT','PREMIUM','EQUILIBRIUM','UNVERIFIED'),opposing:group,
+ delivery:nullable(obj({timeframe:tf,at:time,body:num,range:num,body_fraction:nullable(num),compression:en('QUALITATIVE_REVIEW'),uncorrected_expansion:en('QUALITATIVE_REVIEW')})),limitations:arr(code,8)}),3),total:num,omitted:num}),
+ range_pois:arr(obj({timeframe:tf,high:ref,low:ref,confirmed_at:time,directional_anchor:en(false),triggers:group,review_required:en(true)}),4),
+ potential_target:nullable(ref),target_status:en('POTENTIAL_TARGET_IDENTIFIED','TARGET_NOT_SELECTED'),path_completeness:en('COMPLETE','PARTIAL','UNKNOWN'),free_path_proven:en(false),probability:en(null)});
+
+const schema=obj({tda:optional(tda),published_at:optional(nullable(time)),freshness:optional(obj({quote_retrieved_at:nullable(time),quote_status:en('FRESH','STALE','MARKET_CLOSED'),data_quality:code,stale_reasons:arr(code,10),quote_max_seconds:num,h4_max_delay_seconds:num,h4_delay_seconds:num,source_age_seconds:num,delivery_max_seconds:num})),technical_only:optional(en(true)),details:optional(obj({path:en('/api/intelligence'),snapshot_sha256:hex})),schema_version:en('desk-report-v2'),symbol:en('EURUSD','NAS100','JP225','EU50'),status:en('ERROR','STALE','UNVERIFIED','PARTIAL'),generated_at:time,as_of:nullable(time),expires_at:time,
   error:en(null,'UPSTREAM_UNAVAILABLE','INVALID_REQUEST','INVALID_EVIDENCE','REPORT_TOO_LARGE','TRANSPORT_ERROR','UNTRUSTED_RESPONSE','HTTP_ERROR','SCHEMA_ERROR','EXPIRED_REPORT'),
   diagnostic:optional(obj({stage:en('http','schema','size','expiry','provider','publish'),code:en('NETWORK_ERROR','TIMEOUT','HTTP_STATUS','HTTP_REDIRECT','CONTENT_TYPE','INVALID_JSON','CONTRACT_REJECTED','CONTRACT_REVISION_MISMATCH','REPORT_TOO_LARGE','REPORT_EXPIRED','INVALID_REPORT_TIME','SECRET_IN_REPORT','UPSTREAM_UNAVAILABLE','CAPITAL_CONFIG','CAPITAL_AUTH','CAPITAL_RATE_LIMIT','REQUEST_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY','CANDLES_UNAVAILABLE','CAPITAL_TIMEOUT','CAPITAL_INVALID_RESPONSE','CAPITAL_UPSTREAM','INVALID_EVIDENCE','GITHUB_HTTP_ERROR','PRIVATE_REPOSITORY_REQUIRED','INVALID_PUBLICATION','CONFIGURATION_ERROR','PUBLISH_FAILED'),http_status:nullable(num),response_bytes:nullable(num),media_type:en('json','html','other',null),contract_revision:en(CONTRACT_REVISION)})),
   source:nullable(obj({provider:en('Capital.com'),environment:en('demo','live'),analysis_schema:en('edge-knowledge-5'),price_side:en('bid','ask'),engine_commit:nullable(str(/^[a-f0-9]{40}$/,40)),evidence_sha256:hex,demo_live_equivalence:en('NOT_ESTABLISHED'),full_ohlc_published:en(false)})),
@@ -257,4 +265,38 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
     if(Array.isArray(x.items)&&typeof x.total==='number'&&typeof x.omitted==='number'&&(!Number.isInteger(x.total)||!Number.isInteger(x.omitted)||x.omitted<0||x.total!==x.items.length+x.omitted))throw Error('INVALID_COVERAGE_COUNTS');
     Object.values(x).forEach(counts);
   }counts(value);
+  validateTdaRelations(value);
+}
+
+/** Cross-field checks shared with the publisher, beyond JSON shape validation. */
+function validateTdaRelations(value:unknown){
+ type Group={items:string[];total:number;omitted:number};
+ type Pair={timeframe:string;high:string;low:string;confirmed_at:string};
+ type Evidence={kind:string;timeframe:string;confirmed_at:string;lower:number;upper:number;polarity:string;direction:string;candle_refs:number[];lifecycle:{state:string;coverage:string;liquidity_consumed:boolean}|null};
+ type Anchor={level:string;liquidity_available:boolean|null;last_contact_at:string|null;vc:Group;vc_timeframe:string|null;vc_status:string;triggers:Group;refinements:{items:{trigger:string;confirmed_at:string;vc:Group;vc_timeframe:string|null;status:string}[]};range:Pair|null;delivery:{at:string}|null};
+ const r=value as {as_of:string;scenario:{A:{selected:string|null}}|null;evidence:Record<string,Evidence>;candle_windows:string[][];tda?:{selected_anchor:string|null;anchors:{items:Anchor[]};range_pois:(Pair&{triggers:Group})[];potential_target:string|null;target_status:string}};
+ const t=r.tda;if(!t)return;const order=['MN1','W1','D1','H4'],next=(tf:string)=>order[order.indexOf(tf)+1]??null;
+ const get=(id:string)=>{const e=r.evidence[id];if(!e)throw Error('MISSING_TDA_EVIDENCE');return e;};
+ const checkVc=(parent:Evidence,g:Group,tf:string|null,status:string)=>{
+  if(tf!==next(parent.timeframe)||status!==(tf?g.total?'VC_OBSERVED':'AWAITING_VC':'LOWER_TIMEFRAME_UNAVAILABLE'))throw Error('INVALID_TDA_VC_TIMEFRAME');
+  for(const id of g.items){const e=get(id),first=r.candle_windows[e.candle_refs[0]];
+   if(!['FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(e.kind)||e.timeframe!==tf||!first||first[0]<parent.confirmed_at||e.confirmed_at<=parent.confirmed_at)throw Error('NONCAUSAL_TDA_VC');
+   const bullish=parent.kind==='FRACTAL'?parent.polarity==='low':parent.direction==='bullish';if((e.direction==='bullish')!==bullish)throw Error('INVALID_TDA_DIRECTION');
+  }
+ };
+ const trigger=(parent:Evidence,id:string)=>{const e=get(id),first=r.candle_windows[e.candle_refs[0]];
+  if(e.kind!=='FRACTAL'||![parent.timeframe,next(parent.timeframe)].includes(e.timeframe)||!first||first[0]<parent.confirmed_at||e.lower<parent.lower||e.upper>parent.upper)throw Error('INVALID_TDA_TRIGGER');return e;};
+ const pair=(q:Pair)=>{const h=get(q.high),l=get(q.low);if(h.kind!=='FRACTAL'||l.kind!=='FRACTAL'||h.polarity!=='high'||l.polarity!=='low'||h.timeframe!==q.timeframe||l.timeframe!==q.timeframe||l.lower>=h.upper||q.confirmed_at!==[h.confirmed_at,l.confirmed_at].sort().at(-1))throw Error('INVALID_TDA_RANGE');};
+ if(t.selected_anchor!==(r.scenario?.A.selected??null))throw Error('INVALID_TDA_ANCHOR');
+ for(const a of t.anchors.items){const e=get(a.level),s=e.lifecycle;
+  if(!s||s.coverage!=='COMPLETE_OBSERVED_INTERVAL'||!(e.kind==='FVG'?s.state==='ACTIVE':e.kind==='FRACTAL'?['ACTIVE','CONSUMED'].includes(s.state):['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(e.kind)&&['ACTIVE','CANDIDATE'].includes(s.state)))throw Error('INVALID_TDA_POI');
+  if(a.liquidity_available!==(e.kind==='FRACTAL'?!s.liquidity_consumed:null))throw Error('FALSE_TDA_LIQUIDITY');
+  if(a.last_contact_at&&(a.last_contact_at<e.confirmed_at||a.last_contact_at>r.as_of)||a.delivery&&(a.delivery.at!==a.last_contact_at||a.delivery.at>r.as_of))throw Error('FUTURE_TDA_CONTACT');
+  checkVc(e,a.vc,a.vc_timeframe,a.vc_status);for(const id of a.triggers.items)trigger(e,id);
+  for(const x of a.refinements.items){const f=trigger(e,x.trigger);if(x.confirmed_at!==f.confirmed_at)throw Error('FUTURE_TDA_TRIGGER');checkVc(f,x.vc,x.vc_timeframe,x.status);}
+  if(a.range)pair(a.range);
+ }
+ for(const q of t.range_pois){pair(q);const h=get(q.high),l=get(q.low);for(const id of q.triggers.items)trigger({...h,confirmed_at:q.confirmed_at,lower:l.lower},id);}
+ if((t.potential_target!==null)!==(t.target_status==='POTENTIAL_TARGET_IDENTIFIED'))throw Error('FALSE_TDA_TARGET');
+ if(t.potential_target){const b=get(t.potential_target),a=t.selected_anchor?get(t.selected_anchor):null;if(!['FRACTAL','FVG'].includes(b.kind)||b.lifecycle?.state!=='ACTIVE'||b.lifecycle?.liquidity_consumed||a&&![a.timeframe,next(a.timeframe)].includes(b.timeframe))throw Error('INVALID_TDA_TARGET');}
 }

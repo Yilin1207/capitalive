@@ -2,8 +2,9 @@
 import {useEffect,useState} from 'react';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../../lib/active-research-markets';
 import type {compactResearchContext} from '../../lib/research-bridge/context';
+import type {compactTda} from '../../lib/research-bridge/tda';
 type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null;rb_quality?:{raid_backed:number;fvg_only_weaker:number};snr_quality?:{very_strong_candidates:number;context_conflicts:number;review_required:number}}[];
- research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;confirmed_at?:string;snr?:{level_price:number;relative_strength:string;failed_test_bars:number;failed_test_episodes:number;waiting_bars:number;formation_seconds:number;impulse_detected:boolean;impulse_leg_body_to_median:number|null;impulse_leg_bars:number;primary_kl:string;x1_fvg:string|null;opposing_kl:string|null};rb?:{level_price:number;relative_quality:string;basis:string;primary_kl:string;liquidity:string|null;fvg:string|null};lifecycle?:{state:string;initial_role:string;fill?:{state:string;max_observed_fraction:number;remaining?:{lower:number;upper:number}|null;fully_tested_at?:string|null}}}>};
+ tda?:ReturnType<typeof compactTda>;research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;confirmed_at?:string;snr?:{level_price:number;relative_strength:string;failed_test_bars:number;failed_test_episodes:number;waiting_bars:number;formation_seconds:number;impulse_detected:boolean;impulse_leg_body_to_median:number|null;impulse_leg_bars:number;primary_kl:string;x1_fvg:string|null;opposing_kl:string|null};rb?:{level_price:number;relative_quality:string;basis:string;primary_kl:string;liquidity:string|null;fvg:string|null};lifecycle?:{state:string;initial_role:string;fill?:{state:string;max_observed_fraction:number;remaining?:{lower:number;upper:number}|null;fully_tested_at?:string|null}}}>};
 export default function ResearchRefresh(){
  const [busy,setBusy]=useState(false),[rows,setRows]=useState<Row[]>([]),[files,setFiles]=useState<Record<string,string>>({});
  const [clock,setClock]=useState(0);
@@ -46,6 +47,19 @@ export default function ResearchRefresh(){
     {Object.values(row.evidence??{}).filter(e=>e.kind==='FVG'&&e.lifecycle?.fill).map(e=>{const fill=e.lifecycle!.fill!;return <details key={'fvg-'+e.id}><summary>{e.timeframe} FVG · {e.lifecycle!.state} · протестировано {(fill.max_observed_fraction*100).toFixed(1)}%</summary>
       <p>Исходная зона: {e.lower}–{e.upper}. Непротестированный остаток: {fill.remaining?`${fill.remaining.lower}–${fill.remaining.upper}`:'отсутствует / зона инвалидирована'}.</p>
       <p>Подтверждение FVG: {e.confirmed_at}. Полный тест: {fill.fully_tested_at??'не установлен'}. Оценка глубины — по теням закрытых свечей; исходный ID сохраняется.</p><code>{e.id}</code></details>;})}
+    {row.tda&&<section><h3>Top Down Analysis — TDA</h3>
+     <p>Начинаем с POI на X. Ищем потенциальную цель Fractal/FVG на X или X−1 и реакцию RB/SNR/FVG на X−1. Масштабирование не требует обязательного прохождения всех таймфреймов.</p>
+     <p>Trigger — только подтверждённый фрактал. Его собственное подтверждение ищется на следующем младшем таймфрейме; подтверждение исходного POI для этого необязательно. Доступны MN1, W1, D1, H4; H1/M15 не загружены.</p>
+     <p>Выбранная A: {row.tda.selected_anchor?row.evidence?.[row.tda.selected_anchor]?.id:'требуется выбор'}. Потенциальная B: {row.tda.potential_target?row.evidence?.[row.tda.potential_target]?.id:'не выбрана'}. Полнота пути: {row.tda.path_completeness}. Потенциальная цель не означает свободный путь или подтверждённый Narrative.</p>
+     <p>Показано POI: {row.tda.anchors.items.length}/{row.tda.anchors.total}; пропущено из компактного отчёта: {row.tda.anchors.omitted}.</p>
+     {row.tda.anchors.items.map(a=>{const e=row.evidence?.[a.level];return <details key={a.level}><summary>{e?.timeframe} {e?.kind} · {a.context} · {a.premium_discount}</summary>
+       <p>Последнее взаимодействие: {a.last_contact_at??'не наблюдалось'}. Ликвидность: {a.liquidity_available===null?'не применимо':a.liquidity_available?'не снята':'снята; POI реакции сохраняется'}.</p>
+       <p>VC на {a.vc_timeframe??'недоступном TF'}: {a.vc_status}; показано {a.vc.items.length}/{a.vc.total}. Trigger: {a.triggers.items.length}/{a.triggers.total}.</p>
+       {[...a.vc.items,...a.triggers.items].map(id=><p key={id}><code>{row.evidence?.[id]?.id}</code></p>)}
+       {a.refinements.items.map(x=><p key={x.trigger}>Фрактал <code>{row.evidence?.[x.trigger]?.id}</code> → {x.vc_timeframe??'недоступный TF'}: {x.status}; VC {x.vc.items.length}/{x.vc.total}.</p>)}
+       <p>Доставка цены, значимость POI и противоположные уровни требуют оценки. Наблюдаемая реакция не гарантирует разворот.</p><code>{e?.id}</code>
+     </details>;})}
+    </section>}
     <h3>Support &amp; Resistance — SNR</h3>
     <p>Две противоположные свечи задают уровень по закрытию первой. SNR формируется после доставки к KL и первого закрытия строго за уровнем: сопротивление становится кандидатом поддержки, поддержка — сопротивления.</p>
     <p>Сила зависит от того, как и где возник элемент PA. Повторные неудачные тесты и последующий импульс усиливают оценку; FVG необязателен даже для очень сильного SNR. Пробой в противоположный HTF-уровень требует отдельной оценки.</p>

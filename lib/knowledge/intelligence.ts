@@ -1,3 +1,5 @@
+import {tdaRelationships,tdaAnchorLevels} from './tda';
+import {intervalCoverage} from './level-state';
 import {fvgTestTimeline,currentBounds} from './fvg-remaining';
 import type { CandleResponse, PriceSide, Timeframe } from "../candle-data";
 import type { MarketQuote } from "../quote-normalization";
@@ -144,15 +146,19 @@ export function buildIntelligence(
     selected:(f.range??f.dr_detection.current)?validateDealingRangeEvidence((f.range??f.dr_detection.current)!,states,frames[f.timeframe],detected,!f.range&&f.dr_detection.status==='ESTABLISHED'):null,
     candidates:f.range_candidates.candidates.filter(range=>range.basis==='KL_REACTION_LOCAL_DR_REQUIRES_REVIEW').map(range=>({range,validation:validateDealingRangeEvidence(range,states,frames[f.timeframe],detected)}))}));
   const active=detected.filter(l=>states.find(s=>s.id===l.id)?.state==='ACTIVE').map(l=>({...currentBounds(l,states.find(s=>s.id===l.id)),role:states.find(s=>s.id===l.id)!.current_role??l.role}));
-  const hierarchy=resolveHierarchy(active,reference,options.anchor_id),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
+  const tda=tdaRelationships(frames,perFrame.flatMap(f=>f.findings),detected,states,perFrame.map(f=>({timeframe:f.timeframe,range:f.range??f.dr_detection.current,state:f.range?f.range_state.state:f.dr_detection.status==='ESTABLISHED'?'ACTIVE':f.dr_detection.status})),reference);
+  const pois=tdaAnchorLevels(detected,tda).map(l=>currentBounds(l,states.find(s=>s.id===l.id)));
+  const reactionIds=tda.anchors.filter(a=>a.eligible_as_poi&&a.context!=='AWAITING_DELIVERY').map(a=>a.id);
+  const hierarchy=resolveHierarchy(pois,reference,options.anchor_id,reactionIds),direction=hierarchy.candidate_bias==='Bullish'?'up':hierarchy.candidate_bias==='Bearish'?'down':null;
   // Empty/unknown frames cannot prove an obstacle-free path. Calendar, finite
   // history and detector boundary limitations remain explicit even if no IDs were truncated.
-  const pathCoverage=TF_ORDER.slice(0,3).some(tf=>frames[tf].status==='UNVERIFIED')?'UNKNOWN':'PARTIAL';
+  const relevantTfs=TF_ORDER; // Higher-TF obstacles also require observed coverage.
+  const pathCoverage=relevantTfs.some(tf=>frames[tf].status==='UNVERIFIED'||!frames[tf].bars.length)?'UNKNOWN':relevantTfs.every(tf=>frames[tf].warnings.length===0&&intervalCoverage([frames[tf]],frames[tf].bars[0].time,frames[tf].bars.at(-1)!.end).complete)?'COMPLETE':'PARTIAL';
   const targetSelection=selectTarget(detected,states,reference,direction,hierarchy.a,options.target_id,pathCoverage);
   const researchPaths=targetSelection.target_candidates.filter(c=>c.role_eligible).map(c=>({target_id:c.id,
     from_basis:hierarchy.a?'ANCHOR_BOUNDARY':'LAST_CLOSED_H4',
     ...validatePathCompleteness(detected,states,frames,hierarchy.a?(direction==='up'?hierarchy.a.upper:hierarchy.a.lower):reference,c.price,[c.id,...(hierarchy.a?[hierarchy.a.id]:[])])}));
-  const target=detected.find(l=>l.id===targetSelection.validated_target?.id)??null,a=hierarchy.a;
+  const targetLevel=detected.find(l=>l.id===targetSelection.candidate_target?.id),target=targetLevel?currentBounds(targetLevel,states.find(s=>s.id===targetLevel.id)):null,a=hierarchy.a;
   const manualC=options.human_review?.C;
   const validManualC=!!manualC&&!!a&&manualC.timeframe===a.timeframe&&Number.isFinite(manualC.price)&&(a.role==='support'?manualC.price<=a.lower:manualC.price>=a.upper)&&manualC.condition==='CLOSE_BEYOND'&&!frames[a.timeframe].bars.some(b=>b.time>=a.confirmed_at&&(a.role==='support'?b.close<manualC.price:b.close>manualC.price));
   const c =
@@ -181,10 +187,10 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',fvg_revision:'fvg-unfilled-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
-  const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',fvg_revision:'fvg-unfilled-1',tda_revision:'tda-notion-1',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c,tda.anchors.some(x=>x.id===a?.id&&x.eligible_as_poi));
   const narrative = {
-    ...provenance("EDGE.NARRATIVE.v3"),
+    ...provenance("EDGE.NARRATIVE.v4"),
     ...assessment,
     ...conclusionEvidence,
     bias: assessment.bias,
@@ -202,6 +208,8 @@ export function buildIntelligence(
     B: target
       ? {
           id: target.id,
+          status: targetSelection.candidate_status,
+          path_status: targetSelection.status,
           timeframe: target.timeframe,
           price: direction === "up" ? target.lower : target.upper,
           evidence: target.source_finding,
@@ -231,20 +239,12 @@ export function buildIntelligence(
   const downstream = perFrame.filter(
     (f) => a && TF_ORDER.indexOf(f.timeframe) > TF_ORDER.indexOf(a.timeframe),
   );
-  const vc = downstream
-    .flatMap((f) => f.findings)
-    .filter(
-      (f) =>
-        f.kind === "FVG" &&
-        f.origin >= a!.confirmed_at &&
-        f.facts.direction ===
-          (narrative.candidate_bias === "Bullish" ? "bullish" : "bearish") &&
-        f.candle_evidence.some((b) => b.high >= a!.lower && b.low <= a!.upper),
-    );
+  const selectedTda=tda.anchors.find(x=>x.id===a?.id);
+  const vc=perFrame.flatMap(f=>f.findings).filter(f=>selectedTda?.vc_ids.includes(f.id));
   const idm = downstream
     .flatMap((f) => f.findings)
     .filter((f) => f.kind === "IDM_INSIDE_POI" && f.facts.poi_id === a?.id);
-  const h4Range = perFrame.find((f) => f.timeframe === "H4")?.range;
+  const h4Frame=perFrame.find(f=>f.timeframe==='H4'),h4Range=h4Frame?.range??(h4Frame?.dr_detection.status==='ESTABLISHED'?h4Frame.dr_detection.current:null);
   const execution = {
     ...provenance("EDGE.EXECUTION.v1"),
     ...conclusionEvidence,
@@ -256,16 +256,17 @@ export function buildIntelligence(
     models: [
       {
         model: "VC_FVG",
-        available: canPropose && vc.length > 0,
-        evidence_ids: vc.map((v) => v.id),
+        available: canPropose && vc.some(v=>v.kind==='FVG'&&states.find(s=>s.id===v.id)?.state==='ACTIVE'),
+        evidence_ids: vc.filter(v=>v.kind==='FVG').map(v=>v.id),
         reason:
           "Closed directional FVG in HTF KL context; no order and no volume measurement claim",
       },
       {
         model: "VC_RB_SNR",
         available: false,
-        evidence_ids: [],
-        reason: "Author boundary conventions still need specification",
+        prerequisites_observed:vc.some(v=>['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(v.kind)),
+        evidence_ids:vc.filter(v=>['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(v.kind)).map(v=>v.id),
+        reason: 'Causal X-1 RB/SNR reaction observed; execution and stops require review',
       },
       {
         model: "NO_VC_IDM",
@@ -273,7 +274,7 @@ export function buildIntelligence(
         prerequisites_observed: canPropose && idm.length > 0,
         evidence_ids: idm.map((v) => v.id),
         reason:
-          "Requires a verified Strong High/Low stop boundary; an established RB reference alone does not specify trade stops or SNR bounds",
+          "Requires a verified Strong High/Low stop boundary; a PA reference alone does not specify trade stops",
       },
       {
         model: "KL_MARKET_LIMIT",
@@ -288,7 +289,7 @@ export function buildIntelligence(
         available:
           canPropose &&
           !!h4Range &&
-          perFrame.find(f=>f.timeframe==='H4')?.range_state.state==='ACTIVE' &&
+          (h4Frame?.range?h4Frame.range_state.state==='ACTIVE':h4Frame?.dr_detection.status==='ESTABLISHED') &&
           h4Range.confirmed_at >= a!.confirmed_at &&
           h4Range.lower <= a!.upper &&
           h4Range.upper >= a!.lower,
@@ -318,6 +319,7 @@ export function buildIntelligence(
     price_side: side,
     as_of: asOf,
     selection:{anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{}},
+    tda,
     pipeline: [
       "DATA_QUALITY",
       "MN1",
@@ -330,7 +332,7 @@ export function buildIntelligence(
       "VERDICT",
     ],
     hierarchy: {
-      ...provenance("EDGE.TDA.v1"),
+      ...provenance("EDGE.TDA.v2"),
       ...conclusionEvidence,
       order: TF_ORDER,
       chains: TF_ORDER.map((tf, i) => ({

@@ -4,11 +4,11 @@ import type {Timeframe} from '../candle-data';
 import type {LevelState} from './level-state';
 import type {selectTarget} from './target-selection';
 import {REVIEW_QUESTIONS,reviewErrors,type HumanReview} from './human-review';
-export function resolveContext(levels:KeyLevel[],reference:number|null,requestedId?:string){
- const hits=reference===null?[]:levels.filter(l=>['MN1','W1'].includes(l.timeframe)&&l.qualified&&reference>=l.lower&&reference<=l.upper).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||a.id.localeCompare(b.id));
- const top=hits.filter(l=>l.timeframe===hits[0]?.timeframe),a=requestedId?levels.find(l=>l.id===requestedId&&['MN1','W1'].includes(l.timeframe)&&l.qualified)??null:top.length===1?top[0]:null;
+export function resolveContext(levels:KeyLevel[],reference:number|null,requestedId?:string,reactionIds:string[]=[]){
+ const hits=reference===null?[]:levels.filter(l=>['MN1','W1','D1'].includes(l.timeframe)&&l.qualified&&(reference>=l.lower&&reference<=l.upper||reactionIds.includes(l.id))).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||a.id.localeCompare(b.id));
+ const top=hits.filter(l=>l.timeframe===hits[0]?.timeframe),a=requestedId?levels.find(l=>l.id===requestedId&&['MN1','W1','D1'].includes(l.timeframe)&&l.qualified)??null:top.length===1?top[0]:null;
  const conflicts=hits.filter(l=>l.role!==hits[0]?.role);
- return {bias:'Neutral' as const,candidate_bias:!a||conflicts.length&&!requestedId?'Neutral':a.role==='support'?'Bullish':'Bearish',a,conflicts,alternatives:top.map(l=>l.id),reason:requestedId&&!a?'REQUESTED_ANCHOR_UNAVAILABLE':conflicts.length?'CONFLICTING_HTF_KL':top.length>1&&!requestedId?'AMBIGUOUS_HTF_ANCHOR':a?requestedId?'EXPLICIT_ANCHOR_REQUIRES_REVIEW':'KL_CONTAINMENT_ONLY_NOT_NARRATIVE':'NO_ACTIVE_MN1_W1_KL'};
+ return {bias:'Neutral' as const,candidate_bias:!a||conflicts.length&&!requestedId?'Neutral':a.role==='support'?'Bullish':'Bearish',a,conflicts,alternatives:top.map(l=>l.id),reason:requestedId&&!a?'REQUESTED_ANCHOR_UNAVAILABLE':conflicts.length?'CONFLICTING_HTF_KL':top.length>1&&!requestedId?'AMBIGUOUS_HTF_ANCHOR':a?requestedId?'EXPLICIT_ANCHOR_REQUIRES_REVIEW':'KL_CONTAINMENT_ONLY_NOT_NARRATIVE':'NO_ELIGIBLE_MN1_W1_D1_POI'};
 }
 export function swingFlow(frame:Frame,pivots:Pivot[]){
  // No approved author HH/HL-count shortcut for qualitative SOF.
@@ -16,33 +16,35 @@ export function swingFlow(frame:Frame,pivots:Pivot[]){
  return {bias:'Neutral',status:'NEEDS_SPECIFICATION',evidence_ids:[] as string[]};
 }
 
-export type NarrativeFrame={timeframe:Timeframe;structure_bias:string;order_flow:ReturnType<typeof swingFlow>;range:Range|null;range_state?:{state:string;invalidated_at:string|null};findings:{id:string;kind:string;facts:Record<string,unknown>;confirmed_at:string}[]};
+export type NarrativeFrame={timeframe:Timeframe;structure_bias:string;order_flow:ReturnType<typeof swingFlow>;range:Range|null;range_state?:{state:string;invalidated_at:string|null};dr_detection?:{status:string;current:Range|null};findings:{id:string;kind:string;facts:Record<string,unknown>;confirmed_at:string}[]};
 export function assessInvalidations(anchor:LevelState|undefined,entryStopCrossed:boolean|null=null){return {entry_invalidated:entryStopCrossed,KL_invalidated:anchor?.state==='INVALIDATED',narrative_invalidated:anchor?.state==='INVALIDATED',review_required:anchor?.state!=='ACTIVE',basis:entryStopCrossed?'Local stop observation does not propagate to HTF A/B/C':'Evaluate entry and HTF anchor independently'};}
-export function narrativeAssessment(context:ReturnType<typeof resolveContext>,states:LevelState[],frames:NarrativeFrame[],target:ReturnType<typeof selectTarget>,reference:number|null,reliable:boolean,review?:HumanReview,evidenceHash='',hasC=false){
+export function narrativeAssessment(context:ReturnType<typeof resolveContext>,states:LevelState[],frames:NarrativeFrame[],target:ReturnType<typeof selectTarget>,reference:number|null,reliable:boolean,review?:HumanReview,evidenceHash='',hasC=false,poiEligible=false){
  const a=context.a,s=states.find(s=>s.id===a?.id),bias=context.candidate_bias;
  const reasons:string[]=[];
  if(!reliable)reasons.push('INPUT_OR_SOURCE_UNVERIFIED');
  if(!a||bias==='Neutral')reasons.push(context.reason);
- if(s?.state!=='ACTIVE')reasons.push('ANCHOR_NOT_PROVEN_ACTIVE');
+ if(s?.state!=='ACTIVE'&&!poiEligible)reasons.push('ANCHOR_NOT_PROVEN_ACTIVE');
  if(!s?.reaction)reasons.push('NO_CLOSED_HTF_OR_X_MINUS_1_REACTION');
  if(s?.lower_tf_breach)reasons.push('ANCHOR_LOWER_TF_BREACH');
  const structure=frames.filter(f=>['MN1','W1','D1'].includes(f.timeframe)).map(f=>({timeframe:f.timeframe,bias:f.structure_bias,order_flow:f.order_flow}));
- reasons.push('AUTHOR_STRUCTURE_REVIEW_REQUIRED');
- const anchorFrame=frames.find(f=>f.timeframe===a?.timeframe),range=anchorFrame?.range;
- const rangeCurrent=!!range&&!!s&&anchorFrame?.range_state?.state==='ACTIVE'&&range.confirmed_at<=s.as_of&&reference!==null&&reference>=range.lower&&reference<=range.upper;
+ // Qualitative structure is context, not a prerequisite invented for TDA.
+
+ const anchorFrame=frames.find(f=>f.timeframe===a?.timeframe),automaticFrame=(anchorFrame?.dr_detection?.status==='ESTABLISHED'?anchorFrame:frames.find(f=>f.dr_detection?.status==='ESTABLISHED')),range=anchorFrame?.range??automaticFrame?.dr_detection?.current;
+ const rangeActive=anchorFrame?.range?anchorFrame.range_state?.state==='ACTIVE':!!automaticFrame;
+ const rangeCurrent=!!range&&!!s&&rangeActive&&range.confirmed_at<=s.as_of&&reference!==null&&reference>=range.lower&&reference<=range.upper;
  const location=rangeCurrent?reference!<range!.equilibrium?'DISCOUNT':reference!>range!.equilibrium?'PREMIUM':'EQ':'UNVERIFIED';
  if(!rangeCurrent)reasons.push('EXPLICIT_CURRENT_HTF_DR_REQUIRED');
  else if(bias==='Bullish'&&location!=='DISCOUNT'||bias==='Bearish'&&location!=='PREMIUM')reasons.push('HTF_RANGE_LOCATION_NOT_SUPPORTIVE');
- if(target.status!=='TARGET_VALIDATED')reasons.push('TARGET_UNVERIFIED');
+ if(target.status!=='TARGET_VALIDATED')reasons.push('TARGET_PATH_REQUIRES_REVIEW');
  // These are review questions, not invented quantitative SOF / VC thresholds.
  // Hard evidence gates cannot be waived by a human statement.
  const hard:string[]=[];
  if(!reliable)hard.push('INPUT_OR_SOURCE_UNVERIFIED');
  if(review){hard.push(...reviewErrors(review));if(review.evidence_sha256!==evidenceHash)hard.push('STALE_OR_DIFFERENT_REVIEW_EVIDENCE');}
  if(review?.decision!=='Neutral'){
-  if(!a||s?.state!=='ACTIVE'||bias==='Neutral')hard.push('NO_ACTIVE_DIRECTIONAL_ANCHOR');
-  if(!rangeCurrent)hard.push('EXPLICIT_CURRENT_HTF_DR_REQUIRED');
-  if(target.status!=='TARGET_VALIDATED')hard.push('TARGET_UNVERIFIED');
+  if(!a||s?.state!=='ACTIVE'&&!poiEligible||bias==='Neutral')hard.push('NO_ACTIVE_DIRECTIONAL_ANCHOR');
+  if(anchorFrame?.range&&!rangeCurrent)hard.push('SELECTED_DR_INVALID_OR_OUTSIDE');
+  if(!target.candidate_target)hard.push('TARGET_UNVERIFIED');
   if(!hasC)hard.push('STRUCTURAL_INVALIDATION_REQUIRED');
   if(review&&review.decision!==bias)hard.push('REVIEW_DIRECTION_CONTRADICTS_SELECTED_ANCHOR');
  }
