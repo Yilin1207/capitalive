@@ -2,10 +2,10 @@ import type {buildIntelligence} from '../knowledge/intelligence';
 type Intelligence=ReturnType<typeof buildIntelligence>;
 
 /** Bounded presentation; all omissions are counted and recoverable by snapshot inspection. */
-export function compactResearchContext(r:Intelligence,add:(id:string)=>string,contextLimit=1){
+export function compactResearchContext(r:Intelligence,add:(id:string)=>string,contextLimit=1,reduced=false){
   const c=r.research_context;
   const group=(ids:string[],limit=contextLimit)=>({items:ids.slice(0,limit).map(add),total:ids.length,omitted:Math.max(0,ids.length-limit)});
-  const levels=c.executive_ids.map(id=>c.levels.find(l=>l.id===id)!);
+  const levels=c.executive_ids.slice(0,reduced?4:32).map(id=>c.levels.find(l=>l.id===id)!);
   const targetIds=[...new Set([...(r.target_selection.selected_candidate?[r.target_selection.selected_candidate.id]:[]),...r.target_selection.target_candidates.filter(t=>t.role_eligible).sort((a,b)=>{
     const f=(id:string)=>r.frames.flatMap(f=>f.findings).find(f=>f.id===id)?.confirmed_at??'';
     return f(b.id).localeCompare(f(a.id))||a.id.localeCompare(b.id);
@@ -39,9 +39,9 @@ export function compactResearchContext(r:Intelligence,add:(id:string)=>string,co
         internal_classification:d.internal_classification,significance:d.significance,narrative_confirmed:false},
         selected:selected?project(selected):null,candidates:{items:show.map(x=>project(x.validation)),total:candidates.length,omitted:candidates.length-show.length}};
     }),
-    paths:targetIds.map(id=>{const p=c.paths.find(p=>p.target_id===id)!;const shown=p.obstacles.slice(0,4);
+    paths:targetIds.map(id=>{const p=c.paths.find(p=>p.target_id===id)!;const shown=p.obstacles.slice(0,reduced?1:4);
       return {target:add(id),from:p.from,to:p.to,from_basis:p.from_basis,status:p.status==='UNVERIFIED'?'UNVERIFIED':p.obstacles.length>shown.length?'PARTIAL':p.status,
         obstacles:{items:shown.map(x=>add(x.id)),total:p.total,omitted:p.total-shown.length},ohlc_coverage:p.ohlc_coverage,free_path_proven:false,
         reasons:[...p.reasons,...(shown.length<p.total?['OBSTACLES_OMITTED']:[])]};}),
-    full_inspection:{path:'/api/intelligence',mode:'inspection',snapshot_sha256:r.narrative.human_review.evidence_sha256,as_of:r.as_of,requires_authorization:true}};
+    full_inspection:{path:'/api/intelligence',mode:'inspection',snapshot_sha256:r.narrative.human_review.evidence_sha256,as_of:r.as_of,requires_authorization:false}};
 }

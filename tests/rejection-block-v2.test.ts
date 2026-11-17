@@ -51,3 +51,7 @@ test('RB compact report retains basis and evidence and rejects forged quality, l
  for(const mutate of [(x:any)=>{x.evidence[key].rb.relative_quality=e.rb.relative_quality==='RAID_BACKED'?'WEAKER_FVG_ONLY':'RAID_BACKED';},(x:any)=>{x.evidence[key].rb.level_price+=1;},(x:any)=>{x.frames[0].rb_quality.raid_backed+=1;},(x:any)=>{delete x.evidence[key].rb;}]){const x=structuredClone(report);mutate(x);assert.throws(()=>validateReport(x,'NAS100'));}
  assert.equal(report.scenario.confirmed_narrative,null);assert.equal(report.trading_enabled,false);
 });
+test('RB-rich archived NAS100 stays below 64 KiB with honest counted omissions',()=>{
+ const i=JSON.parse(readFileSync('tests/fixtures/htf-NAS100.json','utf8'));
+ for(const side of ['bid','ask'] as const){const r=buildIntelligence(i.data,side,i.quote),now=new Date(Math.max(...Object.values(i.data as Record<string,{fetched_at:string}>).map(d=>Date.parse(d.fetched_at)),...['retrieved_at','fetched_at_utc','provider_timestamp','evaluated_at'].map(k=>Date.parse(i.quote[k])).filter(Number.isFinite))).toISOString();const report=buildDeskReport(r,i.data,i.quote,now);validateReport(report);assert.ok(Buffer.byteLength(JSON.stringify(report)+'\n')<=65536);assert.ok(report.coverage.budget_tier>=4);assert.ok(report.research_context.executive_evidence.omitted>0);for(const p of report.research_context.paths)if(p.obstacles.omitted)assert.notEqual(p.status,'COMPLETE');assert.ok(report.frames.every(f=>f.rb_quality.raid_backed+f.rb_quality.fvg_only_weaker===f.rb.total));}
+});

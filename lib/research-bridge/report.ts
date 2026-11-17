@@ -109,7 +109,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   const bIds=[...new Set([...(ts.selected_candidate?[ts.selected_candidate.id]:[]),...ordered.map(c=>c.id)])].slice(0,3);
   const bRows=bIds.map(id=>{const c=candidates.find(c=>c.id===id)!;const review=ts.candidate_reviews.find(v=>v.id===id);
     const obstacles=review?.path_obstacle_ids??(ts.selected_candidate?.id===id?ts.obstacles.map(o=>o.id):null);
-    const shown=obstacles?.slice(0,4)??[];
+    const shown=obstacles?.slice(0,budgetTier>=4?1:4)??[];
     return {level:add(id),role_eligible:c.role_eligible,author_timeframe_eligible:review?.author_timeframe_eligible??null,
       reasons:reasons(c.reasons),path:{items:shown.map(add),total:obstacles?.length??null,omitted:obstacles?obstacles.length-shown.length:null,
         completeness:obstacles===null||review?.path_completeness==='UNKNOWN'?'UNASSESSED':shown.length<obstacles.length||review?.path_completeness!=='COMPLETE'?'PARTIAL':'COMPLETE'}};
@@ -132,7 +132,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
   const knownClosure=!!h4&&Date.parse(h4)<expectedH4&&closedRegularInterval(symbol,Date.parse(h4),expectedH4);
   if(!h4||h4Delay>policy.h4_delay_seconds&&!knownClosure)staleReasons.push('H4_CLOSED_CANDLE_DELAY');
   const errors=frameRows.some(f=>f.closed_candles===0);
-  const researchContext=compactResearchContext(r,add,budgetTier>=3?0:1);
+  const researchContext=compactResearchContext(r,add,budgetTier>=3?0:1,budgetTier>=4);
   const result={technical_only:true,details:{path:'/api/intelligence',snapshot_sha256:r.narrative.human_review.evidence_sha256},schema_version:'desk-report-v2',symbol,status:errors?'ERROR':staleReasons.length?'STALE':r.data_quality.status==='UNVERIFIED'?'UNVERIFIED':'PARTIAL',
     published_at:null,freshness:{quote_retrieved_at:qretrieved,quote_status:marketClosed?'MARKET_CLOSED':validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?'FRESH':'STALE',data_quality:r.data_quality.status,stale_reasons:staleReasons,quote_max_seconds:policy.quote_seconds,h4_max_delay_seconds:policy.h4_delay_seconds,h4_delay_seconds:h4Delay,source_age_seconds:Math.max(...TFS.map(tf=>(clock-Date.parse(data[tf].fetched_at))/1000)),delivery_max_seconds:policy.delivery_seconds},generated_at:now,as_of:r.as_of,expires_at:new Date(!marketClosed&&validQuote&&qAge!==null&&qAge<=policy.quote_seconds&&quote.fresh?Math.min(clock+policy.delivery_seconds*1000,Date.parse(qtime!)+policy.quote_seconds*1000):clock+policy.delivery_seconds*1000).toISOString(),error:errors?'UPSTREAM_UNAVAILABLE':null,
     source:{provider:'Capital.com',environment:r.environment,analysis_schema:r.schema_version,price_side:r.price_side,
@@ -154,7 +154,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       findings_total:all.length,findings_included:refById.size,findings_omitted:all.length-refById.size,selected_evidence_complete:true,
       all_findings_included:refById.size===all.length,stale_reasons:staleReasons,raw_ohlc_included:false},trading_enabled:false};
   if(Buffer.byteLength(JSON.stringify(result))+1>MAX_REPORT_BYTES){
-    if(budgetTier<3)return buildDeskReport(r,data,quote,now,engineCommit,budgetTier+1);
+    if(budgetTier<4)return buildDeskReport(r,data,quote,now,engineCommit,budgetTier+1);
     throw Error('REPORT_TOO_LARGE');
   }
   validateReport(result,symbol);
