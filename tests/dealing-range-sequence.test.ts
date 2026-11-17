@@ -37,6 +37,8 @@ test('DR internal KL reaction offers a local candidate, retaining its outer pare
  const level:KeyLevel={id:'POI',kind:'FVG',timeframe:'D1',side:'bid',lower:9.5,upper:10.5,role:'support',qualified:true,confirmed_at:at(3),source_finding:{...p,id:'POI'}};
  const d=run(f,[level]);assert.equal(d.current?.lower,8);assert.equal(d.current?.upper,16);assert.equal(d.local_candidates.length,1);assert.equal(d.local_candidates[0].range.lower,10);assert.equal(d.local_candidates[0].range.upper,15);assert.equal(d.local_candidates[0].parent_low_id,d.current?.low_id);assert.equal(d.local_candidates[0].review_required,true);
  assert.equal(run(f,[{...level,confirmed_at:at(8)}]).local_candidates.length,0,'No future KL can justify a prior local origin');
+ const brokenOnConfirmation=frame([...base.slice(0,7),[14,9,9],[13,10,12]]);
+ assert.equal(run(brokenOnConfirmation,[level]).local_candidates.length,0,'A local pair broken by its confirming candle is not an active candidate');
 });
 test('DR top-down fallback skips missing monthly boundary and cannot invent a monthly DR',()=>{
  const rows=TF_ORDER.map(tf=>({timeframe:tf,dr_detection:run(frame(tf==='MN1'?base.slice(0,3):base,tf))}));const d=selectTopDownRange(rows);assert.equal(d.timeframe,'W1');assert.equal(d.skipped[0].timeframe,'MN1');assert.equal(d.narrative_confirmed,false);

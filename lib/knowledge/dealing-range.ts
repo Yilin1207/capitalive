@@ -66,7 +66,7 @@ export function detectDealingRange(frame:Frame,pivots:Pivot[],levels:KeyLevel[]=
       const a=internal[i],b=internal[i+1],range=pair(frame,a,b);if(!range)continue;
       // A local exception needs a causally available KL interaction, never merely "inside DR".
       const context=originContext(a);
-      if(!context.length||frame.bars.some(c=>c.time>=range.confirmed_at&&c.segment===range.segment&&(c.close<range.lower||c.close>range.upper)))continue;
+      if(!context.length||frame.bars.some(c=>c.end>=range.confirmed_at&&c.segment===range.segment&&(c.close<range.lower||c.close>range.upper)))continue;
       localCandidates.push({range,parent_high_id:current.high_id,parent_low_id:current.low_id,context_ids:context.map(l=>l.id),review_required:true});
     }
   }
