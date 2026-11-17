@@ -1,0 +1,50 @@
+{
+  "attempts": [
+    {
+      "side": "bid",
+      "http": 200,
+      "bytes": 56700,
+      "status": "PARTIAL",
+      "generated": "2026-11-17T14:20:06.385Z",
+      "provider_timestamp": "2026-11-17T14:20:02.355Z",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "engine": "f45f81cfee441b6479e593354d25c90851397f28"
+    },
+    {
+      "side": "ask",
+      "http": 200,
+      "bytes": 56682,
+      "status": "PARTIAL",
+      "generated": "2026-11-17T14:20:06.784Z",
+      "provider_timestamp": "2026-11-17T14:20:02.355Z",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "engine": "f45f81cfee441b6479e593354d25c90851397f28"
+    }
+  ],
+  "rows": [
+    {
+      "side": "bid",
+      "http": 200,
+      "bytes": 56700,
+      "status": "PARTIAL",
+      "generated": "2026-11-17T14:20:06.385Z",
+      "provider_timestamp": "2026-11-17T14:20:02.355Z",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "engine": "f45f81cfee441b6479e593354d25c90851397f28"
+    },
+    {
+      "side": "ask",
+      "http": 200,
+      "bytes": 56682,
+      "status": "PARTIAL",
+      "generated": "2026-11-17T14:20:06.784Z",
+      "provider_timestamp": "2026-11-17T14:20:02.355Z",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "engine": "f45f81cfee441b6479e593354d25c90851397f28"
+    }
+  ]
+}

@@ -24,6 +24,35 @@
 
 ## Активация
 
-На момент этого коммита Production ещё не обновлён. Результаты CI, реальных HTTP-запросов и повторного чтения приватной публикации будут внесены после выполнения этих этапов. Старые материалы DR/RB/SNR сохранены как исторические аудиты соответствующих релизов.
+Production обновлён на runtime `f45f81cfee441b6479e593354d25c90851397f28`, deployment `dpl_4d5r8z986Z4iDZ8upQ9ZKvBfG5ZU`.
+Проверенный immutable адрес: https://capitalive-j3xo5ge1b-yilin1207s-projects.vercel.app.
+PR [#13](https://github.com/Yilin1207/capitalive/pull/13) слит только в `feature/the-edge-knowledge`; основной PR #2 не слит. Приватный контракт [#9](https://github.com/Yilin1207/capitalive-research-bridge/pull/9) слит в `main`; `BRIDGE_BASE_URL` переключён на этот immutable Production. SSO и password protection отсутствуют, как ранее разрешил пользователь.
+
+CI исходников [44100788669](https://github.com/Yilin1207/capitalive/actions/runs/44100788669): SUCCESS — 261 unit, 10 browser, TypeScript/build, replay THE EDGE v1/v2/v4, записанные HTTP-контракты. V4: 12 наборов, 7 290 префиксов. Приватный CI [44100110378](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44100110378): SUCCESS, 13 тестов publisher.
+
+Реальные запросы без авторизации:
+
+| Проверка | Результат |
+|---|---|
+| Окончательный Preview, три рынка × Bid/Ask | 6 × HTTP 200 JSON, 56 682–64 927 байт, FRESH quote |
+| Preview, полные intelligence по трём рынкам | 3 × HTTP 200; полностью заполненных ACTIVE FVG — 0 |
+| Публичный `capitalive.vercel.app`, три рынка × Bid/Ask | 6 × HTTP 200 JSON, 56 711–64 955 байт |
+| `/api/chart?symbol=EURUSD&timeframe=H4` | HTTP 200, image/png, 112 260 байт, проверена PNG-сигнатура |
+| `/api/market-audit?symbol=EURUSD` | HTTP 200, настоящий JSON, 739 870 байт |
+| `/research` | HTTP 200 HTML без авторизации |
+
+В первом Production-ответе EURUSD отсутствовал provider timestamp: система вернула `STALE/QUOTE_PROVIDER_TIME_UNKNOWN`, не выдав цену за свежую. Последующая публикация получила timestamp и FRESH для всех трёх рынков. При интенсивной серии повторных запросов также наблюдался HTTP 429 `HISTORY_RATE_LIMIT`; лимит не отключался. После паузы EURUSD Bid/Ask снова вернули HTTP 200, PARTIAL/FRESH, без stale reasons: provider timestamp `2026-11-17T14:20:02.355Z`, ответы созданы в `14:20:06Z`. Подробности в `verification/fvg-v1/eurusd-recheck.json`.
+
+Research Bridge [44101659252](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44101659252): SUCCESS. Повторно прочитаны manifest и три JSON из одного GitHub-коммита `2309979bc8d003acc5c8c669d278e9fcd81c4d07`; публикация атомарная, изменены ровно эти четыре файла. Размеры, SHA-256 и Git blob SHA совпали; контракт `desk-report-v2.5`, runtime правильный, future evidence и автоматический Confirmed Narrative отсутствуют.
+
+| Опубликованный файл | Байты | SHA-256 | Свежесть при чтении |
+|---|---:|---|---|
+| EURUSD.json | 56 724 | `93c40c1c818dfe0025bb0c69fc4ec114e5ba964e59d6df6c49e16b9998799957` | FRESH, возраст ≤28.399 с |
+| NAS100.json | 60 328 | `e809cdfae1f30fb3550ee6c2e8571f236d6f29acf5aa451aeb468046d9d6eec4` | FRESH, возраст ≤26.981 с |
+| JP225.json | 64 977 | `a56c6e03d474284d2e35d714d8e0eee6cf56474084ab0c7e3bd951324dbfaca2` | FRESH, возраст ≤26.232 с |
+
+Все три отчёта имеют общий статус `PARTIAL` из-за ограничений доказательств/покрытия, а не ошибки публикации. На момент чтения срок действия не истёк. Snapshot в GitHub не становится бессрочно свежим: требуется следующий запуск или запрос обновления. Полная OHLC-история, ключи и торговые аккаунты в компактную публикацию не добавлены; строгий контракт и проверки утечки прошли.
+
+Вердикт: **READY для обновлённой логики FVG и публикации Research Bridge**. Это техническая валидация правил и транспорта, не независимое доказательство торговой эффективности. Ограничения: закрытые свечи вместо тиков, неполное историческое покрытие, неизвестное время отдельных котировок, защитные лимиты частых запросов, ручная оценка значимости PA. Старые материалы DR/RB/SNR сохранены как исторические аудиты соответствующих релизов.
 
 Публичная страница: https://capitalive.vercel.app/research. Для ChatGPT в JSON исходные границы FVG являются историческими; текущую область следует читать из `lifecycle.fill.remaining` вместе со статусом и покрытием. `TESTED` и `INVALIDATED` не являются активными зонами. Всегда проверять `generated_at`, `expires_at`, свежесть котировки и время закрытых свечей: доступность URL сама по себе не доказывает свежесть и не гарантирует индексацию поиском.
