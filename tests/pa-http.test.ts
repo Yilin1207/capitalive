@@ -36,6 +36,7 @@ test('V6 exact Evidence ID returns full formation and causal interactions; snaps
  const h=f.data.H4.candles[0];h.high={bid:h.high.bid!+1,ask:h.high.ask!+1};
  assert.equal((await paHttp(url(`symbol=JP225&offset=2&snapshot_sha256=${page.snapshot_sha256}`),'evidence',f.deps)).status,409);
  assert.equal((await paHttp(url('symbol=JP225&id=unknown'),'evidence',f.deps)).status,404);
+ assert.equal((await paHttp(url('symbol=JP225&view=interactions&id=unknown'),'evidence',f.deps)).status,404);
 });
 
 test('V6 closed OHLC pages reconstruct the exact filtered finite window with one pin',async t=>{

@@ -1,0 +1,747 @@
+{
+  "origin": "https://capitalive.vercel.app",
+  "expected_commit": "6230dcd9752525a099ba0713b21fe4dae5de64bb",
+  "authenticated": false,
+  "checked_at": "2026-11-17T17:52:00.265Z",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 11987,
+      "sha256": "194e814c8510e53596e422a56f196422499b9e6e63e648fd4e5eb45b7cd146a3",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "STALE",
+      "data_quality": "PARTIAL",
+      "quote_status": "STALE",
+      "provider_timestamp": null,
+      "provider_age_seconds_upper_bound": null,
+      "expires_at": "2026-11-17T17:53:01.046Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:50:55.965Z",
+      "generated_at": "2026-11-17T17:51:01.046Z",
+      "evidence_included": 0,
+      "evidence_total": 812,
+      "omitted": {
+        "evidence": 812,
+        "ohlc": 616,
+        "lifecycle_events": 1310,
+        "cross_timeframe_interactions": 259,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 11987,
+      "sha256": "a9c6d718e18221bf2e34da3d76b20733e7a4ed8529d78dce2e60e3f4b2f76c30",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "STALE",
+      "data_quality": "PARTIAL",
+      "quote_status": "STALE",
+      "provider_timestamp": null,
+      "provider_age_seconds_upper_bound": null,
+      "expires_at": "2026-11-17T17:53:01.911Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:50:55.965Z",
+      "generated_at": "2026-11-17T17:51:01.911Z",
+      "evidence_included": 0,
+      "evidence_total": 815,
+      "omitted": {
+        "evidence": 815,
+        "ohlc": 616,
+        "lifecycle_events": 1321,
+        "cross_timeframe_interactions": 255,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "f14afa79893e782fde527989509664796550f39c11eeeaf88914c35a18db5683",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63955,
+      "sha256": "0d69764bf8e869b355dcec719bed945c00df5722ce7d13336d43b08988c90124",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "PARTIAL",
+      "data_quality": "PARTIAL",
+      "quote_status": "FRESH",
+      "provider_timestamp": "2026-11-17T17:50:58.930Z",
+      "provider_age_seconds_upper_bound": 6.069,
+      "expires_at": "2026-11-17T17:52:58.930Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:51:03.446Z",
+      "generated_at": "2026-11-17T17:51:05.565Z",
+      "evidence_included": 13,
+      "evidence_total": 801,
+      "omitted": {
+        "evidence": 788,
+        "ohlc": 615,
+        "lifecycle_events": 1243,
+        "cross_timeframe_interactions": 237,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63933,
+      "sha256": "a75e6f4a1bfd02c084097783a764e36441b04d385e6d0f3be4a3570f19477ce8",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "PARTIAL",
+      "data_quality": "PARTIAL",
+      "quote_status": "FRESH",
+      "provider_timestamp": "2026-11-17T17:50:58.930Z",
+      "provider_age_seconds_upper_bound": 7.069,
+      "expires_at": "2026-11-17T17:52:58.930Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:51:03.446Z",
+      "generated_at": "2026-11-17T17:51:06.414Z",
+      "evidence_included": 13,
+      "evidence_total": 801,
+      "omitted": {
+        "evidence": 788,
+        "ohlc": 615,
+        "lifecycle_events": 1243,
+        "cross_timeframe_interactions": 237,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "4983e91123e808bc7dd305856a58926e0ccdf9038b1f4e356d2b8f39f37d68be",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61794,
+      "sha256": "7e77f6eeb6e01486095e5acc1058842ed2275c1253f3d7440c8ffb5e73a569e8",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "PARTIAL",
+      "data_quality": "PARTIAL",
+      "quote_status": "FRESH",
+      "provider_timestamp": "2026-11-17T17:51:01.346Z",
+      "provider_age_seconds_upper_bound": 7.653,
+      "expires_at": "2026-11-17T17:53:01.346Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:51:07.415Z",
+      "generated_at": "2026-11-17T17:51:08.546Z",
+      "evidence_included": 13,
+      "evidence_total": 754,
+      "omitted": {
+        "evidence": 741,
+        "ohlc": 616,
+        "lifecycle_events": 1066,
+        "cross_timeframe_interactions": 196,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61796,
+      "sha256": "128355c1e686a47dac902aa4d411302e607b4ffc1249f463c5925cc86d13578a",
+      "schema": "pa-engine-v6",
+      "contract": "pa-engine-v6.1",
+      "status": "PARTIAL",
+      "data_quality": "PARTIAL",
+      "quote_status": "FRESH",
+      "provider_timestamp": "2026-11-17T17:51:01.346Z",
+      "provider_age_seconds_upper_bound": 7.653,
+      "expires_at": "2026-11-17T17:53:01.346Z",
+      "expired_at_read": false,
+      "as_of": "2026-11-17T17:51:07.415Z",
+      "generated_at": "2026-11-17T17:51:09.312Z",
+      "evidence_included": 13,
+      "evidence_total": 755,
+      "omitted": {
+        "evidence": 742,
+        "ohlc": 616,
+        "lifecycle_events": 1064,
+        "cross_timeframe_interactions": 196,
+        "market_structure": true,
+        "range_history": true
+      },
+      "snapshot_sha256": "c50527f305f09b453921021282716702e3933e2892dc21496970b7d0244ddc86",
+      "closed_cutoffs": {
+        "MN1": "2026-11-01T00:00:00.000Z",
+        "W1": "2026-11-16T00:00:00.000Z",
+        "D1": "2026-11-17T00:00:00.000Z",
+        "H4": "2026-11-17T16:00:00.000Z"
+      },
+      "causality": "PASS",
+      "forbidden_fields_absent": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "desk-EURUSD-bid",
+      "path": "/api/desk-report?symbol=EURUSD&side=bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 11987,
+      "sha256": "194e814c8510e53596e422a56f196422499b9e6e63e648fd4e5eb45b7cd146a3",
+      "server_date": "Tue, 17 Nov 2026 17:51:00 GMT"
+    },
+    {
+      "name": "desk-EURUSD-ask",
+      "path": "/api/desk-report?symbol=EURUSD&side=ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 11987,
+      "sha256": "a9c6d718e18221bf2e34da3d76b20733e7a4ed8529d78dce2e60e3f4b2f76c30",
+      "server_date": "Tue, 17 Nov 2026 17:51:01 GMT"
+    },
+    {
+      "name": "desk-NAS100-bid",
+      "path": "/api/desk-report?symbol=NAS100&side=bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63955,
+      "sha256": "0d69764bf8e869b355dcec719bed945c00df5722ce7d13336d43b08988c90124",
+      "server_date": "Tue, 17 Nov 2026 17:51:04 GMT"
+    },
+    {
+      "name": "desk-NAS100-ask",
+      "path": "/api/desk-report?symbol=NAS100&side=ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63933,
+      "sha256": "a75e6f4a1bfd02c084097783a764e36441b04d385e6d0f3be4a3570f19477ce8",
+      "server_date": "Tue, 17 Nov 2026 17:51:05 GMT"
+    },
+    {
+      "name": "desk-JP225-bid",
+      "path": "/api/desk-report?symbol=JP225&side=bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61794,
+      "sha256": "7e77f6eeb6e01486095e5acc1058842ed2275c1253f3d7440c8ffb5e73a569e8",
+      "server_date": "Tue, 17 Nov 2026 17:51:08 GMT"
+    },
+    {
+      "name": "desk-JP225-ask",
+      "path": "/api/desk-report?symbol=JP225&side=ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61796,
+      "sha256": "128355c1e686a47dac902aa4d411302e607b4ffc1249f463c5925cc86d13578a",
+      "server_date": "Tue, 17 Nov 2026 17:51:08 GMT"
+    },
+    {
+      "name": "evidence-EURUSD",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&timeframe=H4&kind=FRACTAL&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 15654,
+      "sha256": "77b1b9f0689e9b9e77199f6e26cdf5c17fe6373ef6708b34552e494f27323282",
+      "server_date": "Tue, 17 Nov 2026 17:51:10 GMT"
+    },
+    {
+      "name": "detail-EURUSD",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-24T12%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-24T08%3A00%3A00.000Z",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 7404,
+      "sha256": "25702e0ee88c22d848c48feb8b413b9253167b7f4dfddce6367432ac8590ce09",
+      "server_date": "Tue, 17 Nov 2026 17:51:10 GMT"
+    },
+    {
+      "name": "price-filter-EURUSD",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&min_price=1.13989&max_price=1.13989&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 13456,
+      "sha256": "f05183b1299854a3c72aa8502aae183bd70aea613d4a6d38cbd626dee4a3e1d1",
+      "server_date": "Tue, 17 Nov 2026 17:51:10 GMT"
+    },
+    {
+      "name": "candles-1-EURUSD",
+      "path": "/api/pa-candles?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=H4&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3074,
+      "sha256": "b7cb0d30eda655aaaf387bdfe834fc9e5a5d1db644000766b1e14869d0d3b910",
+      "server_date": "Tue, 17 Nov 2026 17:51:11 GMT"
+    },
+    {
+      "name": "candles-2-EURUSD",
+      "path": "/api/pa-candles?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=H4&limit=3&offset=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3073,
+      "sha256": "3083d30bf767103372d3ea80d917ff6094251b28c76b55789cb6e7cbd457107f",
+      "server_date": "Tue, 17 Nov 2026 17:51:11 GMT"
+    },
+    {
+      "name": "cross-tf-EURUSD",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&view=interactions&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 2230,
+      "sha256": "94152336a63fb883b4591e3ec79ba97097608de9a483b587d4abf2885c0533ff",
+      "server_date": "Tue, 17 Nov 2026 17:51:11 GMT"
+    },
+    {
+      "name": "structure-EURUSD-MN1",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=MN1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 20271,
+      "sha256": "523df124a1453af8961e6d92543f386e79e801ebe2500b7e3a82e681426f1b3a",
+      "server_date": "Tue, 17 Nov 2026 17:51:11 GMT"
+    },
+    {
+      "name": "structure-EURUSD-W1",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=W1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 43328,
+      "sha256": "70a73d337f50a8667d80e2261b442e64bdea45a8d9d8a436aac9e59f43a01d2f",
+      "server_date": "Tue, 17 Nov 2026 17:51:12 GMT"
+    },
+    {
+      "name": "structure-EURUSD-D1",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=D1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 35821,
+      "sha256": "4eae98258ea09d399a4b264f2ea28cdc031ab6bb33bda2963d6b62b7f620e19a",
+      "server_date": "Tue, 17 Nov 2026 17:51:12 GMT"
+    },
+    {
+      "name": "structure-EURUSD-H4",
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&snapshot_sha256=ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948&timeframe=H4&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 50743,
+      "sha256": "181bbd63dbf2962c2223b5bd8f9af1ad3e45144289690ce3f7c861c3ef20ca9a",
+      "server_date": "Tue, 17 Nov 2026 17:51:12 GMT"
+    },
+    {
+      "name": "evidence-NAS100",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&timeframe=H4&kind=FRACTAL&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 15850,
+      "sha256": "ae2b7adf0a123a176929fd9b4cd6e0e5024f790dbb75136e85e3983301365c5d",
+      "server_date": "Tue, 17 Nov 2026 17:51:13 GMT"
+    },
+    {
+      "name": "detail-NAS100",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&id=NAS100%3AH4%3Abid%3AFRACTAL%3A2026-09-24T12%3A00%3A00.000Z%3A3%3Alow%3A2026-09-24T08%3A00%3A00.000Z",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64243,
+      "sha256": "2fe2e85312949a05cee0e6ba7edda8185c80afa76bf48f413272c0b23ef3b812",
+      "server_date": "Tue, 17 Nov 2026 17:51:13 GMT"
+    },
+    {
+      "name": "price-filter-NAS100",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&min_price=30074.1&max_price=30074.1&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 14093,
+      "sha256": "7a74f825b86a24615b94ccd4977c9b181f3fbcf2a2a6852c0759b668498f3622",
+      "server_date": "Tue, 17 Nov 2026 17:51:13 GMT"
+    },
+    {
+      "name": "candles-1-NAS100",
+      "path": "/api/pa-candles?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=H4&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3097,
+      "sha256": "a8315c0e9bee93cfdec3922fe2998c0057faad7eaf4b38751c4f5fc2756f27ee",
+      "server_date": "Tue, 17 Nov 2026 17:51:13 GMT"
+    },
+    {
+      "name": "candles-2-NAS100",
+      "path": "/api/pa-candles?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=H4&limit=3&offset=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3089,
+      "sha256": "d9c3d628efe296f7270db3114799835ab44a1813101ad279609b497989220e91",
+      "server_date": "Tue, 17 Nov 2026 17:51:14 GMT"
+    },
+    {
+      "name": "cross-tf-NAS100",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&view=interactions&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 2182,
+      "sha256": "28adee554079970d81e4361ef5bc9ae1d653dc318456fc17c1594225c17f2e0e",
+      "server_date": "Tue, 17 Nov 2026 17:51:14 GMT"
+    },
+    {
+      "name": "structure-NAS100-MN1",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=MN1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 15304,
+      "sha256": "fde617aca7856268504df2b31533a03dfe552c5ac24eb26f8d140f8caa92359d",
+      "server_date": "Tue, 17 Nov 2026 17:51:14 GMT"
+    },
+    {
+      "name": "structure-NAS100-W1",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=W1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 39061,
+      "sha256": "3000ba1a7dc322edb63ce4b9f2fb87f4bcd505e0b4bcab1557176b736ce60006",
+      "server_date": "Tue, 17 Nov 2026 17:51:15 GMT"
+    },
+    {
+      "name": "structure-NAS100-D1",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=D1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 36787,
+      "sha256": "88135eb3905450416d3ff04f0033fe16f3b73ff33ea8fbdc1f8b72a1b02e05fb",
+      "server_date": "Tue, 17 Nov 2026 17:51:15 GMT"
+    },
+    {
+      "name": "structure-NAS100-H4",
+      "path": "/api/pa-evidence?symbol=NAS100&side=bid&snapshot_sha256=77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096&timeframe=H4&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 50177,
+      "sha256": "df4700bd689a596589255ed161efa8ed5b55fc666baece9acd20c6414857ec18",
+      "server_date": "Tue, 17 Nov 2026 17:51:15 GMT"
+    },
+    {
+      "name": "evidence-JP225",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&timeframe=H4&kind=FRACTAL&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 15763,
+      "sha256": "a10bce74ba2d2f0feec257ec20629af2ba4b7c96d682149e6dc1005bf02e43c2",
+      "server_date": "Tue, 17 Nov 2026 17:51:16 GMT"
+    },
+    {
+      "name": "detail-JP225",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&id=JP225%3AH4%3Abid%3AFRACTAL%3A2026-09-24T12%3A00%3A00.000Z%3A3%3Alow%3A2026-09-24T08%3A00%3A00.000Z",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 65273,
+      "sha256": "a46fd808f6b3eaa312da70f222c4a87731ac2b4d390ffe73e6507adae7ea17af",
+      "server_date": "Tue, 17 Nov 2026 17:51:16 GMT"
+    },
+    {
+      "name": "price-filter-JP225",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&min_price=65297.2&max_price=65297.2&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 17260,
+      "sha256": "aa6e37110ebced1b6f456a4f3eb2e2a8a1c523a59d629651a2b28109ae427872",
+      "server_date": "Tue, 17 Nov 2026 17:51:16 GMT"
+    },
+    {
+      "name": "candles-1-JP225",
+      "path": "/api/pa-candles?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=H4&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3047,
+      "sha256": "43b08f82cbd3a24b4ee48fe43b6f3680c91c4b70acc8d75263079ee795aeea69",
+      "server_date": "Tue, 17 Nov 2026 17:51:16 GMT"
+    },
+    {
+      "name": "candles-2-JP225",
+      "path": "/api/pa-candles?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=H4&limit=3&offset=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 3047,
+      "sha256": "4065b7e88922a2129aa6bba2d821a326718d8aef4eb60a297e1125609b2bd285",
+      "server_date": "Tue, 17 Nov 2026 17:51:17 GMT"
+    },
+    {
+      "name": "cross-tf-JP225",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&view=interactions&limit=3",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 2129,
+      "sha256": "a83c47c5906cb240c927ce778ee42e6f40b12130acfb4a1c7dab47d708f02f27",
+      "server_date": "Tue, 17 Nov 2026 17:51:17 GMT"
+    },
+    {
+      "name": "structure-JP225-MN1",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=MN1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 23054,
+      "sha256": "63b0e77008aa132142f070029ec9ad17fba4bd8a92c1a16810da5603ac366336",
+      "server_date": "Tue, 17 Nov 2026 17:51:17 GMT"
+    },
+    {
+      "name": "structure-JP225-W1",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=W1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 44107,
+      "sha256": "39ea251412c259bbec618a7ec8fee1d358d12294a113e89577a275f20a588327",
+      "server_date": "Tue, 17 Nov 2026 17:51:17 GMT"
+    },
+    {
+      "name": "structure-JP225-D1",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=D1&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 34699,
+      "sha256": "cad151a27de53e3a498e92e35921adcb290fab01bd339ec6c7d93b314b020161",
+      "server_date": "Tue, 17 Nov 2026 17:51:17 GMT"
+    },
+    {
+      "name": "structure-JP225-H4",
+      "path": "/api/pa-evidence?symbol=JP225&side=bid&snapshot_sha256=094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2&timeframe=H4&view=structure",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 53158,
+      "sha256": "5291c2311926af660a421611f1f5062be68da78e7235f4af3c2e726aa5276980",
+      "server_date": "Tue, 17 Nov 2026 17:51:18 GMT"
+    },
+    {
+      "name": "market-audit",
+      "path": "/api/market-audit?symbol=EURUSD",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 741617,
+      "sha256": "283a397f372a20a0995aabe3dfe6f0c501dfbf377329888ebe9eaa8b880cbc5d",
+      "server_date": "Tue, 17 Nov 2026 17:51:18 GMT"
+    },
+    {
+      "name": "chart-H4",
+      "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+      "http": 200,
+      "content_type": "image/png",
+      "bytes": 112310,
+      "sha256": "dc46fe23c405e20b614def07d22ac9270a0acd20f83dcab44405032aaa17c203",
+      "server_date": "Tue, 17 Nov 2026 17:51:19 GMT"
+    },
+    {
+      "name": "research-html",
+      "path": "/research",
+      "http": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 6950,
+      "sha256": "9b450687ca171539cb5dc28a1c8be59ce2a532c57ea704bfda031cc53df82511",
+      "server_date": "Tue, 17 Nov 2026 17:51:20 GMT"
+    }
+  ],
+  "throttles": [],
+  "markets": [
+    {
+      "symbol": "EURUSD",
+      "snapshot_sha256": "ed9311f22b5c7bd6e8a6a472c8b6c1f1b8fab039efa45d5e82f97423f3ce6948",
+      "same_snapshot_as_report": true,
+      "evidence_total": 99,
+      "full_id": "EURUSD:H4:bid:FRACTAL:2026-09-24T12:00:00.000Z:3:high:2026-09-24T08:00:00.000Z",
+      "full_id_candle_count": 3,
+      "interaction_count": 3,
+      "price_filter": "PASS",
+      "ohlc_pages": 2,
+      "ohlc_rows": 6,
+      "ohlc_total": 239,
+      "causal_cutoff": "2026-11-17T17:50:55.965Z",
+      "cross_timeframe_total": 259,
+      "structures": [
+        {
+          "timeframe": "MN1",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 27,
+          "http": 200
+        },
+        {
+          "timeframe": "W1",
+          "status": "AWAITING_NEW_EXTREME",
+          "fractal_sequence": 56,
+          "http": 200
+        },
+        {
+          "timeframe": "D1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "fractal_sequence": 70,
+          "http": 200
+        },
+        {
+          "timeframe": "H4",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 99,
+          "http": 200
+        }
+      ],
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "NAS100",
+      "snapshot_sha256": "77efbbf9a773461e67372de5b9c4a458f80cf74a7c9a703a29c095e0f4307096",
+      "same_snapshot_as_report": true,
+      "evidence_total": 99,
+      "full_id": "NAS100:H4:bid:FRACTAL:2026-09-24T12:00:00.000Z:3:low:2026-09-24T08:00:00.000Z",
+      "full_id_candle_count": 3,
+      "interaction_count": 149,
+      "price_filter": "PASS",
+      "ohlc_pages": 2,
+      "ohlc_rows": 6,
+      "ohlc_total": 239,
+      "causal_cutoff": "2026-11-17T17:51:03.446Z",
+      "cross_timeframe_total": 237,
+      "structures": [
+        {
+          "timeframe": "MN1",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 18,
+          "http": 200
+        },
+        {
+          "timeframe": "W1",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 53,
+          "http": 200
+        },
+        {
+          "timeframe": "D1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "fractal_sequence": 72,
+          "http": 200
+        },
+        {
+          "timeframe": "H4",
+          "status": "AWAITING_NEW_EXTREME",
+          "fractal_sequence": 99,
+          "http": 200
+        }
+      ],
+      "forbidden_fields_absent": true
+    },
+    {
+      "symbol": "JP225",
+      "snapshot_sha256": "094933a27f27c4618d82e16801830c025ed82ef80f3ae93760074f31f54250d2",
+      "same_snapshot_as_report": true,
+      "evidence_total": 103,
+      "full_id": "JP225:H4:bid:FRACTAL:2026-09-24T12:00:00.000Z:3:low:2026-09-24T08:00:00.000Z",
+      "full_id_candle_count": 3,
+      "interaction_count": 152,
+      "price_filter": "PASS",
+      "ohlc_pages": 2,
+      "ohlc_rows": 6,
+      "ohlc_total": 239,
+      "causal_cutoff": "2026-11-17T17:51:07.415Z",
+      "cross_timeframe_total": 196,
+      "structures": [
+        {
+          "timeframe": "MN1",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 27,
+          "http": 200
+        },
+        {
+          "timeframe": "W1",
+          "status": "ESTABLISHED",
+          "fractal_sequence": 52,
+          "http": 200
+        },
+        {
+          "timeframe": "D1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "fractal_sequence": 68,
+          "http": 200
+        },
+        {
+          "timeframe": "H4",
+          "status": "AWAITING_NEW_EXTREME",
+          "fractal_sequence": 103,
+          "http": 200
+        }
+      ],
+      "forbidden_fields_absent": true
+    }
+  ],
+  "market_audit": {
+    "name": "market-audit",
+    "path": "/api/market-audit?symbol=EURUSD",
+    "http": 200,
+    "content_type": "application/json",
+    "bytes": 741617,
+    "sha256": "283a397f372a20a0995aabe3dfe6f0c501dfbf377329888ebe9eaa8b880cbc5d",
+    "server_date": "Tue, 17 Nov 2026 17:51:18 GMT"
+  },
+  "chart": {
+    "name": "chart-H4",
+    "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112310,
+    "sha256": "dc46fe23c405e20b614def07d22ac9270a0acd20f83dcab44405032aaa17c203",
+    "server_date": "Tue, 17 Nov 2026 17:51:19 GMT",
+    "png_signature": true
+  },
+  "research": {
+    "name": "research-html",
+    "path": "/research",
+    "http": 200,
+    "content_type": "text/html; charset=utf-8",
+    "bytes": 6950,
+    "sha256": "9b450687ca171539cb5dc28a1c8be59ce2a532c57ea704bfda031cc53df82511",
+    "server_date": "Tue, 17 Nov 2026 17:51:20 GMT"
+  },
+  "status": "PASS"
+}
