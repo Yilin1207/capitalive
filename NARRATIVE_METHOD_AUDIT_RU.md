@@ -32,3 +32,46 @@
 ## Ограничения
 
 Рейтинг не откалиброван на независимой экспертной разметке и не измеряет вероятность сделки. Минимальный R:R, торговые издержки и отступ стопа пользователь не задавал — они не придуманы. Сохранённая публикация GitHub имеет срок годности; текущую свежесть нужно проверять по provider timestamp и expires_at. Ошибка провайдера не маскируется предыдущим снимком.
+
+## Завершённый выпуск
+
+Runtime commit: `a291ec8801d8277b7bdf0602021ce539d1a25261`.
+
+- [Source PR #17](https://github.com/Yilin1207/capitalive/pull/17) слит только в `feature/the-edge-knowledge`; merge `cb57e8cc0a35901197498b3eb2ba440b9df3828d`. PR #2 остаётся открытым, `main` не изменялся.
+- [Release checks](https://github.com/Yilin1207/capitalive/actions/runs/44133156953): SUCCESS. 281 тест, 10 браузерных тестов, typecheck, build, recorded HTTP contracts и replay. Проверены 7 290 закрытых префиксов исторических EURUSD/NAS100/EU50; активный JP225 дополнительно включён в шесть differential-проверок Bid/Ask. Это проверка причинности реализации, а не независимая экспертная оценка метода.
+- [Private Bridge PR #11](https://github.com/Yilin1207/capitalive-research-bridge/pull/11): синхронизирован идентичный portable contract; [CI](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44133170502) SUCCESS. Merge `b0518a56e6ad7d85ee525eb2f0c965dad5ccf158`.
+- Проверенный Preview: `capitalive-bv7tbd603-yilin1207s-projects.vercel.app`.
+- Production deployment: `dpl_CgnFXRJicqhnZu1v47HQhQKj2owB`, тот же runtime SHA. [Immutable Production](https://capitalive-f1k9lnf5t-yilin1207s-projects.vercel.app/research).
+- Публичный адрес: [capitalive.vercel.app/research](https://capitalive.vercel.app/research). Анонимный HTTP 200; SSO отсутствует, пароль отсутствует. Раздел Narrative показан для всех трёх рынков, ошибок JavaScript не обнаружено. UI проверялся на реальных записанных ответах соответствующего deployment.
+
+## Реальные HTTP-проверки
+
+Проверка стабильного Production завершена `2026-11-17T17:10:59.228Z` по клиентским часам. Без авторизации, cookies и bypass. Каждый JSON проверен переносимым контрактом, включая ссылки на evidence, причинность, геометрию, оценки, отдельные C/стоп и запрет автоматического Confirmed.
+
+| Рынок | Bid, байт | Ask, байт | HTTP / тип | Свежесть котировки | Полнота |
+|---|---:|---:|---|---|---|
+| EURUSD | 65 419 | 65 337 | 200 / application/json | FRESH | PARTIAL |
+| NAS100 | 64 362 | 64 312 | 200 / application/json | FRESH | PARTIAL |
+| JP225 | 61 646 | 61 646 | 200 / application/json | FRESH | PARTIAL |
+
+Все ответы меньше 65 536 байт. `PARTIAL` не заменён на полный успех: ограничения истории и непрерывности данных остаются видны отдельно от свежести котировки. Три полных Intelligence-ответа Preview также проверены: 3 884 595 / 3 568 159 / 3 028 121 байт, ниже лимита 4,25 MB.
+
+[Market Audit EURUSD](https://capitalive.vercel.app/api/market-audit?symbol=EURUSD) вернул HTTP 200 и JSON; [H4 Chart EURUSD](https://capitalive.vercel.app/api/chart?symbol=EURUSD&timeframe=H4) — HTTP 200, `image/png`, 112 414 байт, правильная сигнатура PNG.
+
+Практическое наблюдение EURUSD: у выбранного H4-кандидата C=1.09846 пересечена тенью, но закрытия H4 за C нет. Narrative остаётся Candidate; действующего стопа нет, поэтому R:R отсутствует. Это наблюдение сохранённого ответа, а не текущий торговый сигнал.
+
+## Публикация и повторное чтение GitHub
+
+`BRIDGE_BASE_URL` переключён на проверенный immutable Production. Push-run [44134071427](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44134071427) и ручной run [44134313527](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44134313527) завершены SUCCESS.
+
+После ручного запуска прочитаны manifest и три JSON с привязкой к одному commit `0ffabeaa7f2e1abd6511c9162e3ee5230aede53f`. Публикация обновилась относительно предыдущего commit `93ae49d0f10bb9c3f77ae81940d9d40afc7dfcc3`. Manifest `published_at=2026-11-17T17:12:15.475Z`, contract `desk-report-v2.7`. Проверены атомарные четыре файла, Git blob SHA-1, SHA-256 и длины байтов, engine SHA, новая методика и отсутствие Confirmed/автоторговли.
+
+| JSON | Байт | SHA-256 |
+|---|---:|---|
+| EURUSD.json | 65 441 | `bbee09ec327ccbf0f5fb8379da4c3c6c1c5e14d46f849d636d8deb6bb25adfb0` |
+| NAS100.json | 64 386 | `949aad5a5dc9389b97188b67dc92ed9ccb4d5e2e1d21c860b38f7417b605cc53` |
+| JP225.json | 61 697 | `772508b4383a49703cf3f1afef1793dddd68f5b6c60c0e9715d8aa77f07d09c3` |
+
+Во время повторного чтения все три котировки были свежими, возраст по серверному HTTP Date составлял не более 87 секунд; `expires_at` не истёк. Это утверждение относится к проверке, а не обещание бессрочной свежести сохранённого файла. Для текущего анализа нужно обновить отчёт и проверить его timestamps.
+
+Безопасные результаты находятся в `verification/narrative-v1/`; полные приватные ответы, OHLC и логи не опубликованы. Verdict: **READY для технического выпуска Narrative method v1**, с указанными ограничениями данных и отсутствием независимой калибровки оценок.
