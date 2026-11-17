@@ -8,6 +8,8 @@ test('V5.1 research separates observations, unverified roles, DR review and snap
  await page.route('**/api/desk-report?**',route=>{const symbol=new URL(route.request().url()).searchParams.get('symbol');return route.fulfill({json:{...r,symbol}});});
  await page.goto('/research');await page.getByRole('button',{name:'Получить свежие отчёты'}).click();
  await expect(page.getByRole('heading',{name:'Наблюдения и авторская структура'})).toHaveCount(3);
+ await expect(page.getByRole('heading',{name:'Support & Resistance — SNR',exact:true})).toHaveCount(3);
+ await expect(page.getByText('FVG необязателен даже для очень сильного SNR.',{exact:false})).toHaveCount(3);
  await expect(page.getByRole('heading',{name:'Rejection Blocks',exact:true})).toHaveCount(3);
  await expect(page.getByText('RB только на FVG существенно слабее RB со снятием ликвидности.',{exact:false})).toHaveCount(3);
  await expect(page.getByText('Первый установленный DR сверху вниз:',{exact:false})).toHaveCount(3);

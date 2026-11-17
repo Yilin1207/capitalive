@@ -1,3 +1,4 @@
+import type {snrFormationContext} from '../knowledge/snr-context';
 import {freshnessPolicy} from './freshness';
 import {closedRegularInterval} from '../research/calendars';
 import {createHash} from 'node:crypto';
@@ -51,6 +52,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
     const s=states.get(id),facts=f.facts,junction=facts.junction as {lower?:unknown;upper?:unknown}|undefined;
     const lower=number(facts.lower)??number(junction?.lower)??number(facts.price),upper=number(facts.upper)??number(junction?.upper)??number(facts.price);
     const candleRefs=f.candle_evidence.map(c=>windowRef(c.time,c.closed_at));
+    const formation=f.facts.formation as ReturnType<typeof snrFormationContext>|undefined;
     rules[f.rule_id]={version:f.rule_version,status:f.rule_status,specification:f.specification,
       basis:choice((f as Finding&{basis?:string}).basis,['DOCUMENTED','PROJECT_HYPOTHESIS']),source_revisions:f.sources.map(x=>({id:x.id,revision:x.revision}))};
     const interactions=s?[s.first_raid,s.last_test,s.reaction,s.lower_tf_breach,...s.role_evidence].filter(x=>x!==null).map(x=>{
@@ -58,7 +60,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       return {kind:x.kind,timeframe:x.timeframe,candle:windowRef(x.time,x.confirmed_at)};
     }):[];
     const dependencies:string[]=[];
-    for(const key of ['kl_id','pivot_id','poi_id','raid_id','vc_id','source_id','rb_liquidity_id','rb_fvg_id'])if(typeof facts[key]==='string'){const dependency=add(facts[key] as string);if(!dependencies.includes(dependency))dependencies.push(dependency);}
+    for(const key of ['kl_id','pivot_id','poi_id','raid_id','vc_id','source_id','rb_liquidity_id','rb_fvg_id','snr_x1_fvg_id','snr_opposing_kl_id'])if(typeof facts[key]==='string'){const dependency=add(facts[key] as string);if(!dependencies.includes(dependency))dependencies.push(dependency);}
     evidence[ref]={id:f.id,timeframe:f.timeframe,kind:f.kind,origin:f.origin,confirmed_at:f.confirmed_at,
       lower,upper,variant:facts.variant===3?facts.variant:null,polarity:choice(facts.polarity,['high','low']),
       direction:choice(facts.direction,['bullish','bearish','Bullish','Bearish','up','down']),
@@ -66,6 +68,13 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       ...(f.kind==='RB_TWO_CANDLE'?{rb:{revision:'rb-first-close-2',level_policy:'FIRST_CANDLE_CLOSE',level_price:number(facts.level_price),formation_confirmed:true,
         basis:facts.basis,relative_quality:facts.relative_quality,probability:null,significance:'REVIEW_REQUIRED',
         primary_kl:add(String(facts.kl_id)),liquidity:typeof facts.rb_liquidity_id==='string'?add(facts.rb_liquidity_id):null,fvg:typeof facts.rb_fvg_id==='string'?add(facts.rb_fvg_id):null}}:{}),
+      ...(f.kind==='SNR_CLOSED_BREAK'&&formation?{snr:{revision:formation.revision,level_policy:formation.level_policy,level_price:formation.level_price,formation_confirmed:true,
+        origin_confirmed_at:formation.origin_confirmed_at,delivery_at:formation.delivery_at,breakout_at:formation.breakout_at,waiting_bars:formation.waiting_bars,formation_seconds:formation.formation_seconds,
+        failed_test_bars:formation.failed_test_bars,failed_test_episodes:formation.failed_test_episodes,test_windows:formation.failed_tests.map(c=>windowRef(c.time,c.closed_at)),
+        breakout_body:formation.breakout_body,breakout_body_fraction:formation.breakout_body_fraction,prior_body_sample:formation.prior_body_sample,body_to_prior_median:formation.body_to_prior_median,
+        impulse_leg_bars:formation.impulse_leg_bars,impulse_leg_body_to_median:formation.impulse_leg_body_to_median,impulse_leg_efficiency:formation.impulse_leg_efficiency,
+        impulse_detected:formation.impulse_detected,impulse_evidence:formation.impulse_evidence,relative_strength:formation.relative_strength,strength_policy:formation.strength_policy,impulse_policy:formation.impulse_policy,
+        probability:null,review_required:true,primary_kl:add(String(facts.kl_id)),x1_fvg:formation.x1_fvg_id?add(formation.x1_fvg_id):null,opposing_kl:formation.opposing_kl_id?add(formation.opposing_kl_id):null}}:{}),
       candle_refs:candleRefs,candle_evidence_sha256:hash(f.candle_evidence),dependencies,
       lifecycle:s?{state:s.state,initial_role:s.initial_role,fill:s.fill??null,current_role:s.role_status==='RETEST_CONFIRMED'&&!['INVALIDATED','CONSUMED','UNVERIFIED'].includes(s.state)?s.current_role:null,role_status:['INVALIDATED','CONSUMED','UNVERIFIED'].includes(s.state)?'UNVERIFIED':s.role_status,coverage:s.coverage,evaluated_through:s.evaluated_through,
         invalidated_at:s.invalidated_at,liquidity_consumed:s.liquidity_consumed,interactions}:null};
@@ -84,7 +93,8 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       data_status:f.data_status,warnings:reasons(f.warnings),discarded_rows:data[tf].metadata.discarded_rows,
       structure:{bias:bias(f.structure_bias),events:group(f.findings.filter(x=>['BOS','CHOCH'].includes(x.kind)),1),
         swing_bias:bias(f.order_flow.bias),swing_basis:'NEEDS_SPECIFICATION',swing_evidence:f.order_flow.evidence_ids.map(add)},
-      fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),budgetTier>=1?0:1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1?0:1),
+      fractals,snr:group(f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'),1),rb:group(f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'),budgetTier>=1&&tf!==[...r.frames].reverse().find(frame=>frame.findings.some(x=>x.kind==='RB_TWO_CANDLE'))?.timeframe?0:1),
+      snr_quality:{very_strong_candidates:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='VERY_STRONG_FORMATION_CANDIDATE').length,context_conflicts:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='CONTEXT_CONFLICT').length,review_required:f.findings.filter(x=>x.kind==='SNR_CLOSED_BREAK'&&(x.facts.formation as ReturnType<typeof snrFormationContext>)?.relative_strength==='REVIEW_REQUIRED').length},
       rb_quality:{raid_backed:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='RAID_BACKED').length,fvg_only_weaker:f.findings.filter(x=>x.kind==='RB_TWO_CANDLE'&&x.facts.relative_quality==='WEAKER_FVG_ONLY').length,counting:'FINDINGS_PER_PRIMARY_KL'},
       fvg:group(f.findings.filter(x=>x.kind==='FVG'),budgetTier>=2?0:1),ifvg:group(f.findings.filter(x=>x.kind==='FVG_CLOSED_BREACH'),0),
       liquidity:{raids:group(f.findings.filter(x=>x.kind==='RAID'),budgetTier>=2?0:1),idm:group(f.findings.filter(x=>x.kind==='IDM_INSIDE_POI'),0),strong:group(f.findings.filter(x=>x.kind==='STRONG_PIVOT_CANDIDATE'),0),irl:group(f.findings.filter(x=>x.kind==='INTERNAL_LIQUIDITY'),budgetTier>=2?0:1)},

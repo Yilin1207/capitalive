@@ -96,7 +96,7 @@ export function buildIntelligence(
     );
     const raids = detectRaids(frame, pivots),
       rb = detectRejectionBlocks(frame, context),
-      snr = detectSnr(frame, context),
+      snr = detectSnr(frame, context, allLevels),
       structure = detectStructure(frame, pivots),
       dr = selectRange(frame, pivots, options.ranges?.[tf]);
     const sessions = detectSessionGaps(frame, options.sessions);
@@ -179,7 +179,7 @@ export function buildIntelligence(
     invalidation:
       "Review when A/B/C, supporting closed candles or source revisions change",
   };
-  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
+  const evidenceHash=createHash('sha256').update(canonical({dr_revision:'dr-sequence-1',rb_revision:'rb-first-close-2',snr_revision:'snr-formation-context-2',as_of:asOf,side,frames:TF_ORDER.map(tf=>({tf,symbol:frames[tf].symbol,bars:frames[tf].bars,warnings:frames[tf].warnings})),environment:data.H4.environment,anchor_id:options.anchor_id??null,target_id:options.target_id??null,ranges:options.ranges??{},sources:knowledgeCoverage().catalog_revision})).digest('hex');
   const assessment=narrativeAssessment(hierarchy,states,perFrame,targetSelection,reference,reliable,options.human_review,evidenceHash,!!c);
   const narrative = {
     ...provenance("EDGE.NARRATIVE.v3"),

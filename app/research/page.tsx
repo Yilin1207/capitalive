@@ -2,8 +2,8 @@
 import {useEffect,useState} from 'react';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../../lib/active-research-markets';
 import type {compactResearchContext} from '../../lib/research-bridge/context';
-type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null;rb_quality?:{raid_backed:number;fvg_only_weaker:number}}[];
- research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;confirmed_at?:string;rb?:{level_price:number;relative_quality:string;basis:string;primary_kl:string;liquidity:string|null;fvg:string|null};lifecycle?:{state:string;initial_role:string;fill?:{state:string}}}>};
+type Row={symbol:string;status:string;generated_at?:string;expires_at?:string;quote?:{provider_timestamp:string|null};freshness?:{quote_status:string};frames?:{timeframe:string;last_closed_at:string|null;rb_quality?:{raid_backed:number;fvg_only_weaker:number};snr_quality?:{very_strong_candidates:number;context_conflicts:number;review_required:number}}[];
+ research_context?:ReturnType<typeof compactResearchContext>;evidence?:Record<string,{id:string;timeframe:string;kind:string;lower:number;upper:number;confirmed_at?:string;snr?:{level_price:number;relative_strength:string;failed_test_bars:number;failed_test_episodes:number;waiting_bars:number;formation_seconds:number;impulse_detected:boolean;impulse_leg_body_to_median:number|null;impulse_leg_bars:number;primary_kl:string;x1_fvg:string|null;opposing_kl:string|null};rb?:{level_price:number;relative_quality:string;basis:string;primary_kl:string;liquidity:string|null;fvg:string|null};lifecycle?:{state:string;initial_role:string;fill?:{state:string}}}>};
 export default function ResearchRefresh(){
  const [busy,setBusy]=useState(false),[rows,setRows]=useState<Row[]>([]),[files,setFiles]=useState<Record<string,string>>({});
  const [clock,setClock]=useState(0);
@@ -41,6 +41,15 @@ export default function ResearchRefresh(){
      <p>Lifecycle: {e?.lifecycle?.state}. Fill: {e?.lifecycle?.fill?.state??'не применимо'}. Исходная геометрия: {e?.lifecycle?.initial_role}. Текущая роль: {l.current_role??'не подтверждена'}.</p>
      <p>Цена относительно зоны: {l.reference_position}. Причины: {l.relevance_reasons.join(', ')}.</p><p>Неопределённости: {l.uncertainty.join(', ')}.</p>
      <p>Связанные взаимодействия: {l.interactions.items.length}/{l.interactions.total}; HTF: {l.htf_dependencies.items.length}/{l.htf_dependencies.total}.</p><code>{e?.id}</code></details>;})}
+    <h3>Support &amp; Resistance — SNR</h3>
+    <p>Две противоположные свечи задают уровень по закрытию первой. SNR формируется после доставки к KL и первого закрытия строго за уровнем: сопротивление становится кандидатом поддержки, поддержка — сопротивления.</p>
+    <p>Сила зависит от того, как и где возник элемент PA. Повторные неудачные тесты и последующий импульс усиливают оценку; FVG необязателен даже для очень сильного SNR. Пробой в противоположный HTF-уровень требует отдельной оценки.</p>
+    {row.frames?.filter(f=>f.snr_quality).map(f=><p key={'snr-'+f.timeframe}>{f.timeframe}: кандидаты очень сильного формирования — {f.snr_quality!.very_strong_candidates}; конфликт контекста — {f.snr_quality!.context_conflicts}; остальные требуют оценки — {f.snr_quality!.review_required}.</p>)}
+    {Object.values(row.evidence??{}).filter(e=>e.snr).map(e=><details key={e.id}><summary>{e.timeframe} SNR: {e.snr!.level_price} · {e.snr!.relative_strength==='VERY_STRONG_FORMATION_CANDIDATE'?'кандидат очень сильного формирования':e.snr!.relative_strength==='CONTEXT_CONFLICT'?'конфликт с HTF':'требуется оценка'}</summary>
+      <p>Неудачных тестов до пробоя: {e.snr!.failed_test_bars}, отдельных эпизодов: {e.snr!.failed_test_episodes}. Ожидание: {e.snr!.waiting_bars} свечей. Подтверждение: {e.confirmed_at}.</p>
+      <p>Импульс: {e.snr!.impulse_detected?'есть измеримые признаки':'автоматически не установлен'}; свечей в движении: {e.snr!.impulse_leg_bars}; отношение суммы тел к медиане: {e.snr!.impulse_leg_body_to_median?.toFixed(2)??'недостаточно данных'}. X−1 FVG: {e.snr!.x1_fvg?'есть':'не установлен / нет покрытия'}.</p>
+      <p>KL доставки: {row.evidence?.[e.snr!.primary_kl]?.id}. Противоположный KL: {e.snr!.opposing_kl?row.evidence?.[e.snr!.opposing_kl]?.id:'пересечение не обнаружено в доступном контексте'}.</p><code>{e.id}</code></details>)}
+    <p>Автоматический критерий импульса — техническое допущение: сумма тел последовательного движения ≥2 медиан предыдущих 20 свечей, направленная эффективность ≥60%, минимум 5 предшествующих свечей; FVG может дать дополнительное основание. Это не вероятность успеха и не подтверждение Narrative.</p>
     <h3>Rejection Blocks</h3>
     <p>RB подтверждается второй закрытой свечой. Уровень — закрытие первой свечи, включая гэп. Простой Rejection сам по себе не подтверждает RB.</p>
     <p>RB только на FVG существенно слабее RB со снятием ликвидности. Это качественное различие, а не вероятность сделки.</p>

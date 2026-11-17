@@ -114,11 +114,11 @@ const specs: Spec[] = [
     "Two-candle SNR with KL context",
     "snr",
     "PARTIAL",
-    "Opposite-candle origin, subsequent delivery into KL and a closed break of the origin.",
+    "Opposite-candle origin at first close, subsequent KL delivery and first closed break; formation history and destination determine contextual strength.",
     ["Origin precedes KL reaction; breakout is independent of FVG."],
     [
       "Support-break text says above, but reviewed diagrams el02_04/el02_09 show below; implementation follows the diagram and records this conflict.",
-      "Reviewed diagrams define the body junction. A band for unequal adjacent close/open is a project convention; break alone does not establish a successful retest.",
+      "User confirmed first close at gaps and optional FVG even for very strong SNR on 2026-11-17. Repeated test episodes plus measured impulse support a very-strong formation candidate. Impulse proxy: same-direction closed leg bodies at least 2x prior-20 median, efficiency >=0.60, minimum 5 prior bars; causal X-1 FVG is an alternative observation. These numeric thresholds are project assumptions, not author-validated probabilities. Opposing HTF overlap prevents automatic strong classification; missing lower-TF history is not evidence of no impulse.",
     ],
   ],
   [
@@ -312,9 +312,9 @@ const specs: Spec[] = [
 ];
 export const RULES: Rule[] = specs.map(
   ([name, concept, src, specification, definition, formation, unresolved]) => ({
-    id: `EDGE.${name}.v${name==='RB'?2:1}`,
+    id: `EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`,
     concept,
-    version: name==='RB'?2:1,
+    version: ['RB','SNR'].includes(name)?2:1,
     status: specification === "NEEDS_SPECIFICATION" ? "DOCUMENTED" : "TESTED",
     specification,
     source_ids: [source[src]],
