@@ -6,7 +6,7 @@ export const SNR_REVISION='snr-formation-context-2';
 const order=['MN1','W1','D1','H4'];
 /** Measurements stop at the FIRST closed break. Later retests never strengthen
  * the historical formation. These are author-method observations, not odds. */
-export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:Bar,breakout:Bar,level:number,bullish:boolean,context:KeyLevel[],lowerLevels:KeyLevel[]){
+export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:Bar,breakout:Bar,level:number,bullish:boolean,context:KeyLevel[],lowerLevels:KeyLevel[],includeStrength=true){
   const waiting=frame.bars.filter(c=>c.segment===origin.segment&&c.index>second.index&&c.index<breakout.index&&c.end<=breakout.end);
   const tests=waiting.filter(c=>c.low<=level&&c.high>=level&&(bullish?c.close<=level:c.close>=level));
   let episodes=0,previous=-2;for(const c of tests){if(c.index!==previous+1)episodes++;previous=c.index;}
@@ -23,7 +23,7 @@ export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:B
   const expansion=median&&median>0?legBody/median:null,efficiency=legSpan>0?Math.min(1,legMove/legSpan):0;
   // Explicit implementation proxy, not a numeric threshold stated by the author.
   // FVG is an optional additional observation, never a mandatory strength gate.
-  const measuredImpulse=bodies.length>=5&&expansion!==null&&expansion>=2&&efficiency>=0.6&&leg.length>0;
+  const measuredImpulse=includeStrength&&bodies.length>=5&&expansion!==null&&expansion>=2&&efficiency>=0.6&&leg.length>0;
   const admissible=(l:KeyLevel)=>l.qualified&&l.side===frame.side&&l.confirmed_at<=breakout.end&&(!l.invalidated_at||l.invalidated_at>breakout.end)&&(!l.continuity_end||l.continuity_end>=breakout.end);
   const sort=(a:KeyLevel,b:KeyLevel)=>order.indexOf(a.timeframe)-order.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id);
   const x1=lowerLevels.filter(l=>l.kind==='FVG'&&l.timeframe===order[order.indexOf(frame.timeframe)+1]&&admissible(l)&&l.role===(bullish?'support':'resistance')&&l.source_finding.origin>=start&&l.confirmed_at>=breakout.time&&l.lower<=level&&l.upper>=level).sort(sort)[0]??null;
@@ -38,8 +38,8 @@ export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:B
     breakout_body:body,breakout_body_fraction:span>0?body/span:0,prior_body_sample:bodies.length,body_to_prior_median:median&&median>0?body/median:null,
     impulse_leg_bars:leg.length,impulse_leg_body_to_median:expansion,impulse_leg_efficiency:efficiency,
     x1_fvg_id:x1?.id??null,opposing_kl_id:opposing?.id??null,opposing_bounds:opposing?{lower:opposing.lower,upper:opposing.upper}:null,
-    impulse_detected:measuredImpulse||!!x1,impulse_evidence:measuredImpulse?(x1?'MEASURED_EXPANSION_AND_X1_FVG':'MEASURED_EXPANSION'):x1?'X1_FVG_AT_BREAK':'BODY_METRICS_ONLY',
-    relative_strength:opposing?'CONTEXT_CONFLICT':episodes>=2&&(measuredImpulse||x1)?'VERY_STRONG_FORMATION_CANDIDATE':'REVIEW_REQUIRED',
+    impulse_detected:includeStrength&&(measuredImpulse||!!x1),impulse_evidence:!includeStrength?'NOT_EVALUATED':measuredImpulse?(x1?'MEASURED_EXPANSION_AND_X1_FVG':'MEASURED_EXPANSION'):x1?'X1_FVG_AT_BREAK':'BODY_METRICS_ONLY',
+    relative_strength:!includeStrength?'NEEDS_SPECIFICATION':opposing?'CONTEXT_CONFLICT':episodes>=2&&(measuredImpulse||x1)?'VERY_STRONG_FORMATION_CANDIDATE':'REVIEW_REQUIRED',
     strength_policy:'REPEATED_EPISODES_AND_IMPULSE_FVG_OPTIONAL',impulse_policy:'PRIOR20_MEDIAN_2X_LEG_EFFICIENCY_060_MIN5_OR_X1_FVG',probability:null,review_required:true as const,
     history_scope:'OBSERVED_CONTIGUOUS_ORIGIN_TO_FIRST_BREAK',
   };

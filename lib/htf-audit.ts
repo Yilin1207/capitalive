@@ -29,7 +29,7 @@ export function buildHtfAudit(asset: AnalysisSymbol, side: PriceSide, data: Reco
   return { engine: 'capitalive-2.1-htf', version: '2.1', asset, price_side: side, environment: data.H4.environment, reference_price: price,
     reference_fresh: quote.fresh, data_reliability: reliability, snr, structure, catalog, priority_zones: priority,
     contact:observeHtfContact(quote,side,catalog.zones),
-    risk: { ...calculateStructuralRisk(analyses, catalog, entry ?? price, {data,asset,side,quote,settings:analyses[0]?.materiality}), entry_source: entry === undefined ? 'selected_quote_side' : 'user_hypothesis_unverified',
+    risk: { ...calculateStructuralRisk(analyses, catalog, entry ?? null, {data,asset,side,quote,settings:analyses[0]?.materiality}), entry_source: entry === undefined ? 'NOT_ASSIGNED_PA_ONLY' : 'user_hypothesis_unverified',
       reference_fresh: entry === undefined ? quote.fresh : false, data_reliability: reliability },
     scope: { view:'full', full_catalog_included:true, timeframes: ANALYSIS_TIMEFRAMES, loaded_history_only: true, omitted_zones: 0, source: 'same_snapshot_as_market_audit', no_synthetic_candles: true } };
 }

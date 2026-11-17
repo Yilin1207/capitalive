@@ -1,90 +1,33 @@
-# Capitalive V5 — THE EDGE Research
+# Capitalive V6 - PA Only Engine
 
-Technical research for **EURUSD / NAS100 / JP225**, with explicit Capital.com
-Demo/Live environment and timestamps. No order execution. Macro-EDGE, final
-decisions and aggregate risk remain with the user and ChatGPT.
+Technical evidence for EURUSD, NAS100 and JP225, MN1/W1/D1/H4, Bid/Ask.
+Capitalive detects closed-candle PA and lifecycle. ChatGPT interprets it; the user decides.
+No automatic Narrative, A/B/C, entry/stop/target selection, R:R, scoring or trading.
 
-V5.1 with sequential DR, first-close RB, contextual SNR, remaining FVG, TDA and scored Narrative A/B/C is active on the public Production
-site. Private Bridge main uses the same immutable Production deployment.
-See [current Narrative audit](NARRATIVE_METHOD_AUDIT_RU.md) for runtime,
-publication/readback, timestamps and remaining access limitations. Earlier V5
-activation audits describe historical deployments.
+Implementation and verified release status: [V6 audit](PA_ENGINE_V6_AUDIT_RU.md).
+Primary-source definitions and unresolved rules: [Notion audit](PA_ENGINE_V6_SOURCES_RU.md).
+Prior V5/V5.1 audits describe historical releases, not the active methodology.
 
-## Public access — updated 17 November 2026
+## Public access and API
 
-The user explicitly requested public website/API access for ChatGPT. Project-level
-Vercel Authentication is now disabled (`ssoProtection: null`). This supersedes
-earlier instructions in historical audits to retain SSO; do not re-enable login
-for research routes without a new user instruction. GitHub report storage remains
-private, and server credentials and authenticated ingestion remain protected.
+Public site: https://capitalive.vercel.app/research . No SSO, password or cookie is required.
+Credentials and ingestion remain protected; the report repository remains private.
 
-Stable public site: https://capitalive.vercel.app/research . Direct research JSON:
-`https://capitalive.vercel.app/api/desk-report?symbol=EURUSD&side=bid`
-(also NAS100 and JP225). Unauthenticated HTTP checks returned 200 HTML/JSON/PNG,
-without a login redirect. The stable domain returned no `X-Robots-Tag: noindex`;
-`robots.txt` returned 404, not a robots exclusion policy.
+- /api/desk-report?symbol=NAS100&side=bid: pa-engine-v6, header pa-engine-v6.1; maximum 65,536 bytes.
+- /api/intelligence: compatibility address returning the same PA_ONLY contract; forecast parameters disabled.
+- /api/pa-evidence: filter by timeframe, kind, lifecycle and price; exact id returns candle proof and interactions.
+- /api/pa-evidence?view=structure: fractal sequences, established/pending DR and history.
+- /api/pa-evidence?view=interactions: paginated cross-timeframe links; id selects closed contact history.
+- /api/pa-candles: closed OHLC, timeframe, from/to UTC, offset/limit. Subsequent pages require snapshot_sha256.
+- /api/chart, /api/market-audit and /api/candles: retained technical routes; knowledge=1 uses V6.
 
-Production now runs Narrative method v1 from `a291ec8`; the user explicitly authorized
-activation on 17 November 2026. Use the stable public URL above for current
-research. Historical Preview links are release evidence, not the current source.
-The built-in web retrieval tool returned an internal accessibility error despite
-successful unauthenticated HTTP checks; actual search-tool retrieval/indexing is
-not claimed verified. User-Agent-only probes are not proof of OpenAI network access.
-Existing provider rate limits still apply. See
-[HTTP evidence](verification/public-access/http.json).
-
-## Current contracts
-
-**V5.1 is activated in Production and the working Bridge.**
-See [V5.1 audit](CAPITALIVE_V5_1_AUDIT_RU.md) and
-[compatibility notes](BRIDGE_V5_1_COMPATIBILITY.md): context/lifecycle review,
-lossless full inspection and `context-5.1`. The current portable header is `desk-report-v2.7`.
-The [DR sequence update](DR_SEQUENCE_AUDIT_RU.md) implements chronological
-Fractal 3 ranges, retained parent ranges, KL-linked local origins and MN1→H4 fallback.
-The [RB v2 update](RB_V2_AUDIT_RU.md) uses the first candle close, permits weaker
-FVG-only interactions and keeps liquidity-raid evidence and quality distinct.
-The [SNR update](SNR_FORMATION_CONTEXT_AUDIT_RU.md) uses first-close levels,
-pre-break failed tests, waiting time, impulse measurements and HTF context.
-FVG is optional even for very-strong formation candidates; numeric impulse
-thresholds are explicit project assumptions, not calibrated probabilities.
-The [FVG update](FVG_REMAINING_ZONE_AUDIT_RU.md) preserves only the untested remainder.
-The [TDA update](TDA_NOTION_AUDIT_RU.md) uses Fractal-only triggers and explicit X/X-1 relationships.
-The [Narrative specification](NARRATIVE_METHOD_SPEC_RU.md) defines MN1 priority,
-W1 conflict penalties, separate 1-5 level and precontact delivery grades, confirmed
-HH/HL trends, X/X-1 targets, and separate entry stops versus structural close invalidation.
-Grades are explicit project criteria, not probabilities; missing evidence stays unknown.
-The source and companion publisher now both use the following contracts.
-
-- `/api/intelligence`: `edge-knowledge-5`; author Fractal 3, FVG, contextual
-  RB/SNR, Raid/IDM, explicit DR, candidate Narrative and evidence IDs.
-- `/api/desk-report?symbol=EURUSD&side=bid`: `desk-report-v2`, header
-  `X-Desk-Contract: desk-report-v2.7`, maximum 65,536 UTF-8 bytes including newline.
-- `POST /api/desk-report?symbol=EURUSD&side=bid&refresh=1`: new provider request,
-  separate quote and closed-candle analysis. Browser refresh is same-origin;
-  automation uses the existing Vercel protection header, never a URL secret.
-- `/research`: public on-demand reports with timestamps and JSON download.
-- `/api/chart`, `/api/market-audit`, `/api/candles`: retained. Old ATR-SNR,
-  generic structure/OB/breaker/priority fields are explicitly disabled. Author
-  analysis is `/api/intelligence` or `knowledge=1` in market-audit.
-
-Current fractals use three closed consecutive candles, confirming at the third
-close. Equal extrema do not establish a strict pivot. Session boundaries remain
-separated; no invented candles or pattern stitching.
-
-## Methodology
-
-Current user instruction > THE EDGE article > rules map > implementation.
-See [rules map](https://app.notion.com/p/419e05dadd188118ba32fc9f0f146cc4) and
-[author's system](https://app.notion.com/p/02de05dadd188371823c01c1f58aacc1).
-FVG geometry, session gaps, fill and invalidation are separate. SNR requires its
-own two-candle origin, KL delivery and closed breakout; FVG does not manufacture
-SNR. Rejection alone is not a two-candle RB.
-
-Qualitative significance, SOF, Compression/LRL and Strong High/Low boundaries
-remain review/specification questions. Generic BOS/CHOCH, ATR-cluster SNR, Order
-Blocks, Breakers and automatic fractal role flips do not supply evidence.
-Range candidates do not prove significance. Candidate Narrative never becomes
-Confirmed without attributable human review.
+All compact omissions are explicit. A displayed subset is not a complete market survey.
+A 409 snapshot change requires restarting pagination. Available history is finite.
+Fractals use only three closed candles. No stitching across unexplained gaps.
+Consumed liquidity and filled FVG are not fresh levels; ACTIVE does not prove a support role.
+Compression/LRL and unformalized significance remain NEEDS_SPECIFICATION.
+OHLC arithmetic is checked, but independent second-provider accuracy and historical sessions
+are not established. PARTIAL limitations remain visible; STALE/ERROR suppress current observations.
 
 ## Freshness
 
@@ -143,7 +86,7 @@ Public web research does not require that connector or access to GitHub Actions.
    `--source <immutable-preview> --branch verification/v5-<name>` verifies a release.
 
 No new secret or paid service is required. Existing credentials stay in their
-services; no account data, raw OHLC or personal data enters compact/public files.
+services; no account data or personal data is published. Full closed OHLC is available through the paginated public API; compact GitHub reports contain only selected formation evidence.
 Production has been explicitly activated; public access remains enabled.
 
 ## Validation and migration
@@ -153,10 +96,10 @@ Run `npm ci`, `npm test`, `npm run lint`, `npm run build`,
 `npm run knowledge:replay:v4`, `npm run test:ui`.
 
 The V2 compact publisher rejects old payloads. Coordinate its approved upgrade
-with `BRIDGE_BASE_URL` pointing at a verified immutable V5 Preview. Never relabel
+with `BRIDGE_BASE_URL` pointing at the verified immutable V6 deployment. Never relabel
 V1 archives. All four latest files publish in one non-forced commit; readback is
 pinned to that commit.
 
 Old design/tests under `docs/archive` and `tests/historical-v4` are historical
 records, not active methodology. Actual results and release scope:
-[CAPITALIVE_V5_AUDIT_RU.md](CAPITALIVE_V5_AUDIT_RU.md).
+[PA_ENGINE_V6_AUDIT_RU.md](PA_ENGINE_V6_AUDIT_RU.md).

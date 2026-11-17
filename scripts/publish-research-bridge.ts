@@ -8,8 +8,8 @@ export const TARGET_REPOSITORY='Yilin1207/capitalive-research-bridge';
 const symbols=ACTIVE_RESEARCH_SYMBOLS;
 const sha=(v:string)=>createHash('sha256').update(v).digest('hex');
 export function transportError(symbol:string,now:string,code='TRANSPORT_ERROR',failure?:BridgeDiagnostic){
-  return {schema_version:'desk-report-v2',symbol,status:'ERROR',generated_at:now,as_of:null,expires_at:now,error:code,
-    source:null,quote:null,frames:[],scenario:null,evidence:{},rules:{},candle_windows:[],coverage:null,trading_enabled:false,...(failure?{diagnostic:failure}:{})};
+  return {schema_version:'pa-engine-v6',mode:'PA_ONLY',symbol,status:'ERROR',generated_at:now,as_of:null,expires_at:now,error:code,
+    source:null,quote:null,data_quality:'UNVERIFIED',freshness:null,frames:{},evidence:[],market_structure:{},dealing_ranges:[],lifecycle_events:[],cross_timeframe_interactions:[],omitted:{evidence:0},warnings:[code],coverage:null,trading_enabled:false,...(failure?{diagnostic:failure}:{})};
 }
 const media=(response:Response):BridgeDiagnostic['media_type']=>response.headers.get('content-type')?.includes('application/json')?'json':response.headers.get('content-type')?.includes('text/html')?'html':'other';
 export async function boundedJson(response:Response,max=MAX_REPORT_BYTES,onBytes:(size:number)=>void=()=>{}){
@@ -106,7 +106,7 @@ export async function verifyPublication(token:string,commit:string,fetcher:typeo
     const readAt=clock(),expired=Date.parse(report.expires_at)<=readAt;
     const quoteAge=report.quote?.provider_timestamp?(readAt-Date.parse(report.quote.provider_timestamp))/1000:null;
     results.push({symbol:row.symbol,bytes:bytes.length,sha256:row.sha256,status:report.status,read_status:expired&&report.status!=='ERROR'?'STALE':report.status,expired_at_read:expired,
-      delivery:deliveryHealth(report.generated_at,readAt),provider_age_seconds_at_read:quoteAge,provider_timestamp:report.quote?.provider_timestamp??null,last_closed_h4:report.frames.find((f:{timeframe:string})=>f.timeframe==='H4')?.last_closed_at??null,engine_commit:report.source?.engine_commit??null});
+      delivery:deliveryHealth(report.generated_at,readAt),provider_age_seconds_at_read:quoteAge,provider_timestamp:report.quote?.provider_timestamp??null,last_closed_h4:(Array.isArray(report.frames)?report.frames.find((f:{timeframe:string})=>f.timeframe==='H4')?.last_closed_at:report.frames?.H4?.last_closed_at)??null,engine_commit:report.source?.engine_commit??null});
   }
   return {commit,readback_at:new Date(clock()).toISOString(),published_at:manifest.published_at,reports:results};
 }

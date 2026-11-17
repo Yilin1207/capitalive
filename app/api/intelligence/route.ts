@@ -1,4 +1,4 @@
-import { intelligenceHttp } from "@/lib/knowledge/http";
+import { paHttp as intelligenceHttp } from "@/lib/pa-engine/http";
 import { historyOptions } from "@/lib/history-http";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

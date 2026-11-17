@@ -23,8 +23,8 @@ test('JP225 never inherits the EU50/US historical session calendar',()=>{
  assert.equal(regularSession('JP225',Date.parse('2026-11-15T23:00:00Z')),'UNKNOWN');const c=calendarDiagnostics(jp225Synthetic().data.H4);assert.equal(c.timezone,'UTC');assert.equal(c.holiday_calendar,'NOT_VERIFIED');
 });
 
-test('JP225 Market Audit integration retains the existing 2.1 API and optional V4 knowledge',async()=>{
+test('JP225 Market Audit retains 2.1 geometry and exposes V6 PA-only knowledge',async()=>{
  const f=jp225Synthetic(),deps={getCandles:async(_symbol:string,tf:Timeframe)=>f.data[tf],getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf})};
  const response=await marketAudit(new Request('https://local/api/market-audit?symbol=JP225&side=ask&view=priority&knowledge=1'),deps),r=await response.json();
- assert.equal(response.status,200);assert.equal(r.schema_version,'2.1');assert.equal(r.symbol,'JP225');assert.equal(r.knowledge_intelligence.price_side,'ask');assert.equal(r.knowledge_intelligence.frames.length,4);
+ assert.equal(response.status,200);assert.equal(r.schema_version,'2.1');assert.equal(r.symbol,'JP225');assert.equal(r.knowledge_intelligence.price_side,'ask');assert.equal(Object.keys(r.knowledge_intelligence.frames).length,4);assert.equal(r.knowledge_intelligence.schema_version,'pa-engine-v6');assert.equal(r.knowledge_intelligence.mode,'PA_ONLY');assert.equal(r.knowledge_intelligence.narrative,undefined);assert.equal(r.knowledge_intelligence.narrative_method,undefined);assert.equal(r.knowledge_intelligence.target_selection,undefined);assert.equal(r.htf.risk.hypothetical_entry,null);
 });

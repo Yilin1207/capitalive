@@ -274,7 +274,11 @@ test("market-audit retains 2.1 default and embeds knowledge only on explicit opt
     b = await rich.json();
   assert.equal(rich.status, 200);
   assert.equal(b.knowledge_intelligence.symbol, "EURUSD");
-  assert.equal(b.knowledge_intelligence.schema_version, "edge-knowledge-5");
+  assert.equal(b.knowledge_intelligence.schema_version, "pa-engine-v6");
+  assert.equal(b.knowledge_intelligence.mode, "PA_ONLY");
+  assert.equal(b.knowledge_intelligence.narrative, undefined);
+  assert.equal(b.knowledge_intelligence.narrative_method, undefined);
+  assert.equal(b.knowledge_intelligence.target_selection, undefined);
   assert.equal(b.schema_version, a.schema_version);
   assert.deepEqual(b.analysis, a.analysis);
   assert.equal(

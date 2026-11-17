@@ -357,7 +357,7 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
   }
   return out;
 }
-export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLevel[] = []) {
+export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLevel[] = [], includeStrength=true) {
   const out: Finding[] = [];
   for (let i=1;i<frame.bars.length;i++) {
     const a=frame.bars[i-1],b=frame.bars[i];
@@ -372,7 +372,7 @@ export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLev
     const delivery=later.find(x=>x.index<=breakout.index&&context.some(l=>{const kl=levelAt(l,x.time);return kl&&eligible(kl,x);}));
     if(!delivery)continue;
     const kl=context.map(l=>levelAt(l,delivery.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>eligible(kl,delivery)).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
-    const formation=snrFormationContext(frame,a,b,delivery,breakout,lower,resistance,context,lowerLevels);
+    const formation=snrFormationContext(frame,a,b,delivery,breakout,lower,resistance,context,lowerLevels,includeStrength);
     out.push(event(frame,'SNR','SNR_CLOSED_BREAK',[a,b,delivery,breakout],{
       kl_id:kl.id,lower,upper,direction:resistance?'bullish':'bearish',old_role:resistance?'resistance':'support',proposed_role:resistance?'support':'resistance',
       fvg_required:false,bounds_policy:'FIRST_CANDLE_CLOSE',formation,

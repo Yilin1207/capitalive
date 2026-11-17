@@ -223,6 +223,6 @@ export function targetMap(series: SeriesAnalysis[], price: number | null) {
   const currentZones = price === null ? [] : series.flatMap(s => s.fvgs.filter(g => g.material && g.remaining_lower! <= price && g.remaining_upper! >= price)
     .map(g => ({ source_id: g.id, timeframe: s.timeframe, lower: g.remaining_lower, upper: g.remaining_upper, eligible_d1_plus: s.timeframe !== "H4" })));
   return { reference_price: price, above: direction(true), below: direction(false), current_zones: currentZones,
-    facts: "REVIEW_REQUIRED: geometric levels only. Use THE EDGE X/X-1/X-2 target analysis in /api/intelligence.",
+    facts: "PA_ONLY: legacy geometric levels only, no automatic target selection. Complete author PA evidence is available in /api/desk-report.",
     hypotheses: [], probability: null, coverage: "loaded_history_only_not_exhaustive" };
 }
