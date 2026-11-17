@@ -18,8 +18,8 @@
       "combined": 43,
       "strong_before": 35,
       "strong_after": 37,
-      "report_bytes": 62316,
-      "report_sha256": "b6bcf959f9d2a2dcd342c2a61d84020c13468b49f16f1f99014becc53c72f7c1",
+      "report_bytes": 62317,
+      "report_sha256": "c11ceb9e6c3acdd89340922e57e2505307157735a09e8d2a20658016d7a8422b",
       "wire_lossless": true,
       "confirmed_narrative": null
     },
@@ -38,8 +38,8 @@
       "combined": 43,
       "strong_before": 37,
       "strong_after": 39,
-      "report_bytes": 62296,
-      "report_sha256": "eb931e22f2ae93fff06fa6303d3aef305f0915bf0a280ef0f28229fb892eb68c",
+      "report_bytes": 62297,
+      "report_sha256": "6b8ff72311876deeca1894fd21d4605c8600983fab0e23d5a5f6f8d74e4835e2",
       "wire_lossless": true,
       "confirmed_narrative": null
     },
@@ -58,8 +58,8 @@
       "combined": 40,
       "strong_before": 40,
       "strong_after": 43,
-      "report_bytes": 62677,
-      "report_sha256": "87b6c6fd7e007771d580b488871ba2759b1f6548f6796b1d5ffa92626c7c10a9",
+      "report_bytes": 62678,
+      "report_sha256": "5a7c455d31f2962b5fff23bef839734f68265bfd77ca34e5b8ee3a55c17c05c5",
       "wire_lossless": true,
       "confirmed_narrative": null
     },
@@ -78,8 +78,8 @@
       "combined": 40,
       "strong_before": 40,
       "strong_after": 43,
-      "report_bytes": 62679,
-      "report_sha256": "f729e8c5bee62685c6fcf8ca0f36af155580e8b8ad168990e32620718fe986dd",
+      "report_bytes": 62680,
+      "report_sha256": "70bcb9c0851273bf432183505849e7ad8b2e4b7193a50cf6aed5e24ab6f9cfdf",
       "wire_lossless": true,
       "confirmed_narrative": null
     },
@@ -98,8 +98,8 @@
       "combined": 36,
       "strong_before": 36,
       "strong_after": 38,
-      "report_bytes": 64152,
-      "report_sha256": "b1b701a99b4e40c1fe4fd558efe9317f8454c973be1c5f6da1740b9dfbb0fdb3",
+      "report_bytes": 64153,
+      "report_sha256": "1630d18704cf50325583d45927b9bee4aba27b14a5b87a43c530d76125e8161a",
       "wire_lossless": true,
       "confirmed_narrative": null
     },
@@ -118,8 +118,8 @@
       "combined": 36,
       "strong_before": 36,
       "strong_after": 38,
-      "report_bytes": 64152,
-      "report_sha256": "085f2feba8e382b0f046b9c3cf0867bd33fceb4c8c210471b0e8eac4c24ac47d",
+      "report_bytes": 64153,
+      "report_sha256": "b0c73e98be000519d712ea215a3cc81e269e1702dd9d1dcbd20070963ef3c9b8",
       "wire_lossless": true,
       "confirmed_narrative": null
     }

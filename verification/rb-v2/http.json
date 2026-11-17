@@ -1,0 +1,308 @@
+{
+  "preview": "https://capitalive-20ef3d14c-yilin1207s-projects.vercel.app",
+  "engine_commit": "bdbe3b166f0f103760ba88ae57a2d2cfb92358bd",
+  "authenticated": false,
+  "checked_at": "2026-11-17T11:14:48.677Z",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58567,
+      "sha256": "6bc121dc14ea263ab7f03e70772cf682403a0168fa2365788163934d054cb7cd",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:41.530Z",
+      "generated_at": "2026-11-17T11:13:44.321Z",
+      "expires_at": "2026-11-17T11:15:43.136Z",
+      "evidence_count": 33,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 20,
+          "fvg_only_weaker": 17,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 9,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 31,
+          "fvg_only_weaker": 63,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 58540,
+      "sha256": "9be2b10c442e9b70f02abe5b3a641355139a474a817c4085bdfca7a974bf9e0d",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:41.530Z",
+      "generated_at": "2026-11-17T11:13:45.464Z",
+      "expires_at": "2026-11-17T11:15:43.136Z",
+      "evidence_count": 33,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 20,
+          "fvg_only_weaker": 17,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 9,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 32,
+          "fvg_only_weaker": 63,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61444,
+      "sha256": "9f108349fad777d4401703906333987664d078f6baf7b1a913eeb599f099c44a",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:46.519Z",
+      "generated_at": "2026-11-17T11:13:48.183Z",
+      "expires_at": "2026-11-17T11:15:47.322Z",
+      "evidence_count": 38,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 5,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 19,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 30,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 29,
+          "fvg_only_weaker": 70,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61416,
+      "sha256": "afd4d492dba0d8d3ff5532328a5fc67f126c5e291917c0f5c65b896520aec07e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:46.519Z",
+      "generated_at": "2026-11-17T11:13:49.095Z",
+      "expires_at": "2026-11-17T11:15:47.322Z",
+      "evidence_count": 38,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 5,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 19,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 30,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 29,
+          "fvg_only_weaker": 70,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 62746,
+      "sha256": "9281154d0f061e4d2e5165359f00506da7d4d211d7f96698a0b84ea6c6d80d59",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:49.882Z",
+      "generated_at": "2026-11-17T11:13:51.895Z",
+      "expires_at": "2026-11-17T11:15:51.455Z",
+      "evidence_count": 40,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 14,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 21,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 21,
+          "fvg_only_weaker": 53,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 62747,
+      "sha256": "731c77ad30dafb6c6b9f0edc6750cf12da414a65cabea6f20e30a284ad9dfcf8",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T11:13:49.882Z",
+      "generated_at": "2026-11-17T11:13:52.673Z",
+      "expires_at": "2026-11-17T11:15:51.455Z",
+      "evidence_count": 40,
+      "rb_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 14,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 21,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 19,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 21,
+          "fvg_only_weaker": 53,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.3",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    }
+  ],
+  "full": [
+    {
+      "symbol": "EURUSD",
+      "http": 200,
+      "bytes": 3392541,
+      "rb": 172,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "http": 200,
+      "bytes": 3099714,
+      "rb": 182,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "http": 200,
+      "bytes": 2725401,
+      "rb": 156,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    }
+  ],
+  "throttles": [],
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112645,
+    "png_signature": true
+  }
+}

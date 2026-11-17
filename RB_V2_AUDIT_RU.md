@@ -72,8 +72,52 @@ Strong-кандидаты и перечень препятствий, что ф�
 
 [Replay](verification/rb-v2/replay.json): 6/6 фиксированных входов.
 Все независимые от RB/Strong находки и DR сохранились; full wire lossless.
-JSON с newline: 62296–64152 байта, меньше 65536. Это техническая регрессия,
+JSON с newline: 62297–64153 байта, меньше 65536. SHA-256 рассчитан по тем же
+байтам, включая newline. Это техническая регрессия,
 не независимая экспертная оценка точности торговли. Точные исходные OHLC
 пользовательских FOREXCOM-скриншотов не подменяются данными Capital.com Demo.
 
-Финальные ссылки CI, Preview и результаты HTTP/публикации будут добавлены после проверки.
+## Реальные проверки и публикация
+
+Проверенный runtime: `bdbe3b166f0f103760ba88ae57a2d2cfb92358bd`.
+[Открытая Preview](https://capitalive-20ef3d14c-yilin1207s-projects.vercel.app/research).
+Последующие изменения аудита и сериализации контрольного hash не меняют runtime.
+
+- [Release checks](https://github.com/Yilin1207/capitalive/actions/runs/44071704325):
+  SUCCESS; 243 unit, 10 browser, сборка, TypeScript, recorded HTTP и replay.
+  V4 replay прошёл 12 случаев и 7290 закрытых префиксов; это исторические
+  EURUSD/NAS100/EU50, активный JP225 дополнительно проверен отдельным replay выше.
+- [Companion CI](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44071632320):
+  SUCCESS, 13 publisher tests; commit `08a9d4a5a288fc9753c6ab643f4bfec6bbd2e493`.
+- [HTTP evidence](verification/rb-v2/http.json): все шесть EURUSD/NAS100/JP225 ×
+  Bid/Ask вернули 200 application/json без авторизации; каждый меньше 65536 байт.
+  Дополнительно три полных Intelligence прошли проверку цены первой свечи,
+  времени подтверждения и качества RB. H4 chart вернул PNG с правильной сигнатурой.
+- [Ручная публикация](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44072171499):
+  SUCCESS. Атомарный commit `f52d8a1338c8dfbfdae99fb536505eb69a4a8bc6`
+  только в `verification/v5-1-context` приватного репозитория.
+- [Повторное чтение](verification/rb-v2/publication-readback.json): manifest и все
+  три файла прочитаны по фиксированному commit. Размеры, SHA-256, git blob,
+  source revision, причинность evidence, четыре TF DR/RB и отсутствие
+  Confirmed Narrative совпали. Никакой файл не истёк на момент чтения.
+
+| Актив | Байты | Статус | Максимальный возраст котировки при чтении |
+|---|---:|---|---:|
+| EURUSD | 58591 | PARTIAL / FRESH quote | 37.926 с |
+| NAS100 | 61467 | PARTIAL / FRESH quote | 38.160 с |
+| JP225 | 62770 | PARTIAL / FRESH quote | 34.772 с |
+
+PARTIAL не скрывает ошибку: сохраняются ограничения истории/компактного вывода,
+`selected_evidence_complete=true`, `all_findings_included=false`, полные счётчики
+и omissions. Перед обновлением workflow честно отметил предыдущую публикацию
+STALE, затем создал новую; это видно в [журнале](verification/rb-v2/actions-publication.json).
+Свежесть относится только к моменту проверки; снимки имеют срок действия.
+
+[Контроль границ изменений](verification/rb-v2/safety.json): Production остаётся
+на `430a36fec8122bbb9b45237e1fb5ad1020f75c51`, основной PR #2 не слит,
+PR #9 и #7 открыты. Рабочий BRIDGE_BASE_URL и private main не изменены.
+Разрешённый ранее публичный доступ сохранён (`ssoProtection=null`).
+
+Вердикт: **READY для review и согласованной активации**. Новая RB-логика работает
+на указанной Preview; Production и рабочая публикация ещё не переключены.
+Это не независимая экспертная валидация торговой эффективности.
