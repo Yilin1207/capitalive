@@ -1,0 +1,2049 @@
+{
+  "preview": "https://capitalive-bv7tbd603-yilin1207s-projects.vercel.app",
+  "engine_commit": "a291ec8801d8277b7bdf0602021ce539d1a25261",
+  "market_audit": {
+    "http": 200,
+    "bytes": 741522,
+    "content_type": "application/json"
+  },
+  "authenticated": false,
+  "checked_at": "2026-11-17T17:07:32.420Z",
+  "rows": [
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": false,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "W1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "DISCOUNT"
+          }
+        ],
+        "selection_status": "CANDIDATE_SELECTED",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": true,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "H4",
+                "lower": 1.09904,
+                "upper": 1.09904,
+                "entry": 1.09904,
+                "confirmed_at": "2026-11-17T00:00:00.000Z",
+                "source_ids": [
+                  "e21"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": true,
+              "quality": {
+                "score": 4,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 0
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": 1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 1
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": -1
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 2,
+                "anchor_position": "DISCOUNT"
+              },
+              "delivery": {
+                "score": null,
+                "timeframe": "H4",
+                "from": "2026-11-17T00:00:00.000Z",
+                "through": "2026-11-17T08:00:00.000Z",
+                "contact_at": "2026-11-17T08:00:00.000Z",
+                "bars": 2,
+                "efficiency": null,
+                "body_ratio": null,
+                "reason": "INSUFFICIENT_APPROACH_HISTORY",
+                "opposing": {
+                  "items": [],
+                  "total": 0,
+                  "omitted": 0
+                }
+              },
+              "B": {
+                "level": "e18",
+                "timeframe": "H4",
+                "price": 1.10128,
+                "confirmed_at": "2026-11-17T12:00:00.000Z"
+              },
+              "target_count": 27,
+              "obstacles": {
+                "items": [],
+                "total": 0,
+                "omitted": 0
+              },
+              "C": {
+                "price": 1.09846,
+                "timeframe": "H4",
+                "source_ids": [
+                  "e20",
+                  "e19"
+                ],
+                "known_at": "2026-11-17T08:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": true,
+                "wick_at": "2026-11-17T16:00:00.000Z",
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": null,
+              "rr": null,
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 133,
+          "omitted": 132
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e10",
+              "e8",
+              "e11",
+              "e9"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e20",
+              "e18",
+              "e21",
+              "e19"
+            ]
+          }
+        }
+      ],
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 65418,
+      "sha256": "0a52a3a4efecfb97cf710e9c1531a3b4127951b53cfe853bf872ac69367dd82f",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:18.924Z",
+      "generated_at": "2026-11-17T17:06:22.178Z",
+      "expires_at": "2026-11-17T17:08:12.632Z",
+      "evidence_count": 35,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 15,
+          "review_required": 12
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 23
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.8800721370604104,
+          "remaining": {
+            "lower": 1.09544,
+            "upper": 1.09677
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "MN1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2023-08-01T00:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 8,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 26,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 540,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": false,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "W1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "DISCOUNT"
+          }
+        ],
+        "selection_status": "CANDIDATE_SELECTED",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": true,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "H4",
+                "lower": 1.09911,
+                "upper": 1.09911,
+                "entry": 1.09911,
+                "confirmed_at": "2026-11-17T00:00:00.000Z",
+                "source_ids": [
+                  "e22"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": true,
+              "quality": {
+                "score": 4,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 0
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": 1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 1
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": -1
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 2,
+                "anchor_position": "DISCOUNT"
+              },
+              "delivery": {
+                "score": null,
+                "timeframe": "H4",
+                "from": "2026-11-17T00:00:00.000Z",
+                "through": "2026-11-17T08:00:00.000Z",
+                "contact_at": "2026-11-17T08:00:00.000Z",
+                "bars": 2,
+                "efficiency": null,
+                "body_ratio": null,
+                "reason": "INSUFFICIENT_APPROACH_HISTORY",
+                "opposing": {
+                  "items": [],
+                  "total": 0,
+                  "omitted": 0
+                }
+              },
+              "B": {
+                "level": "e19",
+                "timeframe": "H4",
+                "price": 1.10135,
+                "confirmed_at": "2026-11-17T12:00:00.000Z"
+              },
+              "target_count": 25,
+              "obstacles": {
+                "items": [],
+                "total": 0,
+                "omitted": 0
+              },
+              "C": {
+                "price": 1.09853,
+                "timeframe": "H4",
+                "source_ids": [
+                  "e21",
+                  "e20"
+                ],
+                "known_at": "2026-11-17T08:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": true,
+                "wick_at": "2026-11-17T16:00:00.000Z",
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": null,
+              "rr": null,
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 131,
+          "omitted": 130
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e10",
+              "e8",
+              "e11",
+              "e9"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e21",
+              "e19",
+              "e22",
+              "e20"
+            ]
+          }
+        }
+      ],
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 65338,
+      "sha256": "5e360c315d0c782f419365dae29d653ae10089087679be55057a7220112efd44",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:18.924Z",
+      "generated_at": "2026-11-17T17:06:23.780Z",
+      "expires_at": "2026-11-17T17:08:12.632Z",
+      "evidence_count": 35,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 17,
+          "review_required": 10
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 23
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.8791704238052197,
+          "remaining": {
+            "lower": 1.0955,
+            "upper": 1.09684
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "MN1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2023-08-01T00:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 7,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 27,
+          "fvg_only_weaker": 20,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 541,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": true,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "PREMIUM"
+          },
+          {
+            "timeframe": "W1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "UNVERIFIED"
+          }
+        ],
+        "selection_status": "CANDIDATE_SELECTED",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": true,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "MN1",
+                "lower": 26980.6,
+                "upper": 26980.6,
+                "entry": 26980.6,
+                "confirmed_at": "2026-09-01T00:00:00.000Z",
+                "source_ids": [
+                  "e1"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": true,
+              "quality": {
+                "score": 2,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 1
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": -1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 0
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": -1
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 0,
+                "anchor_position": "PREMIUM"
+              },
+              "delivery": {
+                "score": 2,
+                "timeframe": "W1",
+                "from": "2026-09-21T00:00:00.000Z",
+                "through": "2026-11-02T00:00:00.000Z",
+                "contact_at": "2026-11-02T00:00:00.000Z",
+                "bars": 6,
+                "efficiency": 0.31686994006939323,
+                "body_ratio": 0.76799796489443,
+                "reason": "OPPOSING_PA_ON_APPROACH",
+                "opposing": {
+                  "items": [
+                    "e28"
+                  ],
+                  "total": 2,
+                  "omitted": 1
+                }
+              },
+              "B": {
+                "level": "e6",
+                "timeframe": "W1",
+                "price": 30015.8,
+                "confirmed_at": "2026-11-09T00:00:00.000Z"
+              },
+              "target_count": 3,
+              "obstacles": {
+                "items": [
+                  "e29"
+                ],
+                "total": 37,
+                "omitted": 36
+              },
+              "C": {
+                "price": 22779.3,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": {
+                "price": 22779.3,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "rr": {
+                "risk": 4201.299999999999,
+                "reward": 3035.2000000000007,
+                "ratio": 0.722443053340633,
+                "costs_included": false,
+                "minimum_required": null
+              },
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 119,
+          "omitted": 118
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bullish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e8",
+              "e6",
+              "e9",
+              "e7"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e16",
+              "e14",
+              "e17",
+              "e15"
+            ]
+          }
+        }
+      ],
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64362,
+      "sha256": "900897f3bfe65577f1b35ee7b2128e9966d1cb2dc5e074c8b7fc17c773cf58ce",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:25.648Z",
+      "generated_at": "2026-11-17T17:06:27.955Z",
+      "expires_at": "2026-11-17T17:08:18.810Z",
+      "evidence_count": 32,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 32,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 46,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25206.2,
+            "upper": 26255.2
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0.1424208326635569,
+          "remaining": {
+            "lower": 30015.8,
+            "upper": 30549.3
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 498,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": true,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "PREMIUM"
+          },
+          {
+            "timeframe": "W1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "UNVERIFIED"
+          }
+        ],
+        "selection_status": "CANDIDATE_SELECTED",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": true,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "MN1",
+                "lower": 26984.6,
+                "upper": 26984.6,
+                "entry": 26984.6,
+                "confirmed_at": "2026-09-01T00:00:00.000Z",
+                "source_ids": [
+                  "e1"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": true,
+              "quality": {
+                "score": 2,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 1
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": -1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 0
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": -1
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 0,
+                "anchor_position": "PREMIUM"
+              },
+              "delivery": {
+                "score": 2,
+                "timeframe": "W1",
+                "from": "2026-09-21T00:00:00.000Z",
+                "through": "2026-11-02T00:00:00.000Z",
+                "contact_at": "2026-11-02T00:00:00.000Z",
+                "bars": 6,
+                "efficiency": 0.3168699400693929,
+                "body_ratio": 0.76799796489443,
+                "reason": "OPPOSING_PA_ON_APPROACH",
+                "opposing": {
+                  "items": [
+                    "e28"
+                  ],
+                  "total": 2,
+                  "omitted": 1
+                }
+              },
+              "B": {
+                "level": "e6",
+                "timeframe": "W1",
+                "price": 30017.6,
+                "confirmed_at": "2026-11-09T00:00:00.000Z"
+              },
+              "target_count": 3,
+              "obstacles": {
+                "items": [
+                  "e29"
+                ],
+                "total": 37,
+                "omitted": 36
+              },
+              "C": {
+                "price": 22781.1,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": {
+                "price": 22781.1,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "rr": {
+                "risk": 4203.5,
+                "reward": 3033,
+                "ratio": 0.7215415724991079,
+                "costs_included": false,
+                "minimum_required": null
+              },
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 119,
+          "omitted": 118
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bullish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e8",
+              "e6",
+              "e9",
+              "e7"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e16",
+              "e14",
+              "e17",
+              "e15"
+            ]
+          }
+        }
+      ],
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64312,
+      "sha256": "4eb47b4ee06bbf914f1377559974e5898151272b353900b0de09b25801427286",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:25.648Z",
+      "generated_at": "2026-11-17T17:06:29.423Z",
+      "expires_at": "2026-11-17T17:08:18.810Z",
+      "evidence_count": 32,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 32,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 46,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25208,
+            "upper": 26257
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0.1424208326635569,
+          "remaining": {
+            "lower": 30017.6,
+            "upper": 30551.1
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 4,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 498,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": false,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "W1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "UNVERIFIED"
+          }
+        ],
+        "selection_status": "NO_CURRENT_SCORED_REACTION",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": false,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "MN1",
+                "lower": 60426.1,
+                "upper": 60426.1,
+                "entry": 60426.1,
+                "confirmed_at": "2026-09-01T00:00:00.000Z",
+                "source_ids": [
+                  "e1"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": false,
+              "quality": {
+                "score": 5,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 1
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": 1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 0
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 0,
+                "anchor_position": "DISCOUNT"
+              },
+              "delivery": {
+                "score": 2,
+                "timeframe": "W1",
+                "from": "2026-09-21T00:00:00.000Z",
+                "through": "2026-11-02T00:00:00.000Z",
+                "contact_at": "2026-11-02T00:00:00.000Z",
+                "bars": 6,
+                "efficiency": 0.22608125268053136,
+                "body_ratio": 0.6300207265190361,
+                "reason": "OPPOSING_PA_ON_APPROACH",
+                "opposing": {
+                  "items": [
+                    "e26"
+                  ],
+                  "total": 2,
+                  "omitted": 1
+                }
+              },
+              "B": {
+                "level": "e0",
+                "timeframe": "MN1",
+                "price": 73635.5,
+                "confirmed_at": "2026-08-01T00:00:00.000Z"
+              },
+              "target_count": 4,
+              "obstacles": {
+                "items": [
+                  "e5"
+                ],
+                "total": 8,
+                "omitted": 7
+              },
+              "C": {
+                "price": 50394.8,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": {
+                "price": 50394.8,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "rr": {
+                "risk": 10031.299999999996,
+                "reward": 13209.400000000001,
+                "ratio": 1.3168183585377775,
+                "costs_included": false,
+                "minimum_required": null
+              },
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 74,
+          "omitted": 73
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bullish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e7",
+              "e5",
+              "e8",
+              "e6"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e17",
+              "e15",
+              "e18",
+              "e16"
+            ]
+          }
+        }
+      ],
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61646,
+      "sha256": "1ba84b2d5a9b6843cfa90c99d2fa3a926d9998ebbaeac69ebf09bca616f0bc6e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:30.527Z",
+      "generated_at": "2026-11-17T17:06:32.435Z",
+      "expires_at": "2026-11-17T17:08:23.619Z",
+      "evidence_count": 30,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 55,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 65427.3,
+            "upper": 67852.9
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 188,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "narrative_method": {
+        "revision": "narrative-method-1",
+        "score_policy": "QUALITY_1_TO_5_NOT_PROBABILITY",
+        "delivery_policy": "PRECONTACT_LAST6_PRIOR20_MIN5_EFF035_070_BODY1_15",
+        "primary_context": "MN1",
+        "mn1_w1_conflict": false,
+        "contexts": [
+          {
+            "timeframe": "MN1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "W1",
+            "position": "DISCOUNT"
+          },
+          {
+            "timeframe": "D1",
+            "position": "UNVERIFIED"
+          },
+          {
+            "timeframe": "H4",
+            "position": "UNVERIFIED"
+          }
+        ],
+        "selection_status": "NO_CURRENT_SCORED_REACTION",
+        "automatic_confirmation": false,
+        "probability": null,
+        "candidates": {
+          "items": [
+            {
+              "selected": false,
+              "A": {
+                "kind": "FRACTAL",
+                "timeframe": "MN1",
+                "lower": 60436.1,
+                "upper": 60436.1,
+                "entry": 60436.1,
+                "confirmed_at": "2026-09-01T00:00:00.000Z",
+                "source_ids": [
+                  "e1"
+                ]
+              },
+              "direction": "Bullish",
+              "current_reaction": false,
+              "quality": {
+                "score": 5,
+                "factors": [
+                  {
+                    "code": "BASE",
+                    "delta": 2
+                  },
+                  {
+                    "code": "HTF_PRIORITY",
+                    "delta": 1
+                  },
+                  {
+                    "code": "FAVORABLE_LOCATION",
+                    "delta": 1
+                  },
+                  {
+                    "code": "REPEATED_HOLDS",
+                    "delta": 0
+                  },
+                  {
+                    "code": "RAID_BACKED",
+                    "delta": 1
+                  },
+                  {
+                    "code": "MN1_W1_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "TREND_CONFLICT",
+                    "delta": 0
+                  },
+                  {
+                    "code": "OPPOSING_HTF_POI",
+                    "delta": 0
+                  }
+                ],
+                "hold_episodes": 0,
+                "anchor_position": "DISCOUNT"
+              },
+              "delivery": {
+                "score": 2,
+                "timeframe": "W1",
+                "from": "2026-09-21T00:00:00.000Z",
+                "through": "2026-11-02T00:00:00.000Z",
+                "contact_at": "2026-11-02T00:00:00.000Z",
+                "bars": 6,
+                "efficiency": 0.22608125268053136,
+                "body_ratio": 0.6300207265190361,
+                "reason": "OPPOSING_PA_ON_APPROACH",
+                "opposing": {
+                  "items": [
+                    "e26"
+                  ],
+                  "total": 2,
+                  "omitted": 1
+                }
+              },
+              "B": {
+                "level": "e0",
+                "timeframe": "MN1",
+                "price": 73645.5,
+                "confirmed_at": "2026-08-01T00:00:00.000Z"
+              },
+              "target_count": 4,
+              "obstacles": {
+                "items": [
+                  "e5"
+                ],
+                "total": 8,
+                "omitted": 7
+              },
+              "C": {
+                "price": 50404.8,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "entry_stop": {
+                "price": 50404.8,
+                "timeframe": "MN1",
+                "source_ids": [
+                  "e0",
+                  "e3"
+                ],
+                "known_at": "2026-09-01T00:00:00.000Z",
+                "kind": "DR_BOUNDARY",
+                "evaluated_through": "2026-11-17T16:00:00.000Z",
+                "wick_breached": false,
+                "wick_at": null,
+                "close_breached": false,
+                "close_at": null,
+                "coverage": "COMPLETE"
+              },
+              "rr": {
+                "risk": 10031.299999999996,
+                "reward": 13209.400000000001,
+                "ratio": 1.3168183585377775,
+                "costs_included": false,
+                "minimum_required": null
+              },
+              "entry_status": "NOT_ENTERED",
+              "narrative_status": "CANDIDATE",
+              "confirmed_narrative": null,
+              "review_required": true
+            }
+          ],
+          "total": 74,
+          "omitted": 73
+        }
+      },
+      "trend_frames": [
+        {
+          "timeframe": "MN1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bullish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e2",
+              "e0",
+              "e3",
+              "e1"
+            ]
+          }
+        },
+        {
+          "timeframe": "W1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e7",
+              "e5",
+              "e8",
+              "e6"
+            ]
+          }
+        },
+        {
+          "timeframe": "D1",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Neutral",
+            "swing_basis": "INSUFFICIENT_CONFIRMED_PIVOTS",
+            "swing_evidence": []
+          }
+        },
+        {
+          "timeframe": "H4",
+          "structure": {
+            "bias": "Neutral",
+            "events": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "swing_bias": "Bearish",
+            "swing_basis": "OBSERVED_FRACTAL_SEQUENCE",
+            "swing_evidence": [
+              "e17",
+              "e15",
+              "e18",
+              "e16"
+            ]
+          }
+        }
+      ],
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 61647,
+      "sha256": "c187bdbc6c19a19e453e7bf30b33bfd2ed0a87e25923423f05bfd45f93b3a9e3",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T17:06:30.527Z",
+      "generated_at": "2026-11-17T17:06:33.680Z",
+      "expires_at": "2026-11-17T17:08:23.619Z",
+      "evidence_count": 30,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 55,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 65437.3,
+            "upper": 67862.9
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 188,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.7",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    }
+  ],
+  "full": [
+    {
+      "narrative_candidates": 133,
+      "narrative_revision": "narrative-method-1",
+      "fvg_total": 118,
+      "fvg_tested": 3,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "EURUSD",
+      "http": 200,
+      "bytes": 3884595,
+      "snr": 154,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 105,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "narrative_candidates": 119,
+      "narrative_revision": "narrative-method-1",
+      "fvg_total": 130,
+      "fvg_tested": 8,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "NAS100",
+      "http": 200,
+      "bytes": 3568159,
+      "snr": 137,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 107,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "narrative_candidates": 74,
+      "narrative_revision": "narrative-method-1",
+      "fvg_total": 112,
+      "fvg_tested": 12,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "JP225",
+      "http": 200,
+      "bytes": 3028121,
+      "snr": 131,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 89,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    }
+  ],
+  "throttles": [],
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112457,
+    "png_signature": true
+  }
+}
