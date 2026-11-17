@@ -93,10 +93,89 @@ lifecycle V5 не изменились; Narrative semantics не изменил�
 внутренние фракталы, KL-исключение с сохранённым родителем, wick/close, подтверждающую
 свечу, fallback, gaps и каждый закрытый префикс. Дополнительный контрактный тест
 отклоняет перепутанное направление, ложный PD, неправильный fallback и границы,
-не совпадающие с evidence. HTTP/CI/публикация фиксируются после внешней проверки.
+не совпадающие с evidence. Итоги внешней проверки приведены ниже.
 
 Ограничения: строгий history gap не склеивается ради получения DR. На архивном
 срезе после разрыва у D1/H4 может не быть двух подтверждённых фракталов; тогда
 ответ честно AWAITING_CONFIRMED_PAIR. Более глубокая история, режим торгов и
 qualitative KL review влияют на выбор локального диапазона. Распознавание DR
 само по себе не доказывает направление сделки или независимую экспертную точность.
+
+## Проверенный Preview и CI
+
+Runtime: `a050b1a0f9e5d67c961aed41469d683910587114`.
+[Открыть Research](https://capitalive-i4q6z87dq-yilin1207s-projects.vercel.app/research).
+Это Preview; без авторизации `/api/desk-report` отвечает **302 на Vercel SSO**.
+HTTP-проверки ниже выполнены с существующим авторизованным доступом, защита не отключалась.
+
+[Release checks 44065982251](https://github.com/Yilin1207/capitalive/actions/runs/44065982251)
+завершились success: **233 unit, 10 browser, 23 recorded HTTP**, build, TypeScript,
+replay THE EDGE/V2/V4, включая **7290 закрытых префиксов V4**. Отдельный replay V5
+прошёл на 6 фиксированных входах. Первоначальный CI 44064833682 обнаружил реальные
+испорченные русские подписи нового блока DR; они исправлены, браузерная проверка повторена.
+Также локальный кандидат отклоняется при закрытии подтверждающей свечи вне его границ.
+
+## Реальные HTTP-ответы, 17 ноября 2026
+
+Все шесть ответов — HTTP 200, `application/json`, контракт `desk-report-v2.2`.
+Размеры указаны для HTTP body без добавленной publisher строки newline.
+
+| Актив | Bid, байты | Ask, байты | Статус в этой HTTP-выборке |
+|---|---:|---:|---|
+| EURUSD | 57069 | 57046 | PARTIAL |
+| NAS100 | 60011 | 59983 | PARTIAL |
+| JP225 | 62867 | 62866 | PARTIAL |
+
+Все меньше 65536 байт. PARTIAL отражает ограничения покрытия истории; котировки
+в этой выборке свежие. Подтверждены evidence IDs, причинность, SHA-256 и новый DR
+на MN1/W1/D1/H4. EURUSD Bid MN1: **1.01772–1.20824**, январь 2025 → январь 2026.
+На D1 в текущем непрерывном участке нет полной пары: диапазон не подставлен.
+
+Инспекция: 6/6 HTTP 200 с привязкой к snapshot; неверный hash → 409, отсутствующий
+hash → 400. Полный Intelligence: 3/3 HTTP 200, wire декодирован без потерь.
+JP225 H4 chart: HTTP 200, `image/png`, **105841 байт**, PNG signature подтверждена.
+При 429 инспектор выполнил ограниченный повтор с ожиданием Retry-After.
+
+[HTTP evidence](verification/dr-sequence/http-summary.json),
+[inspection evidence](verification/dr-sequence/inspection-http.json),
+[CI evidence](verification/dr-sequence/release-checks.json).
+
+## Приватная публикация и повторное чтение
+
+Bridge PR #7: `48d6f213040bf2129ab9f857d1c5e23814605472`, контракт 2.2.
+[Companion CI 44066088154](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44066088154)
+и [публикация 44066618419](https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/44066618419)
+завершились success; 13 native publisher тестов прошли.
+Запуск записал только `verification/v5-1-context`, commit
+`6c8a0125fed895af11f3aee4209ae9a5157ee38f`, published_at `2026-11-17T10:38:13.870Z`.
+
+| JSON | Байты с newline | SHA-256 | Статус |
+|---|---:|---|---|
+| EURUSD | 57121 | `85267d6c7dd7d1486d4e2af8500aa19a2002fad35c5ecfbc02ea95ee7640b0bd` | STALE |
+| NAS100 | 60033 | `7d6e18454c20c3e49e1b09721f756b9e089a5b829e8eeefbcbcd84e73aa6a993` | PARTIAL |
+| JP225 | 62915 | `4dad0731e5cccd1188d0fec7bcb7be7b7afbf7ba88154aa9587c97d0c88798f4` | PARTIAL |
+
+Все три файла повторно прочитаны из GitHub по одному commit; размеры/SHA-256
+совпали с manifest, Git blob проверен, контракт и metadata `dr-sequence-1` присутствуют.
+На момент чтения ни один файл не истёк. EURUSD не имел provider timestamp и честно
+остался STALE; возраст NAS100/JP225 с верхней границей по HTTP Date — 30.861/42.727 сек.
+Это отдельный снимок от HTTP-матрицы выше. Код выхода readback 2 означает `all_fresh=false`
+из-за EURUSD, а не провал контракта/хешей. После expires_at файлы служат историческим
+доказательством доставки; для актуального исследования нужно новое обновление.
+
+[Readback](verification/dr-sequence/publication-readback.json),
+[Actions](verification/dr-sequence/actions-publication.json).
+Полные приватные JSON/OHLC и секреты в source не включены.
+
+## Границы выпуска
+
+Изменение реализовано и проверено в **PR #9 / Preview**. Автоматического merge и
+активации Production не было. Рабочие Bridge main и BRIDGE_BASE_URL не менялись.
+Текущий Production `dpl_FJ8LtsSMBeYeX1NztGrV2o3aowCi` создан ранее, в 05:36 UTC,
+на коммите `430a36f`, до этого исправления DR. Поэтому старый audit с другим
+production ID не используется как доказательство текущего состояния.
+[Проверка состояния](verification/dr-sequence/safety.json).
+
+Вердикт: **готово для review и согласованной активации**. Не заявляется, что
+изменение уже работает на основном сайте, что все котировки всегда свежие или
+что качественная значимость DR прошла независимую экспертную валидацию.
