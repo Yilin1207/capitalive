@@ -1,0 +1,34 @@
+{
+  "preview": "capitalive-2xlim4dbe-yilin1207s-projects.vercel.app",
+  "commit": "d632272da8b666417c99a7f69c95a0cea4b1cd24",
+  "throttles": [],
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "as_of": "2026-11-17T16:11:38.612Z",
+      "anchors": 629,
+      "direct_vc": 824,
+      "triggers": 36,
+      "all_relationships_causal": true,
+      "automatic_confirmation": false
+    },
+    {
+      "symbol": "NAS100",
+      "as_of": "2026-11-17T16:11:45.835Z",
+      "anchors": 618,
+      "direct_vc": 554,
+      "triggers": 47,
+      "all_relationships_causal": true,
+      "automatic_confirmation": false
+    },
+    {
+      "symbol": "JP225",
+      "as_of": "2026-11-17T16:11:49.301Z",
+      "anchors": 587,
+      "direct_vc": 420,
+      "triggers": 40,
+      "all_relationships_causal": true,
+      "automatic_confirmation": false
+    }
+  ]
+}
