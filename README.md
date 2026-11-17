@@ -4,9 +4,11 @@ Technical research for **EURUSD / NAS100 / JP225**, with explicit Capital.com
 Demo/Live environment and timestamps. No order execution. Macro-EDGE, final
 decisions and aggregate risk remain with the user and ChatGPT.
 
-V5 is active in the private Bridge main, using its configured immutable Preview.
-See [final activation audit](CAPITALIVE_V5_FINAL_ACTIVATION_RU.md) for merged
-commits, real publication/readback, quote timestamps and freshness limits.
+V5.1 with sequential DR and first-close RB is active on the public Production
+site. Private Bridge main uses the same immutable Production deployment.
+See [current activation audit](RB_PRODUCTION_ACTIVATION_RU.md) for runtime,
+publication/readback, timestamps and remaining access limitations. Earlier V5
+activation audits describe historical deployments.
 
 ## Public access — updated 17 November 2026
 
@@ -22,10 +24,9 @@ Stable public site: https://capitalive.vercel.app/research . Direct research JSO
 without a login redirect. The stable domain returned no `X-Robots-Tag: noindex`;
 `robots.txt` returned 404, not a robots exclusion policy.
 
-The verified DR Preview is also public:
-https://capitalive-i4q6z87dq-yilin1207s-projects.vercel.app/research . It still has
-Vercel's Preview `noindex` header. Public access does not promote its DR code to
-Production: the stable site is still on `430a36f`, DR Preview on `a050b1a`.
+Production now includes DR and RB from `2e7a442`; the user explicitly authorized
+activation on 17 November 2026. Use the stable public URL above for current
+research. Historical Preview links are release evidence, not the current source.
 The built-in web retrieval tool returned an internal accessibility error despite
 successful unauthenticated HTTP checks; actual search-tool retrieval/indexing is
 not claimed verified. User-Agent-only probes are not proof of OpenAI network access.
@@ -34,7 +35,7 @@ Existing provider rate limits still apply. See
 
 ## Current contracts
 
-This branch also contains **V5.1 Preview**, not activated in the working Bridge.
+**V5.1 is activated in Production and the working Bridge.**
 See [V5.1 audit](CAPITALIVE_V5_1_AUDIT_RU.md) and
 [compatibility notes](BRIDGE_V5_1_COMPATIBILITY.md): context/lifecycle review,
 lossless full inspection, `desk-report-v2.3` header and `context-5.1`.
@@ -42,17 +43,16 @@ The [DR sequence update](DR_SEQUENCE_AUDIT_RU.md) implements chronological
 Fractal 3 ranges, retained parent ranges, KL-linked local origins and MN1→H4 fallback.
 The [RB v2 update](RB_V2_AUDIT_RU.md) uses the first candle close, permits weaker
 FVG-only interactions and keeps liquidity-raid evidence and quality distinct.
-The V5 contracts below describe the active Bridge source; do not point its old
-publisher at V5.1 without a coordinated, separately authorized upgrade.
+The source and companion publisher now both use the following contracts.
 
 - `/api/intelligence`: `edge-knowledge-5`; author Fractal 3, FVG, contextual
   RB/SNR, Raid/IDM, explicit DR, candidate Narrative and evidence IDs.
 - `/api/desk-report?symbol=EURUSD&side=bid`: `desk-report-v2`, header
-  `X-Desk-Contract: desk-report-v2.0`, maximum 65,536 UTF-8 bytes including newline.
+  `X-Desk-Contract: desk-report-v2.3`, maximum 65,536 UTF-8 bytes including newline.
 - `POST /api/desk-report?symbol=EURUSD&side=bid&refresh=1`: new provider request,
   separate quote and closed-candle analysis. Browser refresh is same-origin;
   automation uses the existing Vercel protection header, never a URL secret.
-- `/research`: protected on-demand reports with timestamps and JSON download.
+- `/research`: public on-demand reports with timestamps and JSON download.
 - `/api/chart`, `/api/market-audit`, `/api/candles`: retained. Old ATR-SNR,
   generic structure/OB/breaker/priority fields are explicitly disabled. Author
   analysis is `/api/intelligence` or `knowledge=1` in market-audit.
@@ -102,16 +102,26 @@ not solve intraday freshness.
 
 ## ChatGPT and recovery
 
-Connect the private `Yilin1207/capitalive-research-bridge` repository. Read
+For current research, fetch the public `/api/desk-report?symbol=EURUSD&side=bid`
+URL (also NAS100 and JP225). No login, cookie or token is required. The endpoint
+re-evaluates freshness on every request; HTTP responses are `private, no-store`.
+Provider quote cache is 5 seconds and candle cache is 30 seconds. Check
+`quote.provider_timestamp`, `freshness.quote_status`, `expires_at`, last closed
+H4 and error/STALE fields. A fresh retrieval time does not make old provider data
+fresh. Rate limits may return 429 with Retry-After; respect that delay.
+
+For stored publication, connect the private `Yilin1207/capitalive-research-bridge`
+repository. Read
 `reports/latest/manifest.json` and all three reports at the **same commit**.
 Check byte sizes/SHA-256, expiry and provider times against the current clock.
 Stored `fresh:true` means fresh at generation, not at reading. Expiry requires
 refresh; it must never become a current-market claim.
 
 The [ChatGPT GitHub app is read-only](https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt-deep-resear).
-It cannot invoke workflow_dispatch or the protected Preview automatically.
+Public web research does not require that connector or access to GitHub Actions.
 
-1. Open protected `/research`, refresh and attach downloaded compact JSON.
+1. Open public `/research`, refresh and attach downloaded compact JSON if web
+   retrieval is unavailable in the current ChatGPT session.
 2. Run the private workflow manually, wait for publication/readback, then ask
    ChatGPT to read that commit. This still requires Actions availability.
 3. Operator recovery without Actions: Node 24 plus existing Git Credential
@@ -124,7 +134,7 @@ It cannot invoke workflow_dispatch or the protected Preview automatically.
 
 No new secret or paid service is required. Existing credentials stay in their
 services; no account data, raw OHLC or personal data enters compact/public files.
-Production and SSO are unchanged.
+Production has been explicitly activated; public access remains enabled.
 
 ## Validation and migration
 
