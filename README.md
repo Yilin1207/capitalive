@@ -4,9 +4,33 @@ Technical research for **EURUSD / NAS100 / JP225**, with explicit Capital.com
 Demo/Live environment and timestamps. No order execution. Macro-EDGE, final
 decisions and aggregate risk remain with the user and ChatGPT.
 
-V5 is active in the private Bridge main, using the protected immutable Preview.
+V5 is active in the private Bridge main, using its configured immutable Preview.
 See [final activation audit](CAPITALIVE_V5_FINAL_ACTIVATION_RU.md) for merged
 commits, real publication/readback, quote timestamps and freshness limits.
+
+## Public access — updated 17 November 2026
+
+The user explicitly requested public website/API access for ChatGPT. Project-level
+Vercel Authentication is now disabled (`ssoProtection: null`). This supersedes
+earlier instructions in historical audits to retain SSO; do not re-enable login
+for research routes without a new user instruction. GitHub report storage remains
+private, and server credentials and authenticated ingestion remain protected.
+
+Stable public site: https://capitalive.vercel.app/research . Direct research JSON:
+`https://capitalive.vercel.app/api/desk-report?symbol=EURUSD&side=bid`
+(also NAS100 and JP225). Unauthenticated HTTP checks returned 200 HTML/JSON/PNG,
+without a login redirect. The stable domain returned no `X-Robots-Tag: noindex`;
+`robots.txt` returned 404, not a robots exclusion policy.
+
+The verified DR Preview is also public:
+https://capitalive-i4q6z87dq-yilin1207s-projects.vercel.app/research . It still has
+Vercel's Preview `noindex` header. Public access does not promote its DR code to
+Production: the stable site is still on `430a36f`, DR Preview on `a050b1a`.
+The built-in web retrieval tool returned an internal accessibility error despite
+successful unauthenticated HTTP checks; actual search-tool retrieval/indexing is
+not claimed verified. User-Agent-only probes are not proof of OpenAI network access.
+Existing provider rate limits still apply. See
+[HTTP evidence](verification/public-access/http.json).
 
 ## Current contracts
 
