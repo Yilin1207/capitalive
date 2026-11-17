@@ -16,8 +16,8 @@
       "strong_before": 37,
       "strong_after": 37,
       "very_strong_without_fvg": 0,
-      "report_bytes": 56295,
-      "report_sha256": "e3e531cb93951c4cf7ebe7c2ccc4aac0ff031a0793686ab0c97723a7e29aa4b6",
+      "report_bytes": 58603,
+      "report_sha256": "dfb70151ec70a0c5da546a801756d9454806183258edd1edc6360abe97568764",
       "wire_bytes": 3598323,
       "wire_lossless": true
     },
@@ -34,8 +34,8 @@
       "strong_before": 39,
       "strong_after": 39,
       "very_strong_without_fvg": 0,
-      "report_bytes": 56220,
-      "report_sha256": "593f5128c3562a4c945b76e5f1872c2bdb494f4595fd6c53c770b35086142542",
+      "report_bytes": 58528,
+      "report_sha256": "7a29f8dbec92fe4b156eb14f0c7d70155219db6324e2f8d817b475beff52a0a9",
       "wire_bytes": 3617228,
       "wire_lossless": true
     },
@@ -52,8 +52,8 @@
       "strong_before": 43,
       "strong_after": 43,
       "very_strong_without_fvg": 0,
-      "report_bytes": 48994,
-      "report_sha256": "dd4ff0c2ff2a45d3af54a56cf7daf083e95954a081c02572c2d4a81f8ada55ae",
+      "report_bytes": 51289,
+      "report_sha256": "c4d5e9222b2d7d5b92a34623e2dc35fa9c6373d5c8c637c86e5089b18a7d7991",
       "wire_bytes": 3272770,
       "wire_lossless": true
     },
@@ -70,8 +70,8 @@
       "strong_before": 43,
       "strong_after": 43,
       "very_strong_without_fvg": 0,
-      "report_bytes": 48976,
-      "report_sha256": "dbf4a533453267de0d9f58c40ca4cbbc8d2a981edeb9344dd1df1cbabfd7f7a0",
+      "report_bytes": 51277,
+      "report_sha256": "7625655f7d919ae5b6baeb6a23fc9b8eb2ace248a1162ff388ec2843e2c4e676",
       "wire_bytes": 3272863,
       "wire_lossless": true
     },
@@ -88,8 +88,8 @@
       "strong_before": 38,
       "strong_after": 38,
       "very_strong_without_fvg": 0,
-      "report_bytes": 62272,
-      "report_sha256": "22ecffef220893162407eb9d55bb175587aa73bf005fe9887d959b178ada0e15",
+      "report_bytes": 63593,
+      "report_sha256": "5046d4fa28fa4a8afbbc7017eda809aaa4a498c964be5c68a4160788594b0117",
       "wire_bytes": 2915952,
       "wire_lossless": true
     },
@@ -106,8 +106,8 @@
       "strong_before": 38,
       "strong_after": 38,
       "very_strong_without_fvg": 0,
-      "report_bytes": 62272,
-      "report_sha256": "973fddf3bbdf57c355a548b7ff227c7496bafe06e0140c9772caa64e9fdae2d0",
+      "report_bytes": 63593,
+      "report_sha256": "33c9f8840a25cbfa23f40980e37ae8c7dbf63408ed0eb97de9c10b873f16d0f2",
       "wire_bytes": 2919074,
       "wire_lossless": true
     }
