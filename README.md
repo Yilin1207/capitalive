@@ -47,7 +47,7 @@ The [SNR update](SNR_FORMATION_CONTEXT_AUDIT_RU.md) uses first-close levels,
 pre-break failed tests, waiting time, impulse measurements and HTF context.
 FVG is optional even for very-strong formation candidates; numeric impulse
 thresholds are explicit project assumptions, not calibrated probabilities.
-The [FVG update](FVG_REMAINING_AUDIT_RU.md) preserves only the untested remainder.
+The [FVG update](FVG_REMAINING_ZONE_AUDIT_RU.md) preserves only the untested remainder.
 The [TDA update](TDA_NOTION_AUDIT_RU.md) uses Fractal-only triggers and explicit X/X-1 relationships.
 The [Narrative specification](NARRATIVE_METHOD_SPEC_RU.md) defines MN1 priority,
 W1 conflict penalties, separate 1-5 level and precontact delivery grades, confirmed
