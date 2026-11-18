@@ -34,7 +34,9 @@ test('V6 exact Evidence ID returns full formation and causal interactions; snaps
  for(const c of r.evidence[0].candle_evidence)assert.ok(c.closed_at<=e.confirmed_at&&e.confirmed_at<=r.as_of);
  for(const x of r.interaction_history)assert.ok(x.time>=e.confirmed_at&&x.confirmed_at<=expected.evaluated_through);
  const h=f.data.H4.candles[0];h.high={bid:h.high.bid!+1,ask:h.high.ask!+1};
- assert.equal((await paHttp(url(`symbol=EU50&offset=2&snapshot_sha256=${page.snapshot_sha256}`),'evidence',f.deps)).status,409);
+ const path='symbol=EU50&offset=2&snapshot_sha256='+page.snapshot_sha256;
+ assert.equal((await paHttp(url(path),'evidence',f.deps)).status,200);
+ assert.equal((await paHttp(new Request(url(path+'&refresh=1'),{method:'POST'}),'evidence',f.deps)).status,409);
  assert.equal((await paHttp(url('symbol=EU50&id=unknown'),'evidence',f.deps)).status,404);
  assert.equal((await paHttp(url('symbol=EU50&view=interactions&id=unknown'),'evidence',f.deps)).status,404);
 });
@@ -55,7 +57,8 @@ test('V6 stale quote suppresses current evidence; explicit archive is labelled a
  const archived=await paHttp(url('symbol=EU50&as_of='+archivedAt),'evidence',f.deps),a=await archived.json();assert.equal(archived.status,200);assert.equal(a.source_type,'ARCHIVE_AS_OF');assert.ok(a.as_of<=archivedAt);
  const deps={...f.deps,getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf,fresh:false,provider_timestamp:'2026-11-15T13:50:00.000Z',quote_time:'2026-11-15T13:50:00.000Z'})};
  const res=await paHttp(url('symbol=EU50'),'report',deps),r=await res.json();assert.equal(res.status,200);assert.equal(r.status,'STALE');assert.deepEqual(r.evidence,[]);assert.deepEqual(r.market_structure,{});assert.deepEqual(r.dealing_ranges,[]);assert.equal(r.coverage.observations_available,false);validatePaReport(r,'EU50');
- assert.equal((await paHttp(url('symbol=EU50'),'evidence',deps)).status,503);assert.equal((await paHttp(url('symbol=EU50'),'candles',deps)).status,503);
+ const historyOnly={...f.deps,getAnalysisQuote:async()=>{throw Error('quote transport down');}};
+ for(const view of ['evidence','candles'] as const){const res=await paHttp(url('symbol=EU50'),view,historyOnly);assert.equal(res.status,200);const page=await res.json();assert.equal(page.quote_required,false);assert.ok(page[view].length>0);}
 });
 
 test('V6 malformed filters, unpinned pagination and forecast inputs are rejected before upstream',async()=>{

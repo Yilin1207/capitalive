@@ -683,7 +683,8 @@ export async function getMarketSummaries(
   epics: readonly string[],
   context = createCapitalRequestContext(),
 ): Promise<Record<string, CapitalMarketSummary>> {
-  const query = new URLSearchParams({ epics: epics.join(",") });
+  // A single-epic catalogue search returns timestamped bid/offer rows.
+  const query = new URLSearchParams(epics.length === 1 ? { searchTerm: epics[0] } : { epics: epics.join(",") });
   const payload = (await capitalGet(
     `/api/v1/markets?${query}`,
     "markets_batch",
@@ -706,7 +707,7 @@ export async function getMarketSummaries(
   for (const market of payload.markets) {
     if (!market || typeof market !== "object") continue;
     const summary = market as CapitalMarketSummary;
-    if (typeof summary.epic === "string") summaries[summary.epic] = summary;
+    if (typeof summary.epic === "string" && epics.includes(summary.epic)) summaries[summary.epic] = summary;
   }
   return summaries;
 }
