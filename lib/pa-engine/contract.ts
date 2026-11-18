@@ -1,3 +1,4 @@
+import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets.ts';
 // Dependency-free contract: copied with the private publisher, no engine or credentials.
 export const PA_CONTRACT_REVISION='pa-engine-v6.1';
 const tfs=['MN1','W1','D1','H4'];
@@ -14,7 +15,7 @@ export function validatePaReport(value:unknown,symbol?:string,now?:number,secret
  const forbidden=new Set(['narrative','narrative_method','candidate_narrative','confirmed_narrative','scenario','scenarios','entry','entry_stop','stop_loss','take_profit','rr','verdict','target_selection','quality_score','probability','account','account_id','accounts','password','api_key','token','access_token','refresh_token','authorization','headers','cst','security_token','x_security_token','raw_response','raw_ohlc','credentials','client_secret'].map(normal));
  const walk=(v:unknown)=>{if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){if(forbidden.has(normal(k)))fail();walk(x);}};walk(r);
  const allowed=new Set('schema_version contract_revision mode technical_only symbol price_side status data_quality generated_at as_of published_at expires_at error source snapshot_sha256 quote freshness frames evidence market_structure dealing_ranges lifecycle_events cross_timeframe_interactions definitions coverage warnings omitted details trading_enabled diagnostic'.split(' '));
- if(Object.keys(r).some(k=>!allowed.has(k))||r.schema_version!=='pa-engine-v6'||r.mode!=='PA_ONLY'||r.trading_enabled!==false||!['EURUSD','NAS100','JP225'].includes(r.symbol)||symbol&&r.symbol!==symbol||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(r.status)||!date(r.generated_at)||!date(r.expires_at)||r.expires_at<r.generated_at||r.published_at!==null&&r.published_at!==undefined&&!date(r.published_at))fail();
+ if(Object.keys(r).some(k=>!allowed.has(k))||r.schema_version!=='pa-engine-v6'||r.mode!=='PA_ONLY'||r.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(symbol=>symbol===r.symbol)||symbol&&r.symbol!==symbol||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(r.status)||!date(r.generated_at)||!date(r.expires_at)||r.expires_at<r.generated_at||r.published_at!==null&&r.published_at!==undefined&&!date(r.published_at))fail();
  if(now!==undefined&&r.status!=='ERROR'&&(Date.parse(r.expires_at)<=now||Date.parse(r.generated_at)>now))throw Error('REPORT_EXPIRED');
  if(!Array.isArray(r.evidence)||!strings(r.warnings)||!['PARTIAL','UNVERIFIED'].includes(r.data_quality))fail();
  if(r.status==='ERROR'&&r.source===null){

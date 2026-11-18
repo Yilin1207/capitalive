@@ -73,11 +73,11 @@ export async function publishReports(token:string,reports:Record<string,unknown>
   const ref=await api(`/git/ref/heads/${branch}`),parent=await api(`/git/commits/${ref.object.sha}`);
   const currentTree=await api(`/git/trees/${parent.tree.sha}?recursive=1`);
   if(currentTree.truncated||!Array.isArray(currentTree.tree))throw Error('INVALID_PUBLICATION');
-  const oldEu50=currentTree.tree?.find((entry:{path:string;type:string;sha:string})=>entry.path==='reports/latest/EU50.json'&&entry.type==='blob');
-  if(oldEu50){
+  const oldJp225=currentTree.tree?.find((entry:{path:string;type:string;sha:string})=>entry.path==='reports/latest/JP225.json'&&entry.type==='blob');
+  if(oldJp225){
     // Preserve the exact old blob outside latest before removing its active path.
-    tree.push({path:`reports/archive/EU50/${oldEu50.sha}.json`,mode:'100644',type:'blob',sha:oldEu50.sha});
-    tree.push({path:'reports/latest/EU50.json',mode:'100644',type:'blob',sha:null});
+    tree.push({path:`reports/archive/JP225/${oldJp225.sha}.json`,mode:'100644',type:'blob',sha:oldJp225.sha});
+    tree.push({path:'reports/latest/JP225.json',mode:'100644',type:'blob',sha:null});
   }
   const newTree=await api('/git/trees','POST',{base_tree:parent.tree.sha,tree});
   const commit=await api('/git/commits','POST',{message:'Refresh compact research reports',tree:newTree.sha,parents:[ref.object.sha],author:{name:'Capitalive Research Bridge',email:'41898282+github-actions[bot]@users.noreply.github.com'}});
