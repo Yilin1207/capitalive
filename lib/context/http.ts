@@ -79,7 +79,14 @@ export async function marketContextHttp(request:Request){
   const json=(b:unknown,status=200)=>Response.json(b,{status,headers:{'Cache-Control':'private, no-store','Access-Control-Allow-Origin':'*'}});
   if(!ACTIVE_RESEARCH_SYMBOLS.includes(symbol)||!['bid','ask'].includes(side)||[...q.keys()].some(k=>!['symbol','side','view'].includes(k)))return json({error:'INVALID_CONTEXT_REQUEST'},400);
   try{checkHistoryRequest(request);}catch(e){return historyFailure(e);}
-  const env=capitalEnvironment(),epic=VERIFIED_MARKETS[symbol].epic;
+  let env: ReturnType<typeof capitalEnvironment>;
+  try { env=capitalEnvironment(); }
+  catch {
+    const missing=(name:string)=>unavailable(name,'BROKER_CONFIGURATION_UNAVAILABLE');
+    return json({schema_version:'market-context-v1',symbol,price_side:side,environment:null,generated_at:new Date().toISOString(),
+      vix:missing(vixSource),client_sentiment:missing(source),realized_volatility:{H4:missing('Capital.com H4 closed OHLC'),D1:missing('Capital.com D1 closed OHLC')},reference_indices:references},503);
+  }
+  const epic=VERIFIED_MARKETS[symbol].epic;
   const [fear,clients,...vol]=await Promise.allSettled([vix(env),sentiment(epic,env),...(['H4','D1'] as const).map(async tf=>{
     const data=await getCandles(symbol,tf,HISTORY[tf].limit);
     return realized(data,side as PriceSide,Date.now());

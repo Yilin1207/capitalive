@@ -26,3 +26,19 @@ for(const symbol of ['EU50','NAS100','EURUSD'])test(symbol+' closed H4/D1 contex
   assert.equal(realized(f,side,now+7*86400000).status,'STALE');
  }
 });
+
+test('context route rejects historical requests and reports missing configuration with no fabricated metrics',async()=>{
+ const {marketContextHttp}=await import('../lib/context/http');
+ const endpoint='https://local/api/desk-report?view=market-context';
+ assert.equal((await marketContextHttp(new Request(endpoint+'&as_of=2020-01-01'))).status,400);
+ const before=process.env.CAPITAL_API_KEY;
+ try{
+  delete process.env.CAPITAL_API_KEY;
+  const r=await marketContextHttp(new Request(endpoint+'&symbol=EU50'));
+  assert.equal(r.status,503);
+  const j=await r.json();
+  for(const m of [j.vix,j.client_sentiment,j.realized_volatility.H4,j.realized_volatility.D1]){
+   assert.equal(m.status,'UNAVAILABLE');assert.equal(m.timestamp,null);assert.equal(m.value,null);
+  }
+ }finally{if(before!==undefined)process.env.CAPITAL_API_KEY=before;}
+});
