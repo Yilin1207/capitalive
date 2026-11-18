@@ -48,8 +48,11 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   const policy=freshnessPolicy(process.env);
   // A pinned detail page can continue reading its immutable closed bars.
   const pinned=pin && view!=='report' && !refresh && saved?.hash===pin;
-  checkHistoryRequest(request,Boolean(pinned));
-  if(!pinned){
+  const currentMs=Date.now(), captured=saved?Date.parse(saved.core.as_of):NaN;
+  const reusableHistory=view!=='report' && !refresh && !pin && !asof &&
+    currentMs>=captured && currentMs-captured<300_000 && Math.floor(currentMs/14400000)===Math.floor(captured/14400000);
+  checkHistoryRequest(request,Boolean(pinned || reusableHistory));
+  if(!pinned && !reusableHistory){
    const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
    const key=market+':'+Math.floor(now/window)+':'+Math.floor(now/14400000);
    const {value:data}=await store.frames.get(key,async()=>{
@@ -77,7 +80,7 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   if(!PA_TFS.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);
   const base={mode:'PA_ONLY',symbol,price_side:side,as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
    source:{provider:'Capital.com',environment:data.H4.environment,analysis_schema:'pa-engine-v6',price_side:side,engine_commit:commit,evidence_sha256:hash,demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
-   quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
+   quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':reusableHistory?'RECENT_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
   let result:Record<string,unknown>;
   if(view==='candles'){
    const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const rows=all.slice(offset,offset+limit).map(b=>({...b,is_closed:true}));
