@@ -158,7 +158,7 @@ test("health is degraded only when both Capital.com transports fail", () => {
 
 test("context does not expose unavailable futures or fake yield spreads", () => {
   assert.deepEqual(Object.keys(CONTEXT_MARKETS), ["VIX"]);
-  assert.equal(CONTEXT_MARKETS.VIX.representation, "volatility_index");
+  assert.equal(CONTEXT_MARKETS.VIX.representation, "volatility_cfd");
   assert.equal(DERIVED.yield_spreads.available, false);
 });
 

@@ -8,6 +8,9 @@ Implementation and verified release status: [V6 audit](PA_ENGINE_V6_AUDIT_RU.md)
 Primary-source definitions and unresolved rules: [Notion audit](PA_ENGINE_V6_SOURCES_RU.md).
 Prior V5/V5.1 audits describe historical releases, not the active methodology.
 
+## Market Context
+Open `/api/desk-report?symbol=NAS100&side=bid&view=market-context` for the separate public context view. EURUSD and EU50 support the same arguments. Each PA report links to it under `details.market_context`. Context is calculated on demand, separately from PA. The response gives broker CFD quotes, observed client positioning, rolling H4/D1 volatility, and source and freshness metadata. Sentiment history accumulates on requests in hourly cache buckets.
+
 ## Public access and API
 
 Public site: https://capitalive.vercel.app/research . No SSO, password or cookie is required.
