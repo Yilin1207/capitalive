@@ -1,0 +1,38 @@
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_G716r4j6sr3UaLwN1HLgb7bqj9Ck",
+    "url": "https://capitalive-foomifcsp-yilin1207s-projects.vercel.app",
+    "productionUrl": null,
+    "inspectorUrl": "https://vercel.com/yilin1207s-projects/capitalive/G716r4j6sr3UaLwN1HLgb7bqj9Ck",
+    "readyState": "READY",
+    "target": null,
+    "environment": "preview",
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_G716r4j6sr3UaLwN1HLgb7bqj9Ck",
+    "buildMachine": {
+      "cores": 2,
+      "memory": 8192,
+      "machine": "basic",
+      "selectionType": "fixed",
+      "selectionSource": "plan-default"
+    },
+    "deploymentProtection": [
+      "vercel_authentication"
+    ]
+  },
+  "message": "Deployment capitalive-foomifcsp-yilin1207s-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel curl https://capitalive-foomifcsp-yilin1207s-projects.vercel.app",
+      "when": "Verify deployment, including when Deployment Protection is enabled"
+    },
+    {
+      "command": "vercel inspect capitalive-foomifcsp-yilin1207s-projects.vercel.app",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod",
+      "when": "Promote to production"
+    }
+  ]
+}

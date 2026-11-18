@@ -1,0 +1,405 @@
+{
+  "checked_at": "2026-11-15T13:59:01.717Z",
+  "origin": "https://capitalive-foomifcsp-yilin1207s-projects.vercel.app",
+  "transport": "Actual external HTTPS with temporary deployment-protection authentication; not unauthenticated public access",
+  "public_access": {
+    "status": 302,
+    "content_type": "text/plain"
+  },
+  "production_target": "capitalive-2rnu3zimh-yilin1207s-projects.vercel.app",
+  "blind_cases": 18,
+  "blind_labels_generated": false,
+  "results": [
+    {
+      "path": "/api/intelligence?symbol=EURUSD&side=bid",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3138519,
+      "sha256": "27f40900e773a93ffdcac9e862794e68441dd50bf8933bf1431f6b86a606c771"
+    },
+    {
+      "path": "/api/candles?symbol=EURUSD&timeframe=MN1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 37066,
+      "sha256": "92f5e617064d906906cd72bae167eee4659b8758f40824cb1c06bd4f97b7d86b"
+    },
+    {
+      "path": "/api/candles?symbol=EURUSD&timeframe=W1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 25366,
+      "sha256": "1b30eb1fcd105e82620f9d3979a214396dde2e544a02626940f53e5039666351"
+    },
+    {
+      "path": "/api/candles?symbol=EURUSD&timeframe=D1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 43673,
+      "sha256": "705ac82ff05a291e6ae9e4b1303e611bf803cfb98d1d461710378bef6c0a13ee"
+    },
+    {
+      "path": "/api/candles?symbol=EURUSD&timeframe=H4",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 50297,
+      "sha256": "51a542b86fce0d611b414e12d434fadd8e39ad8fc2830bae5803473398fcdfd1"
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=priority",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 406797,
+      "sha256": "99888a9abece4885877e4cf9fd038f45d65d025d993f7990d22685712ca73580"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&side=ask",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3140867,
+      "sha256": "dbae0bfa9dad22894b3d95c8a53998ded96371c2eeeed36eb73253f43875bae7"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&high_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-23T00%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-22T20%3A00%3A00.000Z&low_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-22T20%3A00%3A00.000Z%3A3%3Alow%3A2026-09-22T16%3A00%3A00.000Z",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3142517,
+      "sha256": "3526637dca85753e37befb5ac430343132c521dc33ce06450ba093fe2d22b9ea",
+      "selected_range": {
+        "high_id": "EURUSD:H4:bid:FRACTAL:2026-09-23T00:00:00.000Z:3:high:2026-09-22T20:00:00.000Z",
+        "low_id": "EURUSD:H4:bid:FRACTAL:2026-09-22T20:00:00.000Z:3:low:2026-09-22T16:00:00.000Z",
+        "lower": 1.14289,
+        "upper": 1.14553,
+        "equilibrium": 1.14421,
+        "confirmed_at": "2026-09-23T04:00:00.000Z",
+        "origin": "2026-09-22T12:00:00.000Z",
+        "timeframe": "H4",
+        "segment": 0
+      }
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD",
+      "method": "POST",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 241,
+      "sha256": "387fc1f28d0309013067b2f8c027b8e246a91e9a0d633c193fdc8ae45b051c6d"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD",
+      "method": "POST",
+      "status": 409,
+      "content_type": "application/json",
+      "bytes": 167,
+      "sha256": "7455e9edbb0981ca66856cfb40e02255ddf2413af4a7573a66a35333067321ae"
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD",
+      "method": "POST",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3138627,
+      "sha256": "9d0dd362a37af6e0a89b2520c8eb36c8f83ed493da626b45a8d07b2a9054209d",
+      "scope": "Synthetic transport exercise, not a reference label or market validation"
+    },
+    {
+      "path": "/api/intelligence?symbol=NAS100&side=bid",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2793312,
+      "sha256": "ee784bd4d40bd6e4f641b4228bc17e76bb1a2800f6b775eb28ab6d68dc0dd922"
+    },
+    {
+      "path": "/api/candles?symbol=NAS100&timeframe=MN1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 36353,
+      "sha256": "6d28c6b5184e55e7ad096be398166a5bd33e111ff455d4e7ff7f8bf05134db6c"
+    },
+    {
+      "path": "/api/candles?symbol=NAS100&timeframe=W1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 25265,
+      "sha256": "6593a03a5f764d6249a42a484ce0f8421c3fffe92a5d0791573f03368cab97e1"
+    },
+    {
+      "path": "/api/candles?symbol=NAS100&timeframe=D1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 43512,
+      "sha256": "b51c948378cc32486a05f6d2c4c39f9dc6f394629ecedfb62ddeb11040a87402"
+    },
+    {
+      "path": "/api/candles?symbol=NAS100&timeframe=H4",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 50055,
+      "sha256": "e01ec66073f54bf21e4e213596419b19372918432af68268f70b8a565cde5f94"
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&view=priority",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 450584,
+      "sha256": "c7fa9a48e2f1c9e849e4c29e0a9454d77a7a0e31222012a2e94113459416c18b"
+    },
+    {
+      "path": "/api/intelligence?symbol=EU50&side=bid",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2848576,
+      "sha256": "93a5ad28a38157d1015d34dfe14b06cbfa5cfd9bbadbc18c62159731e50962f1"
+    },
+    {
+      "path": "/api/candles?symbol=EU50&timeframe=MN1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 35473,
+      "sha256": "fdc3f6895e6a0fc9f315682347bf1b43ca6a7200b78f58b8d53fc5040d07774e"
+    },
+    {
+      "path": "/api/candles?symbol=EU50&timeframe=W1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 24292,
+      "sha256": "c45c62971d5853d8bb536257951a0bb8844bbcfda62cd4d12d86dcf20976650b"
+    },
+    {
+      "path": "/api/candles?symbol=EU50&timeframe=D1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 41903,
+      "sha256": "ba5d8084bcdc0d68255f6ce2b18240b2fbb9df06b532bf87569e596f500ed1d0"
+    },
+    {
+      "path": "/api/candles?symbol=EU50&timeframe=H4",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 48244,
+      "sha256": "eb9a3d7a91bf3b55c212667c8d247da7a6e41c5988c45ba7c0e114dfa47f348a"
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&view=priority",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 425416,
+      "sha256": "0c1e662622c3512e9602e58c67821795ecd1fddfd1a366005441976e56d0e4f4"
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3155389,
+      "sha256": "7defdb7c21fa1b2e92024df266c932923876459adaec610e7642d484ed7a43af"
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+      "method": "GET",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 115698,
+      "sha256": "74a0d81a299cc13cdb6308a2c372d874bd9ce0b18be76518e036759d84b4568d",
+      "width": 1400,
+      "height": 1000,
+      "pixels_decoded": true
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=priority&knowledge=1",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3543275,
+      "sha256": "13ff8895d07a76758b56b08984315531fc5d3c0e7f3f21a8b20e3f7ac750cb14"
+    },
+    {
+      "path": "/api/research/blind",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 3343,
+      "sha256": "56fc9ce82470dc77a26e72714462b9adbf566e1217a78d9214f139eed9c956a2"
+    },
+    {
+      "path": "/api/research/blind?case_id=4667f20cc0343dfb",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165967,
+      "sha256": "1f69d85073902e994ad28c166180d32817bc66e1cd549bfe36ab85057cc942b2"
+    },
+    {
+      "path": "/api/research/blind?case_id=80b371c0461f0a94",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 164147,
+      "sha256": "9df7290bb7fd5499eee8346429f83e4cbea88f5a8443a5bcd879c82e6d51d6da"
+    },
+    {
+      "path": "/api/research/blind?case_id=b7c3cc9d98f83229",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 159218,
+      "sha256": "b9594dbe7bffe7d2c6a18d29124f2776a6f021149b0d0a5120c953914513dd55"
+    },
+    {
+      "path": "/api/research/blind?case_id=65ab8b087db0eef6",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165915,
+      "sha256": "0427ad277a4e4d7795c01237ea2cf04f4d19ae5d776f0919b08037bdd4ac9df4"
+    },
+    {
+      "path": "/api/research/blind?case_id=8641cdabf39e3884",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 158970,
+      "sha256": "0a6e67c134f1055a103e485f5f2d1164eae3c1fd1504abdb7d961f64b2f9dec3"
+    },
+    {
+      "path": "/api/research/blind?case_id=91b44f6b129d2016",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 164181,
+      "sha256": "39781762911f721f5a0dec7f846e9ab9a54be4a5c62358816b9b5e620b18ca2b"
+    },
+    {
+      "path": "/api/research/blind?case_id=31cdd09d2d57d4fe",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165983,
+      "sha256": "740ecc8e05b028fa882a4f8cb7e55648aab2325528a6c189e9faa6550b0bd284"
+    },
+    {
+      "path": "/api/research/blind?case_id=329cae75001dca62",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 164176,
+      "sha256": "cb673189291e30d8d7f953fc996f4f845f288ca2163d579071b4569ab2c3a578"
+    },
+    {
+      "path": "/api/research/blind?case_id=85ffb3bc292693a2",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 159068,
+      "sha256": "f91d5d96694eab4c6ed0263f8fe7f74ce2b76a78586a7c783e5c7985ac9377d0"
+    },
+    {
+      "path": "/api/research/blind?case_id=1a559ab8da843bf3",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 158926,
+      "sha256": "853e3b612c2e7dc6a019de4e00ce75571c7bb22af80707f117c7bb1dc1595b55"
+    },
+    {
+      "path": "/api/research/blind?case_id=2b005fe072979414",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 164108,
+      "sha256": "7b81355c5f6d2a46a4de9199b9d3b11a096b09d9bf38ae235f2cd4f0309a23d0"
+    },
+    {
+      "path": "/api/research/blind?case_id=d547f343d35562fe",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165837,
+      "sha256": "3379ec06234e562ff88243980bb4d7527c03f9ba310d520655eec1753ae6095a"
+    },
+    {
+      "path": "/api/research/blind?case_id=492202c8aa3fb3df",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 163990,
+      "sha256": "ffc3eedfec24091c9be852a5ff113bfdd24f4e1e733bade4ffec8c3c00060966"
+    },
+    {
+      "path": "/api/research/blind?case_id=5bfceb4bc6f4204a",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 158811,
+      "sha256": "6ecb8fbddfbeee98b00d7337c7f2ca8b691ec01add25164ddb650c13b19f1763"
+    },
+    {
+      "path": "/api/research/blind?case_id=83ddbfc30205cdb6",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165726,
+      "sha256": "7a38772e0fb75b3ea2d9dfc42d2fc789d5653d86fb6537fab7e79360354ac588"
+    },
+    {
+      "path": "/api/research/blind?case_id=105fa11420d6eb9b",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 165749,
+      "sha256": "8e0591b9b7426e34129bd7fc71dfc8910b1a51d2f16bb03695c82cae0785e38c"
+    },
+    {
+      "path": "/api/research/blind?case_id=c49818b6ab2e27fa",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 158928,
+      "sha256": "136f5bed89151237c8acf69be6396564c2a9cecedc8cdee4d1cb40eea0574503"
+    },
+    {
+      "path": "/api/research/blind?case_id=c798995366a4bad8",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 164104,
+      "sha256": "c6e42209d762ff95d7e9c210d161a0e9faf4122ee73b7e266a2a3b159d771996"
+    },
+    {
+      "path": "/research/blind",
+      "method": "GET",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 9545,
+      "sha256": "a36afd6934f32f582ecae782b79388f847ecec993d3ace71a4e06748839435fb"
+    },
+    {
+      "path": "/intelligence",
+      "method": "GET",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 7087,
+      "sha256": "716daac40fbd73e9135be5451ef5971cc9c859a152540900678a5edf7be1982a"
+    }
+  ]
+}

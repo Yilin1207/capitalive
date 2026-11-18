@@ -1,5 +1,6 @@
 import CandleChart from "@/app/candle-chart";
-import { PUBLIC_SYMBOLS, VERIFIED_MARKETS } from "@/lib/capital";
+import { VERIFIED_MARKETS } from "@/lib/capital";
+import {ACTIVE_RESEARCH_SYMBOLS} from '@/lib/active-research-markets';
 import "./market-feed.css";
 
 export default function Home() {
@@ -7,9 +8,11 @@ export default function Home() {
     <main>
       <div className="eyebrow">MARKET DATA · READ ONLY</div>
       <h1>Capitalive 2.1</h1>
-      <p className="intro">Свечи Capital.com: MN1 · W1 · D1 · H4. Фракталы, диапазоны и FVG для EURUSD, NAS100 и EU50.</p>
-      <CandleChart instruments={PUBLIC_SYMBOLS.map(symbol => ({ symbol, name: VERIFIED_MARKETS[symbol].name }))} />
+      <p className="intro">Свечи Capital.com: MN1 · W1 · D1 · H4. Фракталы, диапазоны и FVG для {ACTIVE_RESEARCH_SYMBOLS.join(', ')}.</p>
+      <CandleChart instruments={ACTIVE_RESEARCH_SYMBOLS.map(symbol => ({ symbol, name: VERIFIED_MARKETS[symbol].name }))} />
       <nav className="api-links" aria-label="Public API">
+        <a href="/knowledge">Knowledge Base · THE EDGE</a>
+        <a href="/intelligence">Market Intelligence</a>
         <a href="/api/quotes">GET /api/quotes</a>
         <a href="/api/candles?symbol=NAS100&timeframe=H4&limit=200">GET /api/candles</a>
         <a href="/api/structure?symbol=NAS100&w1=20&d1=30&h4=40">GET /api/structure</a>

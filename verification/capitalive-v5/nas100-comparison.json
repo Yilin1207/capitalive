@@ -1,0 +1,38 @@
+{
+  "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+  "as_of": "2026-11-16T07:17:59.382Z",
+  "before": {
+    "id": "NAS100:D1:bid:FVG:2026-11-10T00:00:00.000Z:",
+    "state": "UNVERIFIED",
+    "coverage": "UNVERIFIED",
+    "coverage_gaps": [
+      {
+        "from": "2026-11-14T00:00:00.000Z",
+        "to": "2026-11-15T00:00:00.000Z"
+      }
+    ]
+  },
+  "after": {
+    "id": "NAS100:D1:bid:FVG:2026-11-10T00:00:00.000Z:",
+    "lower": 27097.8,
+    "upper": 27419.3,
+    "confirmed_at": "2026-11-11T00:00:00.000Z",
+    "state": "ACTIVE",
+    "coverage": "COMPLETE_OBSERVED_INTERVAL",
+    "coverage_gaps": [],
+    "coverage_closures": [
+      {
+        "from": "2026-11-14T00:00:00.000Z",
+        "to": "2026-11-15T00:00:00.000Z"
+      }
+    ],
+    "fill": {
+      "state": "UNTOUCHED",
+      "max_observed_fraction": 0,
+      "first_test_at": null,
+      "last_test_at": null
+    }
+  },
+  "same_input": true,
+  "ohlc_modified": false
+}

@@ -184,7 +184,7 @@ const marketRequests: Partial<Record<PublicSymbol, Promise<MarketMapping>>> = {}
 let getRequestQueue: Promise<void> = Promise.resolve();
 let nextGetRequestAt = 0;
 
-type CapitalRequestStep = "authentication" | "markets_batch" | "single_market" | "prices";
+type CapitalRequestStep = "authentication" | "markets_batch" | "single_market" | "prices" | "client_sentiment";
 
 export type CapitalErrorCode =
   | "CAPITAL_AUTH"
@@ -311,6 +311,10 @@ async function createSession(
         timeoutMs: SESSION_TIMEOUT_MS,
         maxAttempts: 3,
         baseDelayMs: 1000,
+        // Independent cold instances share Capital.com's one-session-per-second quota.
+        rateLimitBackoffMs: [1100,2100,3500,5000,6500],
+        respectRetryAfter: true,
+        maxRetryDelayMs: 8500,
         metrics: context,
         onFailure: ({ status, statusText, timedOut }) =>
           logCapitalError("authentication", context, {
@@ -350,6 +354,7 @@ async function createSession(
       "Capital.com authentication failed",
       "authentication",
       response.status,
+      retryAfterSeconds(response.headers.get("Retry-After")),
     );
   }
 
@@ -683,7 +688,8 @@ export async function getMarketSummaries(
   epics: readonly string[],
   context = createCapitalRequestContext(),
 ): Promise<Record<string, CapitalMarketSummary>> {
-  const query = new URLSearchParams({ epics: epics.join(",") });
+  // A single-epic catalogue search returns timestamped bid/offer rows.
+  const query = new URLSearchParams(epics.length === 1 ? { searchTerm: epics[0] } : { epics: epics.join(",") });
   const payload = (await capitalGet(
     `/api/v1/markets?${query}`,
     "markets_batch",
@@ -706,9 +712,14 @@ export async function getMarketSummaries(
   for (const market of payload.markets) {
     if (!market || typeof market !== "object") continue;
     const summary = market as CapitalMarketSummary;
-    if (typeof summary.epic === "string") summaries[summary.epic] = summary;
+    if (typeof summary.epic === "string" && epics.includes(summary.epic)) summaries[summary.epic] = summary;
   }
   return summaries;
+}
+
+export function getClientSentiments(epics: readonly string[]): Promise<unknown> {
+  const query = new URLSearchParams({marketIds: epics.join(",")});
+  return capitalGet(`/api/v1/clientsentiment?${query}`, "client_sentiment", createCapitalRequestContext());
 }
 
 export function capitalEnvironment(): "demo" | "live" {
@@ -719,7 +730,7 @@ export function capitalEnvironment(): "demo" | "live" {
 // Reuses the same server-only session, refresh, retry and GET pacing as quotes.
 export async function getHistoricalPrices(
   epic: string,
-  resolution: "WEEK" | "DAY" | "HOUR_4" | "MINUTE",
+  resolution: "WEEK" | "DAY" | "HOUR_4" | "HOUR" | "MINUTE",
   limit: number,
   context = createCapitalRequestContext(),
   range?: { from?: string; to?: string },

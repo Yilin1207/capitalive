@@ -7,6 +7,8 @@ import { checkConsistency } from "@/lib/analysis-consistency";
 import { checkHistoryRequest, historyFailure, historyJson } from "@/lib/history-http";
 import { buildHtfAudit } from "@/lib/htf-audit";
 import { createAuditSnapshot, readAuditSnapshot } from './audit-snapshots';
+import { buildPaEngine } from './pa-engine/core';
+import { buildPaReport } from './pa-engine/report';
 
 export async function marketAudit(request: Request, dependencies = { getCandles, getAnalysisQuote }) {
   try {
@@ -17,6 +19,8 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
     if(url.searchParams.has('page'))throw new HistoryError('SNAPSHOT_ID_REQUIRED','page requires snapshot_id',400);
     const includeCandles = url.searchParams.get("include_candles") ?? "0";
     const includeHtf = url.searchParams.get('htf') ?? '1';
+    const includeKnowledge = url.searchParams.get('knowledge') ?? '0';
+    if (!['0','1'].includes(includeKnowledge)) throw new HistoryError('INVALID_KNOWLEDGE', 'knowledge must be 0 or 1', 400);
     const view = url.searchParams.get('view') ?? 'full';
     if (!['full','priority','snapshot'].includes(view)) throw new HistoryError('INVALID_VIEW', 'view must be full, priority or snapshot', 400);
     if (includeHtf !== '0' && includeHtf !== '1') throw new HistoryError('INVALID_HTF', 'htf must be 0 or 1', 400);
@@ -48,7 +52,7 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
       frame_snapshots:Object.fromEntries(ANALYSIS_TIMEFRAMES.map(tf=>[tf,data[tf].fetched_at])),
       scope:{...completeHtf.scope,view:'priority',full_catalog_url:fullUrl.href,full_snapshot_url:snapshotUrl.href,full_catalog_count:completeHtf.catalog.total,full_catalog_included:false},
     } : completeHtf;
-    const body = { ok: true, schema_version: "2.1", symbol, provider: "Capital.com", environment: data.H4.environment,
+    const body = { ok: true, schema_version: "2.1", mode:'PA_ONLY', interpretation_engine:'DISABLED', symbol, provider: "Capital.com", environment: data.H4.environment,
       price_side: side, generated_at: new Date().toISOString(), quote,
       reliability: { fresh_tick_verified: quote.fresh, history_warnings_present: analyses.some(s => s.warnings.length > 0),
         cross_timeframe_consistency: consistency.status, session_coverage_verified: false },
@@ -57,13 +61,13 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
         candles_url: new URL(`/api/candles?symbol=${symbol}&timeframe=${s.timeframe}`, url.origin).href,
         metadata: data[s.timeframe].metadata }])),
       response_scope: { structure_timeframes: only ? [only] : ANALYSIS_TIMEFRAMES, targets_timeframes: ANALYSIS_TIMEFRAMES, candles_included: includeCandles === "1", htf_timeframes: htf ? ANALYSIS_TIMEFRAMES : [], htf_requested: includeHtf === '1' },
-      targets: { ...targets, reference_fresh: quote.fresh, interpretation: "Observed candidates, not an instruction to place TP; inspect warnings and intermediate H4 obstacles." },
-      htf, consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
+      targets: { ...targets, reference_fresh: quote.fresh, automatic_selection:'DISABLED', interpretation: "Legacy geometric price catalog only. No target, direction, probability or trading scenario is selected." },
+      htf, ...(includeKnowledge === '1' ? { knowledge_intelligence: buildPaReport(buildPaEngine(data, side),data,quote,new Date().toISOString(),process.env.VERCEL_GIT_COMMIT_SHA??null) } : {}), consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
         const params = new URLSearchParams({ symbol, timeframe, side, min_remaining_units: String(settings.min_remaining_units), atr_fraction: String(settings.atr_fraction) });
         if (timeframe === "H4" && selection) { params.set("range_high", selection.high_id); params.set("range_low", selection.low_id); }
         return [timeframe, { url: new URL(`/api/chart?${params}`, url.origin).href, content_type: "image/png", snapshot: "independently_fetched_cached_history_check_chart_timestamp" }];
       })), warnings,
-      interpretation: "Facts from available Capital.com history only. No BUY/SELL, EDGE or probability is generated. Forming pivots are provisional; swept fractals and immaterial FVGs are not eligible D1+ targets.",
+      interpretation: "Compatibility geometry from finite Capital.com history. No Narrative, A/B/C, direction forecast, Entry/SL/TP or RR is generated. Author PA evidence is available from /api/desk-report and knowledge=1; historical observations are not current conclusions when the quote is stale.",
     };
     if(view==='snapshot')return historyJson({ok:true,schema_version:'2.1',pagination:createAuditSnapshot(body,url)});
     if (Buffer.byteLength(JSON.stringify(body)) > 4_250_000) return historyJson({ ok: false,

@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-15T13:00:23.574Z",
+  "temporary_bypass_revoked": true,
+  "bypass_entries_remaining": 0,
+  "sso_protection": {
+    "deploymentType": "all_except_custom_domains"
+  },
+  "production_target": "capitalive-2rnu3zimh-yilin1207s-projects.vercel.app",
+  "production_unchanged": true
+}

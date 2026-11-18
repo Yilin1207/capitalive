@@ -1,0 +1,38 @@
+{
+  "reviewed_at": "2026-11-15",
+  "documents": [
+    {
+      "id": "418e05dadd188134b279fb543a6ed8fe",
+      "title": "📚 THE EDGE — Key Information",
+      "revision": "2026-11-15T10:44:06.149Z",
+      "url": "https://app.notion.com/p/418e05dadd188134b279fb543a6ed8fe"
+    },
+    {
+      "id": "419e05dadd188118ba32fc9f0f146cc4",
+      "title": "🧠 Capitalive — Knowledge Operating Manual (THE EDGE)",
+      "revision": "2026-11-15T11:13:46.537Z",
+      "url": "https://app.notion.com/p/419e05dadd188118ba32fc9f0f146cc4"
+    },
+    {
+      "id": "418e05dadd18812aa4e7c5f3fbe3cebe",
+      "title": "Narrative > Entry и как определять направление рынка эффективно?",
+      "revision": "2026-11-15T09:33:15.430Z",
+      "url": "https://app.notion.com/p/418e05dadd18812aa4e7c5f3fbe3cebe"
+    },
+    {
+      "id": "419e05dadd1881f68a6bd60a2e1d2cff",
+      "title": "Rejection Block [RB]",
+      "revision": "2026-11-15T08:35:06.009Z",
+      "url": "https://app.notion.com/p/419e05dadd1881f68a6bd60a2e1d2cff"
+    },
+    {
+      "id": "419e05dadd1881c6a539fe10cf3ea892",
+      "title": "Support aNd Resistance [SNR]",
+      "revision": "2026-11-15T08:41:30.306Z",
+      "url": "https://app.notion.com/p/419e05dadd1881c6a539fe10cf3ea892"
+    }
+  ],
+  "images_review": "knowledge/the-edge/visual-review.json: 12 RB + 10 SNR images inspected in memory; unchanged source revisions on re-fetch",
+  "original_images_stored": false,
+  "limitations": "434 other images and videos not reviewed; qualitative delivery, author SOF, execution tolerances remain undefined"
+}

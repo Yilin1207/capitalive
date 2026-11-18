@@ -1,0 +1,9 @@
+{
+  "main_ref": "3988921bfe3baab8f2d10f492f51b5fbdf2d3d7d",
+  "private": true,
+  "base_url": "https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app",
+  "workflow_state": "active",
+  "cron": "7 * * * *",
+  "uses_variable": true,
+  "code_files_identical": 7
+}

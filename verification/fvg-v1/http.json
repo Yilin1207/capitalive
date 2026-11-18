@@ -1,0 +1,746 @@
+{
+  "preview": "https://capitalive-nmlpsxmwm-yilin1207s-projects.vercel.app",
+  "engine_commit": "f45f81cfee441b6479e593354d25c90851397f28",
+  "authenticated": false,
+  "checked_at": "2026-11-17T14:15:18.097Z",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 56701,
+      "sha256": "273ef60b096300eadf60bc32fb430ced5bcd281e9b583939af7f3acfad68ec7b",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:12.901Z",
+      "generated_at": "2026-11-17T14:14:15.928Z",
+      "expires_at": "2026-11-17T14:16:07.286Z",
+      "evidence_count": 27,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 15,
+          "review_required": 12
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 24
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.727682596934174,
+          "remaining": {
+            "lower": 1.09544,
+            "upper": 1.09846
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 1.08579,
+            "upper": 1.0888
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 8,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 24,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 56682,
+      "sha256": "d6d7003dcc633a4a8db4bcfd6e5742313d3bf91677badb48d42cab1acc75f4b8",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:12.901Z",
+      "generated_at": "2026-11-17T14:14:16.998Z",
+      "expires_at": "2026-11-17T14:16:07.286Z",
+      "evidence_count": 27,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 17,
+          "review_required": 10
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 24
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.7267808836789832,
+          "remaining": {
+            "lower": 1.0955,
+            "upper": 1.09853
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 1.08585,
+            "upper": 1.08886
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 7,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 25,
+          "fvg_only_weaker": 20,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 60332,
+      "sha256": "54a9cfe82e0dc7cd6e0d2a681866975d9352577997bca1b7cf96b958c1f63579",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:17.907Z",
+      "generated_at": "2026-11-17T14:14:20.169Z",
+      "expires_at": "2026-11-17T14:16:12.234Z",
+      "evidence_count": 29,
+      "rb_included": 3,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 33,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 44,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 5,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25206.2,
+            "upper": 26255.2
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T16:00:00.000Z"
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-08-04T00:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-11T08:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 60302,
+      "sha256": "0806e4ad19696c30379e4aae3bd48070e246f943617fba7f9cc4f544b7b1f50b",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:17.907Z",
+      "generated_at": "2026-11-17T14:14:21.013Z",
+      "expires_at": "2026-11-17T14:16:12.234Z",
+      "evidence_count": 29,
+      "rb_included": 3,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 33,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 44,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 5,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25208,
+            "upper": 26257
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T16:00:00.000Z"
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-08-04T00:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-11T08:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64927,
+      "sha256": "3013b1e02bea5def8311376083d9846313d6c8662b310cacd43d3d035f3d3b0e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:21.938Z",
+      "generated_at": "2026-11-17T14:14:23.404Z",
+      "expires_at": "2026-11-17T14:16:16.607Z",
+      "evidence_count": 33,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 54,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 8,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-23T00:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 54629.3,
+            "upper": 56249.3
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "UNVERIFIED",
+          "fraction": 0.9583333333333321,
+          "remaining": {
+            "lower": 56390.2,
+            "upper": 56431.1
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T16:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-10T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "D1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-17T12:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64926,
+      "sha256": "cd14fd542c06bf6fb197532a1861c38695b5dee0189b57373d9b75bd14524459",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T14:14:21.938Z",
+      "generated_at": "2026-11-17T14:14:24.267Z",
+      "expires_at": "2026-11-17T14:16:16.607Z",
+      "evidence_count": 33,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 54,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 8,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-23T00:00:00.000Z"
+        },
+        {
+          "timeframe": "W1",
+          "state": "ACTIVE",
+          "fraction": 0,
+          "remaining": {
+            "lower": 54639.3,
+            "upper": 56259.3
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "UNVERIFIED",
+          "fraction": 0.9583333333333321,
+          "remaining": {
+            "lower": 56400.2,
+            "upper": 56441.1
+          },
+          "fully_tested_at": null
+        },
+        {
+          "timeframe": "D1",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T16:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "INVALIDATED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-10T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "D1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-17T12:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "contract": "desk-report-v2.5",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    }
+  ],
+  "full": [
+    {
+      "fvg_total": 118,
+      "fvg_tested": 3,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "EURUSD",
+      "http": 200,
+      "bytes": 2793353,
+      "snr": 155,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 103,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "fvg_total": 131,
+      "fvg_tested": 9,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "NAS100",
+      "http": 200,
+      "bytes": 2723696,
+      "snr": 136,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 107,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    },
+    {
+      "fvg_total": 112,
+      "fvg_tested": 12,
+      "fvg_full_active": 0,
+      "fvg_rule": "PASS",
+      "symbol": "JP225",
+      "http": 200,
+      "bytes": 2538414,
+      "snr": 130,
+      "snr_geometry_causality_strength": "PASS",
+      "rb": 89,
+      "first_close_arithmetic": "PASS",
+      "confirmation_causality": "PASS",
+      "relative_quality": "PASS"
+    }
+  ],
+  "throttles": [],
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112202,
+    "png_signature": true
+  }
+}

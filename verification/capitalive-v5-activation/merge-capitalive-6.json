@@ -1,0 +1,17 @@
+{
+  "repo": "capitalive",
+  "pr": 6,
+  "head": "10d974be5b4afd0c33b1d75dcadd3b2d24b5e0d8",
+  "base": "research/v4-pa-validation-20261116",
+  "merge_commit": "5a3dfa6afb3bb488c0f6ea5df874e403827f3048",
+  "tree": "809fc7cd28a048f58c6f04ea7b6d31e6ba057464",
+  "head_tree": "809fc7cd28a048f58c6f04ea7b6d31e6ba057464",
+  "checked_ci": [
+    {
+      "name": "verify",
+      "url": "https://github.com/Yilin1207/capitalive/actions/runs/43928664364/job/133514876097",
+      "conclusion": "success"
+    }
+  ],
+  "at": "2026-11-16T18:28:31.756Z"
+}

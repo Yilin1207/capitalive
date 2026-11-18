@@ -19,15 +19,17 @@ export type Candle = {
   is_closed: boolean;
   start_time?: string;
   end_time?: string;
-  source?: "Capital.com DAY";
+  source?: "Capital.com DAY" | "Capital.com HOUR_4" | "Capital.com DAY + HOUR_4" | "Capital.com HOUR" | "Capital.com DAY + intraday";
+  reconstructed_daily_times?: string[];
   first_daily_bar?: string;
   last_daily_bar?: string;
   daily_bars?: number;
   history_completeness?: "unknown_sessions_not_verified" | "partial_validation";
+  history_completeness_by_side?: Record<PriceSide,"unknown_sessions_not_verified"|"partial_validation">;
 };
 export type RejectedCandle = {
   time: string | null;
-  reason: "invalid_time" | "future_time" | "no_valid_side" | "crossed_sides";
+  reason: "invalid_time" | "future_time" | "no_valid_side" | "crossed_sides" | "conflicting_duplicate";
   // Only allowlisted market prices, never the upstream response object.
   crossed_fields?: { field: "open" | "high" | "low" | "close"; bid: number; ask: number }[];
 };
@@ -47,13 +49,13 @@ export type CandleResponse = {
     available: number;
     insufficient_history: boolean;
     discarded_rows: number;
-    discarded_reasons: { invalid_time: number; future_time: number; no_valid_side: number; crossed_sides: number };
+    discarded_reasons: { invalid_time: number; future_time: number; no_valid_side: number; crossed_sides: number; conflicting_duplicate?:number };
     discarded_sides: number;
     duplicate_rows: number;
     validation_gaps?: string[];
     time_semantics: "provider_bar_start_utc" | "calendar_month_start_utc";
     closure_basis: "successor_or_nominal_interval_elapsed_at_fetch" | "calendar_month_end_elapsed_at_fetch";
-    aggregation?: { source: "Capital.com DAY"; calendar: "UTC"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown" };
+    aggregation?: { source: "Capital.com DAY"; calendar: "UTC"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown"; reconstructions?:import('./daily-recovery').DailyRecovery[] };
     cache_ttl_seconds: number;
     cache_hit: boolean;
     diagnostics: import("./history-diagnostics").HistoryDiagnostics;
@@ -74,7 +76,7 @@ export function parseCandleTime(value: unknown): string | null {
   return iso.slice(0, 19) === value.slice(0, 19) ? iso : null;
 }
 
-export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe, "MN1"> | "M1", fetchedAt: number) {
+export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe, "MN1"> | "M1" | "H1", fetchedAt: number) {
   const prices = object(payload).prices;
   if (!Array.isArray(prices)) throw new Error("Invalid prices schema");
   const byTime = new Map<string, Candle>();
@@ -84,16 +86,28 @@ export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe,
   const discardedReasons = { invalid_time: 0, future_time: 0, no_valid_side: 0, crossed_sides: 0 };
   const rejected: RejectedCandle[] = [];
   const providerTimes = new Set<string>();
+  const seenRows=new Map<string,string>(),conflicts=new Set<string>();
   for (const raw of prices) {
     const row = object(raw);
     const time = parseCandleTime(row.snapshotTimeUTC);
     if (!time) { discardedRows++; discardedReasons.invalid_time++; rejected.push({ time: null, reason: "invalid_time" }); continue; }
     providerTimes.add(time);
     if (Date.parse(time) > fetchedAt) { discardedRows++; discardedReasons.future_time++; rejected.push({ time, reason: "future_time" }); continue; }
+    const fingerprint=JSON.stringify(fields.map(field=>[object(row[`${field}Price`]).bid,object(row[`${field}Price`]).ask]));
+    if(seenRows.has(time)){
+      duplicateRows++;
+      if(conflicts.has(time)||seenRows.get(time)!==fingerprint){
+        conflicts.add(time);discardedRows+=byTime.delete(time)?2:1;
+        const counts=discardedReasons as CandleResponse['metadata']['discarded_reasons'];counts.conflicting_duplicate=(counts.conflicting_duplicate??0)+1;
+        rejected.push({time,reason:'conflicting_duplicate'});
+      }
+      continue;
+    }
+    seenRows.set(time,fingerprint);
     const sides = {} as Record<PriceSide, Record<Field, number> | null>;
     for (const side of ["bid", "ask"] as const) {
       const values = Object.fromEntries(fields.map(field => [field, object(row[`${field}Price`])[side]])) as Record<Field, number>;
-      const valid = fields.every(field => typeof values[field] === "number" && Number.isFinite(values[field]))
+      const valid = fields.every(field => typeof values[field] === "number" && Number.isFinite(values[field]) && values[field]>0)
         && values.low <= Math.min(values.open, values.close)
         && values.high >= Math.max(values.open, values.close);
       sides[side] = valid ? values : null;
@@ -116,9 +130,8 @@ export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe,
     const candle = {
       time,
       ...Object.fromEntries(fields.map(field => [field, { bid: sides.bid?.[field] ?? null, ask: sides.ask?.[field] ?? null }])),
-      is_closed: Date.parse(time) + (timeframe === "M1" ? 60 : HISTORY[timeframe].seconds) * 1000 <= fetchedAt,
+      is_closed: Date.parse(time) + (timeframe === "M1" ? 60 : timeframe === "H1" ? 3600 : HISTORY[timeframe].seconds) * 1000 <= fetchedAt,
     } as Candle;
-    if (byTime.has(time)) duplicateRows++;
     byTime.set(time, candle);
   }
   const candles = [...byTime.values()].sort((a, b) => a.time.localeCompare(b.time));

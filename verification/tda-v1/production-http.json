@@ -1,0 +1,585 @@
+{
+  "preview": "https://capitalive.vercel.app",
+  "engine_commit": "7b5099c2763f853e79a548fc9c381c897e6c8b28",
+  "market_audit": {
+    "http": 200,
+    "bytes": 742728,
+    "content_type": "application/json"
+  },
+  "authenticated": false,
+  "checked_at": "2026-11-17T16:17:51.890Z",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63766,
+      "sha256": "a53e931f7c6bbdf67827b7ce8915393f3367d43fa2853c0a4717ee772909311e",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:16:58.701Z",
+      "generated_at": "2026-11-17T16:17:01.665Z",
+      "expires_at": "2026-11-17T16:18:52.536Z",
+      "evidence_count": 32,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 15,
+          "review_required": 12
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 23
+        }
+      ],
+      "fvg_included": 1,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.8800721370604104,
+          "remaining": {
+            "lower": 1.09544,
+            "upper": 1.09677
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 7,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 8,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 26,
+          "fvg_only_weaker": 22,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 540,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 63746,
+      "sha256": "2d61ef5876735ba93bab3ac9366989715acb3bacfd8f6bb73d2efbc0d4457175",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:16:58.701Z",
+      "generated_at": "2026-11-17T16:17:03.050Z",
+      "expires_at": "2026-11-17T16:18:52.536Z",
+      "evidence_count": 32,
+      "rb_included": 1,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 14,
+          "review_required": 2
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 45,
+          "review_required": 3
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 17,
+          "review_required": 10
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 40,
+          "review_required": 23
+        }
+      ],
+      "fvg_included": 1,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.8791704238052197,
+          "remaining": {
+            "lower": 1.0955,
+            "upper": 1.09684
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 7,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 2,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 18,
+          "fvg_only_weaker": 12,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 7,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 27,
+          "fvg_only_weaker": 20,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 541,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59771,
+      "sha256": "31b0653fb9003dc00473bfc04d586845f5f0f33759a54cd2c9bffaf9fc7ee3c1",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:17:04.458Z",
+      "generated_at": "2026-11-17T16:17:06.892Z",
+      "expires_at": "2026-11-17T16:18:58.592Z",
+      "evidence_count": 27,
+      "rb_included": 3,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 33,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 46,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25206.2,
+            "upper": 26255.2
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 500,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 59747,
+      "sha256": "e759e8eb8c193d0b35584bfb5fe3f1fc6bd2a8407850f494ad0d01570d5d3af8",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:17:04.458Z",
+      "generated_at": "2026-11-17T16:17:07.838Z",
+      "expires_at": "2026-11-17T16:18:58.592Z",
+      "evidence_count": 27,
+      "rb_included": 3,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 33,
+          "review_required": 7
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 7,
+          "review_required": 14
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 46,
+          "review_required": 18
+        }
+      ],
+      "fvg_included": 2,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-07-29T00:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "ACTIVE",
+          "fraction": 0.5230300550175054,
+          "remaining": {
+            "lower": 25208,
+            "upper": 26257
+          },
+          "fully_tested_at": null
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 3,
+          "fvg_only_weaker": 4,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 15,
+          "fvg_only_weaker": 16,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 7,
+          "fvg_only_weaker": 14,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 19,
+          "fvg_only_weaker": 29,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 500,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64460,
+      "sha256": "ba7a3d2123a4819884b795af21896990ee3da089d26cadee4ec7e513e12b49ba",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:17:08.743Z",
+      "generated_at": "2026-11-17T16:17:09.958Z",
+      "expires_at": "2026-11-17T16:19:00.799Z",
+      "evidence_count": 31,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 55,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T00:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 188,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 64461,
+      "sha256": "f37378eba0de00270fe9607ff793ded1ff5d29285faf4f29d5f318c844b382e6",
+      "status": "PARTIAL",
+      "as_of": "2026-11-17T16:17:08.743Z",
+      "generated_at": "2026-11-17T16:17:10.808Z",
+      "expires_at": "2026-11-17T16:19:00.799Z",
+      "evidence_count": 31,
+      "rb_included": 2,
+      "snr_quality": [
+        {
+          "timeframe": "MN1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 6,
+          "review_required": 6
+        },
+        {
+          "timeframe": "W1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 26,
+          "review_required": 12
+        },
+        {
+          "timeframe": "D1",
+          "very_strong_candidates": 0,
+          "context_conflicts": 5,
+          "review_required": 7
+        },
+        {
+          "timeframe": "H4",
+          "very_strong_candidates": 0,
+          "context_conflicts": 55,
+          "review_required": 14
+        }
+      ],
+      "fvg_included": 3,
+      "fvg_lifecycles": [
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-05T20:00:00.000Z"
+        },
+        {
+          "timeframe": "MN1",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-03-09T00:00:00.000Z"
+        },
+        {
+          "timeframe": "H4",
+          "state": "TESTED",
+          "fraction": 1,
+          "remaining": null,
+          "fully_tested_at": "2026-11-09T00:00:00.000Z"
+        }
+      ],
+      "snr_included": 5,
+      "rb_quality": [
+        {
+          "timeframe": "MN1",
+          "raid_backed": 10,
+          "fvg_only_weaker": 3,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "W1",
+          "raid_backed": 17,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "D1",
+          "raid_backed": 2,
+          "fvg_only_weaker": 9,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        },
+        {
+          "timeframe": "H4",
+          "raid_backed": 16,
+          "fvg_only_weaker": 23,
+          "counting": "FINDINGS_PER_PRIMARY_KL"
+        }
+      ],
+      "tda_revision": "tda-notion-1",
+      "tda_anchors": 188,
+      "tda_shown": 1,
+      "trigger_policy": "FRACTAL_ONLY",
+      "contract": "desk-report-v2.6",
+      "quote_status": "FRESH",
+      "stale_reasons": [],
+      "dr_revision": "dr-sequence-1"
+    }
+  ],
+  "full": [],
+  "throttles": [],
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 112290,
+    "png_signature": true
+  }
+}

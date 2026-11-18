@@ -1,0 +1,75 @@
+{
+  "run": "44072171499",
+  "job": 134000861095,
+  "conclusion": "success",
+  "events": [
+    {
+      "event": "bridge_delivery_health",
+      "requested_at": "2026-11-17T11:14:18.850Z",
+      "trigger": "ON_DEMAND",
+      "age_seconds": 2165.289,
+      "status": "STALE",
+      "reason": "DELIVERY_DELAY_REFRESH_REQUIRED",
+      "scheduler_or_delivery_delay_seconds": 0
+    },
+    {
+      "event": "bridge_readback",
+      "commit": "f52d8a1338c8dfbfdae99fb536505eb69a4a8bc6",
+      "readback_at": "2026-11-17T11:14:52.110Z",
+      "published_at": "2026-11-17T11:14:48.753Z",
+      "reports": [
+        {
+          "symbol": "EURUSD",
+          "bytes": 58591,
+          "sha256": "36d35dcb582fb35dc7d53cbc3d388cc9005ec23a8e08399770fb27dbd89f5f06",
+          "status": "PARTIAL",
+          "read_status": "PARTIAL",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 7.645,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": 7.744,
+          "provider_timestamp": "2026-11-17T11:14:44.073Z",
+          "last_closed_h4": "2026-11-17T08:00:00.000Z",
+          "engine_commit": "bdbe3b166f0f103760ba88ae57a2d2cfb92358bd"
+        },
+        {
+          "symbol": "NAS100",
+          "bytes": 61467,
+          "sha256": "bd04387d2f58490433c3fbb54b2dcc0e5c31d3c104fce26094d4a92a18f32c90",
+          "status": "PARTIAL",
+          "read_status": "PARTIAL",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 6.239,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": 7.102,
+          "provider_timestamp": "2026-11-17T11:14:44.839Z",
+          "last_closed_h4": "2026-11-17T08:00:00.000Z",
+          "engine_commit": "bdbe3b166f0f103760ba88ae57a2d2cfb92358bd"
+        },
+        {
+          "symbol": "JP225",
+          "bytes": 62770,
+          "sha256": "6df3d0a23eb8a77f596bb2fcbc34a556b82a02f41211cdb2b42f4ba7be4622e9",
+          "status": "PARTIAL",
+          "read_status": "PARTIAL",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 3.388,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": 3.883,
+          "provider_timestamp": "2026-11-17T11:14:48.227Z",
+          "last_closed_h4": "2026-11-17T08:00:00.000Z",
+          "engine_commit": "bdbe3b166f0f103760ba88ae57a2d2cfb92358bd"
+        }
+      ]
+    }
+  ]
+}

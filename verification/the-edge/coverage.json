@@ -1,0 +1,445 @@
+{
+  "expected": 85,
+  "imported": 85,
+  "catalog_revision": "2026-11-15",
+  "stale_rules": [],
+  "rules": 24,
+  "formalized": 22,
+  "tested": 22,
+  "validated": 0,
+  "needs_specification": [
+    "EDGE.COMPRESSION.v1",
+    "EDGE.DISPLACEMENT.v1"
+  ],
+  "partial": [
+    "EDGE.IFVG.v1",
+    "EDGE.RB.v1",
+    "EDGE.SNR.v1",
+    "EDGE.IDM.v1",
+    "EDGE.STRONG.v1",
+    "EDGE.BOS_CHOCH.v1",
+    "EDGE.IRL.v1",
+    "EDGE.NARRATIVE.v1",
+    "EDGE.EXECUTION.v1"
+  ],
+  "images_total": 456,
+  "images_reviewed": 22,
+  "out_of_sample": "NOT_RUN",
+  "raw_text_stored": false,
+  "rule_details": [
+    {
+      "id": "EDGE.FRACTAL_3.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "419e05dadd18817692d6efb4d9a1db5d"
+      ],
+      "unresolved": [
+        "Equality policy is an explicit conservative implementation convention."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.FRACTAL_5.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "419e05dadd18817692d6efb4d9a1db5d"
+      ],
+      "unresolved": [
+        "Project variant, not attributed to THE EDGE."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.FVG.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "419e05dadd18817abc57e446cd074bdc"
+      ],
+      "unresolved": [
+        "Geometry alone is not a VC or entry; context remains required."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.IFVG.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "418e05dadd18811ba86bc816d4f1d2dc"
+      ],
+      "unresolved": [
+        "Breach is executable; an automatic opposite-side trading role is not specified."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.RAID.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd18811ba86bc816d4f1d2dc"
+      ],
+      "unresolved": [
+        "No close-back requirement; raid does not itself invalidate narrative."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.RB.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "419e05dadd1881f68a6bd60a2e1d2cff"
+      ],
+      "unresolved": [
+        "Reviewed diagrams place the RB reference at the body junction outside KL; unequal close/open, stop buffers and full executable zone remain unspecified. Full candle envelope is diagnostic only."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original normalized schematic cases checked against reviewed RB/SNR diagrams; not historical price transcriptions",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.SNR.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "419e05dadd1881c6a539fe10cf3ea892"
+      ],
+      "unresolved": [
+        "Support-break text says above, but reviewed diagrams el02_04/el02_09 show below; implementation follows the diagram and records this conflict.",
+        "Reviewed diagrams define the body junction. A band for unequal adjacent close/open is a project convention; break alone does not establish a successful retest."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original normalized schematic cases checked against reviewed RB/SNR diagrams; not historical price transcriptions",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.IDM.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "419e05dadd18817692d6efb4d9a1db5d"
+      ],
+      "unresolved": [
+        "Near POI distance undefined: only inside is implemented.",
+        "Entry needs narrative and target; IDM is not an order."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.STRONG.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "419e05dadd18817692d6efb4d9a1db5d"
+      ],
+      "unresolved": [
+        "RB/SNR boundary ambiguity propagates; never label an ordinary pivot strong."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.BOS_CHOCH.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "419e05dadd18817692d6efb4d9a1db5d"
+      ],
+      "unresolved": [
+        "Terminology / bias state machine is a Capitalive convention, not a complete author rule."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.DR.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd188105b1afc1a536f434e2"
+      ],
+      "unresolved": [
+        "Automatic selection of a significant macro range is discretionary and not formalized."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.PREMIUM_DISCOUNT.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd188105b1afc1a536f434e2"
+      ],
+      "unresolved": [
+        "EQ is not a claim about fair value or expected return."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.IRL.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "418e05dadd1881a3965bfba58563ff9d"
+      ],
+      "unresolved": [
+        "A continuation trigger additionally needs response/context not specified numerically."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.COMPRESSION.v1",
+      "status": "DOCUMENTED",
+      "specification": "NEEDS_SPECIFICATION",
+      "source_ids": [
+        "418e05dadd188135bf68eb2f9066b094"
+      ],
+      "unresolved": [
+        "Minimum sequence length, slowness, contraction tolerance and relevant KL selection are undefined.",
+        "No automatic reversal conclusion."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.DISPLACEMENT.v1",
+      "status": "DOCUMENTED",
+      "specification": "NEEDS_SPECIFICATION",
+      "source_ids": [
+        "418e05dadd188135bf68eb2f9066b094"
+      ],
+      "unresolved": [
+        "Minimum body, ATR multiple and multi-bar impulse window are not defined by source."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.SESSION_GAP.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881c2a027eb107bbd95ab"
+      ],
+      "unresolved": [
+        "Missing provider calendar blocks identification; nominal OHLC time gaps are not sessions.",
+        "Author fill percentages remain unreplicated hypotheses."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.WEEKLY_OPEN.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881809c26f6f14090b017"
+      ],
+      "unresolved": [
+        "Provider-specific boundary, not a universal spot/futures opening.",
+        "Current forming week deliberately excluded by closed-bar contract."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.MONTHLY_OPEN.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881809c26f6f14090b017"
+      ],
+      "unresolved": [
+        "UTC aggregated CFD month is not an exchange calendar.",
+        "Current forming month deliberately excluded."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-detectors.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.TDA.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881eb8321c5c4edb17a06"
+      ],
+      "unresolved": [
+        "No lower-timeframe vote overrides a contradictory higher KL."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-pipeline.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.NARRATIVE.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "418e05dadd18812aa4e7c5f3fbe3cebe"
+      ],
+      "unresolved": [
+        "Discretionary KL significance and automatic full narrative invalidation are not fully specified."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-pipeline.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.EXECUTION.v1",
+      "status": "TESTED",
+      "specification": "PARTIAL",
+      "source_ids": [
+        "418e05dadd18810a8ae7ef1c01be7232"
+      ],
+      "unresolved": [
+        "Absence of VC never generates a signal; incomplete methods remain unavailable."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-pipeline.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.RISK.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881b4add1f45e4193f5d7"
+      ],
+      "unresolved": [
+        "No default 0.5/1/2/10 percent policy; no automatic increase or broker orders."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-risk.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.EVIDENCE.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd188164b877c4b8124325de"
+      ],
+      "unresolved": [
+        "No numeric probability or validated expected value without independent OOS evidence."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-pipeline.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    },
+    {
+      "id": "EDGE.JOURNAL.v1",
+      "status": "TESTED",
+      "specification": "EXECUTABLE",
+      "source_ids": [
+        "418e05dadd1881fcb926f8c281eabd25"
+      ],
+      "unresolved": [
+        "Psychology cannot create or alter a price signal."
+      ],
+      "validation": {
+        "unit": "tests/knowledge-pipeline.test.ts",
+        "golden": "Original schematic cases from textual conditions; remaining source diagrams not independently transcribed",
+        "out_of_sample": "NOT_RUN",
+        "profitability": "UNVERIFIED"
+      }
+    }
+  ]
+}

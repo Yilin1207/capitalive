@@ -5,6 +5,7 @@ import { HISTORY, normalizeCandles, type CandleResponse, type Timeframe } from "
 import { HistoryCache, WindowLimit } from "@/lib/history-cache";
 import { historyDiagnostics, type HistoryDiagnostics } from "@/lib/history-diagnostics";
 import { aggregateMonths, monthStart } from "@/lib/monthly-candles";
+import {recoverDaily,type DailyRecovery} from './daily-recovery';
 
 export class HistoryError extends Error {
   constructor(public code: string, message: string, public status: number, public retryAfter = 0, public diagnostics?: HistoryDiagnostics) { super(message); }
@@ -12,11 +13,28 @@ export class HistoryError extends Error {
 
 const TTL_SECONDS = 30;
 const cache = new HistoryCache<Omit<CandleResponse, "metadata"> & { quality: ReturnType<typeof normalizeCandles>; aggregation?: CandleResponse["metadata"]["aggregation"] }>(TTL_SECONDS * 1000);
-const upstreamBudget = new WindowLimit(24, 60_000);
+// Three four-frame cold loads, recovery windows and a refresh can exceed 24 pages.
+// Separate pacing and broker cooldown still apply to every actual request.
+const upstreamBudget = new WindowLimit(48, 60_000);
+const historicalPages = new HistoryCache<{prices:unknown[]}>(10 * 60_000, 32);
 let activeLoads = 0;
 let coolingUntil = 0;
+const waiting=new Set<()=>void>();
+async function acquireLoad(){
+  if(activeLoads<3){activeLoads++;return;}
+  if(waiting.size>=12)throw new HistoryError("HISTORY_BUSY","History service is busy",429,5);
+  await new Promise<void>((resolve,reject)=>{
+    const admit=()=>{clearTimeout(timer);resolve();};
+    const timer=setTimeout(()=>{waiting.delete(admit);reject(new HistoryError("HISTORY_BUSY","History service is busy",429,5));},8_000);
+    waiting.add(admit);
+  });
+}
+function releaseLoad(){
+  const next=waiting.values().next().value;
+  if(next){waiting.delete(next);next();}else activeLoads--;
+}
 
-export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number): Promise<CandleResponse> {
+export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number, refresh = false): Promise<CandleResponse> {
   if (timeframe === "MN1" && limit > 60) throw new HistoryError("INVALID_LIMIT", "MN1 limit must be from 1 to 60", 400);
   const environment = capitalEnvironment();
   const epic = VERIFIED_MARKETS[symbol].epic;
@@ -26,12 +44,22 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
     process.env.CAPITAL_API_BASE_URL, process.env.CAPITAL_IDENTIFIER,
     process.env.CAPITAL_API_KEY, process.env.CAPITAL_API_PASSWORD,
   ].join("\n")).digest("hex");
+  async function readPage(resolution:Parameters<typeof getHistoricalPrices>[1], count:number, range?:{from:string;to:string}){
+    const load=async()=>{
+      if(Date.now()<coolingUntil)throw new HistoryError("CAPITAL_RATE_LIMIT","Capital.com rate limit reached",429,Math.ceil((coolingUntil-Date.now())/1000));
+      const wait=upstreamBudget.take("history");
+      if(wait)throw new HistoryError("HISTORY_RATE_LIMIT","History request budget reached",429,wait);
+      const page=await getHistoricalPrices(epic,resolution,count,undefined,range) as {prices?:unknown};
+      if(!Array.isArray(page?.prices))throw new HistoryError("CAPITAL_INVALID_RESPONSE","Invalid price page",502);
+      return {prices:page.prices as unknown[]};
+    };
+    if(!range || Date.parse(range.to)>Date.now()-86400_000)return load();
+    const key=JSON.stringify([scope,epic,resolution,count,range.from,range.to]);
+    return (await historicalPages.get(key,load)).value;
+  }
   const { value, hit } = await cache.get(`${scope}:${environment}:${symbol}:${timeframe}:${fetchLimit}`, async () => {
     if (Date.now() < coolingUntil) throw new HistoryError("CAPITAL_RATE_LIMIT", "Capital.com rate limit reached", 429, Math.ceil((coolingUntil - Date.now()) / 1000));
-    if (activeLoads >= 3) throw new HistoryError("HISTORY_BUSY", "History service is busy; retry shortly", 429, 5);
-    const retryAfter = upstreamBudget.take("history");
-    if (retryAfter) throw new HistoryError("HISTORY_RATE_LIMIT", "History request budget reached", 429, retryAfter);
-    activeLoads++;
+    await acquireLoad();
     try {
       // A small validation reserve can replace rejected rows with older real bars.
       // Never exceed Capital.com's 1000-bar ceiling or synthesize missing prices.
@@ -45,13 +73,8 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
         const prices: unknown[] = [];
         let pages = 0;
         for (let from = rangeStart; from <= rangeEnd;) {
-          if (pages > 0) {
-            const wait = upstreamBudget.take("history");
-            if (wait) throw new HistoryError("HISTORY_RATE_LIMIT", "History request budget reached", 429, wait);
-          }
           const to = Math.min(rangeEnd, from + 900 * 86400_000 - 1000);
-          const page = await getHistoricalPrices(epic, "DAY", 1000, undefined, { from: new Date(from).toISOString(), to: new Date(to).toISOString() }) as { prices?: unknown };
-          if (!Array.isArray(page?.prices)) throw new HistoryError("CAPITAL_INVALID_RESPONSE", "Capital.com returned invalid daily candles", 502);
+          const page = await readPage("DAY", 1000, { from: new Date(from).toISOString(), to: new Date(to).toISOString() });
           prices.push(...page.prices);
           pages++;
           from = to + 1000;
@@ -59,13 +82,31 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
         payload = { prices };
         aggregation = { source: "Capital.com DAY", calendar: "UTC", requested_from: new Date(rangeStart).toISOString(), requested_to: new Date(rangeEnd).toISOString(), pages, coverage: "requested_window_fetched", session_completeness: "unknown" };
       } else {
-        payload = await getHistoricalPrices(epic, HISTORY[timeframe].resolution, Math.min(1000, fetchLimit + 10));
+        payload = await readPage(HISTORY[timeframe].resolution, historyFetchReserve(fetchLimit));
       }
       const fetchedAt = Date.now();
       let quality: ReturnType<typeof normalizeCandles>;
       try {
         quality = normalizeCandles(payload, timeframe === "MN1" ? "D1" : timeframe, fetchedAt);
         if (timeframe === "MN1") {
+          // Strict, bounded reconstruction of rejected D1 from actual closed H4.
+          // Original raw capture remains unchanged; each attempt is recorded.
+          const attempts:DailyRecovery[]=[],recovered=new Set<string>();
+          const candidates=[...new Map(quality.rejected.filter(r=>r.reason==='crossed_sides'&&r.time&&Date.parse(r.time)>=rangeStart&&Date.parse(r.time)+86400_000<=fetchedAt&&!quality.candles.some(c=>c.time===r.time)).map(r=>[r.time,r])).values()].slice(0,4);
+          for(const rejected of candidates){const day=rejected.time!;
+            try{const raw=(payload as {prices:Record<string,unknown>[]}).prices.find(r=>typeof r.snapshotTimeUTC==='string'&&r.snapshotTimeUTC.slice(0,19)===day.slice(0,19));
+              const detail=await readPage('HOUR_4',20,{from:new Date(Date.parse(day)-86400_000).toISOString(),to:new Date(Date.parse(day)+86400_000-1000).toISOString()});
+              let result=recoverDaily(rejected,raw,quality.candles,detail,fetchedAt);
+              if(result.record.reason==='INCOMPLETE_OR_INVALID_H4_DAY'){
+                const hours=await readPage('HOUR',48,{from:new Date(Date.parse(day)-86400_000).toISOString(),to:new Date(Date.parse(day)+86400_000-1000).toISOString()});
+                result=recoverDaily(rejected,raw,quality.candles,hours,fetchedAt,symbol);
+              }
+              attempts.push(result.record);
+              if(result.candle){quality.candles.push(result.candle);recovered.add(day);}
+            }catch(error){attempts.push({day,source:'Capital.com HOUR_4',status:'NOT_RECOVERED',reason:error instanceof CapitalApiError||error instanceof HistoryError?error.code:'RECOVERY_UNAVAILABLE',input_sha256:null});if(error instanceof CapitalApiError&&error.code==='CAPITAL_RATE_LIMIT')coolingUntil=Date.now()+Math.max(60,error.retryAfter??0)*1000;}
+          }
+          if(attempts.length&&aggregation)aggregation.reconstructions=attempts;
+          quality.rejected=quality.rejected.filter(r=>!r.time||!quality.candles.some(c=>c.time===r.time));
           quality.candles = aggregateMonths(quality.candles.filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd), fetchedAt, quality.rejected.map(row => row.time));
           quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(monthStart(Date.parse(time))).toISOString()))].sort();
         }
@@ -79,7 +120,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       };
     } catch (error) {
       if (error instanceof CapitalApiError && error.code === "CAPITAL_RATE_LIMIT") {
-        const retryAfter = Math.max(60, error.retryAfter ?? 0);
+        const retryAfter = error.step==="authentication" ? Math.max(1,error.retryAfter??2) : Math.max(60, error.retryAfter ?? 0);
         coolingUntil = Date.now() + retryAfter * 1000;
         throw new HistoryError("CAPITAL_RATE_LIMIT", "Capital.com rate limit reached", 429, retryAfter);
       }
@@ -87,8 +128,8 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
         throw new HistoryError("CANDLES_UNAVAILABLE", "Capital.com historical data is unavailable for this instrument", 404);
       }
       throw error;
-    } finally { activeLoads--; }
-  });
+    } finally { releaseLoad(); }
+  }, Date.now(), refresh);
   const { quality, aggregation, ...data } = value;
   const candles = data.candles.slice(-limit);
   return { ...data, candles, metadata: {
@@ -104,3 +145,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
     diagnostics: historyDiagnostics(quality, candles, timeframe, Date.parse(data.fetched_at), Date.now(), TTL_SECONDS),
   } };
 }
+
+// Provider max is a request ceiling, not a promise of that many valid rows.
+// Bounded overfetch replaces the observed 191/200 D1 shortage with older REAL bars.
+export function historyFetchReserve(limit:number){return Math.min(1000,Math.ceil(limit*1.35)+10);}

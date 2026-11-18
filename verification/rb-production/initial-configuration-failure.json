@@ -1,0 +1,25 @@
+{
+  "run": "44091927181",
+  "job": 134068977201,
+  "conclusion": "failure",
+  "events": [
+    {
+      "event": "bridge_failure",
+      "stage": "publish",
+      "code": "CONFIGURATION_ERROR",
+      "http_status": null,
+      "response_bytes": null,
+      "media_type": null,
+      "contract_revision": "desk-report-v2.3"
+    },
+    {
+      "event": "bridge_delivery_health",
+      "requested_at": "2026-11-17T13:21:38.728Z",
+      "trigger": "ON_DEMAND",
+      "age_seconds": 6095.168,
+      "status": "STALE",
+      "reason": "DELIVERY_DELAY_REFRESH_REQUIRED",
+      "scheduler_or_delivery_delay_seconds": 2495.1679999999997
+    }
+  ]
+}

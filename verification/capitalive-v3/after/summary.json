@@ -1,0 +1,2392 @@
+{
+  "phase": "after",
+  "controls": "Previously exposed V2 controls; NOT blind evaluation or original lost audit snapshot",
+  "summary": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [
+                "2024-04-01T00:00:00.000Z",
+                "2024-05-01T00:00:00.000Z"
+              ],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 3
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.417Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 1.10225,
+            "ask": 1.10232,
+            "spread": 0.0000700000000000145,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 1.10225,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 353,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1330,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 57
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [
+                "2024-04-01T00:00:00.000Z",
+                "2024-05-01T00:00:00.000Z"
+              ],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 3
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.417Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "OTC_FX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 1.10225,
+            "ask": 1.10232,
+            "spread": 0.0000700000000000145,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 1.10232,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 354,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1337,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 57
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [
+                "2024-04-01T00:00:00.000Z"
+              ],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 1
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.592Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 27835.9,
+            "ask": 27837.7,
+            "spread": 1.7999999999992724,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 27835.9,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 170,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1354,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 58
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [
+                "2024-04-01T00:00:00.000Z"
+              ],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 1
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.592Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 27835.9,
+            "ask": 27837.7,
+            "spread": 1.7999999999992724,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 27837.7,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Bullish",
+        "status": "CANDIDATE_NARRATIVE"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 170,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1354,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 58
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.415Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 6395.2,
+            "ask": 6398.2,
+            "spread": 3,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 6395.2,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Neutral",
+        "status": "REVIEW_REQUIRED"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 0,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1378,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 59
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "data_quality": {
+        "dimensions": {
+          "frames": {
+            "MN1": {
+              "requested": 60,
+              "returned": 60,
+              "closed": 59,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": {
+                "source": "Capital.com DAY",
+                "calendar": "UTC",
+                "requested_from": "2021-12-01T00:00:00.000Z",
+                "requested_to": "2026-11-15T12:36:55.415Z",
+                "pages": 3,
+                "coverage": "requested_window_fetched",
+                "session_completeness": "unknown"
+              },
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "W1": {
+              "requested": 120,
+              "returned": 120,
+              "closed": 119,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "D1": {
+              "requested": 200,
+              "returned": 191,
+              "closed": 191,
+              "insufficient_history": true,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-04-11T00:00:00.000Z",
+                    "to": "2026-04-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-18T00:00:00.000Z",
+                    "to": "2026-04-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-04-25T00:00:00.000Z",
+                    "to": "2026-04-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-02T00:00:00.000Z",
+                    "to": "2026-05-03T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-09T00:00:00.000Z",
+                    "to": "2026-05-10T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-16T00:00:00.000Z",
+                    "to": "2026-05-17T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-23T00:00:00.000Z",
+                    "to": "2026-05-24T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-05-30T00:00:00.000Z",
+                    "to": "2026-05-31T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-06T00:00:00.000Z",
+                    "to": "2026-06-07T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-13T00:00:00.000Z",
+                    "to": "2026-06-14T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-20T00:00:00.000Z",
+                    "to": "2026-06-21T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-06-27T00:00:00.000Z",
+                    "to": "2026-06-28T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-04T00:00:00.000Z",
+                    "to": "2026-07-05T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-11T00:00:00.000Z",
+                    "to": "2026-07-12T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-18T00:00:00.000Z",
+                    "to": "2026-07-19T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-07-25T00:00:00.000Z",
+                    "to": "2026-07-26T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-01T00:00:00.000Z",
+                    "to": "2026-08-02T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-08T00:00:00.000Z",
+                    "to": "2026-08-09T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-15T00:00:00.000Z",
+                    "to": "2026-08-16T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-22T00:00:00.000Z",
+                    "to": "2026-08-23T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-08-29T00:00:00.000Z",
+                    "to": "2026-08-30T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-05T00:00:00.000Z",
+                    "to": "2026-09-06T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-12T00:00:00.000Z",
+                    "to": "2026-09-13T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-19T00:00:00.000Z",
+                    "to": "2026-09-20T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T00:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T00:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            },
+            "H4": {
+              "requested": 240,
+              "returned": 240,
+              "closed": 240,
+              "insufficient_history": false,
+              "partial_months": [],
+              "discarded_reasons": {
+                "invalid_time": 0,
+                "future_time": 0,
+                "no_valid_side": 0,
+                "crossed_sides": 0
+              },
+              "aggregation": null,
+              "calendar": {
+                "profile": "CAPITAL_CFD_REGULAR_SESSIONS_v1",
+                "instrument_class": "BROKER_CASH_INDEX_CFD",
+                "timezone": "America/New_York",
+                "bar_grid": "PROVIDER_UTC_START",
+                "dst": "IANA America/New_York",
+                "scheduled_closures": [
+                  {
+                    "from": "2026-09-26T00:00:00.000Z",
+                    "to": "2026-09-27T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-03T00:00:00.000Z",
+                    "to": "2026-10-04T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-10T00:00:00.000Z",
+                    "to": "2026-10-11T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-17T00:00:00.000Z",
+                    "to": "2026-10-18T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-24T00:00:00.000Z",
+                    "to": "2026-10-25T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-10-31T00:00:00.000Z",
+                    "to": "2026-11-01T20:00:00.000Z"
+                  },
+                  {
+                    "from": "2026-11-07T00:00:00.000Z",
+                    "to": "2026-11-08T20:00:00.000Z"
+                  }
+                ],
+                "unresolved_gaps": [],
+                "holiday_calendar": "NOT_VERIFIED",
+                "continuity_policy": "DIAGNOSTIC_ONLY_NO_PATTERN_STITCHING",
+                "sources": [
+                  "https://help.capital.com/hc/en-us/articles/27299104990482-Trading-hours-extended-on-key-indices",
+                  "https://open-api.capital.com/"
+                ],
+                "limitations": [
+                  "Provider UTC bucket can include a partial session (e.g. Sunday H4).",
+                  "Current openingHours does not prove historical holiday exceptions.",
+                  "Pre-June-2025 index maintenance remains UNKNOWN; no futures exchange calendar substitution."
+                ]
+              }
+            }
+          },
+          "quote": {
+            "environment": "demo",
+            "bid": 6395.2,
+            "ask": 6398.2,
+            "spread": 3,
+            "provider_timestamp": null,
+            "provider_timestamp_available": false,
+            "fresh": false,
+            "market_status": "CLOSED",
+            "used_for_historical_inference": false
+          },
+          "provenance": {
+            "provider": "Capital.com",
+            "environments": [
+              "demo"
+            ],
+            "demo_equals_live": "NOT_ESTABLISHED",
+            "ohlc_source": "BROKER_BID_ASK_NOT_EXCHANGE_TAPE",
+            "volume_evidence": "NONE",
+            "fetched_at_is_provider_quote_time": false
+          }
+        },
+        "status": "PARTIAL",
+        "closed_only": true,
+        "as_of_policy": "requested historical cutoff capped at common minimum fetched timestamp",
+        "reference_kind": "last_admissible_closed_H4_close",
+        "reference_price": 6398.2,
+        "quote_observation": {
+          "fresh": false,
+          "provider_timestamp_available": false,
+          "quote_time": null
+        },
+        "quote_used_as_closed_evidence": false
+      },
+      "narrative": {
+        "bias": "Neutral",
+        "candidate": "Neutral",
+        "status": "REVIEW_REQUIRED"
+      },
+      "target": "TARGET_UNVERIFIED",
+      "target_candidates": 0,
+      "execution": [
+        {
+          "model": "VC_FVG",
+          "available": false
+        },
+        {
+          "model": "VC_RB_SNR",
+          "available": false
+        },
+        {
+          "model": "NO_VC_IDM",
+          "available": false
+        },
+        {
+          "model": "KL_MARKET_LIMIT",
+          "available": false
+        },
+        {
+          "model": "H4_DEALING_RANGE",
+          "available": false
+        }
+      ],
+      "false_positives": null,
+      "metrics_status": "NO_REFERENCE_LABELS",
+      "evidence_confidence": {
+        "status": "PARTIAL",
+        "findings": 1378,
+        "profitability_validated": false
+      },
+      "closed": [
+        {
+          "tf": "MN1",
+          "count": 59
+        },
+        {
+          "tf": "W1",
+          "count": 119
+        },
+        {
+          "tf": "D1",
+          "count": 191
+        },
+        {
+          "tf": "H4",
+          "count": 240
+        }
+      ]
+    }
+  ]
+}

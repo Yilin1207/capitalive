@@ -1,0 +1,176 @@
+{
+  "checked_at": "2026-11-17T17:43:16.296Z",
+  "server": "Actual local Next production build, loopback HTTP",
+  "upstream": "Recorded real candle/quote fixture transport; monthly aggregation has only available recorded D1 history. No live provider/production verification.",
+  "snapshot": {
+    "id": "7a3fb7be41a0f0b975ff15973d4d5d2cb75ccb71d75b8457efe37dc82756adc4",
+    "bytes": 781314,
+    "pages": 2,
+    "sha256": "3363e5971eab31d4a92ca75c70868c5bebdf50c6bead99c1dfdbf280fda41d40",
+    "verified": true
+  },
+  "results": [
+    {
+      "path": "/api/knowledge",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 122958
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 11972
+    },
+    {
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&as_of=2026-11-12T09%3A53%3A10.448Z&timeframe=H4&kind=FRACTAL&limit=50",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 226451
+    },
+    {
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&timeframe=H4&view=structure&as_of=2026-11-12T09%3A53%3A10.448Z&high_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T04%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-21T00%3A00%3A00.000Z&low_id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T08%3A00%3A00.000Z%3A3%3Alow%3A2026-09-21T04%3A00%3A00.000Z",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 48950
+    },
+    {
+      "path": "/api/pa-evidence?symbol=EURUSD&side=bid&as_of=2026-11-12T09%3A53%3A10.448Z&snapshot_sha256=c20b88b11b5764b3adc33e7dda0d2d49db0c7fb73cc6d6f5677a3d8d936f23c2&id=EURUSD%3AH4%3Abid%3AFRACTAL%3A2026-09-21T04%3A00%3A00.000Z%3A3%3Ahigh%3A2026-09-21T00%3A00%3A00.000Z",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 6846
+    },
+    {
+      "path": "/api/pa-candles?symbol=EURUSD&side=bid&timeframe=H4&as_of=2026-11-12T09%3A53%3A10.448Z&snapshot_sha256=c20b88b11b5764b3adc33e7dda0d2d49db0c7fb73cc6d6f5677a3d8d936f23c2&limit=2",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2935
+    },
+    {
+      "path": "/api/pa-candles?symbol=EURUSD&side=bid&timeframe=H4&as_of=2026-11-12T09%3A53%3A10.448Z&snapshot_sha256=c20b88b11b5764b3adc33e7dda0d2d49db0c7fb73cc6d6f5677a3d8d936f23c2&limit=2&offset=2",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 2936
+    },
+    {
+      "path": "/api/intelligence?symbol=EURUSD&high_id=unknown",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 534
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=priority&knowledge=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 334083
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 322077
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 323871
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 327659
+    },
+    {
+      "path": "/api/market-audit?symbol=NAS100&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 327620
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=bid&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 321778
+    },
+    {
+      "path": "/api/market-audit?symbol=EU50&side=ask&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 319781
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&include_candles=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 767529
+    },
+    {
+      "path": "/api/structure?symbol=EURUSD",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 117688
+    },
+    {
+      "path": "/api/quotes",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 25153
+    },
+    {
+      "path": "/api/htf-zones?symbol=NAS100&view=priority",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 5576
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=H4",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 118047
+    },
+    {
+      "path": "/api/chart?symbol=NAS100&timeframe=W1&snr_w1=1&snr_events=1",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 140402
+    },
+    {
+      "path": "/api/htf-zones?symbol=NAS100&side=ask&include_candles=1&view=snapshot",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 1394
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=7a3fb7be41a0f0b975ff15973d4d5d2cb75ccb71d75b8457efe37dc82756adc4&page=0",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 699613
+    },
+    {
+      "path": "/api/htf-zones?include_candles=1&side=ask&symbol=NAS100&view=snapshot&snapshot_id=7a3fb7be41a0f0b975ff15973d4d5d2cb75ccb71d75b8457efe37dc82756adc4&page=1",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 343119
+    },
+    {
+      "path": "/api/chart?symbol=EURUSD&timeframe=BAD",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 124
+    },
+    {
+      "path": "/api/market-audit?symbol=EURUSD&view=invalid",
+      "status": 400,
+      "content_type": "application/json",
+      "bytes": 121
+    },
+    {
+      "path": "/api/market-audit?view=snapshot&snapshot_id=0000000000000000000000000000000000000000000000000000000000000000",
+      "status": 410,
+      "content_type": "application/json",
+      "bytes": 207
+    }
+  ]
+}

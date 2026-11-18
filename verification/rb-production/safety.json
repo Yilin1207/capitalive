@@ -1,0 +1,37 @@
+{
+  "checked_at": "2026-11-17T13:25:17.418Z",
+  "production": "dpl_8fvj6hHuoe35wynBXTmLHXGzPgmT",
+  "sso": null,
+  "password_protection": false,
+  "bridge_base_url": "https://capitalive-j773uyp35-yilin1207s-projects.vercel.app",
+  "prs": [
+    {
+      "repo": "capitalive",
+      "number": 2,
+      "state": "open",
+      "merged": false,
+      "base": "main",
+      "merge_commit": "256e33a779c0dc920361dd19434885a03300ec9f"
+    },
+    {
+      "repo": "capitalive",
+      "number": 9,
+      "state": "closed",
+      "merged": true,
+      "base": "feature/the-edge-knowledge",
+      "merge_commit": "3dc49521297d4a4a77e01f50f0f43dc1191c5690"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "number": 7,
+      "state": "closed",
+      "merged": true,
+      "base": "main",
+      "merge_commit": "c7cc3fe9ac2b19a64807c492f8e1f77ed1ffbd79"
+    }
+  ],
+  "web_retrieval": {
+    "status": "UNVERIFIED",
+    "reason": "Both built-in web retrieval tools returned Internal Error; direct unauthenticated HTTP works. No claim of guaranteed search indexing."
+  }
+}

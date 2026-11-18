@@ -1,0 +1,393 @@
+{
+  "schema": "research-bridge-audit-v1",
+  "checked_at": "2026-11-15T15:09:53.644Z",
+  "implementation_commit": "c843eef6b04c33086f01290de03567e8e6827deb",
+  "baseline_commit": "ccb8cb413d93b2abc5a87e49e7126129014f6f85",
+  "tests": {
+    "all": 223,
+    "bridge": 15,
+    "playwright": 8,
+    "source_ci": "https://github.com/Yilin1207/capitalive/actions/runs/43727363386"
+  },
+  "http": {
+    "checked_at": "2026-11-15T15:03:07.922Z",
+    "origin": "https://capitalive-apw967usw-yilin1207s-projects.vercel.app",
+    "anonymous_status": 302,
+    "sso_unchanged": true,
+    "production_unchanged": true,
+    "checks": [
+      {
+        "symbol": "EURUSD",
+        "side": "bid",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 63443,
+        "sha256": "173e4b47619504b6da3fbe1b140087e96ed632329113db8ffa7f238133871932",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:06.105Z",
+        "as_of": "2026-11-15T15:02:00.229Z",
+        "evidence": 61,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 59,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 8428
+      },
+      {
+        "symbol": "EURUSD",
+        "side": "ask",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 63267,
+        "sha256": "ceff9fc3d3858c155dd25481730a105734966a4da76924d9ecc04bc94ee0f0dc",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:09.027Z",
+        "as_of": "2026-11-15T15:02:00.229Z",
+        "evidence": 61,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 59,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 2907
+      },
+      {
+        "symbol": "NAS100",
+        "side": "bid",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 56460,
+        "sha256": "f81d16556977ce454c941ada124d8a3f4ed0747a22b8e6e93bb2689f9f6b2d8d",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:16.669Z",
+        "as_of": "2026-11-15T15:02:10.556Z",
+        "evidence": 55,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 58,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 7636
+      },
+      {
+        "symbol": "NAS100",
+        "side": "ask",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 56462,
+        "sha256": "880e6c7d8396623c87c4524e1dcabb8c1a14650a9267c36feda68a51aba40fe5",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:19.141Z",
+        "as_of": "2026-11-15T15:02:10.556Z",
+        "evidence": 55,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 58,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 2382
+      },
+      {
+        "symbol": "EU50",
+        "side": "bid",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 52014,
+        "sha256": "63320ce1f53dd3585d58e2c9b4b238aff621f769c57d6344c45fc656c8e6f0c2",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:25.528Z",
+        "as_of": "2026-11-15T15:02:20.440Z",
+        "evidence": 51,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 59,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 6467
+      },
+      {
+        "symbol": "EU50",
+        "side": "ask",
+        "http_status": 200,
+        "content_type": "application/json",
+        "bytes": 51037,
+        "sha256": "29c8a9ff161e00738d4391a0219c0081116c70a9eeb0e5d4e2a624062e0414e4",
+        "status": "STALE",
+        "generated_at": "2026-11-15T15:02:28.162Z",
+        "as_of": "2026-11-15T15:02:20.440Z",
+        "evidence": 50,
+        "frames": [
+          {
+            "timeframe": "MN1",
+            "closed": 59,
+            "last_closed_at": "2026-11-01T00:00:00.000Z"
+          },
+          {
+            "timeframe": "W1",
+            "closed": 119,
+            "last_closed_at": "2026-11-09T00:00:00.000Z"
+          },
+          {
+            "timeframe": "D1",
+            "closed": 200,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          },
+          {
+            "timeframe": "H4",
+            "closed": 240,
+            "last_closed_at": "2026-11-14T00:00:00.000Z"
+          }
+        ],
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN",
+          "H4_OLDER_THAN_8H_MARKET_CLOSURE_NOT_ASSUMED"
+        ],
+        "ms": 2535
+      }
+    ]
+  },
+  "publication": {
+    "checked_at": "2026-11-15T15:07:36.427Z",
+    "repository": "Yilin1207/capitalive-research-bridge",
+    "private": true,
+    "anonymous_status": 404,
+    "commit": "8e4e36cf36a7d1075b5f19ee642885c61a80d05e",
+    "manual_run": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43727902351",
+    "manual_run_success": true,
+    "reports": [
+      {
+        "symbol": "EURUSD",
+        "bytes": 63444,
+        "status": "STALE",
+        "as_of": "2026-11-15T15:05:38.423Z",
+        "generated_at": "2026-11-15T15:05:43.731Z",
+        "sha256": "65b914eeb8c54754965ce4503ccdd830cb7ef9d159e39944ab30f527aa1df8a2",
+        "evidence": 61,
+        "confirmed_narrative": null,
+        "quote_provider_timestamp_present": false
+      },
+      {
+        "symbol": "NAS100",
+        "bytes": 56461,
+        "status": "STALE",
+        "as_of": "2026-11-15T15:05:44.883Z",
+        "generated_at": "2026-11-15T15:05:50.243Z",
+        "sha256": "5e9109362773d88286534aa2bf45b6a29d264900c362e0a468c9e720e69952a7",
+        "evidence": 55,
+        "confirmed_narrative": null,
+        "quote_provider_timestamp_present": false
+      },
+      {
+        "symbol": "EU50",
+        "bytes": 52015,
+        "status": "STALE",
+        "as_of": "2026-11-15T15:05:51.401Z",
+        "generated_at": "2026-11-15T15:05:56.596Z",
+        "sha256": "4efe5f93c92c40b658d67ee5c16da4bb931ae7ce1011f6aee4153a865d2e43c4",
+        "evidence": 51,
+        "confirmed_narrative": null,
+        "quote_provider_timestamp_present": false
+      }
+    ],
+    "sso_unchanged": true,
+    "production_unchanged": true,
+    "dedicated_bypass_stored_only_as_actions_secret": true,
+    "broker_credentials_exported": false
+  },
+  "configuration": {
+    "private_configuration_pr": "https://github.com/Yilin1207/capitalive-research-bridge/pull/1",
+    "configuration_merged": true,
+    "configuration_commit": "c2954970828f139eecec6e629178dd3dd5af17ef",
+    "manual_dispatch_requested": true,
+    "main_application_merged": false,
+    "production_deployed": false
+  },
+  "private_workflow_runs": [
+    {
+      "id": 43727902351,
+      "sha": "c8639e6e7bb00dacb0dd8ebf8512af88c8c4e97c",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43727902351",
+      "event": "workflow_dispatch"
+    },
+    {
+      "id": 43727689148,
+      "sha": "c2954970828f139eecec6e629178dd3dd5af17ef",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43727689148",
+      "event": "push"
+    },
+    {
+      "id": 43727688798,
+      "sha": "c2954970828f139eecec6e629178dd3dd5af17ef",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43727688798",
+      "event": "workflow_dispatch"
+    },
+    {
+      "id": 43727550305,
+      "sha": "f19a4a42db8a6bb53e38223fe9c355ded2a1c3bb",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43727550305",
+      "event": "pull_request"
+    }
+  ],
+  "schedule": {
+    "cron": "17 0,4,8,12,16,20 * * *",
+    "timezone": "UTC",
+    "configured": true,
+    "scheduled_event_observed": false,
+    "manual_event_verified": true
+  },
+  "the_edge_logic_changed": false,
+  "production_deployed": false,
+  "chatgpt_account_connection_verified": false,
+  "source_files": [
+    {
+      "file": "app/api/desk-report/route.ts",
+      "sha256": "ee1a0b9980feb07f76a22d2269310933614cb17d397fd4bfdc242a6153e3c3b4"
+    },
+    {
+      "file": "lib/research-bridge/contract.ts",
+      "sha256": "aaf34478b56732623cb2ee97bbc429b2a12b5c404fe688e7086669f469135fe5"
+    },
+    {
+      "file": "lib/research-bridge/http.ts",
+      "sha256": "6f8d075cca7f798a5bbf404d1c4cdb2b2f8d727367b2028e178d3918c63c0265"
+    },
+    {
+      "file": "lib/research-bridge/report.ts",
+      "sha256": "a5950484c997e2b5c59fdab869b742e8740f766d258abed47dd93b412c5c7ba8"
+    },
+    {
+      "file": "ops/research-bridge/README.private.md",
+      "sha256": "ccee78ba40672e8d73af60427e6215690b2bb0cd856117d64fdbc748becad22f"
+    },
+    {
+      "file": "ops/research-bridge/publish.yml",
+      "sha256": "4d891bf873e5716e13a3c03836ffda86a2921712989a662095ccb225c8dbb404"
+    },
+    {
+      "file": "scripts/publish-research-bridge.ts",
+      "sha256": "e3652191da7be1bac5f0776c7c871f7ae46a6da7e7fce08d3ade7de1e1c52e0a"
+    },
+    {
+      "file": "tests/research-bridge-publisher.test.ts",
+      "sha256": "06c83db278334ac98426e837f04c081dce015a01916c0ca1d9a189753413d2a8"
+    },
+    {
+      "file": "tests/research-bridge.test.ts",
+      "sha256": "9b8cf68b707c44bdec5d8f0c7129da9294f164eb8dcf560ed99818c3d693a22d"
+    }
+  ]
+}

@@ -1,0 +1,710 @@
+{
+  "commit": "6c8a0125fed895af11f3aee4209ae9a5157ee38f",
+  "branch": "verification/v5-1-context",
+  "private": true,
+  "readback_at_client": "2026-11-17T10:39:35.638Z",
+  "git_commit_at": "2026-11-17T10:38:15Z",
+  "publisher_commit": "48d6f213040bf2129ab9f857d1c5e23814605472",
+  "atomic_changed_files": [
+    "reports/latest/EURUSD.json",
+    "reports/latest/JP225.json",
+    "reports/latest/NAS100.json",
+    "reports/latest/manifest.json"
+  ],
+  "manifest": {
+    "bytes": 1578,
+    "sha256": "3aab79478d5276e06a3d3b5e14ec83449a4aa7536049adee3cd38f1900dbba3f",
+    "generated_at": "2026-11-17T10:38:13.870Z",
+    "published_at": "2026-11-17T10:38:13.870Z",
+    "contract": "desk-report-v2.2"
+  },
+  "reports": [
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e2",
+          "low": "e3",
+          "lower": 1.01772,
+          "upper": 1.20824,
+          "equilibrium": 1.1129799999999999,
+          "start_at": "2025-01-01T00:00:00.000Z",
+          "end_at": "2026-01-01T00:00:00.000Z",
+          "confirmed_at": "2026-03-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 2,
+            "omitted": 2
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 10,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_NEW_EXTREME",
+          "reason": "CLOSED_BOUNDARY_BREAK_WAIT_FOR_CONFIRMED_EXTREME",
+          "direction": "Bearish",
+          "high": "e6",
+          "low": "e5",
+          "lower": 1.1104,
+          "upper": 1.17115,
+          "equilibrium": 1.140775,
+          "start_at": "2026-08-17T00:00:00.000Z",
+          "end_at": "2026-10-26T00:00:00.000Z",
+          "confirmed_at": "2026-11-09T00:00:00.000Z",
+          "close_break_at": "2026-11-16T00:00:00.000Z",
+          "last_wick_raid_at": "2026-11-16T00:00:00.000Z",
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 5,
+            "omitted": 5
+          },
+          "parent_ranges": 10,
+          "internal_fractals": 4,
+          "local_candidates": 0,
+          "transitions": 16,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 1.09846,
+          "upper": 1.10303,
+          "equilibrium": 1.1007449999999999,
+          "start_at": "2026-11-16T08:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "symbol": "EURUSD",
+      "bytes": 57121,
+      "sha256": "85267d6c7dd7d1486d4e2af8500aa19a2002fad35c5ecfbc02ea95ee7640b0bd",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "a050b1a0f9e5d67c961aed41469d683910587114",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 1.09928,
+      "ask": 1.09935,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": null,
+      "quote_retrieved_at": "2026-11-17T10:38:07.290Z",
+      "generated_at": "2026-11-17T10:38:09.689Z",
+      "as_of": "2026-11-17T10:34:54.031Z",
+      "published_at": "2026-11-17T10:38:13.870Z",
+      "expires_at": "2026-11-17T10:40:09.689Z",
+      "read_server_date": "Tue, 17 Nov 2026 10:38:32 GMT",
+      "provider_age_seconds_upper_bound": null,
+      "expired_at_read": false,
+      "quote_fresh_at_read": false,
+      "status": "STALE",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:38:07.290Z",
+        "quote_status": "STALE",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 3.317,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 33,
+      "coverage": {
+        "budget_tier": 3,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1200,
+        "findings_included": 33,
+        "findings_omitted": 1167,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "discarded_rows": 3,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e4",
+          "lower": 22779.3,
+          "upper": 30758.3,
+          "equilibrium": 26768.8,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": "2026-11-01T00:00:00.000Z",
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e32"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 6,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e5",
+          "low": "e6",
+          "lower": 26255.2,
+          "upper": 30015.8,
+          "equilibrium": 28135.5,
+          "start_at": "2026-10-26T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e33"
+            ],
+            "total": 2,
+            "omitted": 1
+          },
+          "parent_ranges": 7,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 15,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e15",
+          "low": "e16",
+          "lower": 27094.8,
+          "upper": 27411.2,
+          "equilibrium": 27253,
+          "start_at": "2026-11-16T20:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 1,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "symbol": "NAS100",
+      "bytes": 60033,
+      "sha256": "7d6e18454c20c3e49e1b09721f756b9e089a5b829e8eeefbcbcd84e73aa6a993",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "a050b1a0f9e5d67c961aed41469d683910587114",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 27122.1,
+      "ask": 27123.9,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": "2026-11-17T10:38:09.138Z",
+      "quote_retrieved_at": "2026-11-17T10:38:11.570Z",
+      "generated_at": "2026-11-17T10:38:11.574Z",
+      "as_of": "2026-11-17T10:35:05.627Z",
+      "published_at": "2026-11-17T10:38:13.870Z",
+      "expires_at": "2026-11-17T10:40:09.138Z",
+      "read_server_date": "Tue, 17 Nov 2026 10:38:39 GMT",
+      "provider_age_seconds_upper_bound": 30.861,
+      "expired_at_read": false,
+      "quote_fresh_at_read": true,
+      "status": "PARTIAL",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:38:11.570Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.03,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 38,
+      "coverage": {
+        "budget_tier": 1,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1113,
+        "findings_included": 38,
+        "findings_omitted": 1075,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "discarded_rows": 1,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 120,
+          "discarded_rows": 1,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 239,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    },
+    {
+      "dr_selection": {
+        "timeframe": "MN1",
+        "reason": "FIRST_ESTABLISHED_DR_FROM_MN1_TO_H4",
+        "skipped": [],
+        "narrative_confirmed": false
+      },
+      "dr": [
+        {
+          "timeframe": "MN1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bullish",
+          "high": "e0",
+          "low": "e8",
+          "lower": 50394.8,
+          "upper": 73635.5,
+          "equilibrium": 62015.15,
+          "start_at": "2026-03-01T00:00:00.000Z",
+          "end_at": "2026-06-01T00:00:00.000Z",
+          "confirmed_at": "2026-08-01T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "PREMIUM",
+          "origin_context": {
+            "items": [
+              "e37"
+            ],
+            "total": 1,
+            "omitted": 0
+          },
+          "parent_ranges": 5,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 9,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "W1",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e9",
+          "low": "e10",
+          "lower": 56431.1,
+          "upper": 71358.2,
+          "equilibrium": 63894.649999999994,
+          "start_at": "2026-10-05T00:00:00.000Z",
+          "end_at": "2026-11-02T00:00:00.000Z",
+          "confirmed_at": "2026-11-16T00:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e38"
+            ],
+            "total": 3,
+            "omitted": 2
+          },
+          "parent_ranges": 12,
+          "internal_fractals": 1,
+          "local_candidates": 0,
+          "transitions": 22,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "D1",
+          "revision": "dr-sequence-1",
+          "status": "AWAITING_CONFIRMED_PAIR",
+          "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+          "direction": null,
+          "high": null,
+          "low": null,
+          "lower": null,
+          "upper": null,
+          "equilibrium": null,
+          "start_at": null,
+          "end_at": null,
+          "confirmed_at": null,
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": null,
+          "origin_context": {
+            "items": [],
+            "total": 0,
+            "omitted": 0
+          },
+          "parent_ranges": 0,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 0,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        },
+        {
+          "timeframe": "H4",
+          "revision": "dr-sequence-1",
+          "status": "ESTABLISHED",
+          "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+          "direction": "Bearish",
+          "high": "e23",
+          "low": "e24",
+          "lower": 58714.1,
+          "upper": 60049.1,
+          "equilibrium": 59381.6,
+          "start_at": "2026-11-16T16:00:00.000Z",
+          "end_at": "2026-11-17T00:00:00.000Z",
+          "confirmed_at": "2026-11-17T08:00:00.000Z",
+          "close_break_at": null,
+          "last_wick_raid_at": null,
+          "premium_discount": "DISCOUNT",
+          "origin_context": {
+            "items": [
+              "e7"
+            ],
+            "total": 4,
+            "omitted": 3
+          },
+          "parent_ranges": 1,
+          "internal_fractals": 0,
+          "local_candidates": 0,
+          "transitions": 2,
+          "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+          "significance": "REVIEW_REQUIRED",
+          "narrative_confirmed": false
+        }
+      ],
+      "symbol": "JP225",
+      "bytes": 62915,
+      "sha256": "4dad0731e5cccd1188d0fec7bcb7be7b7afbf7ba88154aa9587c97d0c88798f4",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "a050b1a0f9e5d67c961aed41469d683910587114",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 58788.9,
+      "ask": 58798.9,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": "2026-11-17T10:38:11.272Z",
+      "quote_retrieved_at": "2026-11-17T10:38:13.352Z",
+      "generated_at": "2026-11-17T10:38:13.742Z",
+      "as_of": "2026-11-17T10:38:12.262Z",
+      "published_at": "2026-11-17T10:38:13.870Z",
+      "expires_at": "2026-11-17T10:40:11.272Z",
+      "read_server_date": "Tue, 17 Nov 2026 10:38:53 GMT",
+      "provider_age_seconds_upper_bound": 42.727,
+      "expired_at_read": false,
+      "quote_fresh_at_read": true,
+      "status": "PARTIAL",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-17T10:38:13.352Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.48,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 41,
+      "coverage": {
+        "budget_tier": 0,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1079,
+        "findings_included": 41,
+        "findings_omitted": 1038,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-17T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-17T08:00:00.000Z",
+          "closed_candles": 240,
+          "discarded_rows": 1,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    }
+  ],
+  "all_fresh": false
+}

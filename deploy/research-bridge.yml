@@ -1,0 +1,44 @@
+name: Research Bridge
+on:
+  schedule:
+    # Best effort only. Minute 7 is an H4 <=10m target, never a delivery guarantee.
+    # Hourly recovery stays bounded; fresh research uses on-demand instead.
+    - cron: '7 * * * *'
+  workflow_dispatch:
+    inputs:
+      preview_url:
+        description: 'Optional immutable V5.1 Preview for verification branch only'
+        required: false
+        type: string
+  pull_request:
+  push:
+    branches: [main]
+    paths: ['scripts/**', 'lib/**', 'tests/**', '.github/workflows/**']
+permissions:
+  contents: read
+concurrency:
+  group: research-bridge-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Verify contract and atomic publication
+        run: node --test tests/research-bridge-publisher.test.ts
+      - name: Refresh, publish and read back every report
+        if: github.event_name != 'pull_request'
+        run: node scripts/publish-research-bridge.ts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          BRIDGE_BASE_URL: ${{ github.ref == 'refs/heads/main' && vars.BRIDGE_BASE_URL || inputs.preview_url }}
+          BRIDGE_PUBLISH_BRANCH: ${{ github.ref == 'refs/heads/main' && 'main' || 'verification/v5-1-context' }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

@@ -1,0 +1,75 @@
+{
+  "run": "43939087277",
+  "job": 133551455991,
+  "conclusion": "success",
+  "events": [
+    {
+      "event": "bridge_delivery_health",
+      "requested_at": "2026-11-16T19:25:05.128Z",
+      "trigger": "ON_DEMAND",
+      "age_seconds": 190.898,
+      "status": "STALE",
+      "reason": "DELIVERY_DELAY_REFRESH_REQUIRED",
+      "scheduler_or_delivery_delay_seconds": 0
+    },
+    {
+      "event": "bridge_readback",
+      "commit": "adcb4505fb9e700343f242630bb525aa87855f94",
+      "readback_at": "2026-11-16T19:26:04.355Z",
+      "published_at": "2026-11-16T19:25:59.587Z",
+      "reports": [
+        {
+          "symbol": "EURUSD",
+          "bytes": 59095,
+          "sha256": "20c4d53a176fd1dfe9eb109c4e08a9620b6755137e50a91f0ebb318c3934b32c",
+          "status": "STALE",
+          "read_status": "STALE",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 8.566,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": null,
+          "provider_timestamp": null,
+          "last_closed_h4": "2026-11-16T16:00:00.000Z",
+          "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d"
+        },
+        {
+          "symbol": "NAS100",
+          "bytes": 56326,
+          "sha256": "145f6dbec7576c9b7f153cf3114d89fa52160a3311c7fae88a082b8038b980b8",
+          "status": "PARTIAL",
+          "read_status": "PARTIAL",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 6.466,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": 9.368,
+          "provider_timestamp": "2026-11-16T19:25:54.742Z",
+          "last_closed_h4": "2026-11-16T16:00:00.000Z",
+          "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d"
+        },
+        {
+          "symbol": "JP225",
+          "bytes": 60131,
+          "sha256": "855c628a1241c1cfd671917bc2d3c6b89b3f0172e23453030ac91cc296415e08",
+          "status": "PARTIAL",
+          "read_status": "PARTIAL",
+          "expired_at_read": false,
+          "delivery": {
+            "age_seconds": 4.908,
+            "status": "FRESH",
+            "reason": null
+          },
+          "provider_age_seconds_at_read": 7.541,
+          "provider_timestamp": "2026-11-16T19:25:56.814Z",
+          "last_closed_h4": "2026-11-16T16:00:00.000Z",
+          "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d"
+        }
+      ]
+    }
+  ]
+}

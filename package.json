@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "knowledge:import": "node --import tsx scripts/import-edge-knowledge.ts",
+    "knowledge:coverage": "node --import tsx scripts/knowledge-coverage.ts",
+    "knowledge:replay": "node --conditions=react-server --import tsx scripts/verify-edge-replay.ts",
+    "knowledge:risk": "node --import tsx scripts/assess-edge-risk.ts",
     "test:ui": "playwright test",
     "test:analysis-public": "node --conditions=react-server --import tsx scripts/verify-analysis-public.ts",
     "worker": "node --env-file-if-exists=.env.local --conditions=react-server --import tsx scripts/quote-worker.ts",
@@ -13,12 +17,14 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "test": "node --conditions=react-server --import tsx --test tests/*.test.ts",
-    "test:public": "node scripts/verify-public.mjs"
+    "test:public": "node scripts/verify-public.mjs",
+    "knowledge:replay:v2": "node --conditions=react-server --import tsx scripts/verify-edge-v2.ts",
+    "knowledge:replay:v4": "node --conditions=react-server --import tsx scripts/verify-pa-v4.ts"
   },
   "dependencies": {
     "@resvg/resvg-js": "2.6.2",
     "lightweight-charts": "^5.2.1",
-    "next": "^16.0.0",
+    "next": "16.4.5",
     "pg": "^8.23.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

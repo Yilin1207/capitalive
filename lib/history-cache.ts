@@ -4,9 +4,9 @@ export class HistoryCache<T> {
   private pending = new Map<string, Promise<T>>();
   constructor(private ttlMs: number, private capacity = 160) {}
 
-  async get(key: string, load: () => Promise<T>, now = Date.now()): Promise<{ value: T; hit: boolean }> {
+  async get(key: string, load: () => Promise<T>, now = Date.now(), refresh = false): Promise<{ value: T; hit: boolean }> {
     const saved = this.values.get(key);
-    if (saved && saved.expires > now) return { value: saved.value, hit: true };
+    if (!refresh && saved && saved.expires > now) return { value: saved.value, hit: true };
     this.values.delete(key);
     const pending = this.pending.get(key);
     if (pending) return { value: await pending, hit: true };

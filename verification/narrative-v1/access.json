@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-17T17:13:14.768Z",
+  "production": {
+    "id": "dpl_CgnFXRJicqhnZu1v47HQhQKj2owB",
+    "url": "capitalive-f1k9lnf5t-yilin1207s-projects.vercel.app",
+    "state": "READY",
+    "target": "production",
+    "commit": "a291ec8801d8277b7bdf0602021ce539d1a25261"
+  },
+  "stable_url": "https://capitalive.vercel.app/research",
+  "http": 200,
+  "authenticated": false,
+  "sso_protection": null,
+  "password_protection": false,
+  "main_pr_2": {
+    "state": "open",
+    "merged": false
+  }
+}

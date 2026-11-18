@@ -1,0 +1,1116 @@
+{
+  "scope": "REQUESTED_HISTORICAL_CONTROLS_NOT_GOLDEN_GROUND_TRUTH",
+  "rows": [
+    {
+      "commit": "4e63d4f5e690a21a9ac9b61d2a2695738153fc4f",
+      "symbol": "EURUSD",
+      "as_of": "2026-11-15T21:04:09.960Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bearish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 1.09544,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 1.10653,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "858ad1eff7c0f85f226ce741454417b535128aa52cd926ee280625768e75096e",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "a5116e278bd0780f3c3e1c1c58e00d9d265af23ef4eb0687a9bf483aacc5b4b6",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [
+              {
+                "kind": "CLOSED_ROLE_BREAK",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-13T00:00:00.000Z"
+              },
+              {
+                "kind": "LATER_ROLE_RETEST",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-14T00:00:00.000Z"
+              }
+            ],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 1.10726,
+          "upper": 1.10817,
+          "old": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "0b381c1f7a920893b94dc8ff1ce126360129f8c68c19548bfe865532012e9d67",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "05e424aa015bb04219ce90ad44a49aab06ec47d71b8d70b871139e8a64b5b1a5",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 2,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "4e63d4f5e690a21a9ac9b61d2a2695738153fc4f",
+      "symbol": "NAS100",
+      "as_of": "2026-11-15T21:04:17.219Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Bullish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 27530.4,
+          "upper": 28184.7,
+          "old": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "SNR_CLOSED_BREAK",
+          "lower": 28487.5,
+          "upper": 28488.7,
+          "old": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "a8862bc13b4b7d44c74f41c4369ea3c6f7be100092d9231d19782f5df331a8e1",
+            "state": "CANDIDATE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "1ae1e11acf695c37280a9ba12d1a21bd838fcc0250bc4890d6a52584ef19d89e",
+            "state": "CANDIDATE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "H4",
+          "kind": "FVG",
+          "lower": 27962,
+          "upper": 28151.1,
+          "old": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "6de59ad18be4f9b8b14a2ec629f14ab2056abb7f050f29c3b53ff1d82008182b",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "657edfec6631e9d3e5091b7c92a00d64ec0ec0870386cb80575573e800c14003",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 3,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 26255.2,
+          "upper": 26255.2,
+          "old": null,
+          "new": null,
+          "formation_comparison": "NOT_IN_COMPACT_REPORT",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "4e63d4f5e690a21a9ac9b61d2a2695738153fc4f",
+      "symbol": "EU50",
+      "as_of": "2026-11-15T21:04:23.953Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bullish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 6405.4,
+          "upper": 6405.4,
+          "old": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "2e6d9008450b28f723da10959669045f23ca4c1c5d31d7f5e327c3704a82c411",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "0f6951f8d1856cb5871de439b2f0cedafd0da366db7e1526a3e74fd29c85b0db",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [
+              {
+                "kind": "CLOSED_ROLE_BREAK",
+                "timeframe": "W1",
+                "confirmed_at": "2026-09-07T00:00:00.000Z"
+              },
+              {
+                "kind": "LATER_ROLE_RETEST",
+                "timeframe": "W1",
+                "confirmed_at": "2026-09-14T00:00:00.000Z"
+              }
+            ],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FRACTAL",
+          "lower": 6430.5,
+          "upper": 6430.5,
+          "old": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "2b85f5a0afada31aa5aca703a7a9601c72575e383e2a79d07cea1e2a8e7ac137",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "9b54fed5f2c6cbe1537e0d66b2a798c6139a1d14f7787e5b95d831683c37769b",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 6346.5,
+          "upper": 6351.4,
+          "old": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "dc53ff9613b2d6bba2220d7a79b300a1c1ecceec66005a252d253f8b64a3949c",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "7f761196a0c7fddda129d424fa502a1ab8ac8a40e1f21862d74ce138d9d26a80",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "72a074e6a5878aaf21164da52986e55aa700cd1c",
+      "symbol": "EURUSD",
+      "as_of": "2026-11-15T15:03:24.130Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bearish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 1.09544,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 1.10653,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "858ad1eff7c0f85f226ce741454417b535128aa52cd926ee280625768e75096e",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "a5116e278bd0780f3c3e1c1c58e00d9d265af23ef4eb0687a9bf483aacc5b4b6",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [
+              {
+                "kind": "CLOSED_ROLE_BREAK",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-13T00:00:00.000Z"
+              },
+              {
+                "kind": "LATER_ROLE_RETEST",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-14T00:00:00.000Z"
+              }
+            ],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 1.10726,
+          "upper": 1.10817,
+          "old": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "0b381c1f7a920893b94dc8ff1ce126360129f8c68c19548bfe865532012e9d67",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "05e424aa015bb04219ce90ad44a49aab06ec47d71b8d70b871139e8a64b5b1a5",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 2,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "72a074e6a5878aaf21164da52986e55aa700cd1c",
+      "symbol": "NAS100",
+      "as_of": "2026-11-15T15:03:30.893Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Bullish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 27530.4,
+          "upper": 28184.7,
+          "old": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "SNR_CLOSED_BREAK",
+          "lower": 28487.5,
+          "upper": 28488.7,
+          "old": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "a8862bc13b4b7d44c74f41c4369ea3c6f7be100092d9231d19782f5df331a8e1",
+            "state": "CANDIDATE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "1ae1e11acf695c37280a9ba12d1a21bd838fcc0250bc4890d6a52584ef19d89e",
+            "state": "CANDIDATE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "H4",
+          "kind": "FVG",
+          "lower": 27962,
+          "upper": 28151.1,
+          "old": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "6de59ad18be4f9b8b14a2ec629f14ab2056abb7f050f29c3b53ff1d82008182b",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "657edfec6631e9d3e5091b7c92a00d64ec0ec0870386cb80575573e800c14003",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 3,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 26255.2,
+          "upper": 26255.2,
+          "old": null,
+          "new": null,
+          "formation_comparison": "NOT_IN_COMPACT_REPORT",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "72a074e6a5878aaf21164da52986e55aa700cd1c",
+      "symbol": "EU50",
+      "as_of": "2026-11-15T15:03:37.313Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Bullish",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 6405.4,
+          "upper": 6405.4,
+          "old": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "2e6d9008450b28f723da10959669045f23ca4c1c5d31d7f5e327c3704a82c411",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "0f6951f8d1856cb5871de439b2f0cedafd0da366db7e1526a3e74fd29c85b0db",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [
+              {
+                "kind": "CLOSED_ROLE_BREAK",
+                "timeframe": "W1",
+                "confirmed_at": "2026-09-07T00:00:00.000Z"
+              },
+              {
+                "kind": "LATER_ROLE_RETEST",
+                "timeframe": "W1",
+                "confirmed_at": "2026-09-14T00:00:00.000Z"
+              }
+            ],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FRACTAL",
+          "lower": 6430.5,
+          "upper": 6430.5,
+          "old": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "2b85f5a0afada31aa5aca703a7a9601c72575e383e2a79d07cea1e2a8e7ac137",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "9b54fed5f2c6cbe1537e0d66b2a798c6139a1d14f7787e5b95d831683c37769b",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 6346.5,
+          "upper": 6351.4,
+          "old": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "dc53ff9613b2d6bba2220d7a79b300a1c1ecceec66005a252d253f8b64a3949c",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "7f761196a0c7fddda129d424fa502a1ab8ac8a40e1f21862d74ce138d9d26a80",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": 1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "bfe798e6f56b972ac174e4645550190144f53886",
+      "symbol": "EURUSD",
+      "as_of": "2026-11-16T06:35:23.328Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 1.09544,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EURUSD:MN1:bid:FVG:2025-05-01T00:00:00.000Z:",
+            "confirmed_at": "2025-06-01T00:00:00.000Z",
+            "candle_evidence_sha256": "88e603020f4fbbf8ff9d50e505ee11d918ed219c9f91b24d7d98f615e1f7bdb6",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 1.10653,
+          "upper": 1.10653,
+          "old": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "a5116e278bd0780f3c3e1c1c58e00d9d265af23ef4eb0687a9bf483aacc5b4b6",
+            "state": "ACTIVE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:W1:bid:FRACTAL:2025-05-19T00:00:00.000Z:3:low:2025-05-12T00:00:00.000Z",
+            "confirmed_at": "2025-05-26T00:00:00.000Z",
+            "candle_evidence_sha256": "a5116e278bd0780f3c3e1c1c58e00d9d265af23ef4eb0687a9bf483aacc5b4b6",
+            "state": "ACTIVE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [
+              {
+                "kind": "CLOSED_ROLE_BREAK",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-13T00:00:00.000Z"
+              },
+              {
+                "kind": "LATER_ROLE_RETEST",
+                "timeframe": "D1",
+                "confirmed_at": "2026-11-14T00:00:00.000Z"
+              }
+            ],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 1.10726,
+          "upper": 1.10817,
+          "old": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "05e424aa015bb04219ce90ad44a49aab06ec47d71b8d70b871139e8a64b5b1a5",
+            "state": "UNVERIFIED",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EURUSD:D1:bid:FVG:2026-11-13T00:00:00.000Z:",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "05e424aa015bb04219ce90ad44a49aab06ec47d71b8d70b871139e8a64b5b1a5",
+            "state": "UNVERIFIED",
+            "current_role": null,
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "UNVERIFIED"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "bfe798e6f56b972ac174e4645550190144f53886",
+      "symbol": "NAS100",
+      "as_of": "2026-11-16T06:35:28.942Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bearish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "MN1",
+          "kind": "FVG",
+          "lower": 27530.4,
+          "upper": 28184.7,
+          "old": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+            "confirmed_at": "2026-07-01T00:00:00.000Z",
+            "candle_evidence_sha256": "9891505d37f348b972d9cca10ed117b115704540dc07b1d9448eebe816ca93cf",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "SNR_CLOSED_BREAK",
+          "lower": 28487.5,
+          "upper": 28488.7,
+          "old": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "1ae1e11acf695c37280a9ba12d1a21bd838fcc0250bc4890d6a52584ef19d89e",
+            "state": "CANDIDATE",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:W1:bid:SNR_CLOSED_BREAK:2026-11-02T00:00:00.000Z:2026-07-27T00:00:00.000Z:NAS100:MN1:bid:FRACTAL:2024-08-01T00:00:00.000Z:3:high:2024-07-01T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "candle_evidence_sha256": "1ae1e11acf695c37280a9ba12d1a21bd838fcc0250bc4890d6a52584ef19d89e",
+            "state": "CANDIDATE",
+            "current_role": "resistance",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "H4",
+          "kind": "FVG",
+          "lower": 27962,
+          "upper": 28151.1,
+          "old": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "657edfec6631e9d3e5091b7c92a00d64ec0ec0870386cb80575573e800c14003",
+            "state": "INVALIDATED",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "NAS100:H4:bid:FVG:2026-11-13T16:00:00.000Z:",
+            "confirmed_at": "2026-11-13T20:00:00.000Z",
+            "candle_evidence_sha256": "657edfec6631e9d3e5091b7c92a00d64ec0ec0870386cb80575573e800c14003",
+            "state": "INVALIDATED",
+            "current_role": null,
+            "invalidated_at": "2026-11-16T00:00:00.000Z",
+            "role_proofs": [],
+            "coverage": "UNVERIFIED"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 26255.2,
+          "upper": 26255.2,
+          "old": {
+            "id": "NAS100:W1:bid:FRACTAL:2026-11-09T00:00:00.000Z:3:low:2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "candle_evidence_sha256": "226940caafac6fe2a8e746ffbcf97ff9f4ec372a37a5f73b7a85789d9e2c6f58",
+            "state": "ACTIVE",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "NAS100:W1:bid:FRACTAL:2026-11-09T00:00:00.000Z:3:low:2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "candle_evidence_sha256": "226940caafac6fe2a8e746ffbcf97ff9f4ec372a37a5f73b7a85789d9e2c6f58",
+            "state": "ACTIVE",
+            "current_role": "support",
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    },
+    {
+      "commit": "bfe798e6f56b972ac174e4645550190144f53886",
+      "symbol": "EU50",
+      "as_of": "2026-11-16T06:35:33.221Z",
+      "manifest_sha256_verified": true,
+      "structure": [
+        {
+          "timeframe": "MN1",
+          "bias": "Bullish",
+          "swing_bias": "Bullish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "W1",
+          "bias": "Bullish",
+          "swing_bias": "Bearish",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "D1",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        },
+        {
+          "timeframe": "H4",
+          "bias": "Neutral",
+          "swing_bias": "Neutral",
+          "swing_basis": "PROJECT_OBSERVATION_NOT_AUTHOR_SOF"
+        }
+      ],
+      "checks": [
+        {
+          "timeframe": "W1",
+          "kind": "FRACTAL",
+          "lower": 6405.4,
+          "upper": 6405.4,
+          "old": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "0f6951f8d1856cb5871de439b2f0cedafd0da366db7e1526a3e74fd29c85b0db",
+            "state": "CONSUMED",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EU50:W1:bid:FRACTAL:2026-08-24T00:00:00.000Z:3:low:2026-08-17T00:00:00.000Z",
+            "confirmed_at": "2026-08-31T00:00:00.000Z",
+            "candle_evidence_sha256": "0f6951f8d1856cb5871de439b2f0cedafd0da366db7e1526a3e74fd29c85b0db",
+            "state": "CONSUMED",
+            "current_role": null,
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "COMPLETE_OBSERVED_INTERVAL"
+          },
+          "formation_comparison": "EXACT_FORMATION_HASH_MATCH",
+          "index_shift": null,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FRACTAL",
+          "lower": 6430.5,
+          "upper": 6430.5,
+          "old": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "95720f1a679c46a336b9bc55e42499487642bb29e6a2a25a91e2c8f7fdf03054",
+            "state": "UNVERIFIED",
+            "current_role": "resistance"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FRACTAL:2026-11-13T00:00:00.000Z:3:high:2026-11-12T00:00:00.000Z",
+            "confirmed_at": "2026-11-14T00:00:00.000Z",
+            "candle_evidence_sha256": "9b54fed5f2c6cbe1537e0d66b2a798c6139a1d14f7787e5b95d831683c37769b",
+            "state": "UNVERIFIED",
+            "current_role": null,
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "UNVERIFIED"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": -1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        },
+        {
+          "timeframe": "D1",
+          "kind": "FVG",
+          "lower": 6346.5,
+          "upper": 6351.4,
+          "old": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "6d376ca1407e90b021970acc480a234bc0f20ec4a8db803ed31f307ef70d62d4",
+            "state": "UNVERIFIED",
+            "current_role": "support"
+          },
+          "new": {
+            "id": "EU50:D1:bid:FVG:2026-11-11T00:00:00.000Z:",
+            "confirmed_at": "2026-11-12T00:00:00.000Z",
+            "candle_evidence_sha256": "7f761196a0c7fddda129d424fa502a1ab8ac8a40e1f21862d74ce138d9d26a80",
+            "state": "UNVERIFIED",
+            "current_role": null,
+            "invalidated_at": null,
+            "role_proofs": [],
+            "coverage": "UNVERIFIED"
+          },
+          "formation_comparison": "EXACT_OHLC_MATCH_AFTER_ROLLING_INDEX_SHIFT",
+          "index_shift": -1,
+          "lifecycle_input_equivalence": "NOT_ESTABLISHED_NEW_CAPTURE_IS_NOT_ORIGINAL_FULL_HISTORY"
+        }
+      ]
+    }
+  ]
+}

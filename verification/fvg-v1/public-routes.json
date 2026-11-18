@@ -1,0 +1,16 @@
+[
+  {
+    "path": "/research",
+    "http": 200,
+    "content_type": "text/html; charset=utf-8",
+    "bytes": 6645,
+    "authenticated": false
+  },
+  {
+    "path": "/api/market-audit?symbol=EURUSD",
+    "http": 200,
+    "content_type": "application/json",
+    "bytes": 739870,
+    "authenticated": false
+  }
+]

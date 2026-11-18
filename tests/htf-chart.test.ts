@@ -11,13 +11,13 @@ import type {CandleResponse,Timeframe} from '../lib/candle-data';
 import type {MarketQuote} from '../lib/quote-normalization';
 
 const fixture=JSON.parse(readFileSync('tests/fixtures/htf-NAS100.json','utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
-test('all SNR frames and closed event labels render with explicit image-only counts; switches preserve full data',()=>{
+test('V5 charts never display removed ATR-SNR as author evidence',()=>{
   const data=fixture.data.W1,analysis=analyzeSeries(data,'NAS100');
   const overlay=chartHtf(fixture.data,'NAS100','bid',data.candles.at(-1)!.close.bid);
   const layers={...DEFAULT_LAYERS,snr_mn1:true,snr_w1:true,snr_d1:true,snr_h4:true,snr_events:true};
   const svg=chartSvg(data,analysis,'NAS100','bid',layers,120,overlay);
-  for(const tf of ['MN1','W1','D1','H4'])assert.ok(svg.includes(`data-snr-timeframe="${tf}"`),tf);
-  assert.match(svg,/full catalog retains/);assert.match(svg,/data-snr-state=/);
+  assert.doesNotMatch(svg,/data-snr-timeframe=/);
+  assert.match(svg,/full catalog retains/);assert.doesNotMatch(svg,/data-snr-state=/);
   assert.doesNotMatch(chartSvg(data,analysis,'NAS100','bid',DEFAULT_LAYERS,120,overlay),/data-snr-timeframe=/);
   assert.doesNotMatch(chartSvg(data,analysis,'NAS100','bid',{...layers,snr_events:false},120,overlay),/data-snr-state=/);
 });

@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-11-15T13:00:23.576Z",
+  "unit": {
+    "passed": 190,
+    "failed": 0
+  },
+  "v2_cases": {
+    "passed": 15,
+    "mandatory": 10,
+    "expected_outcomes": "tests/fixtures/edge-v2/golden-expectations.json"
+  },
+  "lint": "PASS",
+  "build": "PASS",
+  "ui": {
+    "passed": 6
+  },
+  "archive_replay": 6,
+  "controlled_replays": 12,
+  "local_http": {
+    "checks": 29,
+    "png_decoded": 2
+  },
+  "external_preview": {
+    "checks": 18,
+    "url": "https://capitalive-m5wiikbc5-yilin1207s-projects.vercel.app",
+    "authenticated": true,
+    "png_decoded": true,
+    "neutral_context_has_no_false_opposition": true
+  },
+  "production_deployed": false,
+  "merged": false
+}

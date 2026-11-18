@@ -26,8 +26,9 @@ test('oversized unicode snapshot reassembles byte-for-byte after newer snapshot;
 test('too-large full HTTP response offers complete snapshot; priority still succeeds and subsequent pages never refetch',async()=>{
   const input=JSON.parse(readFileSync('tests/fixtures/capital-NAS100-h4.json','utf8')) as CandleResponse;
   const quote=JSON.parse(readFileSync('tests/fixtures/htf-NAS100.json','utf8')).quote as MarketQuote;
+  input.candles=input.candles.map(c=>({...c,synthetic_test_padding:'x'.repeat(12000)}));
   const deps={getCandles:async(_s:string,tf:Timeframe)=>({...input,timeframe:tf}),getAnalysisQuote:async()=>({...quote,cache_hit:false,evaluated_at:input.fetched_at})};
-  const response=await marketAudit(new Request('https://local/api/market-audit?symbol=NAS100'),deps);
+  const response=await marketAudit(new Request('https://local/api/market-audit?symbol=NAS100&include_candles=1'),deps);
   assert.equal(response.status,503);const body=await response.json();assert.ok(body.pagination.bytes>4_250_000);
   assert.equal((await marketAudit(new Request('https://local/api/market-audit?symbol=NAS100&view=priority'),deps)).status,200);
   const noFetch={getCandles:async()=>{throw new Error('Must not refetch')},getAnalysisQuote:async()=>{throw new Error('Must not refetch')}};

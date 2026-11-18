@@ -19,6 +19,20 @@ try{
   let ready=false;
   for(let i=0;i<100;i++){if(server.exitCode!==null)throw new Error('Local Next exited');try{await fetch(origin);ready=true;break;}catch{await new Promise(r=>setTimeout(r,100));}}
   assert.ok(ready,'Local server startup');
+  const knowledge=(await get('/api/knowledge')).json();assert.equal(knowledge.coverage.imported,85);assert.equal(knowledge.coverage.validated,0);
+  const intelligence=(await get('/api/intelligence?symbol=EURUSD')).json();assert.equal(intelligence.schema_version,'pa-engine-v6');assert.equal(intelligence.mode,'PA_ONLY');assert.ok(!('narrative' in intelligence));assert.ok(!('target_selection' in intelligence));assert.ok(!('assessment' in intelligence));assert.ok(['STALE','PARTIAL','UNVERIFIED'].includes(intelligence.status));
+  // The transport is archived OHLC, never Live. Current reports must not turn an old quote into fresh observations.
+  if(intelligence.status==='STALE')assert.equal(intelligence.evidence.length,0);
+  const archiveAt=JSON.parse(readFileSync('tests/fixtures/htf-EURUSD.json','utf8')).data.H4.fetched_at;
+  const query={symbol:'EURUSD',side:'bid',as_of:archiveAt,timeframe:'H4',kind:'FRACTAL',limit:'50'};
+  const page=(await get('/api/pa-evidence?'+new URLSearchParams(query))).json();assert.equal(page.schema_version,'pa-evidence-page-v6');assert.equal(page.source_type,'ARCHIVE_AS_OF');assert.ok(page.evidence.length>0);assert.ok(page.evidence.every(e=>e.kind==='FRACTAL'&&e.facts.variant===3&&e.confirmed_at<=page.as_of));
+  const hp=page.evidence,hi=hp.find(h=>h.facts.polarity==='high'&&hp.some(l=>l.facts.polarity==='low'&&l.segment===h.segment&&l.bounds.lower<h.bounds.upper)),lo=hp.find(l=>l.facts.polarity==='low'&&l.segment===hi.segment&&l.bounds.lower<hi.bounds.upper);
+  const selected=(await get('/api/pa-evidence?'+new URLSearchParams({symbol:'EURUSD',side:'bid',timeframe:'H4',view:'structure',as_of:archiveAt,high_id:hi.id,low_id:lo.id}))).json();assert.equal(selected.dealing_ranges[0].explicit_range.high_id,hi.id);
+  const detail=(await get('/api/pa-evidence?'+new URLSearchParams({symbol:'EURUSD',side:'bid',as_of:archiveAt,snapshot_sha256:page.snapshot_sha256,id:hp[0].id}))).json();assert.equal(detail.evidence[0].id,hp[0].id);assert.equal(detail.evidence[0].candle_evidence.length,3);assert.ok(Array.isArray(detail.interaction_history));
+  const candles=(await get('/api/pa-candles?'+new URLSearchParams({symbol:'EURUSD',side:'bid',timeframe:'H4',as_of:archiveAt,snapshot_sha256:page.snapshot_sha256,limit:'2'}))).json();assert.ok(candles.candles.every(c=>c.is_closed&&c.end<=candles.as_of));assert.equal(candles.candles.length,2);assert.ok(candles.next_offset!==null);
+  const nextCandles=(await get('/api/pa-candles?'+new URLSearchParams({symbol:'EURUSD',side:'bid',timeframe:'H4',as_of:archiveAt,snapshot_sha256:page.snapshot_sha256,limit:'2',offset:String(candles.next_offset)}))).json();assert.ok(nextCandles.candles[0].time>candles.candles.at(-1).time);
+  await get('/api/intelligence?symbol=EURUSD&high_id=unknown',400);
+  const embedded=(await get('/api/market-audit?symbol=EURUSD&view=priority&knowledge=1')).json();assert.equal(embedded.knowledge_intelligence.schema_version,'pa-engine-v6');assert.equal(embedded.knowledge_intelligence.mode,'PA_ONLY');
   for(const asset of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask']){
     const body=(await get(`/api/market-audit?symbol=${asset}&side=${side}&view=priority`)).json();
     assert.equal(body.schema_version,'2.1');assert.equal(body.ok,true);assert.ok(body.htf.risk.long.obstacle_policy);

@@ -1,0 +1,1198 @@
+{
+  "audit": "V5_VS_V5_1_SAME_OHLC_NO_FXCM_OR_EXPERT_ORACLE",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+      "as_of": "2026-11-16T07:17:56.301Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "7b2e2aa29916645fa88bf57ea7db0b9d7d73db8270c20006844803c9a771d357",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1204,
+      "report_bytes": 62703,
+      "report_sha256": "d3fdac145e247c1aa550e1085e427a30a0386c2ef0a42103c44316741ed6ec28",
+      "wire_bytes": 3464444,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 5,
+      "evidence_included": 42,
+      "budget_tier": 1,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e4",
+            "low": "e5",
+            "lower": 1.01772,
+            "upper": 1.20824,
+            "equilibrium": 1.1129799999999999,
+            "start_at": "2025-01-01T00:00:00.000Z",
+            "end_at": "2026-01-01T00:00:00.000Z",
+            "confirmed_at": "2026-03-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [
+                "e32"
+              ],
+              "total": 2,
+              "omitted": 1
+            },
+            "parent_ranges": 1,
+            "internal_fractals": 10,
+            "local_candidates": 0,
+            "transitions": 6,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_NEW_EXTREME",
+            "reason": "CLOSED_BOUNDARY_BREAK_WAIT_FOR_CONFIRMED_EXTREME",
+            "direction": "Bearish",
+            "high": "e11",
+            "low": "e7",
+            "lower": 1.1104,
+            "upper": 1.17115,
+            "equilibrium": 1.140775,
+            "start_at": "2026-08-17T00:00:00.000Z",
+            "end_at": "2026-10-26T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "close_break_at": "2026-11-16T00:00:00.000Z",
+            "last_wick_raid_at": "2026-11-16T00:00:00.000Z",
+            "premium_discount": null,
+            "origin_context": {
+              "items": [
+                "e34"
+              ],
+              "total": 5,
+              "omitted": 4
+            },
+            "parent_ranges": 10,
+            "internal_fractals": 4,
+            "local_candidates": 0,
+            "transitions": 16,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+      "as_of": "2026-11-16T07:17:56.301Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "e4a2730997fe356c4aa775aaff25bdf769a8ec92a1fa12ba49acf148fccbc4e8",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1210,
+      "report_bytes": 62683,
+      "report_sha256": "991ccc96651c2eb089e6885cad6956096eba9667a884c2773668b759e31d0464",
+      "wire_bytes": 3469536,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 5,
+      "evidence_included": 42,
+      "budget_tier": 1,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e4",
+            "low": "e5",
+            "lower": 1.01778,
+            "upper": 1.20834,
+            "equilibrium": 1.11306,
+            "start_at": "2025-01-01T00:00:00.000Z",
+            "end_at": "2026-01-01T00:00:00.000Z",
+            "confirmed_at": "2026-03-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [
+                "e32"
+              ],
+              "total": 2,
+              "omitted": 1
+            },
+            "parent_ranges": 1,
+            "internal_fractals": 10,
+            "local_candidates": 0,
+            "transitions": 6,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_NEW_EXTREME",
+            "reason": "CLOSED_BOUNDARY_BREAK_WAIT_FOR_CONFIRMED_EXTREME",
+            "direction": "Bearish",
+            "high": "e11",
+            "low": "e7",
+            "lower": 1.11047,
+            "upper": 1.17122,
+            "equilibrium": 1.140845,
+            "start_at": "2026-08-17T00:00:00.000Z",
+            "end_at": "2026-10-26T00:00:00.000Z",
+            "confirmed_at": "2026-11-09T00:00:00.000Z",
+            "close_break_at": "2026-11-16T00:00:00.000Z",
+            "last_wick_raid_at": "2026-11-16T00:00:00.000Z",
+            "premium_discount": null,
+            "origin_context": {
+              "items": [
+                "e34"
+              ],
+              "total": 5,
+              "omitted": 4
+            },
+            "parent_ranges": 10,
+            "internal_fractals": 4,
+            "local_candidates": 0,
+            "transitions": 16,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+      "as_of": "2026-11-16T07:17:59.382Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "dfab46b053af5305fbed7651c38ebc66647490c7e52f3ab954e2fb9a23451e51",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1129,
+      "report_bytes": 60746,
+      "report_sha256": "389aa9d6e673a791f936406a492f80c0d46acb04423888e948970f7597c43c60",
+      "wire_bytes": 2835642,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": "UP",
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 7,
+      "evidence_included": 35,
+      "budget_tier": 3,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e0",
+            "low": "e2",
+            "lower": 22779.3,
+            "upper": 30758.3,
+            "equilibrium": 26768.8,
+            "start_at": "2026-03-01T00:00:00.000Z",
+            "end_at": "2026-06-01T00:00:00.000Z",
+            "confirmed_at": "2026-08-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": "2026-11-01T00:00:00.000Z",
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [],
+              "total": 1,
+              "omitted": 1
+            },
+            "parent_ranges": 1,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 6,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bearish",
+            "high": "e3",
+            "low": "e4",
+            "lower": 26255.2,
+            "upper": 30015.8,
+            "equilibrium": 28135.5,
+            "start_at": "2026-10-26T00:00:00.000Z",
+            "end_at": "2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [],
+              "total": 2,
+              "omitted": 2
+            },
+            "parent_ranges": 7,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 15,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [
+        {
+          "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+          "timeframe": "MN1",
+          "confirmed_at": "2026-07-01T00:00:00.000Z",
+          "arithmetic": {
+            "lower": 27530.4,
+            "upper": 28184.7
+          },
+          "h4_closed_observations": 239,
+          "h4_intersections": 42,
+          "h4_first_interaction": "2026-10-30T20:00:00.000Z",
+          "own_tf_break": null,
+          "lifecycle": "ACTIVE",
+          "fill": {
+            "state": "FILLED",
+            "max_observed_fraction": 1,
+            "first_test_at": "2026-07-25T00:00:00.000Z",
+            "last_test_at": "2026-11-16T04:00:00.000Z"
+          },
+          "current_role_v5": "support",
+          "current_role_v51": null,
+          "independent_arithmetic": "MATCH",
+          "fxcm_visual": "INSUFFICIENT_EVIDENCE"
+        },
+        {
+          "id": "NAS100:D1:bid:FVG:2026-11-10T00:00:00.000Z:",
+          "timeframe": "D1",
+          "confirmed_at": "2026-11-11T00:00:00.000Z",
+          "arithmetic": {
+            "lower": 27097.8,
+            "upper": 27419.3
+          },
+          "h4_closed_observations": 20,
+          "h4_intersections": 0,
+          "h4_first_interaction": null,
+          "own_tf_break": null,
+          "lifecycle": "ACTIVE",
+          "fill": {
+            "state": "UNTOUCHED",
+            "max_observed_fraction": 0,
+            "first_test_at": null,
+            "last_test_at": null
+          },
+          "current_role_v5": "support",
+          "current_role_v51": null,
+          "independent_arithmetic": "MATCH",
+          "fxcm_visual": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+      "as_of": "2026-11-16T07:17:59.382Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "e1540d7a9ace1ed10373f0bc5714e147e62e2a644b083fb7b0b4861dd6cf6ee1",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1129,
+      "report_bytes": 60740,
+      "report_sha256": "e88eebe724dfff94e95fcf31d004d9c6286fca2bc3405a57d22a826a204656ca",
+      "wire_bytes": 2835681,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": "UP",
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 7,
+      "evidence_included": 35,
+      "budget_tier": 3,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e0",
+            "low": "e2",
+            "lower": 22781.1,
+            "upper": 30760.1,
+            "equilibrium": 26770.6,
+            "start_at": "2026-03-01T00:00:00.000Z",
+            "end_at": "2026-06-01T00:00:00.000Z",
+            "confirmed_at": "2026-08-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": "2026-11-01T00:00:00.000Z",
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [],
+              "total": 1,
+              "omitted": 1
+            },
+            "parent_ranges": 1,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 6,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bearish",
+            "high": "e3",
+            "low": "e4",
+            "lower": 26257,
+            "upper": 30017.6,
+            "equilibrium": 28137.3,
+            "start_at": "2026-10-26T00:00:00.000Z",
+            "end_at": "2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [],
+              "total": 2,
+              "omitted": 2
+            },
+            "parent_ranges": 7,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 15,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "78867d6d942de6c48b2ae0bc041f4848af32e4773680b233ffbc149c3c72f445",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1085,
+      "report_bytes": 60802,
+      "report_sha256": "0a2e29feb74ecb8aae5bfb079e20d65386ce6c387df2c64bd1c36029d8fb2e85",
+      "wire_bytes": 2550965,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 6,
+      "evidence_included": 41,
+      "budget_tier": 0,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e0",
+            "low": "e8",
+            "lower": 50394.8,
+            "upper": 73635.5,
+            "equilibrium": 62015.15,
+            "start_at": "2026-03-01T00:00:00.000Z",
+            "end_at": "2026-06-01T00:00:00.000Z",
+            "confirmed_at": "2026-08-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [
+                "e38"
+              ],
+              "total": 1,
+              "omitted": 0
+            },
+            "parent_ranges": 5,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 9,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bearish",
+            "high": "e9",
+            "low": "e10",
+            "lower": 56431.1,
+            "upper": 71358.2,
+            "equilibrium": 63894.649999999994,
+            "start_at": "2026-10-05T00:00:00.000Z",
+            "end_at": "2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "DISCOUNT",
+            "origin_context": {
+              "items": [
+                "e39"
+              ],
+              "total": 3,
+              "omitted": 2
+            },
+            "parent_ranges": 12,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 22,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "19ab3b25541a6bef35f361816ec559e068f05a5869a9f5ba3038e1064dfcb98d",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": false,
+      "narrative_semantics_unchanged": true,
+      "snapshot_revision": "dr-sequence-1",
+      "findings": 1086,
+      "report_bytes": 60802,
+      "report_sha256": "53a32816ba87d12928e52bdb29461b9a10bb12112f5d2bec779956b4a9968c57",
+      "wire_bytes": 2554176,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 6,
+      "evidence_included": 41,
+      "budget_tier": 0,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bullish",
+            "high": "e0",
+            "low": "e8",
+            "lower": 50404.8,
+            "upper": 73645.5,
+            "equilibrium": 62025.15,
+            "start_at": "2026-03-01T00:00:00.000Z",
+            "end_at": "2026-06-01T00:00:00.000Z",
+            "confirmed_at": "2026-08-01T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "PREMIUM",
+            "origin_context": {
+              "items": [
+                "e38"
+              ],
+              "total": 1,
+              "omitted": 0
+            },
+            "parent_ranges": 5,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 9,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "ESTABLISHED",
+            "reason": "CHRONOLOGICAL_EXTREMES_ESTABLISHED",
+            "direction": "Bearish",
+            "high": "e9",
+            "low": "e10",
+            "lower": 56441.1,
+            "upper": 71368.2,
+            "equilibrium": 63904.649999999994,
+            "start_at": "2026-10-05T00:00:00.000Z",
+            "end_at": "2026-11-02T00:00:00.000Z",
+            "confirmed_at": "2026-11-16T00:00:00.000Z",
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": "DISCOUNT",
+            "origin_context": {
+              "items": [
+                "e39"
+              ],
+              "total": 3,
+              "omitted": 2
+            },
+            "parent_ranges": 12,
+            "internal_fractals": 1,
+            "local_candidates": 0,
+            "transitions": 22,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "D1",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "detection": {
+            "revision": "dr-sequence-1",
+            "status": "AWAITING_CONFIRMED_PAIR",
+            "reason": "BOTH_CHRONOLOGICAL_FRACTAL3_BOUNDARIES_REQUIRED",
+            "direction": null,
+            "high": null,
+            "low": null,
+            "lower": null,
+            "upper": null,
+            "equilibrium": null,
+            "start_at": null,
+            "end_at": null,
+            "confirmed_at": null,
+            "close_break_at": null,
+            "last_wick_raid_at": null,
+            "premium_discount": null,
+            "origin_context": {
+              "items": [],
+              "total": 0,
+              "omitted": 0
+            },
+            "parent_ranges": 0,
+            "internal_fractals": 0,
+            "local_candidates": 0,
+            "transitions": 0,
+            "internal_classification": "INTERNAL_LIQUIDITY_NOT_AUTOMATIC_IDM",
+            "significance": "REVIEW_REQUIRED",
+            "narrative_confirmed": false
+          },
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+knowledge/research/*.json text eol=lf
+verification/capitalive-v3/**/*.json text eol=lf
+verification/capitalive-v3/*.json text eol=lf
+verification/capitalive-v3/**/*.txt text eol=lf
+verification/capitalive-v3/*.txt text eol=lf

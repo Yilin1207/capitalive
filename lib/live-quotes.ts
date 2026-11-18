@@ -25,7 +25,7 @@ export async function liveQuotes(epics: string[], context: CapitalRequestContext
   }
   const pending: Promise<void>[] = [];
   const missing = epics.filter(epic => !cached[epic]);
-  const stream = missing.length ? await streamQuotes(missing, { durationMs: 2500, stopAfterFirst: true, context,
+  const stream = missing.length ? await streamQuotes(missing, { durationMs: 10_000, stopAfterFirst: true, context,
     onTick: tick => {
       if (!archiveConfigured()) return;
       const symbol = (Object.keys(VERIFIED_MARKETS) as PublicSymbol[]).find(symbol => VERIFIED_MARKETS[symbol].epic === tick.epic);
