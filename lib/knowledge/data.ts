@@ -125,7 +125,16 @@ export function closedFrame(
     recoveredDays.size===data.metadata.discarded_reasons.crossed_sides && !data.metadata.discarded_sides &&
     !data.metadata.validation_gaps?.length && data.candles.every(c=>c.history_completeness!=='partial_validation');
   if (allRecovered)record('PROVIDER_ROWS_RECONSTRUCTED','VERIFIED_INTRADAY_AGGREGATION','','All rejected daily rows were reconstructed from provider intraday bars with neighboring-day and unaffected-field checks.');
-  if (!allRecovered && (data.metadata.discarded_rows || data.metadata.discarded_sides))
+  const gaps=data.metadata.validation_gaps??[];
+  const cutoff=Math.min(now,fetched);
+  const formingOnly=gaps.length>0 && gaps.length+recoveredDays.size===data.metadata.discarded_rows &&
+    !data.metadata.discarded_sides && gaps.every(time=>{
+      const start=Date.parse(time),date=new Date(start);
+      const end=data.timeframe==='MN1'?Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,1):start+HISTORY[data.timeframe].seconds*1000;
+      return end>cutoff;
+    });
+  if(formingOnly)record('FORMING_INPUT_REJECTED','UPSTREAM_NORMALIZATION','','Outstanding rejected inputs belong to intervals that had not closed at the analysis cutoff.');
+  if (!allRecovered && !formingOnly && (data.metadata.discarded_rows || data.metadata.discarded_sides))
     {warnings.add("PROVIDER_VALIDATION_LOSS");record('PROVIDER_VALIDATION_LOSS','UPSTREAM_NORMALIZATION','','Provider rows/sides were discarded before this engine. Consult metadata.discarded_reasons and rejected_rows; do not infer root cause without raw upstream evidence.');}
   if (fatal) warnings.add("UNLOCATABLE_OR_INVALID_TIME");
   return {

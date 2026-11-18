@@ -1,3 +1,4 @@
+import {getCandles} from '../lib/candles';
 import assert from "node:assert/strict";
 import test from "node:test";
 import { normalizeCandles } from "../lib/candle-data";
@@ -84,5 +85,9 @@ test("MN1 routes load 60 real calendar months for all seven symbols through boun
     const before = urls.length;
     assert.equal((await candles(new Request("http://local/api/candles?timeframe=MN1&limit=61"))).status, 400);
     assert.equal(urls.length, before);
+    Date.now = () => now + 61_000;
+    const refreshed=await getCandles("EU50","MN1",60,true);
+    assert.equal(refreshed.candles.length,60);
+    assert.equal(urls.length,before+1,"only the window containing the forming month is fetched again");
   } finally { process.env = originalEnv; globalThis.fetch = originalFetch; Date.now = originalNow; }
 });
