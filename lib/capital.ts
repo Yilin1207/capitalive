@@ -184,7 +184,7 @@ const marketRequests: Partial<Record<PublicSymbol, Promise<MarketMapping>>> = {}
 let getRequestQueue: Promise<void> = Promise.resolve();
 let nextGetRequestAt = 0;
 
-type CapitalRequestStep = "authentication" | "markets_batch" | "single_market" | "prices";
+type CapitalRequestStep = "authentication" | "markets_batch" | "single_market" | "prices" | "client_sentiment";
 
 export type CapitalErrorCode =
   | "CAPITAL_AUTH"
@@ -715,6 +715,11 @@ export async function getMarketSummaries(
     if (typeof summary.epic === "string" && epics.includes(summary.epic)) summaries[summary.epic] = summary;
   }
   return summaries;
+}
+
+export function getClientSentiments(epics: readonly string[]): Promise<unknown> {
+  const query = new URLSearchParams({marketIds: epics.join(",")});
+  return capitalGet(`/api/v1/clientsentiment?${query}`, "client_sentiment", createCapitalRequestContext());
 }
 
 export function capitalEnvironment(): "demo" | "live" {

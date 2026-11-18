@@ -7,7 +7,7 @@ export type ContextMarketSpec = {
   asset_class: "rates" | "volatility";
   region: "US";
   tenor: null;
-  representation: "volatility_index";
+  representation: "volatility_cfd";
   inverse_to_yield: boolean;
   role: "context";
   contract: string | null;
@@ -20,7 +20,7 @@ export const CONTEXT_MARKETS: Record<ContextSymbol, ContextMarketSpec> = {
     asset_class: "volatility",
     region: "US",
     tenor: null,
-    representation: "volatility_index",
+    representation: "volatility_cfd",
     inverse_to_yield: false,
     role: "context",
     contract: null,
