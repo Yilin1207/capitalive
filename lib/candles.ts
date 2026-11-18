@@ -75,7 +75,12 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
             if(wait||Date.now()<coolingUntil){attempts.push({day,source:'Capital.com HOUR_4',status:'NOT_RECOVERED',reason:'RECOVERY_REQUEST_BUDGET',input_sha256:null});continue;}
             try{const raw=(payload as {prices:Record<string,unknown>[]}).prices.find(r=>typeof r.snapshotTimeUTC==='string'&&r.snapshotTimeUTC.slice(0,19)===day.slice(0,19));
               const detail=await getHistoricalPrices(epic,'HOUR_4',20,undefined,{from:new Date(Date.parse(day)-86400_000).toISOString(),to:new Date(Date.parse(day)+86400_000-1000).toISOString()});
-              const result=recoverDaily(rejected,raw,quality.candles,detail,fetchedAt);attempts.push(result.record);
+              let result=recoverDaily(rejected,raw,quality.candles,detail,fetchedAt);
+              if(result.record.reason==='INCOMPLETE_OR_INVALID_H4_DAY' && !upstreamBudget.take('history')){
+                const hours=await getHistoricalPrices(epic,'HOUR',48,undefined,{from:new Date(Date.parse(day)-86400_000).toISOString(),to:new Date(Date.parse(day)+86400_000-1000).toISOString()});
+                result=recoverDaily(rejected,raw,quality.candles,hours,fetchedAt,symbol);
+              }
+              attempts.push(result.record);
               if(result.candle){quality.candles.push(result.candle);recovered.add(day);}
             }catch(error){attempts.push({day,source:'Capital.com HOUR_4',status:'NOT_RECOVERED',reason:error instanceof CapitalApiError?error.code:'RECOVERY_UNAVAILABLE',input_sha256:null});if(error instanceof CapitalApiError&&error.code==='CAPITAL_RATE_LIMIT')coolingUntil=Date.now()+Math.max(60,error.retryAfter??0)*1000;}
           }

@@ -39,7 +39,6 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
  if(p.has('view')&&!['structure','interactions'].includes(p.get('view')!))return fail('INVALID_VIEW');
  if(p.has('lifecycle')&&!['ACTIVE','CONSUMED','TESTED','INVALIDATED','UNVERIFIED','CANDIDATE','FILLED','PARTIALLY_FILLED'].includes(p.get('lifecycle')!))return fail('INVALID_LIFECYCLE');
  try{
-  checkHistoryRequest(request,view!=='report' && !!pin && !refresh);
   const market=symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number];
   const ranges:Partial<Record<Timeframe,{high_id:string;low_id:string}>>={};
   for(const t of PA_TFS){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
@@ -49,6 +48,7 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   const policy=freshnessPolicy(process.env);
   // A pinned detail page can continue reading its immutable closed bars.
   const pinned=pin && view!=='report' && !refresh && saved?.hash===pin;
+  checkHistoryRequest(request,Boolean(pinned));
   if(!pinned){
    const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
    const key=market+':'+Math.floor(now/window)+':'+Math.floor(now/14400000);
@@ -81,7 +81,7 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   let result:Record<string,unknown>;
   if(view==='candles'){
    const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const rows=all.slice(offset,offset+limit).map(b=>({...b,is_closed:true}));
-   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,candles:rows,total:all.length,offset,next_offset:offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps}};
+   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,candles:rows,total:all.length,offset,next_offset:offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps,reconstructions:data[tf as Timeframe].metadata.aggregation?.reconstructions}};
   }else if(p.get('view')==='structure'){
    result={...base,schema_version:'pa-structure-v6',timeframe:tf,market_structure:core.market_structure[tf as Timeframe],dealing_ranges:core.dealing_ranges.filter(r=>r.timeframe===tf),definitions:core.definitions,omitted:0};
   }else if(p.get('view')==='interactions'){

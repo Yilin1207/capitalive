@@ -720,7 +720,7 @@ export function capitalEnvironment(): "demo" | "live" {
 // Reuses the same server-only session, refresh, retry and GET pacing as quotes.
 export async function getHistoricalPrices(
   epic: string,
-  resolution: "WEEK" | "DAY" | "HOUR_4" | "MINUTE",
+  resolution: "WEEK" | "DAY" | "HOUR_4" | "HOUR" | "MINUTE",
   limit: number,
   context = createCapitalRequestContext(),
   range?: { from?: string; to?: string },

@@ -19,7 +19,7 @@ export type Candle = {
   is_closed: boolean;
   start_time?: string;
   end_time?: string;
-  source?: "Capital.com DAY" | "Capital.com HOUR_4" | "Capital.com DAY + HOUR_4";
+  source?: "Capital.com DAY" | "Capital.com HOUR_4" | "Capital.com DAY + HOUR_4" | "Capital.com HOUR" | "Capital.com DAY + intraday";
   reconstructed_daily_times?: string[];
   first_daily_bar?: string;
   last_daily_bar?: string;
@@ -76,7 +76,7 @@ export function parseCandleTime(value: unknown): string | null {
   return iso.slice(0, 19) === value.slice(0, 19) ? iso : null;
 }
 
-export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe, "MN1"> | "M1", fetchedAt: number) {
+export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe, "MN1"> | "M1" | "H1", fetchedAt: number) {
   const prices = object(payload).prices;
   if (!Array.isArray(prices)) throw new Error("Invalid prices schema");
   const byTime = new Map<string, Candle>();
@@ -130,7 +130,7 @@ export function normalizeCandles(payload: unknown, timeframe: Exclude<Timeframe,
     const candle = {
       time,
       ...Object.fromEntries(fields.map(field => [field, { bid: sides.bid?.[field] ?? null, ask: sides.ask?.[field] ?? null }])),
-      is_closed: Date.parse(time) + (timeframe === "M1" ? 60 : HISTORY[timeframe].seconds) * 1000 <= fetchedAt,
+      is_closed: Date.parse(time) + (timeframe === "M1" ? 60 : timeframe === "H1" ? 3600 : HISTORY[timeframe].seconds) * 1000 <= fetchedAt,
     } as Candle;
     byTime.set(time, candle);
   }
