@@ -118,7 +118,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       };
     } catch (error) {
       if (error instanceof CapitalApiError && error.code === "CAPITAL_RATE_LIMIT") {
-        const retryAfter = Math.max(60, error.retryAfter ?? 0);
+        const retryAfter = error.step==="authentication" ? Math.max(1,error.retryAfter??2) : Math.max(60, error.retryAfter ?? 0);
         coolingUntil = Date.now() + retryAfter * 1000;
         throw new HistoryError("CAPITAL_RATE_LIMIT", "Capital.com rate limit reached", 429, retryAfter);
       }

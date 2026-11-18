@@ -311,6 +311,10 @@ async function createSession(
         timeoutMs: SESSION_TIMEOUT_MS,
         maxAttempts: 3,
         baseDelayMs: 1000,
+        // Independent cold instances share Capital.com's one-session-per-second quota.
+        rateLimitBackoffMs: [1100,2100,3500,5000,6500],
+        respectRetryAfter: true,
+        maxRetryDelayMs: 8500,
         metrics: context,
         onFailure: ({ status, statusText, timedOut }) =>
           logCapitalError("authentication", context, {
@@ -350,6 +354,7 @@ async function createSession(
       "Capital.com authentication failed",
       "authentication",
       response.status,
+      retryAfterSeconds(response.headers.get("Retry-After")),
     );
   }
 

@@ -19,6 +19,7 @@ type RetryOptions = {
   timeoutMs: number;
   maxAttempts?: number;
   baseDelayMs?: number;
+  rateLimitBackoffMs?: readonly number[];
   metrics?: RetryMetrics;
   fetchImpl?: typeof fetch;
   sleepImpl?: (milliseconds: number) => Promise<void>;
@@ -68,7 +69,7 @@ export async function fetchWithTimeoutRetry(
     ((milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds)));
   let lastNetworkError: UpstreamFetchError | null = null;
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+  for (let attempt = 1; attempt <= Math.max(maxAttempts,1+(options.rateLimitBackoffMs?.length??0)); attempt += 1) {
     let delayMs = baseDelayMs * 2 ** (attempt - 1);
     await options.beforeAttempt?.();
     const controller = new AbortController();
@@ -77,7 +78,9 @@ export async function fetchWithTimeoutRetry(
     try {
       const response = await fetchImpl(input, { ...init, signal: controller.signal });
       clearTimeout(timeout);
-      if (!isTransientStatus(response.status) || attempt === maxAttempts) return response;
+      const backoff=response.status===429 ? options.rateLimitBackoffMs : undefined;
+      if (!isTransientStatus(response.status) || attempt >= (backoff ? backoff.length+1 : maxAttempts)) return response;
+      if(backoff)delayMs=backoff[attempt-1]+Math.floor(Math.random()*1500);
       if (options.respectRetryAfter) {
         const retryAfter = retryAfterSeconds(response.headers.get("Retry-After"));
         if (retryAfter !== null) delayMs = Math.max(delayMs, retryAfter * 1000);
@@ -104,7 +107,7 @@ export async function fetchWithTimeoutRetry(
         statusText: null,
         timedOut,
       });
-      if (attempt === maxAttempts) throw lastNetworkError;
+      if (attempt >= maxAttempts) throw lastNetworkError;
     }
 
     if (options.metrics) options.metrics.retryCount += 1;
