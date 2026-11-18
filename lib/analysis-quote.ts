@@ -31,9 +31,19 @@ export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarke
       summaries.status === "fulfilled" ? summaries.value[epic] : undefined, snapshot.value.receivedAt, now) : null;
     const tick = streaming.status === "fulfilled" ? streaming.value.quotes[epic] : undefined;
     const ws = tick ? normalizeStreamingQuote(symbol, tick, rest, now) : null;
-    const quote = ws ?? rest ?? unavailable(symbol, epic);
+    const row = summaries.status === "fulfilled" ? summaries.value[epic] : undefined;
+    const catalogue = row?.epic === epic ? normalizeQuote(symbol, epic, {
+      instrument: {epic, name: row.instrumentName}, snapshot: row,
+    }, row, retrieved, now) : null;
+    // Prices and provider time always come from the same observation.
+    const candidates = [ws, catalogue, rest].filter((q): q is MarketQuote =>
+      !!q && q.epic === epic && q.bid !== null && q.bid > 0 && q.ask !== null &&
+      (!q.quote_time || Date.parse(q.quote_time) <= now));
+    candidates.sort((a,b) => Number(b.fresh) - Number(a.fresh) ||
+      (Date.parse(b.quote_time ?? '') || 0) - (Date.parse(a.quote_time ?? '') || 0));
+    const quote = candidates[0] ?? unavailable(symbol, epic);
     return { ...quote, provider_timestamp: quote.quote_time, environment, fetched_at_utc: retrieved,
-      rest_fallback_reason: ws ? null : "no_valid_stream_tick_for_analysis" };
+      rest_fallback_reason: quote.source_type === "WEBSOCKET" ? null : "no_valid_stream_tick_for_analysis" };
   }, Date.now(), refresh);
   return { ...evaluateQuote(value), cache_hit: hit, evaluated_at: new Date().toISOString() };
 }

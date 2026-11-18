@@ -1,6 +1,7 @@
 import 'server-only';
-import {createHash} from 'node:crypto';
-import {closedFrame} from '../knowledge/data';
+import {reconcileOhlc} from './coverage';
+import {HistoryCache} from '../history-cache';
+import {freshnessPolicy} from '../research-bridge/freshness';
 import {getCandles} from '../candles';
 import {getAnalysisQuote} from '../analysis-quote';
 import {HISTORY,type CandleResponse,type Timeframe,type PriceSide} from '../candle-data';
@@ -9,9 +10,16 @@ import {buildPaEngine,interactionsForEvidence} from './core';
 import {buildPaReport,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
 import {validatePaReport} from './contract';
-const cache=new Map<string,PaEngine>();
+
 type Dependencies={getCandles:typeof getCandles;getAnalysisQuote:typeof getAnalysisQuote};
-export async function paHttp(request:Request,view:'report'|'evidence'|'candles'='report',deps:Dependencies={getCandles,getAnalysisQuote}){
+const defaultDeps = {getCandles, getAnalysisQuote};
+type Frames = Record<Timeframe,CandleResponse>;
+type Snapshot = {core:PaEngine; data:Frames; hash:string};
+function snapshotCache(){
+ return {frames:new HistoryCache<Frames>(60_000,6), recent:new Map<string,Snapshot>()};
+}
+const stores=new WeakMap<Dependencies,ReturnType<typeof snapshotCache>>();
+export async function paHttp(request:Request,view:'report'|'evidence'|'candles'='report',deps:Dependencies=defaultDeps){
  const p=new URL(request.url).searchParams,symbol=(p.get('symbol')??'EURUSD').toUpperCase(),side=p.get('side')??'bid';
  const json=(body:unknown,status=200,retry=0)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*',...(retry?{'Retry-After':String(retry)}:{})}});
  const fail=(code:string,status=400)=>json(paError(symbol,code),status);
@@ -31,24 +39,49 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
  if(p.has('view')&&!['structure','interactions'].includes(p.get('view')!))return fail('INVALID_VIEW');
  if(p.has('lifecycle')&&!['ACTIVE','CONSUMED','TESTED','INVALIDATED','UNVERIFIED','CANDIDATE','FILLED','PARTIALLY_FILLED'].includes(p.get('lifecycle')!))return fail('INVALID_LIFECYCLE');
  try{
-  checkHistoryRequest(request);const data={} as Record<Timeframe,CandleResponse>;
-  for(const t of PA_TFS)data[t]=await deps.getCandles(symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number],t,HISTORY[t].limit,refresh);
-  const quote=await deps.getAnalysisQuote(symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number],undefined,refresh);
-  const ranges:Partial<Record<Timeframe,{high_id:string;low_id:string}>>={};for(const t of PA_TFS){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
-  const cutoff=asof??PA_TFS.map(t=>data[t].fetched_at).sort()[0];
-  const key=createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,side,ranges,archive:asof??null,frames:PA_TFS.map(t=>{const f=closedFrame(data[t],side as PriceSide,cutoff);return {symbol:data[t].symbol,environment:data[t].environment,tf:t,bars:f.bars,status:f.status,warnings:f.warnings,validation:data[t].metadata.validation_gaps};})})).digest('hex');
-  const built=cache.get(key)??buildPaEngine(data,side as PriceSide,{...(asof?{as_of:asof}:{}),ranges}),hash=snapshotHash(built);
-  if(PA_TFS.some(t=>ranges[t]&&built.frames[t].range_selection_error))return fail('INVALID_RANGE_SELECTION');
-  const core=built;if(!cache.has(key)){if(cache.size>=12)cache.delete(cache.keys().next().value!);cache.set(key,core);}
+  const market=symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number];
+  const ranges:Partial<Record<Timeframe,{high_id:string;low_id:string}>>={};
+  for(const t of PA_TFS){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
+  let store=stores.get(deps);if(!store){store=snapshotCache();stores.set(deps,store);}
+  const scope=JSON.stringify([market,side,ranges,asof]);
+  let saved=store.recent.get(scope);
+  const policy=freshnessPolicy(process.env);
+  // A pinned detail page can continue reading its immutable closed bars.
+  const pinned=pin && view!=='report' && !refresh && saved?.hash===pin;
+  checkHistoryRequest(request,Boolean(pinned));
+  if(!pinned){
+   const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
+   const key=market+':'+Math.floor(now/window)+':'+Math.floor(now/14400000);
+   const {value:data}=await store.frames.get(key,async()=>{
+    const frames={} as Frames;
+    for(const t of PA_TFS)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh);
+    return frames;
+   },now,refresh);
+   if(refresh || !saved || saved.data!==data){
+    const core=buildPaEngine(data,side as PriceSide,{...(asof?{as_of:asof}:{}),ranges});
+    if(PA_TFS.some(t=>ranges[t]&&core.frames[t].range_selection_error))return fail('INVALID_RANGE_SELECTION');
+    saved={core,data,hash:snapshotHash(core)};
+    if(store.recent.size>=12&&!store.recent.has(scope))store.recent.delete(store.recent.keys().next().value!);
+    store.recent.set(scope,saved);
+   }
+  }
+  const {core,data,hash}=saved!;
   if(pin&&pin!==hash)return fail('SNAPSHOT_CHANGED',409);
-  const report=buildPaReport(core,data,quote,new Date().toISOString(),process.env.VERCEL_GIT_COMMIT_SHA??null);
-  if(view==='report'){validatePaReport(report,symbol);return json(report,report.status==='ERROR'?503:200);}
-  if(['STALE','ERROR'].includes(report.status)&&!asof)return json({...paError(symbol,'CURRENT_DATA_UNAVAILABLE'),status:report.status,freshness:report.freshness},503);
-  const base={mode:'PA_ONLY',symbol,price_side:side,as_of:core.as_of,snapshot_sha256:hash,generated_at:report.generated_at,expires_at:report.expires_at,source:report.source,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
+  const commit=process.env.VERCEL_GIT_COMMIT_SHA??null;
+  if(view==='report'){
+   const quote=await deps.getAnalysisQuote(market,undefined,refresh);
+   const report=buildPaReport(core,data,quote,new Date().toISOString(),commit);
+   validatePaReport(report,symbol);return json(report,report.status==='ERROR'?503:200);
+  }
+  if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
+  if(!PA_TFS.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);
+  const base={mode:'PA_ONLY',symbol,price_side:side,as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
+   source:{provider:'Capital.com',environment:data.H4.environment,analysis_schema:'pa-engine-v6',price_side:side,engine_commit:commit,evidence_sha256:hash,demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
+   quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
   let result:Record<string,unknown>;
   if(view==='candles'){
    const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const rows=all.slice(offset,offset+limit).map(b=>({...b,is_closed:true}));
-   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,candles:rows,total:all.length,offset,next_offset:offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation};
+   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,candles:rows,total:all.length,offset,next_offset:offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps,reconstructions:data[tf as Timeframe].metadata.aggregation?.reconstructions}};
   }else if(p.get('view')==='structure'){
    result={...base,schema_version:'pa-structure-v6',timeframe:tf,market_structure:core.market_structure[tf as Timeframe],dealing_ranges:core.dealing_ranges.filter(r=>r.timeframe===tf),definitions:core.definitions,omitted:0};
   }else if(p.get('view')==='interactions'){
@@ -63,5 +96,5 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   }
   if(Buffer.byteLength(JSON.stringify(result))>1_000_000)return fail('PAGE_TOO_LARGE_REDUCE_LIMIT',413);
   return json(result);
- }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return json(paError(symbol,limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'),limited?429:503,limited?60:0);}
+ }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return json(paError(symbol,limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'),limited?429:503,limited?(e && typeof e==='object' && 'retryAfter' in e && typeof e.retryAfter==='number' && e.retryAfter>0?e.retryAfter:60):0);}
 }
