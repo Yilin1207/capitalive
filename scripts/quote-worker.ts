@@ -4,7 +4,7 @@ import { capitalEnvironment, getMarketSummaries, VERIFIED_MARKETS, type CapitalM
 import { streamQuotes } from "../lib/capital-stream";
 import { providerTime, type StreamDiagnostics, type StreamTick } from "../lib/tick-data";
 
-const symbols = ["NAS100", "JP225", "EURUSD", "GER40", "EU50", "UK100", "BRENT"] as const;
+import { ACTIVE_RESEARCH_SYMBOLS as symbols } from '../lib/active-research-markets';
 const byEpic = Object.fromEntries(symbols.map(symbol => [VERIFIED_MARKETS[symbol].epic, symbol]));
 const epics = Object.keys(byEpic);
 

@@ -1,6 +1,6 @@
 import { HISTORY, type Candle, type CandleResponse, type PriceSide, type Timeframe } from "./candle-data";
 
-// EU50 remains available in the general catalogue and historical regressions.
+// JP225 remains available in the general catalogue and historical regressions.
 export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "JP225", "EU50"] as const;
 export type AnalysisSymbol = typeof ANALYSIS_SYMBOLS[number];
 export const ANALYSIS_TIMEFRAMES = ["MN1", "W1", "D1", "H4"] as const;

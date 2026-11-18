@@ -4,10 +4,10 @@ import {buildIntelligence} from '../lib/knowledge/intelligence';import {buildDes
 import {closedFrame} from '../lib/knowledge/data';import {detectFractals,detectFvg} from '../lib/knowledge/detectors';import {regularSession,calendarDiagnostics} from '../lib/research/calendars';
 import {jp225Synthetic} from './fixtures/jp225-synthetic';
 import {marketAudit} from '../lib/market-audit';import type {Timeframe} from '../lib/candle-data';
-test('JP225 active trio and J225 mapping; archived EU50 remains general analysis only',async()=>{
- assert.deepEqual(ACTIVE_RESEARCH_SYMBOLS,['EURUSD','NAS100','JP225']);assert.equal(VERIFIED_MARKETS.JP225.epic,'J225');assert.equal(analysisParams(new URLSearchParams({symbol:'JP225'})).symbol,'JP225');
+test('EU50 active trio and verified mapping; JP225 remains readable in general analysis',async()=>{
+ assert.deepEqual(ACTIVE_RESEARCH_SYMBOLS,['EURUSD','NAS100','EU50']);assert.equal(VERIFIED_MARKETS.EU50.epic,'EU50');assert.equal(analysisParams(new URLSearchParams({symbol:'JP225'})).symbol,'JP225');
  assert.equal(analysisParams(new URLSearchParams({symbol:'EU50'})).symbol,'EU50');
- let calls=0;const r=await deskReportHttp(new Request('https://local/api/desk-report?symbol=EU50'),{getCandles:async()=>{calls++;throw Error('must not fetch');},getAnalysisQuote:async()=>{throw Error('must not fetch');}} as never);assert.equal(r.status,400);assert.equal(calls,0);
+ let calls=0;const r=await deskReportHttp(new Request('https://local/api/desk-report?symbol=JP225'),{getCandles:async()=>{calls++;throw Error('must not fetch');},getAnalysisQuote:async()=>{throw Error('must not fetch');}} as never);assert.equal(r.status,400);assert.equal(calls,0);
 });
 for(const side of ['bid','ask'] as const)test(`JP225 synthetic ${side}: four-frame V4 pipeline and compact contract without future evidence`,()=>{
  const {data,quote,asOf}=jp225Synthetic(),r=buildIntelligence(data,side,quote),report=buildDeskReport(r,data,quote,asOf);

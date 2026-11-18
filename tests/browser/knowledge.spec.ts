@@ -1,6 +1,6 @@
 ﻿import {test,expect} from '@playwright/test';
-test('active market selector uses EURUSD NAS100 JP225 and retired intelligence UI redirects to PA desk',async({page})=>{
- await page.goto('/');expect(await page.locator('select').first().locator('option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['EURUSD','NAS100','JP225']);
+test('active market selector uses EURUSD NAS100 EU50 and retired intelligence UI redirects to PA desk',async({page})=>{
+ await page.goto('/');expect(await page.locator('select').first().locator('option').evaluateAll(options=>options.map(o=>(o as HTMLOptionElement).value))).toEqual(['EURUSD','NAS100','EU50']);
  await page.goto('/intelligence');await expect(page).toHaveURL(/\/research$/);await expect(page.getByRole('heading',{name:'Capitalive V6 — PA Evidence'})).toBeVisible();await expect(page.getByRole('heading',{name:/Narrative|A \/ B \/ C/})).toHaveCount(0);
 });
 test('knowledge catalog searches original summaries and exposes uncertainties',async({page})=>{

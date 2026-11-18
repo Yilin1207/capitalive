@@ -7,11 +7,10 @@ import {closedFrame} from '../lib/knowledge/data';
 import {detectFractals,TF_ORDER} from '../lib/knowledge/detectors';
 import type {CandleResponse,Timeframe} from '../lib/candle-data';
 import type {MarketQuote} from '../lib/quote-normalization';
-import {jp225Synthetic} from './fixtures/jp225-synthetic';
 
-const fixture=(s:string)=>s==='JP225'?jp225Synthetic():JSON.parse(readFileSync(`tests/fixtures/edge-v2/${s}.json`,'utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
+const fixture=(s:string)=>JSON.parse(readFileSync(`tests/fixtures/edge-v2/${s}.json`,'utf8')) as {data:Record<Timeframe,CandleResponse>;quote:MarketQuote};
 
-for(const symbol of ['EURUSD','NAS100','JP225'])for(const side of ['bid','ask'] as const)test(`V6 ${symbol} ${side}: archived/synthetic regression preserves PA evidence, disables interpretation`,()=>{
+for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] as const)test(`V6 ${symbol} ${side}: archived regression preserves PA evidence, disables interpretation`,()=>{
  const input=fixture(symbol),pa=buildPaEngine(input.data,side),legacy=buildIntelligence(input.data,side,input.quote);
  const kinds=['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK','TOUCH','RAID'];
  const old=legacy.frames.flatMap(f=>f.findings).filter(f=>kinds.includes(f.kind)),rows=pa.evidence.filter(f=>kinds.includes(f.kind));

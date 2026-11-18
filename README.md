@@ -1,6 +1,6 @@
 # Capitalive V6 - PA Only Engine
 
-Technical evidence for EURUSD, NAS100 and JP225, MN1/W1/D1/H4, Bid/Ask.
+Technical evidence for EURUSD, NAS100 and EU50, MN1/W1/D1/H4, Bid/Ask.
 Capitalive detects closed-candle PA and lifecycle. ChatGPT interprets it; the user decides.
 No automatic Narrative, A/B/C, entry/stop/target selection, R:R, scoring or trading.
 
@@ -56,7 +56,7 @@ not solve intraday freshness.
 ## ChatGPT and recovery
 
 For current research, fetch the public `/api/desk-report?symbol=EURUSD&side=bid`
-URL (also NAS100 and JP225). No login, cookie or token is required. The endpoint
+URL (also NAS100 and EU50). No login, cookie or token is required. The endpoint
 re-evaluates freshness on every request; HTTP responses are `private, no-store`.
 Provider quote cache is 5 seconds and candle cache is 30 seconds. Check
 `quote.provider_timestamp`, `freshness.quote_status`, `expires_at`, last closed

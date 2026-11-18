@@ -16,7 +16,7 @@ import {compactResearchContext} from './context';
 
 type Intelligence = ReturnType<typeof buildIntelligence>;
 export const SYMBOLS = ACTIVE_RESEARCH_SYMBOLS;
-const REPORT_SYMBOLS = [...SYMBOLS,'EU50'] as const;
+const REPORT_SYMBOLS = [...SYMBOLS,'JP225'] as const;
 export type BridgeSymbol = typeof REPORT_SYMBOLS[number];
 const TFS: Timeframe[] = ['MN1','W1','D1','H4'];
 const hash = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');

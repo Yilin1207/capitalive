@@ -5,7 +5,7 @@ import {collectReports,publishReports,verifyPublication,transportError,boundedJs
 import {MAX_REPORT_BYTES,CONTRACT_REVISION,validateReport,type BridgeDiagnostic} from '../lib/research-bridge/contract.ts';
 import {syntheticDeskReport,syntheticContextReport} from './fixtures/desk-report-synthetic.ts';
 const now=Date.parse('2026-11-15T14:00:00Z'),iso=new Date(now).toISOString();
-const reports=()=>Object.fromEntries(['EURUSD','NAS100','JP225'].map(s=>[s,transportError(s,iso)]));
+const reports=()=>Object.fromEntries(['EURUSD','NAS100','EU50'].map(s=>[s,transportError(s,iso)]));
 
 test('V5.1 portable publisher accepts context and rejects false trend or mismatched inspection snapshot',async()=>{
  const report=syntheticContextReport();validateReport(report);
@@ -38,8 +38,8 @@ test('V4 publisher accepts technical reports and rejects decision/snapshot contr
 test('V5 migration rejects old sources before publishing incompatible evidence',async()=>{
  const fetcher=async(url:unknown)=>{
   const symbol=new URL(String(url)).searchParams.get('symbol')!;
-  const legacy=symbol==='JP225'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
-  return Response.json(legacy,{status:symbol==='JP225'?503:200,headers:{'x-desk-contract':'desk-report-v1.1'}});
+  const legacy=symbol==='EU50'?{...transportError(symbol,iso,'UPSTREAM_UNAVAILABLE'),diagnostic:{stage:'provider',code:'CAPITAL_INVALID_RESPONSE',http_status:503,response_bytes:null,media_type:'json',contract_revision:'desk-report-v1.1'}}:syntheticDeskReport(symbol);
+  return Response.json(legacy,{status:symbol==='EU50'?503:200,headers:{'x-desk-contract':'desk-report-v1.1'}});
  };
  const diagnostics:BridgeDiagnostic[]=[];
  const output=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','test-bypass',fetcher as typeof fetch,()=>now,[],d=>diagnostics.push(d));
@@ -47,9 +47,9 @@ test('V5 migration rejects old sources before publishing incompatible evidence',
  assert.equal(diagnostics[0].stage,'schema');assert.equal(diagnostics[0].code,'CONTRACT_REVISION_MISMATCH');assert.equal(diagnostics[0].contract_revision,CONTRACT_REVISION);
 });
 test('Publisher replaces inaccessible/HTML/oversize upstream results with independent sanitized ERROR reports',async()=>{
-  const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('JP225',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
+  const fetcher=async(url:unknown)=>String(url).includes('EURUSD')?new Response('private-password-html',{status:302,headers:{'content-type':'text/html'}}):String(url).includes('NAS100')?Response.json({padding:'x'.repeat(MAX_REPORT_BYTES)}):Response.json(transportError('EU50',iso,'UPSTREAM_UNAVAILABLE'),{status:503});
   const result=await collectReports('https://capitalive-abc-yilin1207s-projects.vercel.app','private-bypass-canary',fetcher as typeof fetch,()=>now);
-  assert.deepEqual(Object.keys(result),['EURUSD','NAS100','JP225']);assert.ok(Object.values(result).every(r=>r.status==='ERROR'));assert.ok(!JSON.stringify(result).includes('private-password'));
+  assert.deepEqual(Object.keys(result),['EURUSD','NAS100','EU50']);assert.ok(Object.values(result).every(r=>r.status==='ERROR'));assert.ok(!JSON.stringify(result).includes('private-password'));
   await assert.rejects(()=>collectReports('https://evil.test','secret',fetcher as typeof fetch),/CONFIGURATION/);
   await assert.rejects(()=>boundedJson(new Response('x'.repeat(MAX_REPORT_BYTES+1),{headers:{'content-type':'application/json'}})),/REPORT_TOO_LARGE/);
 });
@@ -86,14 +86,14 @@ test('Publisher refuses a public repository before uploading any report',async()
   let calls=0;const fetcher=async()=>{calls++;return Response.json({private:false,full_name:TARGET_REPOSITORY,default_branch:'main'});};
   await assert.rejects(()=>publishReports('token-canary',reports(),fetcher as typeof fetch,now),/PRIVATE_REPOSITORY_REQUIRED/);assert.equal(calls,1);
 });
-for(const archiveEu50 of [false,true])test(`Publisher commits exactly three active reports atomically; existing EU50=${archiveEu50}`,async()=>{
+for(const archiveJp225 of [false,true])test(`Publisher commits exactly three active reports atomically; existing JP225=${archiveJp225}`,async()=>{
   const writes:{path:string;body:Record<string,unknown>}[]=[];
   const fetcher=async(url:unknown,init?:RequestInit)=>{
     const path=String(url).split(TARGET_REPOSITORY)[1];const body=init?.body?JSON.parse(String(init.body)):{};if(init?.method!=='GET')writes.push({path,body});
     if(path==='')return Response.json({private:true,full_name:TARGET_REPOSITORY,default_branch:'main',fork:false});
     if(path==='/git/ref/heads/main')return Response.json({object:{sha:'parent'}});
     if(path==='/git/commits/parent')return Response.json({tree:{sha:'base-tree'}});
-    if(path==='/git/trees/base-tree?recursive=1')return Response.json({tree:archiveEu50?[{path:'reports/latest/EU50.json',type:'blob',sha:'a'.repeat(40)}]:[]});
+    if(path==='/git/trees/base-tree?recursive=1')return Response.json({tree:archiveJp225?[{path:'reports/latest/JP225.json',type:'blob',sha:'a'.repeat(40)}]:[]});
     if(path==='/git/trees')return Response.json({sha:'new-tree'});
     if(path==='/git/commits')return Response.json({sha:'new-commit'});
     if(path==='/git/refs/heads/main')return Response.json({object:{sha:'new-commit'}});
@@ -101,10 +101,10 @@ for(const archiveEu50 of [false,true])test(`Publisher commits exactly three acti
   };
   const result=await publishReports('token-canary',reports(),fetcher as typeof fetch,now);
   assert.equal(result.commit,'new-commit');const tree=writes.find(w=>w.path==='/git/trees')!.body.tree as {path:string;content?:string;sha?:string|null}[];
-  assert.deepEqual(tree.filter(t=>t.content!==undefined).map(t=>t.path),['reports/latest/EURUSD.json','reports/latest/NAS100.json','reports/latest/JP225.json','reports/latest/manifest.json']);
-  assert.deepEqual(result.manifest.reports.map(r=>r.symbol),['EURUSD','NAS100','JP225']);
+  assert.deepEqual(tree.filter(t=>t.content!==undefined).map(t=>t.path),['reports/latest/EURUSD.json','reports/latest/NAS100.json','reports/latest/EU50.json','reports/latest/manifest.json']);
+  assert.deepEqual(result.manifest.reports.map(r=>r.symbol),['EURUSD','NAS100','EU50']);
   for(const row of result.manifest.reports){const content=tree.find(t=>t.path===row.path)!.content!;assert.equal(row.bytes,Buffer.byteLength(content));assert.equal(row.sha256,createHash('sha256').update(content).digest('hex'));}
-  if(archiveEu50){assert.equal(tree.find(t=>t.path==='reports/latest/EU50.json')!.sha,null);assert.equal(tree.find(t=>t.path===`reports/archive/EU50/${'a'.repeat(40)}.json`)!.sha,'a'.repeat(40));}
+  if(archiveJp225){assert.equal(tree.find(t=>t.path==='reports/latest/JP225.json')!.sha,null);assert.equal(tree.find(t=>t.path===`reports/archive/JP225/${'a'.repeat(40)}.json`)!.sha,'a'.repeat(40));}
   assert.ok(!JSON.stringify(tree).includes('token-canary'));assert.deepEqual(writes.at(-1),{path:'/git/refs/heads/main',body:{sha:'new-commit',force:false}});
 });
 test('Publisher validates all three reports before the first content upload',async()=>{
@@ -115,7 +115,7 @@ test('Publisher validates all three reports before the first content upload',asy
 
 test('V5 readback pins all files to one commit, detects tampering and exposes expiry',async()=>{
  const commit='a'.repeat(40),files:Record<string,Buffer>={},rows=[];
- for(const symbol of ['EURUSD','NAS100','JP225']){
+ for(const symbol of ['EURUSD','NAS100','EU50']){
   const r={...syntheticDeskReport(symbol),published_at:iso},path=`reports/latest/${symbol}.json`,bytes=Buffer.from(JSON.stringify(r)+'\n');files[path]=bytes;
   rows.push({symbol,path,status:r.status,generated_at:r.generated_at,as_of:r.as_of,expires_at:r.expires_at,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')});
  }
