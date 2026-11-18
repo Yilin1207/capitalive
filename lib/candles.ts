@@ -13,7 +13,9 @@ export class HistoryError extends Error {
 
 const TTL_SECONDS = 30;
 const cache = new HistoryCache<Omit<CandleResponse, "metadata"> & { quality: ReturnType<typeof normalizeCandles>; aggregation?: CandleResponse["metadata"]["aggregation"] }>(TTL_SECONDS * 1000);
-const upstreamBudget = new WindowLimit(24, 60_000);
+// Three four-frame cold loads, recovery windows and a refresh can exceed 24 pages.
+// Separate pacing and broker cooldown still apply to every actual request.
+const upstreamBudget = new WindowLimit(48, 60_000);
 const historicalPages = new HistoryCache<{prices:unknown[]}>(10 * 60_000, 32);
 let activeLoads = 0;
 let coolingUntil = 0;

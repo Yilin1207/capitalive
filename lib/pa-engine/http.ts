@@ -55,12 +55,15 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   if(!pinned && !reusableHistory){
    const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
    const key=market+':'+Math.floor(now/window)+':'+Math.floor(now/14400000);
+   // A desk refresh always requests a quote. Closed bars can share the current
+   // bounded window across Bid/Ask, including concurrent desk refreshes.
+   const forceFrames=refresh && view!=='report';
    const {value:data}=await store.frames.get(key,async()=>{
     const frames={} as Frames;
     for(const t of PA_TFS)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh);
     return frames;
-   },now,refresh);
-   if(refresh || !saved || saved.data!==data){
+   },now,forceFrames);
+   if(forceFrames || !saved || saved.data!==data){
     const core=buildPaEngine(data,side as PriceSide,{...(asof?{as_of:asof}:{}),ranges});
     if(PA_TFS.some(t=>ranges[t]&&core.frames[t].range_selection_error))return fail('INVALID_RANGE_SELECTION');
     saved={core,data,hash:snapshotHash(core)};
@@ -99,5 +102,5 @@ export async function paHttp(request:Request,view:'report'|'evidence'|'candles'=
   }
   if(Buffer.byteLength(JSON.stringify(result))>1_000_000)return fail('PAGE_TOO_LARGE_REDUCE_LIMIT',413);
   return json(result);
- }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return json(paError(symbol,limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'),limited?429:503,limited?(e && typeof e==='object' && 'retryAfter' in e && typeof e.retryAfter==='number' && e.retryAfter>0?e.retryAfter:60):0);}
+ }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',...(limited?{cause:code}:{}),code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return json(paError(symbol,limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'),limited?429:503,limited?(e && typeof e==='object' && 'retryAfter' in e && typeof e.retryAfter==='number' && e.retryAfter>0?e.retryAfter:60):0);}
 }
