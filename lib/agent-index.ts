@@ -1,0 +1,78 @@
+import {ACTIVE_RESEARCH_SYMBOLS} from './active-research-markets';
+
+/** Static API map for external AI clients. Every URL is absolute so a fetch-only agent can follow it. */
+export function agentIndex(origin:string){
+ const q=(path:string,params:Record<string,string>)=>`${origin}${path}?${new URLSearchParams(params)}`;
+ const markets=Object.fromEntries(ACTIVE_RESEARCH_SYMBOLS.map(symbol=>[symbol,{
+  brief:q('/api/brief',{symbol}),
+  brief_ask:q('/api/brief',{symbol,side:'ask'}),
+  desk_report:q('/api/desk-report',{symbol}),
+  market_context:q('/api/desk-report',{symbol,view:'market-context'}),
+  evidence_h4:q('/api/pa-evidence',{symbol,timeframe:'H4',limit:'50'}),
+  evidence_d1:q('/api/pa-evidence',{symbol,timeframe:'D1',limit:'50'}),
+  candles_h4:q('/api/pa-candles',{symbol,timeframe:'H4',limit:'200'}),
+  candles_d1:q('/api/pa-candles',{symbol,timeframe:'D1',limit:'200'}),
+  structure_h4:q('/api/pa-evidence',{symbol,view:'structure',timeframe:'H4'}),
+ }]));
+ return {
+  service:'Capitalive',schema_version:'agent-index-v1',mode:'PA_ONLY',trading_enabled:false,
+  description:'Technical Price Action evidence (THE EDGE rules) from Capital.com Bid/Ask CFD candles on closed MN1/W1/D1/H4 bars. No narrative, direction, entries, stops, targets, probabilities or scores.',
+  start_here:'Fetch markets.<SYMBOL>.brief first. It has the quote, freshness, per-timeframe last closed candles, dealing range, nearest active levels and recent fractals, each with absolute drill-down URLs.',
+  symbols:[...ACTIVE_RESEARCH_SYMBOLS],timeframes:['MN1','W1','D1','H4'],price_sides:['bid','ask'],
+  markets,
+  docs:`${origin}/llms.txt`,
+  rules:[
+   'Use status/freshness before using any observation: STALE or ERROR means observations are withheld.',
+   'quote is a live price, never closed-candle evidence.',
+   'Levels are ordered by distance to the last closed H4 close, not by significance.',
+   'Follow links.next for pagination; pages are pinned by snapshot_sha256. On 409 SNAPSHOT_CHANGED refetch the brief.',
+   'Errors include diagnostic.message explaining what to fix.',
+  ],
+ };
+}
+
+export function llmsText(origin:string){
+ const index=agentIndex(origin);
+ const market=(s:string)=>{const m=index.markets[s];return `### ${s}
+- Brief (start here): ${m.brief}
+- Brief, Ask side: ${m.brief_ask}
+- Full desk report (≤64 KB): ${m.desk_report}
+- Market context (VIX CFD, client sentiment, realized volatility): ${m.market_context}
+- All H4 findings: ${m.evidence_h4}
+- All D1 findings: ${m.evidence_d1}
+- H4 closed candles: ${m.candles_h4}
+- D1 closed candles: ${m.candles_d1}
+- H4 structure (fractal/swing sequence, dealing ranges): ${m.structure_h4}`;};
+ return `# Capitalive
+
+> ${index.description}
+
+Public, read-only, no login. JSON over HTTPS GET. CORS open.
+
+## How to use (for AI agents)
+1. Fetch the brief for the symbol you need (below). It is compact (about 40 KB, all four timeframes) and every item has an absolute "url".
+2. Check "status" and "freshness" first. PARTIAL = normal (provider data has known limitations listed in "warnings"). STALE or ERROR = observations are withheld; do not invent them.
+3. "quote" is a live Bid/Ask price and is never closed-candle evidence. Evidence uses only fully closed candles.
+4. "timeframes.<TF>.levels" lists the nearest unconsumed, non-invalidated levels above/below the last closed H4 close (FRACTAL, FVG unfilled remainder, RB, SNR). Order = distance only, not significance.
+5. Drill down only by following URLs from responses: level/fractal "url" (full evidence + interaction history), "links.evidence" / "links.candles" / "links.structure", and "links.next" for the next page.
+6. Pages are pinned to "snapshot_sha256". HTTP 409 SNAPSHOT_CHANGED = new closed candles arrived; refetch the brief.
+7. Any error JSON has "error" (code) and "diagnostic.message" (what to fix). HTTP 429 = wait "Retry-After" seconds.
+
+Capitalive never produces narrative, direction, A/B/C, entry, stop, target, RR, probabilities or scores ("trading_enabled": false). Interpretation is up to you and the user. Fields marked NEEDS_SPECIFICATION / NOT_EVALUATED / DISABLED are deliberately not computed.
+
+## Markets
+${index.symbols.map(market).join('\n\n')}
+
+## Parameters
+- symbol: ${index.symbols.join(' | ')}
+- side: bid (default) | ask
+- timeframe: MN1 | W1 | D1 | H4
+- pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions
+- pa-candles: timeframe, from, to, limit (1-200)
+- Times are UTC: 2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z
+
+## Index
+- JSON version of this page: ${origin}/api
+- Service health: ${origin}/api/health
+`;
+}

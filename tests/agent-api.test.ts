@@ -1,0 +1,106 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {paHttp,canonicalTime} from '../lib/pa-engine/http';
+import {buildPaEngine} from '../lib/pa-engine/core';
+import {nearbyLevels,PA_MAX_BYTES,PA_TFS} from '../lib/pa-engine/report';
+import {BRIEF_LEVELS_PER_SIDE} from '../lib/pa-engine/brief';
+import {agentIndex,llmsText} from '../lib/agent-index';
+import {syntheticMarket} from './fixtures/jp225-synthetic';
+import type {Timeframe} from '../lib/candle-data';
+
+// Synthetic contract transport, explicitly not an independent broker price check.
+function fixture(symbol='EU50'){
+ const f=syntheticMarket(symbol);
+ const deps={getCandles:async(_symbol:string,tf:Timeframe)=>f.data[tf],getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf})};
+ return {...f,deps};
+}
+const ORIGIN='https://capitalive.test';
+const req=(path:string,query:string)=>new Request(`${ORIGIN}${path}?${query}`);
+const forbidden=/^(narrative|scenario|entry|entry_stop|stop_loss|take_profit|rr|verdict|target_selection|quality_score|probability|direction|bias|score)$/i;
+function noForecast(v:unknown){if(Array.isArray(v))v.forEach(noForecast);else if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){assert.ok(!forbidden.test(k),k);noForecast(x);}}
+function urls(v:unknown,out:string[]=[]){if(typeof v==='string'&&/^https?:\/\//.test(v))out.push(v);else if(Array.isArray(v))v.forEach(x=>urls(x,out));else if(v&&typeof v==='object')Object.values(v).forEach(x=>urls(x,out));return out;}
+const followEvidence=(u:string,deps:ReturnType<typeof fixture>['deps'])=>paHttp(new Request(u),'evidence',deps);
+
+test('brief: compact per-TF view of the same snapshot, nearest levels by distance only, absolute links',async t=>{
+ const first=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(first.asOf)});
+ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] as const){
+  const f=fixture(symbol),res=await paHttp(req('/api/brief',`symbol=${symbol}&side=${side}`),'brief',f.deps),raw=await res.text(),b=JSON.parse(raw);
+  assert.equal(res.status,200);assert.equal(b.schema_version,'pa-brief-v1');assert.equal(b.symbol,symbol);assert.equal(b.price_side,side);
+  assert.equal(b.trading_enabled,false);assert.equal(b.quote.used_as_closed_evidence,false);assert.equal(b.observations_available,true);
+  assert.ok(Buffer.byteLength(raw)<PA_MAX_BYTES);noForecast(b);
+  // Same snapshot as the desk report.
+  const report=await (await paHttp(req('/api/desk-report',`symbol=${symbol}&side=${side}`),'report',f.deps)).json();
+  assert.equal(b.snapshot_sha256,report.snapshot_sha256);assert.equal(b.status,report.status);
+  // Levels equal the geometric nearby selection with the brief's per-side limit.
+  const expected=nearbyLevels(buildPaEngine(f.data,side),BRIEF_LEVELS_PER_SIDE)!.block;
+  assert.deepEqual(b.reference,expected.reference);
+  for(const tf of PA_TFS){
+   const got=b.timeframes[tf],want=expected.timeframes[tf];
+   for(const k of ['above','below','at_price'])assert.deepEqual(got.levels[k].map(({url,...x}:{url:string})=>x),want[k as 'above']);
+   assert.deepEqual(got.levels.eligible,want.eligible);
+   assert.ok(got.last_closed_candles.length>0&&got.last_closed_candles.length<=5);
+   assert.equal(got.last_closed_candles.at(-1).closed_at,got.last_closed_at);
+   for(const c of got.last_closed_candles)assert.ok(c.closed_at<=b.as_of);
+  }
+  // Every URL is absolute on the request origin.
+  const all=urls(b);assert.ok(all.length>10);for(const u of all)assert.ok(u.startsWith(ORIGIN+'/'),u);
+ }
+});
+
+test('brief: level and fractal URLs are followable and return that exact evidence',async t=>{
+ const f=fixture('NAS100');t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const b=await (await paHttp(req('/api/brief','symbol=NAS100'),'brief',f.deps)).json();
+ const items=PA_TFS.flatMap(tf=>[...b.timeframes[tf].levels.above,...b.timeframes[tf].levels.below,...b.timeframes[tf].recent_fractals]);
+ assert.ok(items.length>0);
+ for(const x of items.slice(0,6)){
+  const res=await followEvidence(x.url,f.deps),r=await res.json();
+  assert.equal(res.status,200,x.url);assert.equal(r.evidence[0].id,x.id);assert.equal(r.snapshot_sha256,b.snapshot_sha256);
+ }
+ const page=await (await followEvidence(b.timeframes.H4.links.evidence,f.deps)).json();
+ assert.ok(page.evidence.every((e:{timeframe:string})=>e.timeframe==='H4'));
+});
+
+test('brief: STALE withholds levels, ranges and fractals like the desk report',async t=>{
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const deps={...f.deps,getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf,fresh:false,provider_timestamp:'2026-11-15T13:50:00.000Z',quote_time:'2026-11-15T13:50:00.000Z'})};
+ const res=await paHttp(req('/api/brief','symbol=EU50'),'brief',deps),b=await res.json();
+ assert.equal(res.status,200);assert.equal(b.status,'STALE');assert.equal(b.observations_available,false);assert.equal(b.reference,null);
+ for(const tf of PA_TFS){const x=b.timeframes[tf];assert.equal(x.levels,null);assert.equal(x.dealing_range,null);assert.equal(x.recent_fractals,null);assert.equal(x.findings_by_kind,null);}
+ assert.ok(b.freshness.stale_reasons.length>0);
+});
+
+test('pages carry absolute pinned links.next that walk the whole result',async t=>{
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ let res=await paHttp(req('/api/pa-evidence','symbol=EU50&timeframe=H4&limit=3'),'evidence',f.deps),r=await res.json();
+ const total=r.total,seen=new Set<string>();assert.ok(total>3);
+ assert.ok(r.links.self.startsWith(ORIGIN+'/api/pa-evidence?'));assert.equal(new URL(r.links.next).searchParams.get('offset'),'3');
+ for(;;){for(const e of r.evidence)seen.add(e.id);if(!r.links.next)break;
+  const u=new URL(r.links.next);assert.equal(u.searchParams.get('snapshot_sha256'),r.snapshot_sha256);assert.equal(u.searchParams.get('offset'),String(r.next_offset));
+  res=await followEvidence(r.links.next,f.deps);r=await res.json();assert.equal(res.status,200);}
+ assert.equal(seen.size,total);
+ const candles=await (await paHttp(req('/api/pa-candles','symbol=EU50&timeframe=H4&limit=2'),'candles',f.deps)).json();
+ assert.equal(new URL(candles.links.next).searchParams.get('offset'),'2');assert.equal(new URL(candles.links.first).searchParams.get('offset'),null);
+});
+
+test('errors explain what to fix; side is case-insensitive; UTC dates accept common spellings',async t=>{
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const bad=await (await paHttp(req('/api/pa-evidence','symbol=XAU'),'evidence',f.deps)).json();
+ assert.equal(bad.error,'INVALID_REQUEST');assert.match(bad.diagnostic.message,/NAS100/);assert.equal(bad.diagnostic.docs,ORIGIN+'/llms.txt');
+ const side=await (await paHttp(req('/api/pa-evidence','symbol=EU50&side=mid'),'evidence',f.deps)).json();assert.match(side.diagnostic.message,/bid or ask/);
+ const unpinned=await (await paHttp(req('/api/pa-evidence','symbol=EU50&offset=5'),'evidence',f.deps)).json();assert.match(unpinned.diagnostic.message,/links\.next/);
+ const upper=await paHttp(req('/api/pa-evidence','symbol=EU50&side=BID&limit=1'),'evidence',f.deps);assert.equal(upper.status,200);assert.equal((await upper.json()).price_side,'bid');
+ const day=f.data.H4.candles[3].time.slice(0,10);
+ const lenient=await paHttp(req('/api/pa-candles',`symbol=EU50&timeframe=H4&from=${day}&to=${day}T23:59:59Z`),'candles',f.deps),l=await lenient.json();
+ assert.equal(lenient.status,200);assert.ok(l.candles.length>0);assert.ok(l.candles.every((c:{time:string})=>c.time.startsWith(day)));
+ assert.equal(canonicalTime('2026-11-01'),'2026-11-01T00:00:00.000Z');assert.equal(canonicalTime('2026-11-01T10:00Z'),'2026-11-01T10:00:00.000Z');
+ assert.equal(canonicalTime('2026-11-01T10:00:00.5Z'),'2026-11-01T10:00:00.500Z');assert.equal(canonicalTime(null),null);
+ for(const x of ['2026-02-30','2026-02-30T00:00:00Z','2026-11-01T10:00:00+03:00','2026-11-01 10:00','yesterday'])assert.equal(canonicalTime(x),undefined,x);
+});
+
+test('agent index and llms.txt list every market with absolute URLs and no trading fields',()=>{
+ const index=agentIndex(ORIGIN);assert.deepEqual(Object.keys(index.markets),['EURUSD','NAS100','EU50']);assert.equal(index.trading_enabled,false);noForecast(index);
+ for(const u of urls(index))assert.ok(u.startsWith(ORIGIN+'/'),u);
+ const text=llmsText(ORIGIN);
+ for(const s of ['EURUSD','NAS100','EU50'])assert.ok(text.includes(`${ORIGIN}/api/brief?symbol=${s}`),s);
+ assert.ok(!/\]\(\//.test(text)&&!/ \/api\//.test(text),'no relative links');
+});

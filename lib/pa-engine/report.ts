@@ -18,7 +18,7 @@ type NearbyFrame={above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[]
 const priceDiff=(a:number,b:number)=>Number((a-b).toFixed(10));
 /** Geometric proximity only: nearest unconsumed, non-invalidated levels around the last closed H4 close.
  * Ordering is distance then id; it is never a significance, strength or direction ranking. */
-export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>){
+export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:number=NEARBY_PER_SIDE){
  const last=core.frames.H4.ohlc.at(-1);if(!last)return null;
  const ref=last.close,timeframes={} as Record<(typeof PA_TFS)[number],NearbyFrame>;let eligible=0;
  for(const tf of PA_TFS){
@@ -32,11 +32,11 @@ export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>){
    const side=b.lower>ref?'above':b.upper<ref?'below':'at_price';
    rows[side].push({id:e.id,kind:e.kind,lower:b.lower,upper:b.upper,bounds_basis:fvg&&s.fill!.max_observed_fraction>0?'FVG_REMAINING':'ORIGINAL',state:s.state,fill:fvg?s.fill!.state:null,distance:side==='above'?priceDiff(b.lower,ref):side==='below'?priceDiff(ref,b.upper):0});
   }
-  const pick=(x:NearbyLevel[])=>x.sort((a,c)=>a.distance-c.distance||a.id.localeCompare(c.id)).slice(0,NEARBY_PER_SIDE);
+  const pick=(x:NearbyLevel[])=>x.sort((a,c)=>a.distance-c.distance||a.id.localeCompare(c.id)).slice(0,perSide);
   const counts={above:rows.above.length,below:rows.below.length,at_price:rows.at_price.length};eligible+=counts.above+counts.below+counts.at_price;
   timeframes[tf]={above:pick(rows.above),below:pick(rows.below),at_price:pick(rows.at_price),eligible:counts};
  }
- return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:NEARBY_PER_SIDE,excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],size_trimmed:0,timeframes},eligible};
+ return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:perSide,excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],size_trimmed:0,timeframes},eligible};
 }
 const nearbyCount=(n:{timeframes:Record<string,NearbyFrame>}|null)=>n?Object.values(n.timeframes).reduce((k,f)=>k+f.above.length+f.below.length+f.at_price.length,0):0;
 /** Size fallback: drop the farthest included level across all TFs (ties: later id first). */

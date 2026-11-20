@@ -33,6 +33,20 @@ levels; `omitted.nearby_levels` counts those not shown, and `size_trimmed` those
 limit (farthest first). Under size pressure the evidence tail is trimmed before `nearby_levels`.
 The block is `null` when the report is STALE or ERROR. Full detail: `/api/pa-evidence?id=...`.
 
+### Access for AI agents
+
+- /llms.txt (text) and /api (JSON): entry point with absolute URLs for every market and endpoint.
+  Give an AI client the single link `https://capitalive.vercel.app/llms.txt`.
+- /api/brief?symbol=NAS100[&side=ask] (`pa-brief-v1`): built from the same snapshot as the desk-report.
+  Per timeframe: last 5 closed candles, dealing range, up to 5 nearest levels per side (same rules as
+  `nearby_levels`), last 6 confirmed fractals and finding counts by kind. Every item has an absolute
+  `url` pinned to `snapshot_sha256`. Levels/ranges/fractals are `null` when STALE or ERROR.
+  On archived fixtures it is 38-43 KB versus 64-65 KB for the desk-report.
+- pa-evidence and pa-candles pages include `links.self/first/next` (absolute, pinned).
+- Errors include `diagnostic.message` (what to fix) and `diagnostic.docs`.
+- `side` is case-insensitive; `from`/`to`/`as_of` also accept `2026-11-01` and `...T10:00Z` (UTC only).
+- /robots.txt allows all agents.
+
 All compact omissions are explicit. A displayed subset is not a complete market survey.
 A 409 snapshot change requires restarting pagination. Available history is finite.
 Fractals use only three closed candles. No stitching across unexplained gaps.
