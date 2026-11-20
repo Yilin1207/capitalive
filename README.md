@@ -24,6 +24,15 @@ Credentials and ingestion remain protected; the report repository remains privat
 - /api/pa-candles: closed OHLC, timeframe, from/to UTC, offset/limit. Subsequent pages require snapshot_sha256.
 - /api/chart, /api/market-audit and /api/candles: retained technical routes; knowledge=1 uses V6.
 
+`nearby_levels` in the desk-report lists, per timeframe (MN1/W1/D1/H4), up to 3 levels above,
+3 below and 3 containing the last closed H4 close (`reference`). Candidates are FRACTAL, FVG, RB and
+SNR evidence whose `lifecycle.state` is not CONSUMED or INVALIDATED; fully filled FVG are excluded and
+partially tested FVG show the remaining zone (`bounds_basis: FVG_REMAINING`). `distance` is in price
+units (not pips); ordering is distance then id, never significance. `eligible` counts all matching
+levels; `omitted.nearby_levels` counts those not shown, and `size_trimmed` those dropped for the byte
+limit (farthest first). Under size pressure the evidence tail is trimmed before `nearby_levels`.
+The block is `null` when the report is STALE or ERROR. Full detail: `/api/pa-evidence?id=...`.
+
 All compact omissions are explicit. A displayed subset is not a complete market survey.
 A 409 snapshot change requires restarting pagination. Available history is finite.
 Fractals use only three closed candles. No stitching across unexplained gaps.

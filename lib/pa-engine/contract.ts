@@ -9,19 +9,47 @@ const keys=(v:unknown,allowed:string)=>{if(!v||typeof v!=='object'||Array.isArra
 const finite=(v:unknown):v is number=>typeof v==='number'&&Number.isFinite(v);
 const strings=(v:unknown)=>Array.isArray(v)&&v.every(x=>typeof x==='string');
 const normal=(s:string)=>s.replace(/[^a-z0-9]/gi,'').toLowerCase();
+/** Optional block (absent in reports built before it existed). Geometry only: distance to the
+ * last closed H4 close, never significance; consumed/invalidated/filled levels are never listed. */
+function validateNearby(r:Record<string,any>){
+ const n=r.nearby_levels,omitted=r.omitted?.nearby_levels;
+ if(omitted!==undefined&&(!Number.isInteger(omitted)||omitted<0))fail();
+ if(n===undefined||n===null)return;
+ if(['STALE','ERROR'].includes(r.status))fail();
+ keys(n,'reference selection_policy state_field distance_unit per_side_limit excluded_states size_trimmed timeframes');
+ keys(n.reference,'price at basis');
+ const ref=n.reference.price,limit=n.per_side_limit,tol=1e-6*Math.max(1,Math.abs(ref));
+ if(!finite(ref)||ref<=0||!date(n.reference.at)||n.reference.at>r.as_of||n.reference.basis!=='LAST_CLOSED_H4_CLOSE'||n.selection_policy!=='NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE'||n.state_field!=='lifecycle.state'||n.distance_unit!=='PRICE'||!Number.isInteger(limit)||limit<1||!strings(n.excluded_states)||!Number.isInteger(n.size_trimmed)||n.size_trimmed<0||omitted===undefined||omitted<n.size_trimmed)fail();
+ if(Object.keys(obj(n.timeframes)).sort().join(',')!=='D1,H4,MN1,W1')fail();
+ const ids=new Set<string>();
+ for(const tf of tfs){const f=n.timeframes[tf];keys(f,'above below at_price eligible');keys(f.eligible,'above below at_price');
+  for(const side of ['above','below','at_price']){const list=f[side];
+   if(!Array.isArray(list)||list.length>limit||!Number.isInteger(f.eligible[side])||f.eligible[side]<list.length)fail();
+   let previous=-Infinity;
+   for(const x of list){keys(x,'id kind lower upper bounds_basis state fill distance');
+    if(typeof x.id!=='string'||ids.has(x.id)||!x.id.startsWith(`${r.symbol}:${tf}:${r.price_side}:`)||!['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(x.kind)||!finite(x.lower)||!finite(x.upper)||x.lower>x.upper||!finite(x.distance)||x.distance<0||x.distance<previous)fail();
+    if(typeof x.state!=='string'||['CONSUMED','INVALIDATED'].includes(x.state)||!['FVG_REMAINING','ORIGINAL'].includes(x.bounds_basis))fail();
+    if(x.kind==='FVG'?typeof x.fill!=='string'||x.fill==='FILLED':x.fill!==null||x.bounds_basis!=='ORIGINAL')fail();
+    const expected=side==='above'?x.lower-ref:side==='below'?ref-x.upper:0;
+    if(side==='above'&&!(x.lower>ref)||side==='below'&&!(x.upper<ref)||side==='at_price'&&(x.lower>ref||x.upper<ref)||Math.abs(x.distance-expected)>tol)fail();
+    ids.add(x.id);previous=x.distance;
+   }
+  }
+ }
+}
 export function validatePaReport(value:unknown,symbol?:string,now?:number,secrets:string[]=[]):void{
  const r=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>65536)throw Error('REPORT_TOO_LARGE');
  if(secrets.some(s=>s.length>=8&&raw.includes(s))||/github_pat_|ghp_[A-Za-z0-9]|Bearer\s+[A-Za-z0-9._-]+/i.test(raw))throw Error('SECRET_IN_REPORT');
  const forbidden=new Set(['narrative','narrative_method','candidate_narrative','confirmed_narrative','scenario','scenarios','entry','entry_stop','stop_loss','take_profit','rr','verdict','target_selection','quality_score','probability','account','account_id','accounts','password','api_key','token','access_token','refresh_token','authorization','headers','cst','security_token','x_security_token','raw_response','raw_ohlc','credentials','client_secret'].map(normal));
  const walk=(v:unknown)=>{if(Array.isArray(v))v.forEach(walk);else if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){if(forbidden.has(normal(k)))fail();walk(x);}};walk(r);
- const allowed=new Set('schema_version contract_revision mode technical_only symbol price_side status data_quality generated_at as_of published_at expires_at error source snapshot_sha256 quote freshness frames evidence market_structure dealing_ranges lifecycle_events cross_timeframe_interactions definitions coverage warnings omitted details trading_enabled diagnostic'.split(' '));
+ const allowed=new Set('schema_version contract_revision mode technical_only symbol price_side status data_quality generated_at as_of published_at expires_at error source snapshot_sha256 quote freshness frames evidence market_structure dealing_ranges lifecycle_events cross_timeframe_interactions nearby_levels definitions coverage warnings omitted details trading_enabled diagnostic'.split(' '));
  if(Object.keys(r).some(k=>!allowed.has(k))||r.schema_version!=='pa-engine-v6'||r.mode!=='PA_ONLY'||r.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(symbol=>symbol===r.symbol)||symbol&&r.symbol!==symbol||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(r.status)||!date(r.generated_at)||!date(r.expires_at)||r.expires_at<r.generated_at||r.published_at!==null&&r.published_at!==undefined&&!date(r.published_at))fail();
  if(now!==undefined&&r.status!=='ERROR'&&(Date.parse(r.expires_at)<=now||Date.parse(r.generated_at)>now))throw Error('REPORT_EXPIRED');
  if(!Array.isArray(r.evidence)||!strings(r.warnings)||!['PARTIAL','UNVERIFIED'].includes(r.data_quality))fail();
  if(r.status==='ERROR'&&r.source===null){
   if(r.evidence.length||r.as_of!==null||r.quote!==null||r.freshness!==null||Object.keys(obj(r.frames)).length||Object.keys(obj(r.market_structure)).length||r.coverage!==null||typeof r.error!=='string'||!/^[A-Z][A-Z0-9_]{0,99}$/.test(r.error))fail();
   for(const k of ['dealing_ranges','lifecycle_events','cross_timeframe_interactions'])if(!Array.isArray(r[k])||r[k].length)fail();
-  if(r.omitted?.evidence!==0)fail();return;
+  if(r.omitted?.evidence!==0||r.nearby_levels!==undefined&&r.nearby_levels!==null)fail();return;
  }
  if(r.contract_revision!==PA_CONTRACT_REVISION||r.technical_only!==true)fail();
  keys(r.source,'provider environment analysis_schema price_side engine_commit evidence_sha256 demo_live_equivalence full_ohlc_published');
@@ -39,6 +67,7 @@ export function validatePaReport(value:unknown,symbol?:string,now?:number,secret
   for(const c of e.candle_evidence){keys(c,'time closed_at index open high low close');if(!date(c.time)||!date(c.closed_at)||c.time>=c.closed_at||c.closed_at>e.confirmed_at||['open','high','low','close'].some(k=>!finite(c[k])||c[k]<=0)||c.low>Math.min(c.open,c.close)||c.high<Math.max(c.open,c.close))fail();}
   if(e.lifecycle?.evaluated_through>r.as_of||e.evaluated_through>r.as_of)fail();
  }
+ validateNearby(r);
  if(r.coverage.findings_included!==r.evidence.length||r.coverage.findings_total!==r.evidence.length+r.omitted.evidence||r.coverage.findings_omitted!==r.omitted.evidence||r.omitted.evidence<0)fail();
  const q=r.quote;keys(q,'bid ask spread provider_timestamp retrieved_at source_type market_status provider_age_seconds fresh used_as_closed_evidence');
  if(q.used_as_closed_evidence!==false||typeof q.fresh!=='boolean'||!['REST','WEBSOCKET'].includes(q.source_type)||q.market_status!==null&&typeof q.market_status!=='string')fail();
