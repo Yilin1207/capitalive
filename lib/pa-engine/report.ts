@@ -6,6 +6,12 @@ import {freshnessPolicy} from '../research-bridge/freshness';
 import {closedRegularInterval} from '../research/calendars';
 export const PA_CONTRACT='pa-engine-v6.1';
 export const PA_MAX_BYTES=65536;
+/** Runtime commit for `source.engine_commit`: a full 40-hex SHA or null (unknown). A deployment without
+ * git metadata exposes VERCEL_GIT_COMMIT_SHA as an empty string; that must read as unknown, not as a SHA. */
+export function engineCommit(env:Record<string,string|undefined>=process.env):string|null{
+ const sha=env.VERCEL_GIT_COMMIT_SHA?.trim().toLowerCase()??'';
+ return /^[a-f0-9]{40}$/.test(sha)?sha:null;
+}
 export const PA_TFS=['MN1','W1','D1','H4'] as const;
 export type PaEngine=ReturnType<typeof buildPaEngine>;
 export function snapshotHash(core:PaEngine){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
@@ -49,7 +55,7 @@ export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:num
   }
   for(const {level,contexts} of groups.values()){
    level.ids=uniqueSorted(level.ids);level.id=level.ids[0];
-   level.contexts=[...contexts].sort(([a],[b])=>a.localeCompare(b)).map(([id,c])=>({id,relationships:uniqueSorted(c.relationships),evidence_ids:uniqueSorted(c.evidence_ids)}));
+   level.contexts=[...contexts].sort(([a],[b])=>a<b?-1:a>b?1:0).map(([id,c])=>({id,relationships:uniqueSorted(c.relationships),evidence_ids:uniqueSorted(c.evidence_ids)}));
   }
   const pick=(x:NearbyLevel[])=>x.sort((a,c)=>a.distance-c.distance||a.id.localeCompare(c.id)).slice(0,perSide);
   const counts={above:rows.above.length,below:rows.below.length,at_price:rows.at_price.length};eligible+=counts.above+counts.below+counts.at_price;

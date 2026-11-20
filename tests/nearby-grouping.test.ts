@@ -116,3 +116,11 @@ test('desk-report contract rejects a nearby group whose ids or contexts are inco
  const old=structuredClone(report) as any;delete old.nearby_levels.grouping;for(const x of levelsOf(old.nearby_levels.timeframes) as any[]){delete x.ids;delete x.contexts;delete x.formation_status;}
  validatePaReport(old,'NAS100');
 });
+
+test('contexts are ordered by code unit, as the contract checks, even where locale collation differs',()=>{
+ const kls=['NAS100:W1:bid:FVG_x:','NAS100:W1:bid:FVG-x:','NAS100:MN1:bid:FVG:a'];
+ assert.notDeepEqual([...kls].sort((a,b)=>a.localeCompare(b)),[...kls].sort(),'fixture must exercise a collation difference');
+ const x=nearbyLevels(core(kls.map(k=>rb(k,26515.6,26515.6))),5)!.block.timeframes.D1.below[0];
+ assert.deepEqual(x.contexts.map(c=>c.id),[...kls].sort());
+ assert.deepEqual(x.ids,[...x.ids].sort());
+});

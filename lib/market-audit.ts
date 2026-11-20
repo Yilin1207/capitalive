@@ -8,7 +8,7 @@ import { checkHistoryRequest, historyFailure, historyJson } from "@/lib/history-
 import { buildHtfAudit } from "@/lib/htf-audit";
 import { createAuditSnapshot, readAuditSnapshot } from './audit-snapshots';
 import { buildPaEngine } from './pa-engine/core';
-import { buildPaReport } from './pa-engine/report';
+import { buildPaReport, engineCommit } from './pa-engine/report';
 
 export async function marketAudit(request: Request, dependencies = { getCandles, getAnalysisQuote }) {
   try {
@@ -62,7 +62,7 @@ export async function marketAudit(request: Request, dependencies = { getCandles,
         metadata: data[s.timeframe].metadata }])),
       response_scope: { structure_timeframes: only ? [only] : ANALYSIS_TIMEFRAMES, targets_timeframes: ANALYSIS_TIMEFRAMES, candles_included: includeCandles === "1", htf_timeframes: htf ? ANALYSIS_TIMEFRAMES : [], htf_requested: includeHtf === '1' },
       targets: { ...targets, reference_fresh: quote.fresh, automatic_selection:'DISABLED', interpretation: "Legacy geometric price catalog only. No target, direction, probability or trading scenario is selected." },
-      htf, ...(includeKnowledge === '1' ? { knowledge_intelligence: buildPaReport(buildPaEngine(data, side),data,quote,new Date().toISOString(),process.env.VERCEL_GIT_COMMIT_SHA??null) } : {}), consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
+      htf, ...(includeKnowledge === '1' ? { knowledge_intelligence: buildPaReport(buildPaEngine(data, side),data,quote,new Date().toISOString(),engineCommit()) } : {}), consistency, charts: Object.fromEntries(ANALYSIS_TIMEFRAMES.map(timeframe => {
         const params = new URLSearchParams({ symbol, timeframe, side, min_remaining_units: String(settings.min_remaining_units), atr_fraction: String(settings.atr_fraction) });
         if (timeframe === "H4" && selection) { params.set("range_high", selection.high_id); params.set("range_low", selection.low_id); }
         return [timeframe, { url: new URL(`/api/chart?${params}`, url.origin).href, content_type: "image/png", snapshot: "independently_fetched_cached_history_check_chart_timestamp" }];

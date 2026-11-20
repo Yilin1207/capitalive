@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {paHttp,canonicalTime} from '../lib/pa-engine/http';
 import {buildPaEngine} from '../lib/pa-engine/core';
-import {nearbyLevels,PA_MAX_BYTES,PA_TFS} from '../lib/pa-engine/report';
+import {engineCommit,nearbyLevels,PA_MAX_BYTES,PA_TFS} from '../lib/pa-engine/report';
 import {BRIEF_LEVELS_PER_SIDE} from '../lib/pa-engine/brief';
 import {agentIndex,llmsText} from '../lib/agent-index';
 import {syntheticMarket} from './fixtures/jp225-synthetic';
@@ -104,4 +104,23 @@ test('agent index and llms.txt list every market with absolute URLs and no tradi
  const text=llmsText(ORIGIN);
  for(const s of ['EURUSD','NAS100','EU50'])assert.ok(text.includes(`${ORIGIN}/api/brief?symbol=${s}`),s);
  assert.ok(!/\]\(\//.test(text)&&!/ \/api\//.test(text),'no relative links');
+});
+
+test('deployment without git metadata (empty VERCEL_GIT_COMMIT_SHA) still serves valid desk-report and brief',async t=>{
+ const f=fixture('NAS100');t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const saved=process.env.VERCEL_GIT_COMMIT_SHA;
+ try{
+  for(const sha of ['','not-a-sha',' ']){
+   process.env.VERCEL_GIT_COMMIT_SHA=sha;
+   const rep=await paHttp(req('/api/desk-report','symbol=NAS100'),'report',f.deps),r=await rep.json();
+   assert.equal(rep.status,200,`report with SHA ${JSON.stringify(sha)}`);assert.equal(r.source.engine_commit,null);
+   const br=await paHttp(req('/api/brief','symbol=NAS100'),'brief',f.deps),b=await br.json();
+   assert.equal(br.status,200,`brief with SHA ${JSON.stringify(sha)}`);assert.equal(b.source.engine_commit,null);
+  }
+  process.env.VERCEL_GIT_COMMIT_SHA='6068b19'.padEnd(40,'a').toUpperCase();
+  const r=await (await paHttp(req('/api/desk-report','symbol=NAS100'),'report',f.deps)).json();
+  assert.equal(r.source.engine_commit,'6068b19'.padEnd(40,'a'));
+ }finally{if(saved===undefined)delete process.env.VERCEL_GIT_COMMIT_SHA;else process.env.VERCEL_GIT_COMMIT_SHA=saved;}
+ assert.equal(engineCommit({}),null);assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:''}),null);
+ assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:'a'.repeat(41)}),null);assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:'b'.repeat(40)}),'b'.repeat(40));
 });

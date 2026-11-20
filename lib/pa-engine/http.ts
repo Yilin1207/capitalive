@@ -7,7 +7,7 @@ import {getAnalysisQuote} from '../analysis-quote';
 import {HISTORY,type CandleResponse,type Timeframe,type PriceSide} from '../candle-data';
 import {checkHistoryRequest} from '../history-http';
 import {buildPaEngine,interactionsForEvidence} from './core';
-import {buildPaReport,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
+import {buildPaReport,engineCommit,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
 import {validatePaBrief,validatePaReport} from './contract';
 import {buildPaBrief} from './brief';
@@ -112,7 +112,7 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
   const {core,data,hash}=saved!;
   if(pin&&pin!==hash)return fail('SNAPSHOT_CHANGED',409);
   const page=(o:number)=>{const u=new URL(requestUrl);u.searchParams.delete('refresh');u.searchParams.set('snapshot_sha256',hash);if(o)u.searchParams.set('offset',String(o));else u.searchParams.delete('offset');return u.toString();};
-  const commit=process.env.VERCEL_GIT_COMMIT_SHA??null;
+  const commit=engineCommit();
   if(desk){
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
    const report=buildPaReport(core,data,quote,new Date().toISOString(),commit);
