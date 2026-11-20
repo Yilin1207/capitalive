@@ -33,15 +33,27 @@ levels; `omitted.nearby_levels` counts those not shown, and `size_trimmed` those
 limit (farthest first). Under size pressure the evidence tail is trimmed before `nearby_levels`.
 The block is `null` when the report is STALE or ERROR. Full detail: `/api/pa-evidence?id=...`.
 
+One formation (same kind, timeframe, formation candles `origin`/`confirmed_at` and bounds) observed at
+several known KL is emitted by the engine once per KL. `nearby_levels` shows it as one row
+(`grouping: KIND_TIMEFRAME_FORMATION_CANDLES_BOUNDS`): `ids` lists every evidence id (sorted; `id` =
+`ids[0]`), `contexts` the related KL (`id`, fact `relationships` such as `kl_id`/`rb_fvg_id`, and the
+`evidence_ids` that reference it), plus `formation_status`. Rows that differ in lifecycle state or
+formation status are never merged. Per-side limits and `eligible` count grouped rows. Reports built
+before grouping (rows without `ids`) remain valid under the contract. On archived fixtures the larger
+rows leave 2 fewer recent findings in the compact report (12 -> 10; all remain paginated).
+
 ### Access for AI agents
 
 - /llms.txt (text) and /api (JSON): entry point with absolute URLs for every market and endpoint.
   Give an AI client the single link `https://capitalive.vercel.app/llms.txt`.
 - /api/brief?symbol=NAS100[&side=ask] (`pa-brief-v1`): built from the same snapshot as the desk-report.
-  Per timeframe: last 5 closed candles, dealing range, up to 5 nearest levels per side (same rules as
-  `nearby_levels`), last 6 confirmed fractals and finding counts by kind. Every item has an absolute
-  `url` pinned to `snapshot_sha256`. Levels/ranges/fractals are `null` when STALE or ERROR.
-  On archived fixtures it is 38-43 KB versus 64-65 KB for the desk-report.
+  Per timeframe: last 5 closed candles, dealing range, up to 5 nearest grouped levels per side (same
+  rules and grouping as `nearby_levels`), last 6 confirmed fractals and finding counts by kind. Levels
+  carry `urls` (one per id in `ids`), fractals and pages an absolute `url`/`links`, all pinned to
+  `snapshot_sha256`. Levels/ranges/fractals are `null` when STALE or ERROR. `validatePaBrief`
+  (lib/pa-engine/contract.ts) runs before every response: forbidden keys as in the desk-report, 65,536-byte
+  cap, withheld observations, grouping and absolute links. Above the cap the farthest levels are dropped
+  and counted in `omitted.levels_size_trimmed`. On archived fixtures it is 45-58 KB, with no trimming.
 - pa-evidence and pa-candles pages include `links.self/first/next` (absolute, pinned).
 - Errors include `diagnostic.message` (what to fix) and `diagnostic.docs`.
 - `side` is case-insensitive; `from`/`to`/`as_of` also accept `2026-11-01` and `...T10:00Z` (UTC only).

@@ -12,17 +12,25 @@ export function snapshotHash(core:PaEngine){return createHash('sha256').update(J
 export const NEARBY_PER_SIDE=3;
 export const NEARBY_KINDS=['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'] as const;
 export const NEARBY_EXCLUDED_STATES=['CONSUMED','INVALIDATED'] as const;
-export type NearbyLevel={id:string;kind:string;lower:number;upper:number;bounds_basis:'FVG_REMAINING'|'ORIGINAL';state:string;fill:string|null;distance:number};
+/** Evidence facts that name the known KL / POI a formation was observed at. */
+export const NEARBY_CONTEXT_KEYS=['kl_id','pivot_id','poi_id','rb_liquidity_id','rb_fvg_id','snr_x1_fvg_id','snr_opposing_kl_id'] as const;
+export const NEARBY_GROUPING='KIND_TIMEFRAME_FORMATION_CANDLES_BOUNDS';
+export type NearbyContext={id:string;relationships:string[];evidence_ids:string[]};
+export type NearbyLevel={id:string;ids:string[];kind:string;lower:number;upper:number;bounds_basis:'FVG_REMAINING'|'ORIGINAL';state:string;formation_status:string;fill:string|null;distance:number;contexts:NearbyContext[]};
 type NearbyFrame={above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[];eligible:{above:number;below:number;at_price:number}};
 /** Strip float noise from price differences (e.g. 57.99999999 -> 58). */
 const priceDiff=(a:number,b:number)=>Number((a-b).toFixed(10));
+const uniqueSorted=(x:string[])=>[...new Set(x)].sort();
 /** Geometric proximity only: nearest unconsumed, non-invalidated levels around the last closed H4 close.
- * Ordering is distance then id; it is never a significance, strength or direction ranking. */
+ * One formation (same kind, TF, formation candles and bounds) observed at several known KL is one level:
+ * `ids` lists every evidence id, `contexts` the KL it was observed at. Members that disagree on lifecycle
+ * state or formation status are never merged. Ordering is distance then id; never significance. */
 export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:number=NEARBY_PER_SIDE){
  const last=core.frames.H4.ohlc.at(-1);if(!last)return null;
  const ref=last.close,timeframes={} as Record<(typeof PA_TFS)[number],NearbyFrame>;let eligible=0;
  for(const tf of PA_TFS){
   const rows={above:[] as NearbyLevel[],below:[] as NearbyLevel[],at_price:[] as NearbyLevel[]};
+  const groups=new Map<string,{level:NearbyLevel;contexts:Map<string,{relationships:string[];evidence_ids:string[]}>}>();
   for(const e of core.evidence){
    const s=e.lifecycle;
    if(e.timeframe!==tf||!s||!(NEARBY_KINDS as readonly string[]).includes(e.kind)||(NEARBY_EXCLUDED_STATES as readonly string[]).includes(s.state))continue;
@@ -30,13 +38,24 @@ export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:num
    const fvg=e.kind==='FVG',b=fvg?e.remaining_bounds:e.bounds;
    if(!b||!Number.isFinite(b.lower)||!Number.isFinite(b.upper)||fvg&&(!s.fill||s.fill.state==='FILLED'||s.fill.max_observed_fraction>=1))continue;
    const side=b.lower>ref?'above':b.upper<ref?'below':'at_price';
-   rows[side].push({id:e.id,kind:e.kind,lower:b.lower,upper:b.upper,bounds_basis:fvg&&s.fill!.max_observed_fraction>0?'FVG_REMAINING':'ORIGINAL',state:s.state,fill:fvg?s.fill!.state:null,distance:side==='above'?priceDiff(b.lower,ref):side==='below'?priceDiff(ref,b.upper):0});
+   const basis=fvg&&s.fill!.max_observed_fraction>0?'FVG_REMAINING' as const:'ORIGINAL' as const,fill=fvg?s.fill!.state:null,formation=e.formation_status;
+   // Formation candles are identified by the first candle open and the confirming close.
+   const key=JSON.stringify([e.kind,e.origin??e.id,e.confirmed_at??e.id,b.lower,b.upper,basis,fill,s.state,formation]);
+   let g=groups.get(key);
+   if(!g){g={level:{id:e.id,ids:[],kind:e.kind,lower:b.lower,upper:b.upper,bounds_basis:basis,state:s.state,formation_status:formation,fill,distance:side==='above'?priceDiff(b.lower,ref):side==='below'?priceDiff(ref,b.upper):0,contexts:[]},contexts:new Map()};groups.set(key,g);rows[side].push(g.level);}
+   g.level.ids.push(e.id);
+   for(const k of NEARBY_CONTEXT_KEYS){const v=e.facts?.[k];if(typeof v!=='string'||!v)continue;
+    const c=g.contexts.get(v)??{relationships:[],evidence_ids:[]};c.relationships.push(k);c.evidence_ids.push(e.id);g.contexts.set(v,c);}
+  }
+  for(const {level,contexts} of groups.values()){
+   level.ids=uniqueSorted(level.ids);level.id=level.ids[0];
+   level.contexts=[...contexts].sort(([a],[b])=>a.localeCompare(b)).map(([id,c])=>({id,relationships:uniqueSorted(c.relationships),evidence_ids:uniqueSorted(c.evidence_ids)}));
   }
   const pick=(x:NearbyLevel[])=>x.sort((a,c)=>a.distance-c.distance||a.id.localeCompare(c.id)).slice(0,perSide);
   const counts={above:rows.above.length,below:rows.below.length,at_price:rows.at_price.length};eligible+=counts.above+counts.below+counts.at_price;
   timeframes[tf]={above:pick(rows.above),below:pick(rows.below),at_price:pick(rows.at_price),eligible:counts};
  }
- return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:perSide,excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],size_trimmed:0,timeframes},eligible};
+ return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,grouping:NEARBY_GROUPING,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:perSide,excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],size_trimmed:0,timeframes},eligible};
 }
 const nearbyCount=(n:{timeframes:Record<string,NearbyFrame>}|null)=>n?Object.values(n.timeframes).reduce((k,f)=>k+f.above.length+f.below.length+f.at_price.length,0):0;
 /** Size fallback: drop the farthest included level across all TFs (ties: later id first). */

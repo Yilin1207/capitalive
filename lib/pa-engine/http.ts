@@ -9,7 +9,7 @@ import {checkHistoryRequest} from '../history-http';
 import {buildPaEngine,interactionsForEvidence} from './core';
 import {buildPaReport,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
-import {validatePaReport} from './contract';
+import {validatePaBrief,validatePaReport} from './contract';
 import {buildPaBrief} from './brief';
 
 const KINDS=['FRACTAL','FVG','FVG_CLOSED_BREACH','RAID','TOUCH','RB_TWO_CANDLE','SNR_CLOSED_BREAK','FRACTAL_INSIDE_POI','DEALING_RANGE','PREMIUM_DISCOUNT'];
@@ -117,7 +117,8 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
    const report=buildPaReport(core,data,quote,new Date().toISOString(),commit);
    validatePaReport(report,symbol);
-   return json(view==='brief'?buildPaBrief(report,core,origin):report,report.status==='ERROR'?503:200);
+   if(view==='brief'){const brief=buildPaBrief(report,core,origin);validatePaBrief(brief,symbol);return json(brief,report.status==='ERROR'?503:200);}
+   return json(report,report.status==='ERROR'?503:200);
   }
   if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
   if(!PA_TFS.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);

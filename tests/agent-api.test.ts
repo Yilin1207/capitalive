@@ -36,7 +36,7 @@ test('brief: compact per-TF view of the same snapshot, nearest levels by distanc
   assert.deepEqual(b.reference,expected.reference);
   for(const tf of PA_TFS){
    const got=b.timeframes[tf],want=expected.timeframes[tf];
-   for(const k of ['above','below','at_price'])assert.deepEqual(got.levels[k].map(({url,...x}:{url:string})=>x),want[k as 'above']);
+   for(const k of ['above','below','at_price'])assert.deepEqual(got.levels[k].map(({urls,...x}:{urls:string[]})=>x),want[k as 'above']);
    assert.deepEqual(got.levels.eligible,want.eligible);
    assert.ok(got.last_closed_candles.length>0&&got.last_closed_candles.length<=5);
    assert.equal(got.last_closed_candles.at(-1).closed_at,got.last_closed_at);
@@ -50,7 +50,8 @@ test('brief: compact per-TF view of the same snapshot, nearest levels by distanc
 test('brief: level and fractal URLs are followable and return that exact evidence',async t=>{
  const f=fixture('NAS100');t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
  const b=await (await paHttp(req('/api/brief','symbol=NAS100'),'brief',f.deps)).json();
- const items=PA_TFS.flatMap(tf=>[...b.timeframes[tf].levels.above,...b.timeframes[tf].levels.below,...b.timeframes[tf].recent_fractals]);
+ const level=(x:{id:string;urls:string[]})=>({id:x.id,url:x.urls[0]});
+ const items=PA_TFS.flatMap(tf=>[...b.timeframes[tf].levels.above.map(level),...b.timeframes[tf].levels.below.map(level),...b.timeframes[tf].recent_fractals]);
  assert.ok(items.length>0);
  for(const x of items.slice(0,6)){
   const res=await followEvidence(x.url,f.deps),r=await res.json();

@@ -1,4 +1,4 @@
-import {nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
+import {nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
  * It reorganizes existing evidence only: no significance, direction or trade fields. */
@@ -9,7 +9,8 @@ export const BRIEF_FRACTALS=6;
 
 /** Absolute URLs pinned to one snapshot; a 409 SNAPSHOT_CHANGED means: refetch the brief. */
 export function paLinks(origin:string,symbol:string,side:string,snapshot:string){
- const url=(path:string,params:Record<string,string>)=>`${origin}${path}?${new URLSearchParams({symbol,side,...params})}`;
+ // ':' is legal in a query string; keeping evidence ids readable also keeps the brief small.
+ const url=(path:string,params:Record<string,string>)=>`${origin}${path}?${String(new URLSearchParams({symbol,side,...params})).replace(/%3A/g,':')}`;
  return {
   brief:url('/api/brief',{}),
   desk_report:url('/api/desk-report',{}),
@@ -27,7 +28,8 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
  const link=paLinks(origin,core.symbol,core.side,snapshot);
  const nearby=available?nearbyLevels(core,BRIEF_LEVELS_PER_SIDE):null;
  const lifecycle=new Map(core.evidence.map(e=>[e.id,e.lifecycle?.state??null]));
- const withUrl=(x:NearbyLevel)=>({...x,url:link.detail(x.id)});
+ // One detail URL per grouped evidence id, in `ids` order.
+ const withUrl=(x:NearbyLevel)=>({...x,urls:x.ids.map(link.detail)});
  let levelsOmitted=0;
  const timeframes=Object.fromEntries(PA_TFS.map(tf=>{
   const f=core.frames[tf],n=nearby?.block.timeframes[tf]??null,dr=report.dealing_ranges.find(r=>r.timeframe===tf);
@@ -52,15 +54,24 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS'},
-  level_rules:{kinds:[...NEARBY_KINDS],excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
+  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
-  omitted:{levels:levelsOmitted,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
+  omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
   definitions:core.definitions,
   links:{self:link.brief,desk_report:link.desk_report,market_context:link.market_context,evidence_all:link.evidence(),docs:link.docs},
   trading_enabled:false as const,
  };
- if(Buffer.byteLength(JSON.stringify(brief))>PA_MAX_BYTES)throw Error('BRIEF_TOO_LARGE');
+ // Size fallback: drop the farthest shown level across all TFs (ties: later id first); counted in omitted.
+ while(Buffer.byteLength(JSON.stringify(brief))+1>PA_MAX_BYTES){
+  let worst:{levels:{omitted:number};list:{distance:number;id:string}[]}|null=null;
+  for(const t of Object.values(brief.timeframes))if(t.levels)for(const list of [t.levels.above,t.levels.below,t.levels.at_price]){
+   const item=list.at(-1),w=worst?.list.at(-1);
+   if(item&&(!w||item.distance>w.distance||item.distance===w.distance&&item.id>w.id))worst={levels:t.levels,list};
+  }
+  if(!worst)throw Error('BRIEF_TOO_LARGE');
+  worst.list.pop();worst.levels.omitted++;brief.omitted.levels++;brief.omitted.levels_size_trimmed++;
+ }
  return brief;
 }
 export type PaBrief=ReturnType<typeof buildPaBrief>;
