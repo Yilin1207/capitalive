@@ -1,5 +1,7 @@
 import {validatePaReport} from '../pa-engine/contract.ts';
 // Portable, dependency-free contract shared by the API and the private-repository publisher.
+// Same rule as lib/session-candles.ts: a Fri/Sat end to Sun/Mon start within 50h is the regular weekend closure.
+const isWeekendClosure=(from:number,to:number)=>to>from&&to-from<=50*3600_000&&[5,6].includes(new Date(from).getUTCDay())&&[0,1].includes(new Date(to).getUTCDay());
 export const MAX_REPORT_BYTES=65_536;
 export const CONTRACT_REVISION='pa-engine-v6.1';
 export type FailureStage='http'|'schema'|'size'|'expiry'|'provider'|'publish';
@@ -211,7 +213,7 @@ export function validateReport(value:unknown,symbol?:string,now?:number,secrets:
   for(const e of Object.values(snrs)){
     if(e.rule==='EDGE.SNR.v2'&&!e.snr)throw Error('MISSING_SNR_METADATA');const s=e.snr;if(!s)continue;
     const cw=e.candle_refs.map(i=>r.candle_windows[i]),kl=snrs[s.primary_kl],x1=s.x1_fvg?snrs[s.x1_fvg]:null,opposing=s.opposing_kl?snrs[s.opposing_kl]:null;
-    if(e.kind!=='SNR_CLOSED_BREAK'||e.rule!=='EDGE.SNR.v2'||cw.length!==4||cw.some(w=>!w)||cw[0][1]!==cw[1][0]||cw[1][1]!==s.origin_confirmed_at||cw[2][1]!==s.delivery_at||cw[3][1]!==s.breakout_at||s.breakout_at!==e.confirmed_at||cw[2][0]<s.origin_confirmed_at||s.delivery_at>s.breakout_at||e.lower!==s.level_price||e.upper!==s.level_price||!['bullish','bearish'].includes(e.direction))throw Error('INVALID_SNR_GEOMETRY');
+    if(e.kind!=='SNR_CLOSED_BREAK'||e.rule!=='EDGE.SNR.v2'||cw.length!==4||cw.some(w=>!w)||cw[0][1]!==cw[1][0]&&!isWeekendClosure(Date.parse(cw[0][1]),Date.parse(cw[1][0]))||cw[1][1]!==s.origin_confirmed_at||cw[2][1]!==s.delivery_at||cw[3][1]!==s.breakout_at||s.breakout_at!==e.confirmed_at||cw[2][0]<s.origin_confirmed_at||s.delivery_at>s.breakout_at||e.lower!==s.level_price||e.upper!==s.level_price||!['bullish','bearish'].includes(e.direction))throw Error('INVALID_SNR_GEOMETRY');
     if(!kl||!['FRACTAL','FVG'].includes(kl.kind)||!e.dependencies.includes(s.primary_kl)||kl.confirmed_at>cw[2][0]||['MN1','W1','D1','H4'].indexOf(kl.timeframe)>['MN1','W1','D1','H4'].indexOf(e.timeframe))throw Error('NONCAUSAL_SNR_CONTEXT');
     if(kl.kind==='FRACTAL'?kl.polarity!==(e.direction==='bullish'?'low':'high'):kl.direction!==e.direction)throw Error('INVALID_SNR_DIRECTION');
     if([s.waiting_bars,s.failed_test_bars,s.failed_test_episodes,s.prior_body_sample,s.impulse_leg_bars].some(n=>!Number.isInteger(n)||n<0)||s.failed_test_episodes>s.failed_test_bars||s.failed_test_bars>s.waiting_bars||s.failed_test_bars!==s.test_windows.length||s.prior_body_sample>20||s.impulse_leg_bars>s.waiting_bars+1||s.formation_seconds!==(Date.parse(s.breakout_at)-Date.parse(s.origin_confirmed_at))/1000||s.breakout_body<0||s.breakout_body_fraction<0||s.breakout_body_fraction>1||s.impulse_leg_efficiency<0||s.impulse_leg_efficiency>1||s.body_to_prior_median!==null&&s.body_to_prior_median<0||s.impulse_leg_body_to_median!==null&&s.impulse_leg_body_to_median<0)throw Error('INVALID_SNR_METRICS');

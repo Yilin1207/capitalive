@@ -5,6 +5,7 @@ import { HISTORY, normalizeCandles, type CandleResponse, type Timeframe } from "
 import { HistoryCache, WindowLimit } from "@/lib/history-cache";
 import { historyDiagnostics, type HistoryDiagnostics } from "@/lib/history-diagnostics";
 import { aggregateMonths, monthStart } from "@/lib/monthly-candles";
+import { aggregateWeeks, mergeSundaySessions, weekStart } from "@/lib/session-candles";
 import {recoverDaily,type DailyRecovery} from './daily-recovery';
 
 export class HistoryError extends Error {
@@ -64,10 +65,11 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       // A small validation reserve can replace rejected rows with older real bars.
       // Never exceed Capital.com's 1000-bar ceiling or synthesize missing prices.
       const rangeEnd = Date.now();
-      const rangeStart = monthStart(rangeEnd, 1 - fetchLimit);
+      const rangeStart = timeframe === "W1" ? weekStart(rangeEnd) - (fetchLimit - 1) * 7 * 86400_000 : monthStart(rangeEnd, 1 - fetchLimit);
       let aggregation: CandleResponse["metadata"]["aggregation"];
       let payload: unknown;
-      if (timeframe === "MN1") {
+      if (timeframe === "MN1" || timeframe === "W1") {
+        // W1 is built from DAY so the Sunday session opens the new week (not the old one).
         // Bounded windows contain at most 900 calendar days, below the 1000-row ceiling.
         // Fetch every window even if one is empty (a listing can start later).
         const prices: unknown[] = [];
@@ -87,7 +89,12 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       const fetchedAt = Date.now();
       let quality: ReturnType<typeof normalizeCandles>;
       try {
-        quality = normalizeCandles(payload, timeframe === "MN1" ? "D1" : timeframe, fetchedAt);
+        quality = normalizeCandles(payload, timeframe === "MN1" || timeframe === "W1" ? "D1" : timeframe, fetchedAt);
+        if (timeframe === "D1") quality.candles = mergeSundaySessions(quality.candles);
+        if (timeframe === "W1") {
+          quality.candles = aggregateWeeks(mergeSundaySessions(quality.candles.filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd)), fetchedAt, quality.rejected.map(row => row.time));
+          quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(weekStart(Date.parse(time))).toISOString()))].sort();
+        }
         if (timeframe === "MN1") {
           // Strict, bounded reconstruction of rejected D1 from actual closed H4.
           // Original raw capture remains unchanged; each attempt is recorded.
@@ -107,7 +114,7 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
           }
           if(attempts.length&&aggregation)aggregation.reconstructions=attempts;
           quality.rejected=quality.rejected.filter(r=>!r.time||!quality.candles.some(c=>c.time===r.time));
-          quality.candles = aggregateMonths(quality.candles.filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd), fetchedAt, quality.rejected.map(row => row.time));
+          quality.candles = aggregateMonths(mergeSundaySessions(quality.candles).filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd), fetchedAt, quality.rejected.map(row => row.time));
           quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(monthStart(Date.parse(time))).toISOString()))].sort();
         }
       }

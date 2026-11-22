@@ -98,7 +98,7 @@ test('validatePaBrief rejects forbidden keys, size, leaked observations, relativ
   ['context outside group',x=>{x.contexts=[{id:'NAS100:MN1:bid:FVG:a',relationships:['kl_id'],evidence_ids:['NAS100:H4:bid:FVG:other']}];}],
   ['unknown relationship',x=>{x.contexts=[{id:'NAS100:MN1:bid:FVG:a',relationships:['significance'],evidence_ids:[x.id]}];}],
   ['bad formation status',x=>{x.formation_status='STRONG';}],
-  ['consumed level',x=>{x.state='CONSUMED';}],
+  ['consumed non-fractal level',x=>{x.state='CONSUMED';if(x.kind==='FRACTAL'){x.kind='FVG';x.fill='PARTIAL';}}],
   ['omitted count',(_x,t)=>{t.levels.omitted++;}],
  ];
  for(const [name,mutate] of groupMutations){const {b,x,t}=first();mutate(x,t);assert.throws(()=>validatePaBrief(b,'NAS100'),/INVALID_EVIDENCE/,name);}

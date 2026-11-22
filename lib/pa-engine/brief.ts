@@ -1,4 +1,4 @@
-import {nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
+import {nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
  * It reorganizes existing evidence only: no significance, direction or trade fields. */
@@ -54,7 +54,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS'},
-  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
+  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
   omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},

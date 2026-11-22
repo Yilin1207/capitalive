@@ -22,7 +22,7 @@ function checkLevel(x:Record<string,any>,c:{symbol:string;side:string;tf:string;
  keys(x,'id ids kind lower upper bounds_basis state formation_status fill distance contexts'+(c.extra?' '+c.extra:''));
  const prefix=`${c.symbol}:${c.tf}:${c.side}:`;
  if(typeof x.id!=='string'||c.ids.has(x.id)||!x.id.startsWith(prefix)||!LEVEL_KINDS.includes(x.kind)||!finite(x.lower)||!finite(x.upper)||x.lower>x.upper||!finite(x.distance)||x.distance<0||x.distance<c.previous)fail();
- if(typeof x.state!=='string'||['CONSUMED','INVALIDATED'].includes(x.state)||!['FVG_REMAINING','ORIGINAL'].includes(x.bounds_basis))fail();
+ if(typeof x.state!=='string'||(x.state==='INVALIDATED'||x.state==='CONSUMED'&&x.kind!=='FRACTAL')||!['FVG_REMAINING','ORIGINAL'].includes(x.bounds_basis))fail();
  if(x.kind==='FVG'?typeof x.fill!=='string'||x.fill==='FILLED':x.fill!==null||x.bounds_basis!=='ORIGINAL')fail();
  if(x.formation_status!==undefined&&!['CONFIRMED','NEEDS_SPECIFICATION'].includes(x.formation_status))fail();
  const members:string[]=x.ids===undefined?[x.id]:x.ids;

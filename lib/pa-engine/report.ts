@@ -17,7 +17,9 @@ export type PaEngine=ReturnType<typeof buildPaEngine>;
 export function snapshotHash(core:PaEngine){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
 export const NEARBY_PER_SIDE=3;
 export const NEARBY_KINDS=['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'] as const;
-export const NEARBY_EXCLUDED_STATES=['CONSUMED','INVALIDATED'] as const;
+export const NEARBY_EXCLUDED_STATES=['INVALIDATED'] as const;
+/** Notion «Fractal Raid»: a raided fractal keeps its supply/demand zone; only its liquidity is consumed. Other consumed levels stay excluded. */
+export const NEARBY_EXCLUDED_EXTRA=['FVG_FILLED','CONSUMED_NON_FRACTAL'] as const;
 /** Evidence facts that name the known KL / POI a formation was observed at. */
 export const NEARBY_CONTEXT_KEYS=['kl_id','pivot_id','poi_id','rb_liquidity_id','rb_fvg_id','snr_x1_fvg_id','snr_opposing_kl_id'] as const;
 export const NEARBY_GROUPING='KIND_TIMEFRAME_FORMATION_CANDLES_BOUNDS';
@@ -27,7 +29,7 @@ type NearbyFrame={above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[]
 /** Strip float noise from price differences (e.g. 57.99999999 -> 58). */
 const priceDiff=(a:number,b:number)=>Number((a-b).toFixed(10));
 const uniqueSorted=(x:string[])=>[...new Set(x)].sort();
-/** Geometric proximity only: nearest unconsumed, non-invalidated levels around the last closed H4 close.
+/** Geometric proximity only: nearest non-invalidated levels (raided fractals included, state CONSUMED) around the last closed H4 close.
  * One formation (same kind, TF, formation candles and bounds) observed at several known KL is one level:
  * `ids` lists every evidence id, `contexts` the KL it was observed at. Members that disagree on lifecycle
  * state or formation status are never merged. Ordering is distance then id; never significance. */
@@ -39,7 +41,7 @@ export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:num
   const groups=new Map<string,{level:NearbyLevel;contexts:Map<string,{relationships:string[];evidence_ids:string[]}>}>();
   for(const e of core.evidence){
    const s=e.lifecycle;
-   if(e.timeframe!==tf||!s||!(NEARBY_KINDS as readonly string[]).includes(e.kind)||(NEARBY_EXCLUDED_STATES as readonly string[]).includes(s.state))continue;
+   if(e.timeframe!==tf||!s||!(NEARBY_KINDS as readonly string[]).includes(e.kind)||(NEARBY_EXCLUDED_STATES as readonly string[]).includes(s.state)||s.state==='CONSUMED'&&e.kind!=='FRACTAL')continue;
    // FVG: only the unfilled remainder is a live zone; a fully tested gap has none.
    const fvg=e.kind==='FVG',b=fvg?e.remaining_bounds:e.bounds;
    if(!b||!Number.isFinite(b.lower)||!Number.isFinite(b.upper)||fvg&&(!s.fill||s.fill.state==='FILLED'||s.fill.max_observed_fraction>=1))continue;
@@ -61,7 +63,7 @@ export function nearbyLevels(core:Pick<PaEngine,'frames'|'evidence'>,perSide:num
   const counts={above:rows.above.length,below:rows.below.length,at_price:rows.at_price.length};eligible+=counts.above+counts.below+counts.at_price;
   timeframes[tf]={above:pick(rows.above),below:pick(rows.below),at_price:pick(rows.at_price),eligible:counts};
  }
- return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,grouping:NEARBY_GROUPING,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:perSide,excluded_states:[...NEARBY_EXCLUDED_STATES,'FVG_FILLED'],size_trimmed:0,timeframes},eligible};
+ return {block:{reference:{price:ref,at:last.end,basis:'LAST_CLOSED_H4_CLOSE' as const},selection_policy:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE' as const,grouping:NEARBY_GROUPING,state_field:'lifecycle.state' as const,distance_unit:'PRICE' as const,per_side_limit:perSide,excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],size_trimmed:0,timeframes},eligible};
 }
 const nearbyCount=(n:{timeframes:Record<string,NearbyFrame>}|null)=>n?Object.values(n.timeframes).reduce((k,f)=>k+f.above.length+f.below.length+f.at_price.length,0):0;
 /** Size fallback: drop the farthest included level across all TFs (ties: later id first). */

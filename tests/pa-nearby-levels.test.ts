@@ -25,16 +25,16 @@ const level=(id:string,lower:number,upper:number,state='ACTIVE',kind='FRACTAL',t
 const fvg=(id:string,lower:number,upper:number,remaining:{lower:number;upper:number}|null,fraction:number,state='ACTIVE',fill='PARTIAL'):Fake=>({id:`NAS100:D1:bid:FVG:${id}`,kind:'FVG',timeframe:'D1',bounds:{lower,upper},remaining_bounds:remaining,lifecycle:{state,fill:{state:fill,max_observed_fraction:fraction}}});
 const fakeCore=(evidence:Fake[],close=100)=>({frames:{H4:{ohlc:[{time:'2026-11-20T08:00:00.000Z',end:'2026-11-20T12:00:00.000Z',open:close,high:close+1,low:close-1,close}]}},evidence}) as unknown as Parameters<typeof nearbyLevels>[0];
 
-test('nearby_levels excludes CONSUMED, INVALIDATED and fully filled FVG; keeps ACTIVE/CANDIDATE/UNVERIFIED',()=>{
+test('nearby_levels excludes INVALIDATED, fully filled FVG and consumed non-fractals; keeps raided fractals (Notion Fractal Raid)',()=>{
  const n=nearbyLevels(fakeCore([
-  level('consumed',101,101,'CONSUMED'),level('invalidated',102,102,'INVALIDATED'),
+  level('consumed',101,101,'CONSUMED'),level('consumed-rb',101.5,101.5,'CONSUMED','RB_TWO_CANDLE'),level('invalidated',102,102,'INVALIDATED'),
   fvg('filled-tested',103,104,null,1,'TESTED','FILLED'),fvg('filled-invalidated',95,96,null,1,'INVALIDATED','FILLED'),
   level('active',110,110),level('candidate',97,98,'CANDIDATE','RB_TWO_CANDLE'),level('unverified',90,90,'UNVERIFIED'),
   {...level('raid',100.5,100.5),kind:'RAID'},{...level('no-lifecycle',100.2,100.2),lifecycle:null},
  ]))!.block.timeframes.D1;
  const ids=[...n.above,...n.below,...n.at_price].map(x=>x.id.split(':').at(-1)).sort();
- assert.deepEqual(ids,['active','candidate','unverified']);
- assert.deepEqual(n.eligible,{above:1,below:2,at_price:0});
+ assert.deepEqual(ids,['active','candidate','consumed','unverified']);
+ assert.deepEqual(n.eligible,{above:2,below:2,at_price:0});
 });
 
 test('nearby_levels uses the FVG remainder for bounds and distance after a partial test',()=>{
@@ -64,7 +64,7 @@ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] a
  const byId=new Map(f.core.evidence.map(e=>[e.id,e]));
  for(const tf of PA_TFS)for(const x of [...n.timeframes[tf].above,...n.timeframes[tf].below,...n.timeframes[tf].at_price]){
   const e=byId.get(x.id)!;assert.equal(e.timeframe,tf);assert.equal(x.state,e.lifecycle!.state);
-  assert.ok(!['CONSUMED','INVALIDATED'].includes(x.state));
+  assert.ok(x.state!=='INVALIDATED'&&(x.state!=='CONSUMED'||x.kind==='FRACTAL'));
   const b=e.kind==='FVG'?e.remaining_bounds!:e.bounds!;assert.deepEqual([x.lower,x.upper],[b.lower,b.upper]);
  }
  const eligible=PA_TFS.reduce((k,tf)=>{const c=n.timeframes[tf].eligible;return k+c.above+c.below+c.at_price;},0);
@@ -105,7 +105,7 @@ test('contract accepts reports without nearby_levels and rejects inconsistent bl
  const stale=buildPaReport(f.core,f.data,f.staleQuote,f.now) as Record<string,any>;validatePaReport(stale,'NAS100');
  stale.nearby_levels=structuredClone(r.nearby_levels);assert.throws(()=>validatePaReport(stale,'NAS100'),/INVALID_EVIDENCE/);
  const mutations:((x:any)=>void)[]=[
-  x=>{x.nearby_levels.timeframes[tf][side][0].state='CONSUMED';},
+  x=>{const l=x.nearby_levels.timeframes[tf][side][0];l.state='CONSUMED';if(l.kind==='FRACTAL')l.kind='SNR_CLOSED_BREAK';},
   x=>{x.nearby_levels.timeframes[tf][side][0].state='INVALIDATED';},
   x=>{x.nearby_levels.timeframes[tf][side][0].distance+=1;},
   x=>{x.nearby_levels.timeframes[tf][side].reverse();},

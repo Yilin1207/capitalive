@@ -1,5 +1,6 @@
 import type { CandleResponse, PriceSide, Timeframe } from "../candle-data";
 import { HISTORY } from "../candle-data";
+import { isWeekendClosure, mergeSundaySessions } from "../session-candles";
 export type Bar = {
   index: number;
   time: string;
@@ -43,8 +44,10 @@ export function closedFrame(
     !Number.isFinite(now) ||
     !Number.isFinite(fetched) ||
     data.metadata.discarded_reasons.invalid_time > 0;
-  for (let index = 0; index < data.candles.length; index++) {
-    const c = data.candles[index],
+  // D1: the Sunday-evening session opens Monday's trading day (idempotent for already merged data).
+  const source = data.timeframe === "D1" ? mergeSundaySessions(data.candles) : data.candles;
+  for (let index = 0; index < source.length; index++) {
+    const c = source[index],
       t = Date.parse(c.time),
       end =
         data.timeframe === "MN1"
@@ -95,7 +98,7 @@ export function closedFrame(
     const prev = bars.at(-1);
     if (
       prev &&
-      (Date.parse(prev.end) !== t ||
+      ((Date.parse(prev.end) !== t && !(data.timeframe === "D1" && isWeekendClosure(Date.parse(prev.end), t))) ||
         rejected.some((x) => x >= Date.parse(prev.time) && x <= t))
     ) {
       segment++;

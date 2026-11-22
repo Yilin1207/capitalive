@@ -58,11 +58,12 @@ test("real route handlers and shared Capital transport (mock upstream only)", as
         assert.equal(body.price_side, "bid_ask");
         assert.equal(body.metadata.requested, HISTORY[timeframe].limit);
         assert.equal(body.metadata.insufficient_history, true);
-        assert.equal(body.candles[0].time, "2026-01-05T00:00:00.000Z");
+        // W1 is built from DAY; the trading week starts Sunday 00:00 UTC.
+        assert.equal(body.candles[0].time, timeframe === "W1" ? "2026-01-04T00:00:00.000Z" : "2026-01-05T00:00:00.000Z");
         assert.deepEqual(body.candles[0].close, { bid: 105, ask: 108 });
         const url = historyUrls.at(-1)!;
-        assert.equal(url.searchParams.get("resolution"), HISTORY[timeframe].resolution);
-        assert.equal(url.searchParams.get("max"), String({W1:172,D1:280,H4:334}[timeframe]));
+        assert.equal(url.searchParams.get("resolution"), timeframe === "W1" ? "DAY" : HISTORY[timeframe].resolution);
+        assert.equal(url.searchParams.get("max"), String({W1:1000,D1:280,H4:334}[timeframe]));
         assert.equal(url.pathname, `/api/v1/prices/${body.epic}`);
         assert.doesNotMatch(JSON.stringify(body), /private-|test-key|test-password|test-identifier|account-must-not-leak|CST|SECURITY-TOKEN/);
       }
