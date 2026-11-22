@@ -26,7 +26,10 @@ Credentials and ingestion remain protected; the report repository remains privat
 
 `nearby_levels` in the desk-report lists, per timeframe (MN1/W1/D1/H4), up to 3 levels above,
 3 below and 3 containing the last closed H4 close (`reference`). Candidates are FRACTAL, FVG, RB and
-SNR evidence whose `lifecycle.state` is not CONSUMED or INVALIDATED; fully filled FVG are excluded and
+SNR evidence whose `lifecycle.state` is not INVALIDATED. A raided FRACTAL stays listed with
+`state: CONSUMED` (its liquidity is taken; the zone remains, per the Notion "Fractal Raid" source as
+relayed by the user); CONSUMED RB/FVG/SNR are excluded (`excluded_states`: INVALIDATED, FVG_FILLED,
+CONSUMED_NON_FRACTAL). Fully filled FVG are excluded and
 partially tested FVG show the remaining zone (`bounds_basis: FVG_REMAINING`). `distance` is in price
 units (not pips); ordering is distance then id, never significance. `eligible` counts all matching
 levels; `omitted.nearby_levels` counts those not shown, and `size_trimmed` those dropped for the byte
@@ -63,6 +66,14 @@ All compact omissions are explicit. A displayed subset is not a complete market 
 A 409 snapshot change requires restarting pagination. Available history is finite.
 Fractals use only three closed candles. No stitching across unexplained gaps.
 Consumed liquidity and filled FVG are not fresh levels; ACTIVE does not prove a support role.
+
+Session-aware candles (lib/session-candles.ts): Capital.com's separate Sunday-evening DAY bar is merged
+into the following Monday (Sunday open, combined high/low, Monday close); a Sunday bar without its
+Monday yet is not closed. W1 is built from these DAY bars, Sunday 00:00 UTC to Sunday 00:00 UTC, so the
+weekly close is Friday's close and the bar is marked closed at Sunday 00:00 UTC; this costs one extra
+DAY request window per W1 fetch. MN1 aggregates the merged days. On D1 only a regular weekend closure
+(Fri/Sat end to Sun/Mon start, at most 50 h) is continuous; any other missing day still splits the
+segment. H4 is unchanged (weekends still split H4 segments).
 Compression/LRL and unformalized significance remain NEEDS_SPECIFICATION.
 OHLC arithmetic is checked, but independent second-provider accuracy and historical sessions
 are not established. PARTIAL limitations remain visible; STALE/ERROR suppress current observations.
