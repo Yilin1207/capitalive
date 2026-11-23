@@ -36,7 +36,8 @@ test('brief: compact per-TF view of the same snapshot, nearest levels by distanc
   assert.deepEqual(b.reference,expected.reference);
   for(const tf of PA_TFS){
    const got=b.timeframes[tf],want=expected.timeframes[tf];
-   for(const k of ['above','below','at_price'])assert.deepEqual(got.levels[k].map(({urls,...x}:{urls:string[]})=>x),want[k as 'above']);
+   for(const k of ['above','below','at_price'])// Additive brief fields (urls, distance_atr_d1, nested_in, kl_events) on top of the geometric selection.
+   assert.deepEqual(got.levels[k].map(({urls,distance_atr_d1,nested_in,kl_events,...x}:Record<string,unknown>)=>x),want[k as 'above']);
    assert.deepEqual(got.levels.eligible,want.eligible);
    assert.ok(got.last_closed_candles.length>0&&got.last_closed_candles.length<=5);
    assert.equal(got.last_closed_candles.at(-1).closed_at,got.last_closed_at);

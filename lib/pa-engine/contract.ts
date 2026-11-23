@@ -68,7 +68,7 @@ export const PA_BRIEF_SCHEMA='pa-brief-v1';
 export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[],maxBytes=65536):void{
  const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>maxBytes)throw Error('BRIEF_TOO_LARGE');
  assertPublishable(b,raw,secrets,'BRIEF');
- keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
+ keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
  if(b.schema_version!==PA_BRIEF_SCHEMA||b.contract_revision!==PA_CONTRACT_REVISION||b.mode!=='PA_ONLY'||b.technical_only!==true||b.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(s=>s===b.symbol)||symbol&&b.symbol!==symbol||!['bid','ask'].includes(b.price_side)||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(b.status)||typeof b.observations_available!=='boolean')fail();
  if(!date(b.generated_at)||!date(b.as_of)||!date(b.expires_at)||b.as_of>b.generated_at||b.expires_at<b.generated_at||!/^[a-f0-9]{64}$/.test(b.snapshot_sha256)||obj(b.quote).used_as_closed_evidence!==false||!strings(b.warnings))fail();
  checkGrid(b.grid,b.timeframes);
@@ -90,7 +90,8 @@ export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]
    for(const where of ['above','below','at_price']){const list=t.levels[where];
     if(!Array.isArray(list)||list.length>limit||!Number.isInteger(t.levels.eligible[where])||t.levels.eligible[where]<list.length)fail();
     let previous=-Infinity;
-    for(const x of list){previous=checkLevel(x,{symbol:b.symbol,side:b.price_side,tf,where,ref,tol,ids,previous,extra:'urls'});
+    for(const x of list){previous=checkLevel(x,{symbol:b.symbol,side:b.price_side,tf,where,ref,tol,ids,previous,extra:'urls distance_atr_d1 nested_in kl_events'});
+     if(x.distance_atr_d1!==undefined&&x.distance_atr_d1!==null&&(!finite(x.distance_atr_d1)||x.distance_atr_d1<0)||x.nested_in!==undefined&&(!strings(x.nested_in)||x.nested_in.some((id:string)=>!id.startsWith(b.symbol+':')||tfs.indexOf(id.split(':')[1])>=tfs.indexOf(tf))))fail();
      if(!Array.isArray(x.urls)||x.urls.length!==x.ids.length||x.urls.some((u:unknown,i:number)=>!absolute(u)||new URL(u as string).searchParams.get('id')!==x.ids[i]))fail();}
     shown+=list.length;eligible+=t.levels.eligible[where];
    }

@@ -1,4 +1,5 @@
 import type {Grid} from '../ny-grid';
+import {atrD1,nestedIn} from './brief-facts';
 import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
@@ -34,8 +35,9 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
  const link=paLinks(origin,core.symbol,core.side,snapshot,grid);
  const nearby=available?nearbyLevels(core,BRIEF_LEVELS_PER_SIDE):null;
  const lifecycle=new Map(core.evidence.map(e=>[e.id,e.lifecycle?.state??null]));
- // One detail URL per grouped evidence id, in `ids` order.
- const withUrl=(x:NearbyLevel)=>({...x,urls:x.ids.map(link.detail)});
+ const atr=available?atrD1(core):null;
+ // One detail URL per grouped evidence id, in `ids` order; distance also in D1 ATR; live higher-TF zones containing the level.
+ const withUrl=(tf:(typeof PA_TFS)[number])=>(x:NearbyLevel)=>({...x,urls:x.ids.map(link.detail),distance_atr_d1:atr?Number((x.distance/atr.value).toFixed(4)):null,nested_in:nestedIn(core,tf,x)});
  let levelsOmitted=0;
  const timeframes=Object.fromEntries(PA_TFS.map(tf=>{
   const f=core.frames[tf],n=nearby?.block.timeframes[tf]??null,dr=report.dealing_ranges.find(r=>r.timeframe===tf);
@@ -47,7 +49,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
    timeframe:tf,grid:f.grid,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,
    last_closed_candles:f.ohlc.slice(-candles).map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close})),
    dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference}:null,
-   levels:n?{above:n.above.map(withUrl),below:n.below.map(withUrl),at_price:n.at_price.map(withUrl),eligible:n.eligible,omitted:eligible-included}:null,
+   levels:n?{above:n.above.map(withUrl(tf)),below:n.below.map(withUrl(tf)),at_price:n.at_price.map(withUrl(tf)),eligible:n.eligible,omitted:eligible-included}:null,
    recent_fractals:available?core.market_structure[tf].swing_sequence.slice(-BRIEF_FRACTALS).map(p=>({id:p.id,polarity:p.polarity,price:p.price,confirmed_at:p.confirmed_at,relation:p.relation,state:lifecycle.get(p.id)??null,url:link.detail(p.id)})):null,
    findings_by_kind:available?kinds:null,
    links:{evidence:link.evidence(tf),candles:link.candles(tf),structure:link.structure(tf)},
@@ -58,9 +60,9 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   symbol:core.symbol,price_side:core.side,grid:gridInfo(core,grid),engine:engineInfo(report.source.engine_commit),status:report.status,data_quality:report.data_quality,observations_available:available,
   generated_at:report.generated_at,as_of:report.as_of,expires_at:report.expires_at,snapshot_sha256:snapshot,
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
-  reference:nearby?.block.reference??null,
+  reference:nearby?.block.reference??null,atr_d1:atr,
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
-  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
+  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
   omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
