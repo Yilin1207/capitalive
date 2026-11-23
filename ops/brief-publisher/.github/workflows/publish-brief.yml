@@ -1,6 +1,8 @@
 # Lives in the public snapshot repository (e.g. Yilin1207/capitalive-brief), not in capitalive.
 # ~7 minutes after every New York-grid H4 close: winter 22/02/06/10/14/18 UTC, summer 21/01/05/09/13/17 UTC.
 # GitHub may start scheduled runs late (often 5-20 min); every file carries its own timestamps.
+# The schedule is registered when this file is pushed to main by a user (not by GITHUB_TOKEN commits).
+# Disabling and re-enabling the workflow can leave it unregistered: push a change to this file to fix that.
 name: Publish Capitalive brief
 on:
   schedule:
