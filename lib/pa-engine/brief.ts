@@ -70,12 +70,19 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',strong_fractals:'THE EDGE Strong High/Low (HRL) facts as two separate flags: VC_AT_FRACTAL = RB/SNR of the same TF formed on one of the fractal candles; RAIDED_PRIOR_FRACTAL = a fractal candle was the first strict crossing of an earlier same-polarity fractal; significance NOT_EVALUATED',fractals_inside_kl:'Fractals of this TF inside a live KL of the same or next higher TF (X-1 trigger geometry); IDM itself NEEDS_SPECIFICATION (near-POI undefined)',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
-  omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
+  omitted:{levels:levelsOmitted,levels_size_trimmed:0,fact_details_size_trimmed:[] as string[],findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
   definitions:core.definitions,
   links:{self:link.brief,desk_report:link.desk_report,market_context:link.market_context,evidence_all:link.evidence(),docs:link.docs},
   trading_enabled:false as const,
  };
- // Size fallback: drop the farthest shown level across all TFs (ties: later id first); counted in omitted.
+ // Size fallback 1: fact details yield before levels (counts and totals stay; listed in omitted).
+ const tooLarge=()=>Buffer.byteLength(JSON.stringify(brief))+1>maxBytes;
+ const steps:[string,()=>void][]=[
+  ['KL_EVENTS_LAST',()=>{for(const t of Object.values(brief.timeframes))if(t.levels)for(const l of [...t.levels.above,...t.levels.below,...t.levels.at_price])if(l.kl_events)l.kl_events.last=[];}],
+  ['STRONG_FRACTALS_AND_INSIDE_KL_ITEMS_BEYOND_FIRST',()=>{for(const t of Object.values(brief.timeframes)){t.strong_fractals?.items.splice(1);t.fractals_inside_kl?.items.splice(1);}}],
+ ];
+ for(const [name,apply] of steps){if(!tooLarge())break;apply();brief.omitted.fact_details_size_trimmed.push(name);}
+ // Size fallback 2: drop the farthest shown level across all TFs (ties: later id first); counted in omitted.
  while(Buffer.byteLength(JSON.stringify(brief))+1>maxBytes){
   let worst:{levels:{omitted:number};list:{distance:number;id:string}[]}|null=null;
   for(const t of Object.values(brief.timeframes))if(t.levels)for(const list of [t.levels.above,t.levels.below,t.levels.at_price]){

@@ -140,3 +140,19 @@ test('definitions flag the open RB-from-FVG question and the new fact blocks wit
  assert.equal(d.strong_high_low,'NEEDS_SPECIFICATION');assert.equal(d.idm,'NEEDS_SPECIFICATION');assert.equal(d.significance,'NOT_EVALUATED');
  assert.equal(d.approach_character,'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION');
 });
+
+test('size: a single brief trims fact details before levels and lists what was trimmed; the batch cap keeps everything',async()=>{
+ const {readFileSync}=await import('node:fs');const {buildPaReport}=await import('../lib/pa-engine/report');const {buildPaBrief}=await import('../lib/pa-engine/brief');
+ const input=JSON.parse(readFileSync('tests/fixtures/edge-v2/NAS100.json','utf8'));
+ const now=new Date(Math.max(...Object.values(input.data as Record<string,{fetched_at:string}>).map(d=>Date.parse(d.fetched_at)))).toISOString();
+ const core=buildPaEngine(input.data,'bid'),report=buildPaReport(core,input.data,{...input.quote,provider_timestamp:now,retrieved_at:now,fresh:true,market_status:'TRADEABLE'},now);
+ const full=buildPaBrief(report,core,'https://capitalive.test','ny',{maxBytes:200_000});
+ const single=buildPaBrief(report,core,'https://capitalive.test','ny');
+ assert.ok(Buffer.byteLength(JSON.stringify(full))>65536);assert.deepEqual(full.omitted.fact_details_size_trimmed,[]);
+ assert.ok(Buffer.byteLength(JSON.stringify(single))<65536);assert.equal(single.omitted.levels_size_trimmed,0);
+ assert.deepEqual(single.omitted.fact_details_size_trimmed,['KL_EVENTS_LAST','STRONG_FRACTALS_AND_INSIDE_KL_ITEMS_BEYOND_FIRST']);
+ for(const tf of PA_TFS){const a=single.timeframes[tf],b=full.timeframes[tf];
+  assert.deepEqual(a.levels!.above.map(x=>x.id),b.levels!.above.map(x=>x.id));assert.deepEqual(a.levels!.below.map(x=>x.id),b.levels!.below.map(x=>x.id));
+  assert.equal(a.strong_fractals!.total,b.strong_fractals!.total);assert.ok(a.strong_fractals!.items.length<=1);
+  for(const x of a.levels!.below)assert.deepEqual(x.kl_events!.own_tf_counts,b.levels!.below.find(y=>y.id===x.id)!.kl_events!.own_tf_counts);}
+});

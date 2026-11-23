@@ -55,7 +55,7 @@ export function classifyKlEvent(prevClose:number,b:Pick<Bar,'high'|'low'|'close'
  return beyond(b.close,far)?'ACCEPTANCE':back(b.close,near)?'REJECTION':'TOUCH';
 }
 /** Closed-candle events at a level on its own TF and lower TFs after the formation closed. */
-export function klEvents(core:Core,level:Pick<NearbyLevel,'id'|'lower'|'upper'>,last=3){
+export function klEvents(core:Core,level:Pick<NearbyLevel,'id'|'lower'|'upper'>,last=2){
  const e=core.evidence.find(x=>x.id===level.id);if(!e)return null;
  const b=e.bounds??{lower:level.lower,upper:level.upper};
  const tf=e.timeframe as Tf,events:{tf:Tf;type:KlEventType;at:string}[]=[];
@@ -88,7 +88,7 @@ export function approach(core:Pick<PaEngine,'frames'>,tf:Tf,atr:number|null,leve
 /** THE EDGE «Strong High / Low (HRL)» facts, two separate flags (user decision 2026-11-23):
  * VC_AT_FRACTAL — an RB/SNR of the same TF, oriented away from the fractal, formed on one of its three candles;
  * RAIDED_PRIOR_FRACTAL — one of the fractal's candles was the first strict crossing of an earlier same-polarity fractal. */
-export function strongFractals(core:Core,tf:Tf,cap=5){
+export function strongFractals(core:Core,tf:Tf,cap=3){
  const own=core.evidence.filter(e=>e.timeframe===tf),rows=[];
  for(const f of own.filter(e=>e.kind==='FRACTAL')){
   const times=new Set(f.candle_evidence.map(c=>c.time)),polarity=f.facts.polarity;
@@ -97,10 +97,11 @@ export function strongFractals(core:Core,tf:Tf,cap=5){
   const vc=own.filter(e=>['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(e.kind)&&oriented(e)&&e.candle_evidence.slice(0,2).some(c=>times.has(c.time)));
   const raided=own.filter(e=>e.kind==='RAID'&&e.facts.polarity===polarity&&e.facts.pivot_id!==f.id&&e.candle_evidence.some(c=>times.has(c.time)));
   if(!vc.length&&!raided.length)continue;
-  rows.push({id:f.id,polarity,price:f.facts.price,confirmed_at:f.confirmed_at,state:f.lifecycle?.state??null,
+  rows.push({id:f.id,price:f.facts.price,confirmed_at:f.confirmed_at,state:f.lifecycle?.state??null,
    flags:[...(vc.length?['VC_AT_FRACTAL']:[]),...(raided.length?['RAIDED_PRIOR_FRACTAL']:[])],
-   vc:vc.map(e=>({id:e.id,kind:e.kind,bounds:e.bounds,kl_id:typeof e.facts.kl_id==='string'?e.facts.kl_id:null})).slice(0,3),
-   raided_fractal_ids:[...new Set(raided.map(e=>String(e.facts.pivot_id)))].slice(0,3)});
+   // Strong range = VC bounds on the VC timeframe (details via the evidence id).
+   vc:vc.map(e=>({id:e.id,lower:e.bounds?.lower??null,upper:e.bounds?.upper??null})).slice(0,2),
+   raided_fractal_ids:[...new Set(raided.map(e=>String(e.facts.pivot_id)))].slice(0,2)});
  }
  rows.sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id));
  return {total:rows.length,items:rows.slice(0,cap),significance:'NOT_EVALUATED' as const};
@@ -108,8 +109,8 @@ export function strongFractals(core:Core,tf:Tf,cap=5){
 
 /** Fractals of this TF inside a live KL of the same or next higher TF (THE EDGE IDM geometry «внутри POI»).
  * «возле POI» has no exact definition, so IDM itself stays NEEDS_SPECIFICATION. */
-export function fractalsInsideKl(core:Core,tf:Tf,cap=5){
- const rows=core.evidence.filter(e=>e.timeframe===tf&&e.kind==='FRACTAL_INSIDE_POI').map(e=>({id:String(e.facts.pivot_id),kl_id:String(e.facts.poi_id),tf_relation:String(e.facts.tf_relation),price:Number(e.facts.price),confirmed_at:e.confirmed_at,evidence_id:e.id}))
+export function fractalsInsideKl(core:Core,tf:Tf,cap=3){
+ const rows=core.evidence.filter(e=>e.timeframe===tf&&e.kind==='FRACTAL_INSIDE_POI').map(e=>({id:String(e.facts.pivot_id),kl_id:String(e.facts.poi_id),tf_relation:String(e.facts.tf_relation),price:Number(e.facts.price),confirmed_at:e.confirmed_at}))
   .sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id));
  return {total:rows.length,items:rows.slice(0,cap),idm_status:'NEEDS_SPECIFICATION' as const};
 }
