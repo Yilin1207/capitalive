@@ -1,5 +1,5 @@
 import type {Grid} from '../ny-grid';
-import {approach,atrD1,klEvents,nestedIn,premiumDiscount} from './brief-facts';
+import {approach,atrD1,fractalsInsideKl,klEvents,nestedIn,premiumDiscount,strongFractals} from './brief-facts';
 import {APPROACH_CONFIG} from './approach-config';
 import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
@@ -53,6 +53,8 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
     premium_discount:premiumDiscount({...dr,explicit_range:core.dealing_ranges.find(r=>r.timeframe===tf)?.explicit_range},nearby?.block.reference.price??null)}:null,
    levels:n?{above:n.above.map(withUrl(tf)),below:n.below.map(withUrl(tf)),at_price:n.at_price.map(withUrl(tf)),eligible:n.eligible,omitted:eligible-included}:null,
    approach:available?approach(core,tf,atr?.value??null,n):null,
+   strong_fractals:available?strongFractals(core,tf):null,
+   fractals_inside_kl:available?fractalsInsideKl(core,tf):null,
    recent_fractals:available?core.market_structure[tf].swing_sequence.slice(-BRIEF_FRACTALS).map(p=>({id:p.id,polarity:p.polarity,price:p.price,confirmed_at:p.confirmed_at,relation:p.relation,state:lifecycle.get(p.id)??null,url:link.detail(p.id)})):null,
    findings_by_kind:available?kinds:null,
    links:{evidence:link.evidence(tf),candles:link.candles(tf),structure:link.structure(tf)},
@@ -65,7 +67,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,atr_d1:atr,approach_config:{...APPROACH_CONFIG,status:Object.values(APPROACH_CONFIG).includes(null)?'NEEDS_SPECIFICATION':'USER_APPROVED'},
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
-  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
+  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',strong_fractals:'THE EDGE Strong High/Low (HRL) facts as two separate flags: VC_AT_FRACTAL = RB/SNR of the same TF formed on one of the fractal candles; RAIDED_PRIOR_FRACTAL = a fractal candle was the first strict crossing of an earlier same-polarity fractal; significance NOT_EVALUATED',fractals_inside_kl:'Fractals of this TF inside a live KL of the same or next higher TF (X-1 trigger geometry); IDM itself NEEDS_SPECIFICATION (near-POI undefined)',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
   omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},

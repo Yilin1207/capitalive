@@ -80,10 +80,12 @@ export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]
  if(Object.keys(obj(b.timeframes)).sort().join(',')!=='D1,H4,MN1,W1')fail();
  const ids=new Set<string>(),tol=1e-6*Math.max(1,Math.abs(ref)||1);let omitted=0;
  for(const tf of tfs){const t=b.timeframes[tf];
-  keys(t,'timeframe grid data_quality warnings last_closed_at closed_candles last_closed_candles dealing_range levels approach recent_fractals findings_by_kind links');
+  keys(t,'timeframe grid data_quality warnings last_closed_at closed_candles last_closed_candles dealing_range levels approach strong_fractals fractals_inside_kl recent_fractals findings_by_kind links');
   if(t.timeframe!==tf||!strings(t.warnings)||!Number.isInteger(t.closed_candles)||t.closed_candles<0||t.last_closed_at!==null&&(!date(t.last_closed_at)||t.last_closed_at>b.as_of)||!Array.isArray(t.last_closed_candles))fail();
   for(const c of t.last_closed_candles){keys(c,'time closed_at open high low close');if(!date(c.time)||!date(c.closed_at)||c.time>=c.closed_at||c.closed_at>b.as_of||['open','high','low','close'].some(k=>!finite(c[k])||c[k]<=0)||c.low>Math.min(c.open,c.close)||c.high<Math.max(c.open,c.close))fail();}
-  if(withheld&&(t.levels!==null||t.dealing_range!==null||t.recent_fractals!==null||t.findings_by_kind!==null||t.approach!=null))fail();
+  if(withheld&&(t.levels!==null||t.dealing_range!==null||t.recent_fractals!==null||t.findings_by_kind!==null||t.approach!=null||t.strong_fractals!=null||t.fractals_inside_kl!=null))fail();
+  if(t.strong_fractals!=null&&(!Array.isArray(t.strong_fractals.items)||t.strong_fractals.items.some((x:Record<string,any>)=>!strings(x.flags)||!x.flags.length||x.flags.some((f:string)=>!['VC_AT_FRACTAL','RAIDED_PRIOR_FRACTAL'].includes(f))||typeof x.id!=='string'||!x.id.startsWith(`${b.symbol}:${tf}:${b.price_side}:FRACTAL:`))))fail();
+  if(t.fractals_inside_kl!=null&&(t.fractals_inside_kl.idm_status!=='NEEDS_SPECIFICATION'||!Array.isArray(t.fractals_inside_kl.items)))fail();
   if(t.approach!=null&&!['EXPANSION_NO_CORRECTION','COMPRESSION','NONE','NOT_EVALUATED'].includes(t.approach.flag))fail();
   if(t.levels!==null){
    if(!finite(ref))fail();

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {approach,atrD1,classifyKlEvent,klEvents,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
+import {approach,atrD1,classifyKlEvent,fractalsInsideKl,klEvents,nestedIn,premiumDiscount,strongFractals} from '../lib/pa-engine/brief-facts';
 import {APPROACH_CONFIG} from '../lib/pa-engine/approach-config';
 import {buildPaEngine} from '../lib/pa-engine/core';
 import {paHttp} from '../lib/pa-engine/http';
@@ -103,4 +103,33 @@ test('approach: run without counter-close, move in D1 ATR, body overlap, contrac
  const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
  const b=await brief(f);assert.equal(b.approach_config.status,'NEEDS_SPECIFICATION');
  for(const tf of PA_TFS){const x=b.timeframes[tf].approach;assert.equal(x.flag,'NOT_EVALUATED');assert.equal(x.through,b.timeframes[tf].last_closed_at);}
+});
+
+test('strong fractals: VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL are separate flags; X-1 fractals inside KL listed, IDM unspecified',async t=>{
+ const c=(time:string)=>({time});
+ const ev=(id:string,kind:string,times:string[],facts:Record<string,unknown>,confirmed_at='2026-11-10T12:00:00.000Z')=>({id,kind,timeframe:'H4',candle_evidence:times.map(c),facts,confirmed_at,bounds:{lower:100,upper:100},lifecycle:{state:'ACTIVE'}});
+ const T=['2026-11-10T00:00:00.000Z','2026-11-10T04:00:00.000Z','2026-11-10T08:00:00.000Z'];
+ const evidence=[
+  ev('X:H4:bid:FRACTAL:both','FRACTAL',T,{polarity:'low',price:100}),
+  ev('X:H4:bid:RB_TWO_CANDLE:up','RB_TWO_CANDLE',[T[1],T[2]],{direction:'bullish',kl_id:'X:D1:bid:FVG:z'}),
+  ev('X:H4:bid:RB_TWO_CANDLE:down','RB_TWO_CANDLE',[T[1],T[2]],{direction:'bearish',kl_id:'k'}),// wrong orientation for a low
+  ev('X:H4:bid:RAID:g','RAID',[T[1]],{polarity:'low',pivot_id:'X:H4:bid:FRACTAL:old'}),
+  ev('X:H4:bid:RAID:h','RAID',[T[1]],{polarity:'high',pivot_id:'X:H4:bid:FRACTAL:oldhigh'}),// other polarity
+  ev('X:H4:bid:FRACTAL:raidonly','FRACTAL',['2026-11-11T00:00:00.000Z','2026-11-11T04:00:00.000Z','2026-11-11T08:00:00.000Z'],{polarity:'high',price:120},'2026-11-11T12:00:00.000Z'),
+  ev('X:H4:bid:RAID:r2','RAID',['2026-11-11T04:00:00.000Z'],{polarity:'high',pivot_id:'X:H4:bid:FRACTAL:p'}),
+  ev('X:H4:bid:FRACTAL:plain','FRACTAL',['2026-11-12T00:00:00.000Z','2026-11-12T04:00:00.000Z','2026-11-12T08:00:00.000Z'],{polarity:'low',price:90}),
+  ev('X:H4:bid:FRACTAL_INSIDE_POI:i','FRACTAL_INSIDE_POI',[T[1]],{pivot_id:'X:H4:bid:FRACTAL:both',poi_id:'X:D1:bid:FVG:z',tf_relation:'X-1',price:100}),
+ ];
+ const core={evidence} as unknown as Parameters<typeof strongFractals>[0];
+ const s=strongFractals(core,'H4');
+ assert.equal(s.total,2);assert.equal(s.significance,'NOT_EVALUATED');
+ const both=s.items.find(x=>x.id==='X:H4:bid:FRACTAL:both')!;
+ assert.deepEqual(both.flags,['VC_AT_FRACTAL','RAIDED_PRIOR_FRACTAL']);assert.deepEqual(both.vc.map(x=>x.id),['X:H4:bid:RB_TWO_CANDLE:up']);assert.deepEqual(both.raided_fractal_ids,['X:H4:bid:FRACTAL:old']);
+ assert.deepEqual(s.items.find(x=>x.id==='X:H4:bid:FRACTAL:raidonly')!.flags,['RAIDED_PRIOR_FRACTAL']);
+ assert.equal(s.items[0].id,'X:H4:bid:FRACTAL:raidonly');// most recent first
+ const inside=fractalsInsideKl(core,'H4');
+ assert.equal(inside.idm_status,'NEEDS_SPECIFICATION');assert.deepEqual(inside.items.map(x=>[x.id,x.kl_id,x.tf_relation]),[['X:H4:bid:FRACTAL:both','X:D1:bid:FVG:z','X-1']]);
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const engine=buildPaEngine(f.data,'bid'),b=await brief(f);
+ for(const tf of PA_TFS){assert.deepEqual(b.timeframes[tf].strong_fractals,strongFractals(engine,tf));assert.deepEqual(b.timeframes[tf].fractals_inside_kl,fractalsInsideKl(engine,tf));}
 });
