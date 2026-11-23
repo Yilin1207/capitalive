@@ -68,7 +68,7 @@ ${index.symbols.map(market).join('\n\n')}
 - side: bid (default) | ask
 - timeframe: MN1 | W1 | D1 | H4
 - pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions
-- pa-candles: timeframe, from, to, limit (1-200)
+- pa-candles: timeframe, from, to, limit (1-200), latest=N (last N closed candles, 1-200, without offset/limit)
 - Times are UTC: 2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z
 
 ## Index

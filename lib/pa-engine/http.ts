@@ -21,7 +21,7 @@ const HINTS:Record<string,string>={
  REFRESH_REQUIRES_POST:'refresh=1 requires POST; plain GET already returns the current snapshot.',
  ORIGIN_REJECTED:'Cross-origin POST is rejected; use GET.',
  INVALID_TIMEFRAME:'timeframe must be one of MN1, W1, D1, H4.',
- INVALID_PAGE:'offset must be an integer >= 0; limit 1..50 for evidence or 1..200 for candles.',
+ INVALID_PAGE:'offset must be an integer >= 0; limit 1..50 for evidence or 1..200 for candles; latest=1..200 (pa-candles only, without offset/limit).',
  INVALID_TIME:'from/to/as_of must be UTC ISO-8601 (2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z); from <= to; as_of not in the future.',
  INVALID_PRICE_RANGE:'min_price/max_price must be positive numbers with min_price <= max_price.',
  INVALID_KIND:'kind must be one of '+KINDS.join(', ')+'.',
@@ -69,6 +69,8 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  if(request.method==='POST'&&request.body){const reader=request.body.getReader();try{const first=await reader.read();if(!first.done&&first.value.length)return fail('INTERPRETATION_DISABLED');}catch{return fail('INVALID_REQUEST');}finally{await reader.cancel().catch(()=>{});}}
  const tf=p.get('timeframe')??'H4';if(!PA_TFS.includes(tf as Timeframe))return fail('INVALID_TIMEFRAME');
  const offset=Number(p.get('offset')??0),limit=Number(p.get('limit')??(view==='candles'?50:8));if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>(view==='candles'?200:50))return fail('INVALID_PAGE');
+ // latest=N: the last N closed candles (after from/to); a tail window, so it never combines with offset/limit.
+ const latest=p.has('latest')?Number(p.get('latest')):null;if(latest!==null&&(view!=='candles'||!/^\d+$/.test(p.get('latest')!)||latest<1||latest>200||p.has('offset')||p.has('limit')))return fail('INVALID_PAGE');
  const from=canonicalTime(p.get('from')),to=canonicalTime(p.get('to')),asof=canonicalTime(p.get('as_of'));if(from===undefined||to===undefined||asof===undefined)return fail('INVALID_TIME');if(from&&to&&from>to||asof&&Date.parse(asof)>Date.now())return fail('INVALID_TIME');
  const min=p.get('min_price'),max=p.get('max_price');if([min,max].some(x=>x!==null&&(!Number.isFinite(Number(x))||Number(x)<=0))||min&&max&&Number(min)>Number(max))return fail('INVALID_PRICE_RANGE');
  const id=p.get('id')??p.get('level_id'),pin=p.get('snapshot_sha256');if(id&&id.length>1500)return fail('INVALID_REQUEST',400,'id is too long.');if(pin&&!/^[a-f0-9]{64}$/.test(pin))return fail('INVALID_REQUEST',400,'snapshot_sha256 must be 64 lowercase hex characters.');
@@ -127,8 +129,8 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':reusableHistory?'RECENT_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
   let result:Record<string,unknown>;
   if(view==='candles'){
-   const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const rows=all.slice(offset,offset+limit).map(b=>({...b,is_closed:true}));
-   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,candles:rows,total:all.length,offset,next_offset:offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps,reconstructions:data[tf as Timeframe].metadata.aggregation?.reconstructions}};
+   const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const start=latest!==null?Math.max(0,all.length-latest):offset,rows=all.slice(start,latest!==null?all.length:offset+limit).map(b=>({...b,is_closed:true}));
+   result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,...(latest!==null?{latest}:{}),candles:rows,total:all.length,offset:start,next_offset:latest===null&&offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps,reconstructions:data[tf as Timeframe].metadata.aggregation?.reconstructions}};
   }else if(p.get('view')==='structure'){
    result={...base,schema_version:'pa-structure-v6',timeframe:tf,market_structure:core.market_structure[tf as Timeframe],dealing_ranges:core.dealing_ranges.filter(r=>r.timeframe===tf),definitions:core.definitions,omitted:0};
   }else if(p.get('view')==='interactions'){

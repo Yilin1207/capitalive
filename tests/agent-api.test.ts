@@ -124,3 +124,17 @@ test('deployment without git metadata (empty VERCEL_GIT_COMMIT_SHA) still serves
  assert.equal(engineCommit({}),null);assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:''}),null);
  assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:'a'.repeat(41)}),null);assert.equal(engineCommit({VERCEL_GIT_COMMIT_SHA:'b'.repeat(40)}),'b'.repeat(40));
 });
+
+test('pa-candles latest=N returns the last N closed candles of the snapshot',async t=>{
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const all=await (await paHttp(req('/api/pa-candles','symbol=EU50&timeframe=D1&limit=200'),'candles',f.deps)).json();
+ const res=await paHttp(req('/api/pa-candles','symbol=EU50&timeframe=D1&latest=3'),'candles',f.deps),r=await res.json();
+ assert.equal(res.status,200);assert.equal(r.candles.length,3);assert.equal(r.latest,3);
+ assert.deepEqual(r.candles.map((c:{time:string})=>c.time),all.candles.slice(-3).map((c:{time:string})=>c.time));
+ assert.equal(r.candles.at(-1).end,r.last_closed_at);assert.equal(r.total,all.total);assert.equal(r.omitted,all.total-3);assert.equal(r.next_offset,null);
+ // latest combines with from/to; never with offset/limit.
+ const day=all.candles.at(-5).time.slice(0,10);
+ const ranged=await (await paHttp(req('/api/pa-candles',`symbol=EU50&timeframe=D1&latest=50&from=${day}`),'candles',f.deps)).json();
+ assert.ok(ranged.candles.length<=5&&ranged.candles.every((c:{time:string})=>c.time>=day));
+ for(const q of ['latest=0','latest=201','latest=x','latest=3&offset=2','latest=3&limit=5']){const bad=await paHttp(req('/api/pa-candles','symbol=EU50&timeframe=D1&'+q),'candles',f.deps);assert.equal(bad.status,400,q);assert.equal((await bad.json()).error,'INVALID_PAGE',q);}
+});
