@@ -210,6 +210,8 @@ export class CapitalApiError extends Error {
     public readonly step: CapitalRequestStep,
     public readonly status: number | null = null,
     public readonly retryAfter: number | null = null,
+    /** Provider error code string only (e.g. error.invalid.max.daterange); never response data. */
+    public readonly providerCode: string | null = null,
   ) {
     super(message);
     this.name = "CapitalApiError";
@@ -546,6 +548,7 @@ async function capitalGet(
       step,
       response.status,
       step === "prices" ? retryAfterSeconds(response.headers.get("Retry-After")) : null,
+      typeof code === "string" && /^[a-z0-9._-]{1,100}$/i.test(code) ? code : null,
     );
   }
 

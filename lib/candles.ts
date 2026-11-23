@@ -18,12 +18,30 @@ const cache = new HistoryCache<Omit<CandleResponse, "metadata"> & { quality: Ret
 // Three four-frame cold loads, recovery windows and a refresh can exceed 24 pages.
 // Separate pacing and broker cooldown still apply to every actual request.
 const upstreamBudget = new WindowLimit(48, 60_000);
-const historicalPages = new HistoryCache<{prices:unknown[]}>(10 * 60_000, 32);
+const historicalPages = new HistoryCache<{prices:unknown[]}>(10 * 60_000, 64);
 // The current HOUR window is shared by NY H4 and NY D1 of one symbol for a short time.
 const recentHourPages = new HistoryCache<{prices:unknown[]}>(TTL_SECONDS * 1000, 8);
-/** NY-close H4/D1 are rebuilt from HOUR in week-aligned windows: 8 weeks x 120 trading hours = 960 rows < 1000. */
-export const NY_WINDOW_WEEKS = 8;
-export const NY_WINDOWS = { H4: 2, D1: 6 } as const;
+/** NY-close H4/D1 are rebuilt from HOUR. History depth in weeks (D1: ~200 trading days incl. holidays). */
+export const NY_WEEKS = { H4: 10, D1: 42 } as const;
+/** Capital.com rejects a HOUR from/to span that is too long (error.invalid.max.daterange, seen on preview
+ * 2026-11-23 for 56 days). Start at 41 days = 984 h (<= 1000 rows), halve on that error and remember it. */
+export const HOUR_MAX_SPAN_MS = 41 * 86400_000;
+const hourSpan = { span: HOUR_MAX_SPAN_MS };
+/** Read [start, end] as HOUR windows aligned to multiples of the span since the epoch, so NY H4 and NY D1
+ * request identical windows and share cached pages. Coverage is contiguous; buckets before `start` are
+ * dropped later by aggregateNy. */
+export async function readHourWindows(read:(from:number,to:number)=>Promise<unknown[]>,start:number,end:number,state=hourSpan){
+  const prices:unknown[]=[];let pages=0;
+  for(let from=Math.floor(start/state.span)*state.span;from<=end;){
+    const to=Math.min(end,from+state.span-1000);
+    try{prices.push(...await read(from,to));pages++;from=to+1000;}
+    catch(error){
+      if(error instanceof CapitalApiError&&error.providerCode==='error.invalid.max.daterange'&&state.span>86400_000){state.span=Math.ceil(state.span/2/3600_000)*3600_000;prices.length=0;pages=0;from=Math.floor(start/state.span)*state.span;continue;}
+      throw error;
+    }
+  }
+  return {prices,pages,span_hours:state.span/3600_000};
+}
 let activeLoads = 0;
 let coolingUntil = 0;
 const waiting=new Set<()=>void>();
@@ -77,17 +95,11 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       let aggregation: CandleResponse["metadata"]["aggregation"];
       let payload: unknown;
       if (ny) {
-        // Week-aligned windows (Sunday 00:00 UTC) start inside the closed weekend, so no NY bucket is cut.
-        const anchor = weekStart(rangeEnd) + 7 * 86400_000, span = NY_WINDOW_WEEKS * 7 * 86400_000;
-        const windows = NY_WINDOWS[timeframe as "H4" | "D1"], from0 = anchor - windows * span;
-        const prices: unknown[] = [];
-        for (let i = windows - 1; i >= 0; i--) {
-          const from = anchor - (i + 1) * span, to = Math.min(rangeEnd, anchor - i * span - 1000);
-          if (from > rangeEnd) continue;
-          prices.push(...(await readPage("HOUR", 1000, { from: new Date(from).toISOString(), to: new Date(to).toISOString() })).prices);
-        }
-        payload = { prices };
-        aggregation = { source: "Capital.com HOUR", calendar: "America/New_York 17:00", requested_from: new Date(from0).toISOString(), requested_to: new Date(rangeEnd).toISOString(), pages: windows, coverage: "requested_window_fetched", session_completeness: "unknown" };
+        // History starts on a Sunday 00:00 UTC, inside the closed weekend, so the first NY bucket is complete.
+        const from0 = weekStart(rangeEnd) + 7 * 86400_000 - NY_WEEKS[timeframe as "H4" | "D1"] * 7 * 86400_000;
+        const read = await readHourWindows(async (from, to) => (await readPage("HOUR", 1000, { from: new Date(from).toISOString(), to: new Date(to).toISOString() })).prices, from0, rangeEnd);
+        payload = { prices: read.prices };
+        aggregation = { source: "Capital.com HOUR", calendar: "America/New_York 17:00", requested_from: new Date(from0).toISOString(), requested_to: new Date(rangeEnd).toISOString(), pages: read.pages, window_hours: read.span_hours, coverage: "requested_window_fetched", session_completeness: "unknown" };
       } else if (timeframe === "MN1" || timeframe === "W1") {
         // W1 is built from DAY so the Sunday session opens the new week (not the old one).
         // Bounded windows contain at most 900 calendar days, below the 1000-row ceiling.

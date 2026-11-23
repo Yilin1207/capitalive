@@ -109,3 +109,27 @@ test('grid parameter: ny is the default, utc is explicit, invalid grid is reject
  assert.notEqual(utc.snapshot_sha256,brief.snapshot_sha256);
  const bad=await paHttp(r('/api/brief','symbol=EU50&grid=london'),'brief',ny);assert.equal(bad.status,400);assert.equal((await bad.json()).error,'INVALID_GRID');
 });
+
+import {readHourWindows,HOUR_MAX_SPAN_MS} from '../lib/candles';
+import {CapitalApiError} from '../lib/capital';
+
+test('HOUR windows: at most 41 days, aligned and shared by H4/D1, halved on error.invalid.max.daterange',async()=>{
+ const end=Date.parse('2026-11-23T08:00:00Z'),D=86400_000;
+ const calls:[number,number][]=[];
+ const ok=async(from:number,to:number)=>{calls.push([from,to]);return [`${from}-${to}`];};
+ const d1=await readHourWindows(ok,end-294*D,end,{span:HOUR_MAX_SPAN_MS});
+ assert.equal(d1.span_hours,984);assert.ok(calls.every(([f,t])=>t-f<HOUR_MAX_SPAN_MS));
+ for(let i=1;i<calls.length;i++)assert.equal(calls[i][0],calls[i-1][1]+1000,'contiguous, no gap or overlap');
+ assert.ok(calls[0][0]<=end-294*D&&calls.at(-1)![1]===end);assert.equal(calls[0][0]%HOUR_MAX_SPAN_MS,0);
+ const d1Windows=new Set(calls.map(c=>c[0]));calls.length=0;
+ await readHourWindows(ok,end-70*D,end,{span:HOUR_MAX_SPAN_MS});
+ assert.ok(calls.every(c=>d1Windows.has(c[0])),'H4 windows are a subset of D1 windows (shared cache keys)');
+ // Provider rejects spans above 21 days: the span halves until accepted and is remembered.
+ const state={span:HOUR_MAX_SPAN_MS};let rejected=0;
+ const strict=async(from:number,to:number)=>{if(to-from>21*D){rejected++;throw new CapitalApiError('CAPITAL_UPSTREAM','rejected','prices',400,null,'error.invalid.max.daterange');}return [from];};
+ const r=await readHourWindows(strict,end-60*D,end,state);
+ assert.equal(rejected,1);assert.equal(state.span,492*3600_000);assert.equal(r.span_hours,492);
+ const again=await readHourWindows(strict,end-60*D,end,state);assert.equal(rejected,1,'learned span is reused');assert.equal(again.pages,r.pages);
+ // Other provider errors are not retried.
+ await assert.rejects(readHourWindows(async()=>{throw new CapitalApiError('CAPITAL_UPSTREAM','x','prices',400,null,'error.invalid.epic');},end-10*D,end,{span:HOUR_MAX_SPAN_MS}),/x/);
+});
