@@ -123,6 +123,7 @@ test('strong fractals: VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL are separate flags
  const core={evidence} as unknown as Parameters<typeof strongFractals>[0];
  const s=strongFractals(core,'H4');
  assert.equal(s.total,2);assert.equal(s.significance,'NOT_EVALUATED');
+ assert.deepEqual(s.by_flag,{VC_AT_FRACTAL:1,RAIDED_PRIOR_FRACTAL:2,BOTH:1});
  const both=s.items.find(x=>x.id==='X:H4:bid:FRACTAL:both')!;
  assert.deepEqual(both.flags,['VC_AT_FRACTAL','RAIDED_PRIOR_FRACTAL']);assert.deepEqual(both.vc.map(x=>x.id),['X:H4:bid:RB_TWO_CANDLE:up']);assert.deepEqual(both.raided_fractal_ids,['X:H4:bid:FRACTAL:old']);
  assert.deepEqual(s.items.find(x=>x.id==='X:H4:bid:FRACTAL:raidonly')!.flags,['RAIDED_PRIOR_FRACTAL']);

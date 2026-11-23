@@ -104,7 +104,8 @@ export function strongFractals(core:Core,tf:Tf,cap=3){
    raided_fractal_ids:[...new Set(raided.map(e=>String(e.facts.pivot_id)))].slice(0,2)});
  }
  rows.sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id));
- return {total:rows.length,items:rows.slice(0,cap),significance:'NOT_EVALUATED' as const};
+ const all=[...rows],count=(f:string)=>all.filter(r=>r.flags.includes(f)).length;
+ return {total:all.length,by_flag:{VC_AT_FRACTAL:count('VC_AT_FRACTAL'),RAIDED_PRIOR_FRACTAL:count('RAIDED_PRIOR_FRACTAL'),BOTH:all.filter(r=>r.flags.length===2).length},items:all.slice(0,cap),significance:'NOT_EVALUATED' as const};
 }
 
 /** Fractals of this TF inside a live KL of the same or next higher TF (THE EDGE IDM geometry «внутри POI»).
