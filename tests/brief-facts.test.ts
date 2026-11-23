@@ -135,9 +135,9 @@ test('strong fractals: VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL are separate flags
  for(const tf of PA_TFS){assert.deepEqual(b.timeframes[tf].strong_fractals,strongFractals(engine,tf));assert.deepEqual(b.timeframes[tf].fractals_inside_kl,fractalsInsideKl(engine,tf));}
 });
 
-test('definitions flag the open RB-from-FVG question and the new fact blocks without changing RB detection',()=>{
+test('definitions: approach is facts-only; the RB-from-FVG open question is resolved (flag removed)',()=>{
  const d=buildPaEngine(fixture().data,'bid').definitions as Record<string,string>;
- assert.equal(d.rb_from_fvg_without_body_close,'OPEN_QUESTION_USER_DECISION');
+ assert.equal(d.rb_from_fvg_without_body_close,undefined);
  assert.equal(d.strong_high_low,'NEEDS_SPECIFICATION');assert.equal(d.idm,'NEEDS_SPECIFICATION');assert.equal(d.significance,'NOT_EVALUATED');
  assert.equal(d.approach_character,'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION');
 });

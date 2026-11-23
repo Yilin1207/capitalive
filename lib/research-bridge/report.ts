@@ -68,7 +68,7 @@ export function buildDeskReport(r: Intelligence, data: Record<Timeframe,CandleRe
       lower,upper,variant:facts.variant===3?facts.variant:null,polarity:choice(facts.polarity,['high','low']),
       direction:choice(facts.direction,['bullish','bearish','Bullish','Bearish','up','down']),
       detector_state:f.state,data_status:f.data_status,rule:f.rule_id,
-      ...(f.kind==='RB_TWO_CANDLE'?{rb:{revision:'rb-first-close-2',level_policy:'FIRST_CANDLE_CLOSE',level_price:number(facts.level_price),formation_confirmed:true,
+      ...(f.kind==='RB_TWO_CANDLE'?{rb:{revision:'rb-first-close-3',level_policy:'FIRST_CANDLE_CLOSE',level_price:number(facts.level_price),formation_confirmed:true,
         basis:facts.basis,relative_quality:facts.relative_quality,probability:null,significance:'REVIEW_REQUIRED',
         primary_kl:add(String(facts.kl_id)),liquidity:typeof facts.rb_liquidity_id==='string'?add(facts.rb_liquidity_id):null,fvg:typeof facts.rb_fvg_id==='string'?add(facts.rb_fvg_id):null}}:{}),
       ...(f.kind==='SNR_CLOSED_BREAK'&&formation?{snr:{revision:formation.revision,level_policy:formation.level_policy,level_price:formation.level_price,formation_confirmed:true,

@@ -107,14 +107,15 @@ test('validatePaBrief rejects forbidden keys, size, leaked observations, relativ
 });
 
 test('desk-report contract rejects a nearby group whose ids or contexts are inconsistent',()=>{
- const {report}=archived('NAS100');validatePaReport(report,'NAS100');
+ // After the RB body-close rule (2026-11-23) the archived multi-KL group is in EU50 ask.
+ const {report}=archived('EU50','ask');validatePaReport(report,'EU50');
  const level=(r:any)=>levelsOf(r.nearby_levels.timeframes).find(x=>x.ids.length>1)!;
- const b=structuredClone(report) as any;const lb=level(b) as any;lb.ids=[...lb.ids,lb.ids[0]];assert.throws(()=>validatePaReport(b,'NAS100'),/INVALID_EVIDENCE/);
- const c=structuredClone(report) as any;const lc=level(c) as any;lc.contexts[0].evidence_ids=['NAS100:D1:bid:RB_TWO_CANDLE:not-in-group'];assert.throws(()=>validatePaReport(c,'NAS100'),/INVALID_EVIDENCE/);
- const d=structuredClone(report) as any;const ld=level(d) as any;ld.id=ld.ids[1];assert.throws(()=>validatePaReport(d,'NAS100'),/INVALID_EVIDENCE/);
+ const b=structuredClone(report) as any;const lb=level(b) as any;lb.ids=[...lb.ids,lb.ids[0]];assert.throws(()=>validatePaReport(b,'EU50'),/INVALID_EVIDENCE/);
+ const c=structuredClone(report) as any;const lc=level(c) as any;lc.contexts[0].evidence_ids=['EU50:D1:ask:RB_TWO_CANDLE:not-in-group'];assert.throws(()=>validatePaReport(c,'EU50'),/INVALID_EVIDENCE/);
+ const d=structuredClone(report) as any;const ld=level(d) as any;ld.id=ld.ids[1];assert.throws(()=>validatePaReport(d,'EU50'),/INVALID_EVIDENCE/);
  // Reports built before grouping (no ids/contexts/formation_status) stay valid.
  const old=structuredClone(report) as any;delete old.nearby_levels.grouping;for(const x of levelsOf(old.nearby_levels.timeframes) as any[]){delete x.ids;delete x.contexts;delete x.formation_status;}
- validatePaReport(old,'NAS100');
+ validatePaReport(old,'EU50');
 });
 
 test('contexts are ordered by code unit, as the contract checks, even where locale collation differs',()=>{

@@ -308,11 +308,12 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
     const eligible=context.map(l=>levelAt(l,a.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>knownLevel(kl,a,frame)&&knownLevel(kl,b,frame)&&
       (!kl.invalidated_at||kl.invalidated_at>b.end)&&['FRACTAL','FVG'].includes(kl.kind)&&
       kl.role===(up?'support':'resistance')&&(interaction(a,kl)||interaction(b,kl))&&
-      (kl.kind==='FVG'||((up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower)&&
-        !frame.bars.slice(0,i-1).some(c=>c.time>=kl.confirmed_at&&interaction(c,kl)))))
+      // THE EDGE RB: «Свеча должна закрываться выше / ниже Key Level» — bodies of both candles close beyond the KL,
+      // for FVG as for fractals (user decision 2026-11-23). Fractal liquidity must also be fresh (first crossing).
+      (up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower)&&
+      (kl.kind==='FVG'||!frame.bars.slice(0,i-1).some(c=>c.time>=kl.confirmed_at&&interaction(c,kl))))
       .sort((x,y)=>TF_ORDER.indexOf(x.timeframe)-TF_ORDER.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
-    // User clarification 2026-11-17: FVG interaction is sufficient, even when
-    // bodies remain inside the zone. A strict, reclaimed liquidity raid is stronger.
+    // A strict, reclaimed liquidity raid is stronger than an FVG-only interaction (both need body closes beyond the KL).
     const raid=eligible.find(l=>l.kind==='FRACTAL'),fvg=eligible.find(l=>l.kind==='FVG');
     for (const kl of eligible) {
       const liquidity=kl.kind==='FRACTAL'?kl:raid,inefficiency=kl.kind==='FVG'?kl:fvg;
@@ -326,7 +327,7 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
             kl_id: kl.id,
             ...(liquidity?{rb_liquidity_id:liquidity.id}:{}),
             ...(inefficiency?{rb_fvg_id:inefficiency.id}:{}),
-            revision:'rb-first-close-2',
+            revision:'rb-first-close-3',
             formation_confirmed:true,
             level_price:a.close,
             level_policy:'FIRST_CANDLE_CLOSE',
@@ -346,7 +347,7 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
               upper: a.close,
             },
             schematic_reference:
-              "el01_03/el01_04; user clarification 2026-11-17: first close, weaker FVG-only interaction; either wick can raid",
+              "el01_03/el01_04; user clarification 2026-11-17: first close, either wick can raid; user decision 2026-11-23: FVG interaction also requires body closes beyond the KL",
           },
           "Formation is observed; subsequent trade validity and stop placement require review, not automatic Narrative confirmation.",
           "OBSERVED",

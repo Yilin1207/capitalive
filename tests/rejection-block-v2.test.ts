@@ -16,16 +16,26 @@ const bear=[[7,11,6,9],[9,9.5,5,6]];
 test('RB v2 uses first close for both directions, all TFs, including price gaps',()=>{
  for(const tf of TF_ORDER)for(const [rows,role]of [[bull,'support'],[bear,'resistance']] as const){const f=frame(rows.map(r=>[...r]),tf);f.bars[1].open+=role==='support'?1:-1;const r=detectRejectionBlocks(f,[level('FRACTAL',role)]);assert.equal(r.length,1);const b=r[0];assert.equal(b.rule_id,'EDGE.RB.v2');assert.equal(b.state,'OBSERVED');assert.equal(b.confirmed_at,f.bars[1].end);assert.equal(b.facts.level_price,f.bars[0].close);assert.deepEqual(b.facts.junction,{lower:f.bars[0].close,upper:f.bars[0].close});assert.equal(b.facts.relative_quality,'RAID_BACKED');const l=contextualLevels(r)[0];assert.equal(l.lower,f.bars[0].close);assert.equal(l.upper,l.lower);assert.equal(l.qualified,false,'Formation is not automatic trade eligibility');}
 });
-test('RB v2 FVG interaction inside the zone suffices and is explicitly weaker',()=>{
- for(const [rows,role]of [[[[11.8,12,10.5,11],[11,11.9,10.8,11.6]],'support'],[[[10.2,11.8,10,11],[11,11.2,10.1,10.4]],'resistance']] as const){const r=detectRejectionBlocks(frame(rows.map(r=>[...r])),[level('FVG',role)]);assert.equal(r.length,1);assert.equal(r[0].facts.relative_quality,'WEAKER_FVG_ONLY');assert.equal(r[0].facts.basis,'FVG_INTERACTION');assert.equal(r[0].facts.quality_is_probability,false);}
+test('RB from FVG without body close beyond the KL is not an RB (Notion: candle must close above / below the KL)',()=>{
+ // Bodies stay inside the FVG 10..12: interaction only, no RB (user decision 2026-11-23).
+ for(const [rows,role]of [[[[11.8,12,10.5,11],[11,11.9,10.8,11.6]],'support'],[[[10.2,11.8,10,11],[11,11.2,10.1,10.4]],'resistance']] as const)assert.equal(detectRejectionBlocks(frame(rows.map(r=>[...r])),[level('FVG',role)]).length,0);
+ // Only one of the two bodies closes beyond the zone: still not an RB.
+ assert.equal(detectRejectionBlocks(frame([[13,13.5,10.5,12.5],[12.5,12.8,11,11.9]]),[level('FVG')]).length,0);
+ assert.equal(detectRejectionBlocks(frame([[12.5,12.8,10.5,11.5],[11.5,13,11,12.6]]),[level('FVG')]).length,0);
+});
+test('RB from FVG with both bodies closing beyond the KL is an RB and is labelled FVG-only',()=>{
+ for(const [rows,role]of [[[[12.6,13,10.5,12.2],[12.2,13.5,11,13]],'support'],[[[9.4,11.5,9,9.8],[9.8,10,8.5,9]],'resistance']] as const){const r=detectRejectionBlocks(frame(rows.map(r=>[...r])),[level('FVG',role)]);assert.equal(r.length,1);assert.equal(r[0].facts.relative_quality,'WEAKER_FVG_ONLY');assert.equal(r[0].facts.basis,'FVG_INTERACTION');assert.equal(r[0].facts.quality_is_probability,false);assert.equal(r[0].facts.revision,'rb-first-close-3');}
 });
 test('RB v2 combines FVG and reclaimed raid evidence, without turning FVG touch into a raid',()=>{
- const r=detectRejectionBlocks(frame(bull),[level('FVG'),level()]);assert.equal(r.length,2);assert.ok(r.every(x=>x.facts.basis==='FVG_AND_LIQUIDITY_RAID'&&x.facts.rb_liquidity_id===level().id&&x.facts.rb_fvg_id===level('FVG').id));
- const equal=detectRejectionBlocks(frame([[13,14,10,11],[11,15,10.5,14]]),[level('FVG'),level()]);assert.equal(equal.length,1);assert.equal(equal[0].facts.relative_quality,'WEAKER_FVG_ONLY');
+ const both=[[13,14,9,12.5],[12.5,15,10.5,14]];
+ const r=detectRejectionBlocks(frame(both),[level('FVG'),level()]);assert.equal(r.length,2);assert.ok(r.every(x=>x.facts.basis==='FVG_AND_LIQUIDITY_RAID'&&x.facts.rb_liquidity_id===level().id&&x.facts.rb_fvg_id===level('FVG').id));
+ const equal=detectRejectionBlocks(frame([[13,14,10,12.5],[12.5,15,10.5,14]]),[level('FVG'),level()]);assert.equal(equal.length,1);assert.equal(equal[0].facts.relative_quality,'WEAKER_FVG_ONLY');
+ // Bodies inside the FVG: the raid-backed RB stays, the FVG is not its inefficiency context.
+ const inside=detectRejectionBlocks(frame(bull),[level('FVG'),level()]);assert.equal(inside.length,1);assert.equal(inside[0].facts.basis,'LIQUIDITY_RAID');assert.equal(inside[0].facts.rb_fvg_id,undefined);
 });
 test('RB v2 uses the FVG residual known before the pair, never a future fill or an already tested zone',()=>{
  const l=level('FVG');
- const f=frame([[11.8,12,10.5,11],[11,11.9,10.8,11.6]]);
+ const f=frame([[12.6,13,10.5,12.2],[12.2,13.5,11,13]]);
  assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(2),fraction:1}]}]).length,1);
  assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(0),fraction:1}]}]).length,0);
  assert.equal(detectRejectionBlocks(f,[{...l,fvg_test_steps:[{at:at(0),fraction:.8}]}]).length,0,'Pair only touches the already filled part above 10.4');
