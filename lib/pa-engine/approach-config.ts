@@ -2,7 +2,8 @@
  * Thresholds for the approach-character flags (THE EDGE: delivery to a KL by expansion without corrections,
  * or by compression / LRL). THE EDGE gives no numbers, so every threshold is null = NEEDS_SPECIFICATION and the
  * flag stays NOT_EVALUATED. The facts (counts, move in D1 ATR, body overlaps, range contraction) are always
- * reported. Set numbers here only after the user approves them.
+ * reported. User decision 2026-11-23: Notion has no numeric thresholds, so they stay null and only raw facts
+ * are served. Do not set numbers without a new explicit decision.
  */
 export const APPROACH_CONFIG = {
   /** Closed candles examined for body overlap and range contraction. A window, not a significance threshold. */
