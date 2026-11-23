@@ -29,3 +29,12 @@ export function nestedIn(core:Core,tf:Tf,level:{lower:number;upper:number},cap=5
  return core.evidence.filter(e=>higher.includes(e.timeframe as Tf)).flatMap(e=>{const b=liveZone(e);return b&&b.lower<=level.lower&&level.upper<=b.upper?[e.id]:[];})
   .sort((a,b)=>PA_TFS.indexOf(a.split(':')[1] as Tf)-PA_TFS.indexOf(b.split(':')[1] as Tf)||a.localeCompare(b)).slice(0,cap);
 }
+
+/** Premium/discount of the current DR (automatic pair = candidate unless high_id/low_id were given). */
+export function premiumDiscount(dr:{status:string;current:{lower:number;upper:number;equilibrium:number}|null;explicit_range?:unknown},ref:number|null){
+ if(!dr.current||ref===null)return null;
+ const {lower:low,upper:high,equilibrium:eq}=dr.current,pct=high>low?round((ref-low)/(high-low)*100,2):null;
+ const zone=ref>high?'ABOVE_RANGE':ref<low?'BELOW_RANGE':ref>eq?'PREMIUM':ref<eq?'DISCOUNT':'EQ';
+ return {high,low,eq,price:ref,price_basis:'LAST_CLOSED_H4_CLOSE' as const,price_position_pct:pct,zone,distance_to_high:round(high-ref,10),distance_to_low:round(ref-low,10),
+  dr_status:dr.status,confirmed:dr.status==='ESTABLISHED',selection:dr.explicit_range?'EXPLICIT_IDS':'AUTOMATIC_CANDIDATE',eq_band:'NEEDS_SPECIFICATION_EXACT_EQUALITY_ONLY'};
+}

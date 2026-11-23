@@ -1,5 +1,5 @@
 import type {Grid} from '../ny-grid';
-import {atrD1,nestedIn} from './brief-facts';
+import {atrD1,nestedIn,premiumDiscount} from './brief-facts';
 import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
@@ -48,7 +48,8 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   return [tf,{
    timeframe:tf,grid:f.grid,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,
    last_closed_candles:f.ohlc.slice(-candles).map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close})),
-   dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference}:null,
+   dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference,
+    premium_discount:premiumDiscount({...dr,explicit_range:core.dealing_ranges.find(r=>r.timeframe===tf)?.explicit_range},nearby?.block.reference.price??null)}:null,
    levels:n?{above:n.above.map(withUrl(tf)),below:n.below.map(withUrl(tf)),at_price:n.at_price.map(withUrl(tf)),eligible:n.eligible,omitted:eligible-included}:null,
    recent_fractals:available?core.market_structure[tf].swing_sequence.slice(-BRIEF_FRACTALS).map(p=>({id:p.id,polarity:p.polarity,price:p.price,confirmed_at:p.confirmed_at,relation:p.relation,state:lifecycle.get(p.id)??null,url:link.detail(p.id)})):null,
    findings_by_kind:available?kinds:null,

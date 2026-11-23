@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {atrD1,nestedIn} from '../lib/pa-engine/brief-facts';
+import {atrD1,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
 import {buildPaEngine} from '../lib/pa-engine/core';
 import {paHttp} from '../lib/pa-engine/http';
 import {PA_TFS} from '../lib/pa-engine/report';
@@ -37,4 +37,20 @@ test('brief levels carry distance_atr_d1 and nested_in; sorting stays by distanc
   for(const x of b.timeframes[tf].levels[k]){n++;assert.ok(Math.abs(x.distance_atr_d1-x.distance/b.atr_d1.value)<1e-4);assert.ok(Array.isArray(x.nested_in));assert.ok(x.distance>=prev);prev=x.distance;
    for(const id of x.nested_in)assert.ok(PA_TFS.indexOf(id.split(':')[1])<PA_TFS.indexOf(tf));}}
  assert.ok(n>0);assert.equal(b.selection_policy.levels,'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE');
+});
+
+test('premium_discount: position of the last closed H4 close in the current DR of each TF',async t=>{
+ const dr=(status:string,explicit?:unknown)=>({status,current:{lower:100,upper:200,equilibrium:150},...(explicit?{explicit_range:explicit}:{})});
+ const at=(p:number,s='ESTABLISHED')=>premiumDiscount(dr(s),p)!;
+ assert.deepEqual([at(175).zone,at(125).zone,at(150).zone,at(250).zone,at(50).zone],['PREMIUM','DISCOUNT','EQ','ABOVE_RANGE','BELOW_RANGE']);
+ assert.equal(at(125).price_position_pct,25);assert.equal(at(250).price_position_pct,150);assert.equal(at(125).distance_to_high,75);assert.equal(at(125).distance_to_low,25);
+ assert.equal(at(125).confirmed,true);assert.equal(at(125).selection,'AUTOMATIC_CANDIDATE');assert.equal(at(125,'AWAITING_NEW_EXTREME').confirmed,false);
+ assert.equal(premiumDiscount(dr('ESTABLISHED',{high_id:'a',low_id:'b'}),125)!.selection,'EXPLICIT_IDS');
+ assert.equal(premiumDiscount({status:'AWAITING_CONFIRMED_PAIR',current:null},125),null);
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const b=await brief(f);let seen=0;
+ for(const tf of PA_TFS){const d=b.timeframes[tf].dealing_range;if(!d.current){assert.equal(d.premium_discount,null);continue;}seen++;
+  const p=d.premium_discount;assert.equal(p.high,d.current.upper);assert.equal(p.low,d.current.lower);assert.equal(p.eq,d.current.equilibrium);assert.equal(p.price,b.reference.price);
+  assert.ok(Math.abs(p.price_position_pct-(b.reference.price-p.low)/(p.high-p.low)*100)<0.01);}
+ assert.ok(seen>0);
 });
