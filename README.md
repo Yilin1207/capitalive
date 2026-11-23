@@ -21,6 +21,7 @@ Credentials and ingestion remain protected; the report repository remains privat
 - /api/pa-evidence: filter by timeframe, kind, lifecycle and price; exact id returns candle proof and interactions.
 - /api/pa-evidence?view=structure: fractal sequences, established/pending DR and history.
 - /api/pa-evidence?view=interactions: paginated cross-timeframe links; id selects closed contact history.
+- `/api/brief?symbols=NAS100,EU50,EURUSD&latest=N` — пакет brief по нескольким активам в одном ответе (`pa-brief-batch-v1`), символы загружаются последовательно на сервере; у каждого актива свой `snapshot_sha256`, набор — `batch_sha256`; ошибка актива видна в `results`/`omitted.symbols_failed`, старый снимок не подставляется. Лимит ≤200 000 байт на актив; одиночный `/api/brief` остаётся ≤64 КиБ. `latest=N` (1–50) — последние N закрытых свечей по каждому TF.
 - `grid=ny|utc` (all PA endpoints; default `ny`): H4/D1 по закрытию Нью-Йорка 17:00 America/New_York (DST), собираются из HOUR Capital.com; `grid=utc` — прежняя UTC-сетка провайдера. W1 — неделя от воскресного открытия до пятничного закрытия, MN1 — календарный месяц UTC на обеих сетках. Фактическая сетка по TF — `grid.by_tf` в каждом ответе.
 - /api/pa-candles: closed OHLC, timeframe, from/to UTC, offset/limit or latest=N (last N closed candles). Subsequent pages require snapshot_sha256.
 - /api/chart, /api/market-audit and /api/candles: retained technical routes; knowledge=1 uses V6.

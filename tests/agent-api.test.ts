@@ -138,3 +138,27 @@ test('pa-candles latest=N returns the last N closed candles of the snapshot',asy
  assert.ok(ranged.candles.length<=5&&ranged.candles.every((c:{time:string})=>c.time>=day));
  for(const q of ['latest=0','latest=201','latest=x','latest=3&offset=2','latest=3&limit=5']){const bad=await paHttp(req('/api/pa-candles','symbol=EU50&timeframe=D1&'+q),'candles',f.deps);assert.equal(bad.status,400,q);assert.equal((await bad.json()).error,'INVALID_PAGE',q);}
 });
+
+test('brief batch: one response for several symbols, loaded sequentially, latest=N candles, failures stay visible',async t=>{
+ const f=fixture('NAS100');t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const per={NAS100:fixture('NAS100'),EU50:fixture('EU50'),EURUSD:fixture('EURUSD')};
+ let active=0,maxActive=0;const order:string[]=[];
+ const deps={getCandles:async(symbol:string,tf:Timeframe)=>{active++;maxActive=Math.max(maxActive,active);await Promise.resolve();active--;if(tf==='H4')order.push(symbol);return per[symbol as 'EU50'].data[tf];},
+  getAnalysisQuote:async(symbol:string)=>({...per[symbol as 'EU50'].quote,cache_hit:false,evaluated_at:f.asOf})};
+ const res=await paHttp(req('/api/brief','symbols=NAS100,EU50,EURUSD&latest=12'),'brief',deps),raw=await res.text(),b=JSON.parse(raw);
+ assert.equal(res.status,200);assert.equal(b.schema_version,'pa-brief-batch-v1');assert.deepEqual(b.symbols,['NAS100','EU50','EURUSD']);
+ assert.deepEqual(order,['NAS100','EU50','EURUSD']);assert.equal(maxActive,1);
+ assert.equal(b.trading_enabled,false);noForecast(b);assert.match(b.batch_sha256,/^[a-f0-9]{64}$/);assert.deepEqual(b.omitted.symbols_failed,[]);
+ for(const s of b.symbols){const x=b.briefs[s];assert.equal(x.symbol,s);assert.equal(x.schema_version,'pa-brief-v1');assert.equal(b.results[s].snapshot_sha256,x.snapshot_sha256);
+  assert.ok(Buffer.byteLength(JSON.stringify(x))<=200_000);assert.ok(x.quote.bid>0&&x.quote.ask>=x.quote.bid);
+  for(const tf of PA_TFS){assert.equal(x.timeframes[tf].last_closed_candles.length,Math.min(12,x.timeframes[tf].closed_candles));assert.equal(x.selection_policy.last_closed_candles_per_tf,12);}
+  // Same snapshot as the single-symbol brief.
+  const single=await (await paHttp(req('/api/brief',`symbol=${s}`),'brief',deps)).json();assert.equal(single.snapshot_sha256,x.snapshot_sha256);}
+ // One failing symbol: reported as its error, no substitute, others still served.
+ const broken={...deps,getCandles:async(symbol:string,tf:Timeframe)=>{if(symbol==='EU50')throw Object.assign(Error('down'),{code:'CAPITAL_UPSTREAM'});return per[symbol as 'EU50'].data[tf];}};
+ const part=await (await paHttp(req('/api/brief','symbols=NAS100,EU50'),'brief',broken)).json();
+ assert.equal(part.status,'ERROR');assert.equal(part.results.EU50.http_status,503);assert.equal(part.results.EU50.snapshot_sha256,null);assert.equal(part.briefs.EU50.error,'UPSTREAM_OR_EVIDENCE_UNAVAILABLE');
+ assert.deepEqual(part.omitted.symbols_failed,['EU50']);assert.equal(part.batch_sha256,null);assert.equal(part.briefs.NAS100.symbol,'NAS100');
+ for(const q of ['symbols=','symbols=NAS100,NAS100','symbols=XAU','symbols=NAS100&symbol=EU50']){const r=await paHttp(req('/api/brief',q),'brief',deps);assert.equal(r.status,400,q);}
+ const bad=await paHttp(req('/api/brief','symbols=NAS100&latest=51'),'brief',deps);assert.equal(bad.status,400);assert.equal((await bad.json()).error,'INVALID_PAGE');
+});

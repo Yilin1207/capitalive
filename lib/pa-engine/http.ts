@@ -11,7 +11,8 @@ import {buildPaReport,engineCommit,engineInfo,gridInfo,paError,PA_CONTRACT,PA_TF
 import {bucketStart,GRIDS,type Grid} from '../ny-grid';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
 import {validatePaBrief,validatePaReport} from './contract';
-import {buildPaBrief} from './brief';
+import {buildPaBrief,BATCH_BRIEF_MAX_BYTES,BRIEF_MAX_CANDLES} from './brief';
+import {createHash} from 'node:crypto';
 
 const KINDS=['FRACTAL','FVG','FVG_CLOSED_BREACH','RAID','TOUCH','RB_TWO_CANDLE','SNR_CLOSED_BREAK','FRACTAL_INSIDE_POI','DEALING_RANGE','PREMIUM_DISCOUNT'];
 const LIFECYCLES=['ACTIVE','CONSUMED','TESTED','INVALIDATED','UNVERIFIED','CANDIDATE','FILLED','PARTIALLY_FILLED'];
@@ -56,7 +57,8 @@ function snapshotCache(){
  return {frames:new HistoryCache<Frames>(60_000,6), recent:new Map<string,Snapshot>()};
 }
 const stores=new WeakMap<Dependencies,ReturnType<typeof snapshotCache>>();
-export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'candles'='report',deps:Dependencies=defaultDeps){
+export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'candles'='report',deps:Dependencies=defaultDeps,batch=false):Promise<Response>{
+ if(view==='brief'&&!batch&&new URL(request.url).searchParams.has('symbols'))return paBatch(request,deps);
  const requestUrl=new URL(request.url),origin=requestUrl.origin,p=requestUrl.searchParams,symbol=(p.get('symbol')??'EURUSD').toUpperCase(),side=(p.get('side')??'bid').toLowerCase();
  const desk=view==='report'||view==='brief';
  const json=(body:unknown,status=200,retry=0)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*',...(retry?{'Retry-After':String(retry)}:{})}});
@@ -73,7 +75,7 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  const tf=p.get('timeframe')??'H4';if(!PA_TFS.includes(tf as Timeframe))return fail('INVALID_TIMEFRAME');
  const offset=Number(p.get('offset')??0),limit=Number(p.get('limit')??(view==='candles'?50:8));if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>(view==='candles'?200:50))return fail('INVALID_PAGE');
  // latest=N: the last N closed candles (after from/to); a tail window, so it never combines with offset/limit.
- const latest=p.has('latest')?Number(p.get('latest')):null;if(latest!==null&&(view!=='candles'||!/^\d+$/.test(p.get('latest')!)||latest<1||latest>200||p.has('offset')||p.has('limit')))return fail('INVALID_PAGE');
+ const latest=p.has('latest')?Number(p.get('latest')):null,latestMax=view==='candles'?200:BRIEF_MAX_CANDLES;if(latest!==null&&(!['candles','brief'].includes(view)||!/^\d+$/.test(p.get('latest')!)||latest<1||latest>latestMax||p.has('offset')||p.has('limit')))return fail('INVALID_PAGE');
  const from=canonicalTime(p.get('from')),to=canonicalTime(p.get('to')),asof=canonicalTime(p.get('as_of'));if(from===undefined||to===undefined||asof===undefined)return fail('INVALID_TIME');if(from&&to&&from>to||asof&&Date.parse(asof)>Date.now())return fail('INVALID_TIME');
  const min=p.get('min_price'),max=p.get('max_price');if([min,max].some(x=>x!==null&&(!Number.isFinite(Number(x))||Number(x)<=0))||min&&max&&Number(min)>Number(max))return fail('INVALID_PRICE_RANGE');
  const id=p.get('id')??p.get('level_id'),pin=p.get('snapshot_sha256');if(id&&id.length>1500)return fail('INVALID_REQUEST',400,'id is too long.');if(pin&&!/^[a-f0-9]{64}$/.test(pin))return fail('INVALID_REQUEST',400,'snapshot_sha256 must be 64 lowercase hex characters.');
@@ -122,7 +124,7 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
    const report=buildPaReport(core,data,quote,new Date().toISOString(),commit,grid);
    validatePaReport(report,symbol);
-   if(view==='brief'){const brief=buildPaBrief(report,core,origin,grid);validatePaBrief(brief,symbol);return json(brief,report.status==='ERROR'?503:200);}
+   if(view==='brief'){const maxBytes=batch?BATCH_BRIEF_MAX_BYTES:undefined,brief=buildPaBrief(report,core,origin,grid,{...(latest!==null?{candles:latest}:{}),maxBytes});validatePaBrief(brief,symbol,[],maxBytes);return json(brief,report.status==='ERROR'?503:200);}
    return json(report,report.status==='ERROR'?503:200);
   }
   if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
@@ -151,4 +153,39 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
   if(Buffer.byteLength(JSON.stringify(result))>1_000_000)return fail('PAGE_TOO_LARGE_REDUCE_LIMIT',413);
   return json(result);
  }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',...(limited?{cause:code}:{}),code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return fail(limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE',limited?429:503,undefined,limited?(e && typeof e==='object' && 'retryAfter' in e && typeof e.retryAfter==='number' && e.retryAfter>0?e.retryAfter:60):0);}
+}
+
+export const BATCH_SCHEMA='pa-brief-batch-v1';
+const STATUS_ORDER=['ERROR','STALE','UNVERIFIED','PARTIAL'];
+/** /api/brief?symbols=A,B,C: one response with the brief of each symbol, loaded one after another on the
+ * server (no client-side parallel requests). Each brief keeps its own snapshot_sha256 (closed candles are
+ * per symbol); batch_sha256 identifies the set. A failed symbol is reported as its error, never replaced
+ * by an older snapshot. */
+async function paBatch(request:Request,deps:Dependencies):Promise<Response>{
+ const url=new URL(request.url),p=url.searchParams,docs=`${url.origin}/llms.txt`;
+ const json=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*'}});
+ const list=(p.get('symbols')??'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
+ if(p.has('symbol')||!list.length||new Set(list).size!==list.length||list.some(s=>!ACTIVE_RESEARCH_SYMBOLS.includes(s as typeof ACTIVE_RESEARCH_SYMBOLS[number])))
+  return json({...paError(list.join(',')||'NONE','INVALID_REQUEST'),diagnostic:{message:'symbols must be a comma-separated list of distinct '+ACTIVE_RESEARCH_SYMBOLS.join(', ')+' (without symbol=).',docs}},400);
+ const briefs:Record<string,unknown>={},results:Record<string,{http_status:number;status:string;snapshot_sha256:string|null;error:string|null}>={};
+ let retry=0;
+ for(const symbol of list){
+  const u=new URL(url);u.searchParams.delete('symbols');u.searchParams.set('symbol',symbol);
+  const res=await paHttp(new Request(u,{method:request.method,headers:request.headers}),'brief',deps,true),body=await res.json() as Record<string,unknown>;
+  if(res.status===400||res.status===405||res.status===403)return json(body,res.status);// request error: same for every symbol
+  retry=Math.max(retry,Number(res.headers.get('Retry-After')??0));
+  briefs[symbol]=body;results[symbol]={http_status:res.status,status:String(body.status),snapshot_sha256:typeof body.snapshot_sha256==='string'?body.snapshot_sha256:null,error:typeof body.error==='string'?body.error:null};
+ }
+ const statuses=Object.values(results).map(r=>r.status),status=STATUS_ORDER.find(s=>statuses.includes(s))??'ERROR';
+ const ok=Object.values(results).filter(r=>r.snapshot_sha256);
+ const first=Object.values(briefs)[0] as Record<string,unknown>;
+ const body={schema_version:BATCH_SCHEMA,contract_revision:PA_CONTRACT,mode:'PA_ONLY',technical_only:true,symbols:list,
+  grid:(first.grid as {requested?:string}|undefined)?.requested??p.get('grid')??'ny',engine:engineInfo(engineCommit()),status,
+  generated_at:new Date().toISOString(),
+  batch_sha256:ok.length===list.length?createHash('sha256').update(JSON.stringify(list.map(s=>[s,results[s].snapshot_sha256]))).digest('hex'):null,
+  results,briefs,omitted:{symbols_failed:list.filter(s=>!results[s].snapshot_sha256)},
+  limits:{per_asset_max_bytes:BATCH_BRIEF_MAX_BYTES,last_closed_candles_per_tf:Number(p.get('latest')??5)},
+  links:{self:url.toString(),docs},trading_enabled:false as const};
+ const all=ok.length===0;
+ return Response.json(body,{status:all?(retry?429:503):200,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*',...(all&&retry?{'Retry-After':String(retry)}:{})}});
 }

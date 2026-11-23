@@ -65,8 +65,8 @@ const absolute=(u:unknown)=>typeof u==='string'&&/^https?:\/\/[^/\s]+\/(api\/|ll
 export const PA_BRIEF_SCHEMA='pa-brief-v1';
 /** Portable contract of /api/brief: same forbidden keys and size cap as the desk-report, observations
  * withheld on STALE/ERROR, grouped levels geometrically consistent, every link absolute. */
-export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]):void{
- const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>65536)throw Error('BRIEF_TOO_LARGE');
+export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[],maxBytes=65536):void{
+ const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>maxBytes)throw Error('BRIEF_TOO_LARGE');
  assertPublishable(b,raw,secrets,'BRIEF');
  keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
  if(b.schema_version!==PA_BRIEF_SCHEMA||b.contract_revision!==PA_CONTRACT_REVISION||b.mode!=='PA_ONLY'||b.technical_only!==true||b.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(s=>s===b.symbol)||symbol&&b.symbol!==symbol||!['bid','ask'].includes(b.price_side)||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(b.status)||typeof b.observations_available!=='boolean')fail();

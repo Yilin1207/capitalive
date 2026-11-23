@@ -6,6 +6,10 @@ import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_
 export const BRIEF_SCHEMA='pa-brief-v1';
 export const BRIEF_LEVELS_PER_SIDE=5;
 export const BRIEF_CANDLES=5;
+/** latest=N for the brief: last N closed candles per TF. */
+export const BRIEF_MAX_CANDLES=50;
+/** Per-asset size cap inside /api/brief?symbols=... (a single /api/brief keeps the 64 KiB desk cap). */
+export const BATCH_BRIEF_MAX_BYTES=200_000;
 export const BRIEF_FRACTALS=6;
 
 /** Absolute URLs pinned to one snapshot; a 409 SNAPSHOT_CHANGED means: refetch the brief. */
@@ -24,7 +28,8 @@ export function paLinks(origin:string,symbol:string,side:string,snapshot:string,
  };
 }
 
-export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Grid='ny'){
+export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Grid='ny',options:{candles?:number;maxBytes?:number}={}){
+ const candles=options.candles??BRIEF_CANDLES,maxBytes=options.maxBytes??PA_MAX_BYTES;
  const available=report.coverage.observations_available,snapshot=report.snapshot_sha256;
  const link=paLinks(origin,core.symbol,core.side,snapshot,grid);
  const nearby=available?nearbyLevels(core,BRIEF_LEVELS_PER_SIDE):null;
@@ -40,7 +45,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   if(available)for(const e of core.evidence)if(e.timeframe===tf)kinds[e.kind]=(kinds[e.kind]??0)+1;
   return [tf,{
    timeframe:tf,grid:f.grid,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,
-   last_closed_candles:f.ohlc.slice(-BRIEF_CANDLES).map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close})),
+   last_closed_candles:f.ohlc.slice(-candles).map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close})),
    dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference}:null,
    levels:n?{above:n.above.map(withUrl),below:n.below.map(withUrl),at_price:n.at_price.map(withUrl),eligible:n.eligible,omitted:eligible-included}:null,
    recent_fractals:available?core.market_structure[tf].swing_sequence.slice(-BRIEF_FRACTALS).map(p=>({id:p.id,polarity:p.polarity,price:p.price,confirmed_at:p.confirmed_at,relation:p.relation,state:lifecycle.get(p.id)??null,url:link.detail(p.id)})):null,
@@ -54,7 +59,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   generated_at:report.generated_at,as_of:report.as_of,expires_at:report.expires_at,snapshot_sha256:snapshot,
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,
-  selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS'},
+  selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
   level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
@@ -64,7 +69,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   trading_enabled:false as const,
  };
  // Size fallback: drop the farthest shown level across all TFs (ties: later id first); counted in omitted.
- while(Buffer.byteLength(JSON.stringify(brief))+1>PA_MAX_BYTES){
+ while(Buffer.byteLength(JSON.stringify(brief))+1>maxBytes){
   let worst:{levels:{omitted:number};list:{distance:number;id:string}[]}|null=null;
   for(const t of Object.values(brief.timeframes))if(t.levels)for(const list of [t.levels.above,t.levels.below,t.levels.at_price]){
    const item=list.at(-1),w=worst?.list.at(-1);
