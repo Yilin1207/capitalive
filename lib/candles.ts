@@ -7,6 +7,7 @@ import { historyDiagnostics, type HistoryDiagnostics } from "@/lib/history-diagn
 import { aggregateMonths, monthStart } from "@/lib/monthly-candles";
 import { aggregateWeeks, mergeSundaySessions, weekStart } from "@/lib/session-candles";
 import {recoverDaily,type DailyRecovery} from './daily-recovery';
+import { aggregateNy, bucketStart, type Grid } from "@/lib/ny-grid";
 
 export class HistoryError extends Error {
   constructor(public code: string, message: string, public status: number, public retryAfter = 0, public diagnostics?: HistoryDiagnostics) { super(message); }
@@ -18,6 +19,11 @@ const cache = new HistoryCache<Omit<CandleResponse, "metadata"> & { quality: Ret
 // Separate pacing and broker cooldown still apply to every actual request.
 const upstreamBudget = new WindowLimit(48, 60_000);
 const historicalPages = new HistoryCache<{prices:unknown[]}>(10 * 60_000, 32);
+// The current HOUR window is shared by NY H4 and NY D1 of one symbol for a short time.
+const recentHourPages = new HistoryCache<{prices:unknown[]}>(TTL_SECONDS * 1000, 8);
+/** NY-close H4/D1 are rebuilt from HOUR in week-aligned windows: 8 weeks x 120 trading hours = 960 rows < 1000. */
+export const NY_WINDOW_WEEKS = 8;
+export const NY_WINDOWS = { H4: 2, D1: 6 } as const;
 let activeLoads = 0;
 let coolingUntil = 0;
 const waiting=new Set<()=>void>();
@@ -35,7 +41,8 @@ function releaseLoad(){
   if(next){waiting.delete(next);next();}else activeLoads--;
 }
 
-export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number, refresh = false): Promise<CandleResponse> {
+export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, limit: number, refresh = false, grid: Grid = "utc"): Promise<CandleResponse> {
+  const ny = grid === "ny" && (timeframe === "H4" || timeframe === "D1");
   if (timeframe === "MN1" && limit > 60) throw new HistoryError("INVALID_LIMIT", "MN1 limit must be from 1 to 60", 400);
   const environment = capitalEnvironment();
   const epic = VERIFIED_MARKETS[symbol].epic;
@@ -54,11 +61,12 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       if(!Array.isArray(page?.prices))throw new HistoryError("CAPITAL_INVALID_RESPONSE","Invalid price page",502);
       return {prices:page.prices as unknown[]};
     };
+    if(range && resolution==="HOUR" && Date.parse(range.to)>Date.now()-86400_000)return (await recentHourPages.get(JSON.stringify([scope,epic,range.from]),load,Date.now(),refresh)).value;
     if(!range || Date.parse(range.to)>Date.now()-86400_000)return load();
     const key=JSON.stringify([scope,epic,resolution,count,range.from,range.to]);
     return (await historicalPages.get(key,load)).value;
   }
-  const { value, hit } = await cache.get(`${scope}:${environment}:${symbol}:${timeframe}:${fetchLimit}`, async () => {
+  const { value, hit } = await cache.get(`${scope}:${environment}:${symbol}:${timeframe}:${fetchLimit}:${ny ? "ny" : "utc"}`, async () => {
     if (Date.now() < coolingUntil) throw new HistoryError("CAPITAL_RATE_LIMIT", "Capital.com rate limit reached", 429, Math.ceil((coolingUntil - Date.now()) / 1000));
     await acquireLoad();
     try {
@@ -68,7 +76,19 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       const rangeStart = timeframe === "W1" ? weekStart(rangeEnd) - (fetchLimit - 1) * 7 * 86400_000 : monthStart(rangeEnd, 1 - fetchLimit);
       let aggregation: CandleResponse["metadata"]["aggregation"];
       let payload: unknown;
-      if (timeframe === "MN1" || timeframe === "W1") {
+      if (ny) {
+        // Week-aligned windows (Sunday 00:00 UTC) start inside the closed weekend, so no NY bucket is cut.
+        const anchor = weekStart(rangeEnd) + 7 * 86400_000, span = NY_WINDOW_WEEKS * 7 * 86400_000;
+        const windows = NY_WINDOWS[timeframe as "H4" | "D1"], from0 = anchor - windows * span;
+        const prices: unknown[] = [];
+        for (let i = windows - 1; i >= 0; i--) {
+          const from = anchor - (i + 1) * span, to = Math.min(rangeEnd, anchor - i * span - 1000);
+          if (from > rangeEnd) continue;
+          prices.push(...(await readPage("HOUR", 1000, { from: new Date(from).toISOString(), to: new Date(to).toISOString() })).prices);
+        }
+        payload = { prices };
+        aggregation = { source: "Capital.com HOUR", calendar: "America/New_York 17:00", requested_from: new Date(from0).toISOString(), requested_to: new Date(rangeEnd).toISOString(), pages: windows, coverage: "requested_window_fetched", session_completeness: "unknown" };
+      } else if (timeframe === "MN1" || timeframe === "W1") {
         // W1 is built from DAY so the Sunday session opens the new week (not the old one).
         // Bounded windows contain at most 900 calendar days, below the 1000-row ceiling.
         // Fetch every window even if one is empty (a listing can start later).
@@ -89,8 +109,14 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
       const fetchedAt = Date.now();
       let quality: ReturnType<typeof normalizeCandles>;
       try {
-        quality = normalizeCandles(payload, timeframe === "MN1" || timeframe === "W1" ? "D1" : timeframe, fetchedAt);
-        if (timeframe === "D1") quality.candles = mergeSundaySessions(quality.candles);
+        quality = normalizeCandles(payload, ny ? "H1" : timeframe === "MN1" || timeframe === "W1" ? "D1" : timeframe, fetchedAt);
+        if (ny) {
+          const tf = timeframe as "H4" | "D1";
+          quality.candles = aggregateNy(quality.candles, tf, fetchedAt, Date.parse(aggregation!.requested_from), quality.rejected.map(row => row.time));
+          quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(bucketStart(Date.parse(time), tf, "ny")).toISOString()))].sort();
+          quality.rejected = quality.rejected.map(row => row.time ? { ...row, time: new Date(bucketStart(Date.parse(row.time), tf, "ny")).toISOString() } : row);
+        }
+        else if (timeframe === "D1") quality.candles = mergeSundaySessions(quality.candles);
         if (timeframe === "W1") {
           quality.candles = aggregateWeeks(mergeSundaySessions(quality.candles.filter(bar => Date.parse(bar.time) >= rangeStart && Date.parse(bar.time) <= rangeEnd)), fetchedAt, quality.rejected.map(row => row.time));
           quality.provider_times = [...new Set(quality.provider_times.map(time => new Date(weekStart(Date.parse(time))).toISOString()))].sort();
@@ -144,9 +170,10 @@ export async function getCandles(symbol: PublicSymbol, timeframe: Timeframe, lim
     insufficient_history: candles.length < limit,
     discarded_rows: quality.discarded_rows, discarded_sides: quality.discarded_sides,
     discarded_reasons: quality.discarded_reasons,
-    duplicate_rows: quality.duplicate_rows, time_semantics: timeframe === "MN1" ? "calendar_month_start_utc" : "provider_bar_start_utc",
+    duplicate_rows: quality.duplicate_rows, time_semantics: timeframe === "MN1" ? "calendar_month_start_utc" : ny ? "ny_close_bucket_start_utc" : "provider_bar_start_utc",
+    grid: ny ? "ny" : timeframe === "MN1" ? "utc_calendar" : timeframe === "W1" ? "utc_week" : "utc",
     validation_gaps: [...new Set(quality.rejected.flatMap(row => row.time && !quality.candles.some(c => c.time === row.time) ? [row.time] : []))].sort(),
-    closure_basis: timeframe === "MN1" ? "calendar_month_end_elapsed_at_fetch" : "successor_or_nominal_interval_elapsed_at_fetch",
+    closure_basis: timeframe === "MN1" ? "calendar_month_end_elapsed_at_fetch" : ny ? "bucket_end_elapsed_at_fetch" : "successor_or_nominal_interval_elapsed_at_fetch",
     ...(aggregation ? { aggregation } : {}),
     cache_ttl_seconds: TTL_SECONDS, cache_hit: hit,
     diagnostics: historyDiagnostics(quality, candles, timeframe, Date.parse(data.fetched_at), Date.now(), TTL_SECONDS),

@@ -7,7 +7,8 @@ import {getAnalysisQuote} from '../analysis-quote';
 import {HISTORY,type CandleResponse,type Timeframe,type PriceSide} from '../candle-data';
 import {checkHistoryRequest} from '../history-http';
 import {buildPaEngine,interactionsForEvidence} from './core';
-import {buildPaReport,engineCommit,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
+import {buildPaReport,engineCommit,engineInfo,gridInfo,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
+import {bucketStart,GRIDS,type Grid} from '../ny-grid';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
 import {validatePaBrief,validatePaReport} from './contract';
 import {buildPaBrief} from './brief';
@@ -21,6 +22,7 @@ const HINTS:Record<string,string>={
  REFRESH_REQUIRES_POST:'refresh=1 requires POST; plain GET already returns the current snapshot.',
  ORIGIN_REJECTED:'Cross-origin POST is rejected; use GET.',
  INVALID_TIMEFRAME:'timeframe must be one of MN1, W1, D1, H4.',
+ INVALID_GRID:'grid must be ny (default: H4/D1 close at 17:00 America/New_York) or utc (provider UTC grid).',
  INVALID_PAGE:'offset must be an integer >= 0; limit 1..50 for evidence or 1..200 for candles; latest=1..200 (pa-candles only, without offset/limit).',
  INVALID_TIME:'from/to/as_of must be UTC ISO-8601 (2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z); from <= to; as_of not in the future.',
  INVALID_PRICE_RANGE:'min_price/max_price must be positive numbers with min_price <= max_price.',
@@ -67,6 +69,7 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  const refresh=p.get('refresh')==='1';if(refresh&&request.method!=='POST')return fail('REFRESH_REQUIRES_POST',405);
  if(request.method==='POST'&&request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return fail('ORIGIN_REJECTED',403);
  if(request.method==='POST'&&request.body){const reader=request.body.getReader();try{const first=await reader.read();if(!first.done&&first.value.length)return fail('INTERPRETATION_DISABLED');}catch{return fail('INVALID_REQUEST');}finally{await reader.cancel().catch(()=>{});}}
+ const grid=(p.get('grid')??'ny').toLowerCase() as Grid;if(!GRIDS.includes(grid))return fail('INVALID_GRID');
  const tf=p.get('timeframe')??'H4';if(!PA_TFS.includes(tf as Timeframe))return fail('INVALID_TIMEFRAME');
  const offset=Number(p.get('offset')??0),limit=Number(p.get('limit')??(view==='candles'?50:8));if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>(view==='candles'?200:50))return fail('INVALID_PAGE');
  // latest=N: the last N closed candles (after from/to); a tail window, so it never combines with offset/limit.
@@ -83,24 +86,24 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
   const ranges:Partial<Record<Timeframe,{high_id:string;low_id:string}>>={};
   for(const t of PA_TFS){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
   let store=stores.get(deps);if(!store){store=snapshotCache();stores.set(deps,store);}
-  const scope=JSON.stringify([market,side,ranges,asof]);
+  const scope=JSON.stringify([market,side,ranges,asof,grid]);
   let saved=store.recent.get(scope);
   const policy=freshnessPolicy(process.env);
   // A pinned detail page can continue reading its immutable closed bars.
   const pinned=pin && !desk && !refresh && saved?.hash===pin;
   const currentMs=Date.now(), captured=saved?Date.parse(saved.core.as_of):NaN;
   const reusableHistory=!desk && !refresh && !pin && !asof &&
-    currentMs>=captured && currentMs-captured<300_000 && Math.floor(currentMs/14400000)===Math.floor(captured/14400000);
+    currentMs>=captured && currentMs-captured<300_000 && bucketStart(currentMs,'H4',grid)===bucketStart(captured,'H4',grid);
   checkHistoryRequest(request,Boolean(pinned || reusableHistory));
   if(!pinned && !reusableHistory){
    const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
-   const key=market+':'+Math.floor(now/window)+':'+Math.floor(now/14400000);
+   const key=market+':'+grid+':'+Math.floor(now/window)+':'+bucketStart(now,'H4',grid);
    // A desk refresh always requests a quote. Closed bars can share the current
    // bounded window across Bid/Ask, including concurrent desk refreshes.
    const forceFrames=refresh && !desk;
    const {value:data}=await store.frames.get(key,async()=>{
     const frames={} as Frames;
-    for(const t of PA_TFS)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh);
+    for(const t of PA_TFS)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh,grid);
     return frames;
    },now,forceFrames);
    if(forceFrames || !saved || saved.data!==data){
@@ -117,14 +120,14 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
   const commit=engineCommit();
   if(desk){
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
-   const report=buildPaReport(core,data,quote,new Date().toISOString(),commit);
+   const report=buildPaReport(core,data,quote,new Date().toISOString(),commit,grid);
    validatePaReport(report,symbol);
-   if(view==='brief'){const brief=buildPaBrief(report,core,origin);validatePaBrief(brief,symbol);return json(brief,report.status==='ERROR'?503:200);}
+   if(view==='brief'){const brief=buildPaBrief(report,core,origin,grid);validatePaBrief(brief,symbol);return json(brief,report.status==='ERROR'?503:200);}
    return json(report,report.status==='ERROR'?503:200);
   }
   if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
   if(!PA_TFS.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);
-  const base={mode:'PA_ONLY',symbol,price_side:side,as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
+  const base={mode:'PA_ONLY',symbol,price_side:side,grid:gridInfo(core,grid),engine:engineInfo(commit),last_closed_at_by_tf:Object.fromEntries(PA_TFS.map(t=>[t,core.frames[t].last_closed_at])),as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
    source:{provider:'Capital.com',environment:data.H4.environment,analysis_schema:'pa-engine-v6',price_side:side,engine_commit:commit,evidence_sha256:hash,demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
    quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':reusableHistory?'RECENT_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
   let result:Record<string,unknown>;
@@ -144,7 +147,7 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    const items=all.slice(offset,offset+(id?1:limit));result={...base,schema_version:'pa-evidence-page-v6',evidence:items,total:all.length,offset,next_offset:offset+items.length<all.length?offset+items.length:null,omitted:all.length-items.length,complete:items.length===all.length,definitions:core.definitions,...(id?{interaction_history:interactionsForEvidence(core,id),cross_timeframe_interactions:core.cross_timeframe_interactions.filter(x=>x.evidence_id===id||x.related_id===id)}:{})};
   }
   const next=typeof result.next_offset==='number'?result.next_offset:null;
-  result.links={self:page(offset),first:page(0),next:next===null?null:page(next),brief:`${origin}/api/brief?${new URLSearchParams({symbol,side})}`,docs};
+  result.links={self:page(offset),first:page(0),next:next===null?null:page(next),brief:`${origin}/api/brief?${new URLSearchParams({symbol,side,grid})}`,docs};
   if(Buffer.byteLength(JSON.stringify(result))>1_000_000)return fail('PAGE_TOO_LARGE_REDUCE_LIMIT',413);
   return json(result);
  }catch(e){const code=e&&typeof e==='object'&&'code'in e?String(e.code):'';const limited=['RATE_LIMIT','CAPITAL_RATE_LIMIT','HISTORY_RATE_LIMIT','HISTORY_BUSY'].includes(code);console.warn(JSON.stringify({event:'pa_engine_failure',symbol,stage:limited?'http':'provider_or_validation',...(limited?{cause:code}:{}),code:limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE'}));return fail(limited?'RATE_LIMIT':'UPSTREAM_OR_EVIDENCE_UNAVAILABLE',limited?429:503,undefined,limited?(e && typeof e==='object' && 'retryAfter' in e && typeof e.retryAfter==='number' && e.retryAfter>0?e.retryAfter:60):0);}

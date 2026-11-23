@@ -67,6 +67,7 @@ ${index.symbols.map(market).join('\n\n')}
 - symbol: ${index.symbols.join(' | ')}
 - side: bid (default) | ask
 - timeframe: MN1 | W1 | D1 | H4
+- grid: ny (default; H4 and D1 close at 17:00 America/New_York, DST-aware, built from Capital.com HOUR bars; Sunday 17:00 ET opens Monday's D1) | utc (provider UTC grid: H4 00/04/08..., D1 00:00 UTC). W1 = Sunday-open to Friday-close week, MN1 = UTC calendar month on both grids. "grid.by_tf" in every response states the grid actually used per timeframe.
 - pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions
 - pa-candles: timeframe, from, to, limit (1-200), latest=N (last N closed candles, 1-200, without offset/limit)
 - Times are UTC: 2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z

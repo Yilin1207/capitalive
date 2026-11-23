@@ -1,4 +1,5 @@
-import {nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
+import type {Grid} from '../ny-grid';
+import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
  * It reorganizes existing evidence only: no significance, direction or trade fields. */
@@ -8,9 +9,9 @@ export const BRIEF_CANDLES=5;
 export const BRIEF_FRACTALS=6;
 
 /** Absolute URLs pinned to one snapshot; a 409 SNAPSHOT_CHANGED means: refetch the brief. */
-export function paLinks(origin:string,symbol:string,side:string,snapshot:string){
+export function paLinks(origin:string,symbol:string,side:string,snapshot:string,grid:Grid='ny'){
  // ':' is legal in a query string; keeping evidence ids readable also keeps the brief small.
- const url=(path:string,params:Record<string,string>)=>`${origin}${path}?${String(new URLSearchParams({symbol,side,...params})).replace(/%3A/g,':')}`;
+ const url=(path:string,params:Record<string,string>)=>`${origin}${path}?${String(new URLSearchParams({symbol,side,grid,...params})).replace(/%3A/g,':')}`;
  return {
   brief:url('/api/brief',{}),
   desk_report:url('/api/desk-report',{}),
@@ -23,9 +24,9 @@ export function paLinks(origin:string,symbol:string,side:string,snapshot:string)
  };
 }
 
-export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
+export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Grid='ny'){
  const available=report.coverage.observations_available,snapshot=report.snapshot_sha256;
- const link=paLinks(origin,core.symbol,core.side,snapshot);
+ const link=paLinks(origin,core.symbol,core.side,snapshot,grid);
  const nearby=available?nearbyLevels(core,BRIEF_LEVELS_PER_SIDE):null;
  const lifecycle=new Map(core.evidence.map(e=>[e.id,e.lifecycle?.state??null]));
  // One detail URL per grouped evidence id, in `ids` order.
@@ -38,7 +39,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
   const kinds:Record<string,number>={};
   if(available)for(const e of core.evidence)if(e.timeframe===tf)kinds[e.kind]=(kinds[e.kind]??0)+1;
   return [tf,{
-   timeframe:tf,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,
+   timeframe:tf,grid:f.grid,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,
    last_closed_candles:f.ohlc.slice(-BRIEF_CANDLES).map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close})),
    dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference}:null,
    levels:n?{above:n.above.map(withUrl),below:n.below.map(withUrl),at_price:n.at_price.map(withUrl),eligible:n.eligible,omitted:eligible-included}:null,
@@ -49,7 +50,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string){
  }));
  const brief={
   schema_version:BRIEF_SCHEMA,contract_revision:PA_CONTRACT,mode:'PA_ONLY',technical_only:true,
-  symbol:core.symbol,price_side:core.side,status:report.status,data_quality:report.data_quality,observations_available:available,
+  symbol:core.symbol,price_side:core.side,grid:gridInfo(core,grid),engine:engineInfo(report.source.engine_commit),status:report.status,data_quality:report.data_quality,observations_available:available,
   generated_at:report.generated_at,as_of:report.as_of,expires_at:report.expires_at,snapshot_sha256:snapshot,
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,

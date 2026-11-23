@@ -45,7 +45,8 @@ export function closedFrame(
     !Number.isFinite(fetched) ||
     data.metadata.discarded_reasons.invalid_time > 0;
   // D1: the Sunday-evening session opens Monday's trading day (idempotent for already merged data).
-  const source = data.timeframe === "D1" ? mergeSundaySessions(data.candles) : data.candles;
+  // NY-close D1 already starts Monday's day at Sunday 17:00 ET; merging it again would swallow Tuesday.
+  const source = data.timeframe === "D1" && data.metadata.grid !== "ny" ? mergeSundaySessions(data.candles) : data.candles;
   for (let index = 0; index < source.length; index++) {
     const c = source[index],
       t = Date.parse(c.time),

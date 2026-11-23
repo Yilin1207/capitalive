@@ -53,9 +53,11 @@ export type CandleResponse = {
     discarded_sides: number;
     duplicate_rows: number;
     validation_gaps?: string[];
-    time_semantics: "provider_bar_start_utc" | "calendar_month_start_utc";
-    closure_basis: "successor_or_nominal_interval_elapsed_at_fetch" | "calendar_month_end_elapsed_at_fetch";
-    aggregation?: { source: "Capital.com DAY"; calendar: "UTC"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown"; reconstructions?:import('./daily-recovery').DailyRecovery[] };
+    time_semantics: "provider_bar_start_utc" | "calendar_month_start_utc" | "ny_close_bucket_start_utc";
+    /** Bar grid actually used; absent in older captures = provider UTC grid. */
+    grid?: import("./ny-grid").BarGrid;
+    closure_basis: "successor_or_nominal_interval_elapsed_at_fetch" | "calendar_month_end_elapsed_at_fetch" | "bucket_end_elapsed_at_fetch";
+    aggregation?: { source: "Capital.com DAY" | "Capital.com HOUR"; calendar: "UTC" | "America/New_York 17:00"; requested_from: string; requested_to: string; pages: number; coverage: "requested_window_fetched"; session_completeness: "unknown"; reconstructions?:import('./daily-recovery').DailyRecovery[] };
     cache_ttl_seconds: number;
     cache_hit: boolean;
     diagnostics: import("./history-diagnostics").HistoryDiagnostics;
