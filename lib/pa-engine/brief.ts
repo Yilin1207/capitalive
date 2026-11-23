@@ -1,5 +1,6 @@
 import type {Grid} from '../ny-grid';
-import {atrD1,klEvents,nestedIn,premiumDiscount} from './brief-facts';
+import {approach,atrD1,klEvents,nestedIn,premiumDiscount} from './brief-facts';
+import {APPROACH_CONFIG} from './approach-config';
 import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
@@ -51,6 +52,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
    dealing_range:dr?{status:dr.status,current:dr.current,current_h4_position:dr.current_h4_position,reference:dr.reference,
     premium_discount:premiumDiscount({...dr,explicit_range:core.dealing_ranges.find(r=>r.timeframe===tf)?.explicit_range},nearby?.block.reference.price??null)}:null,
    levels:n?{above:n.above.map(withUrl(tf)),below:n.below.map(withUrl(tf)),at_price:n.at_price.map(withUrl(tf)),eligible:n.eligible,omitted:eligible-included}:null,
+   approach:available?approach(core,tf,atr?.value??null,n):null,
    recent_fractals:available?core.market_structure[tf].swing_sequence.slice(-BRIEF_FRACTALS).map(p=>({id:p.id,polarity:p.polarity,price:p.price,confirmed_at:p.confirmed_at,relation:p.relation,state:lifecycle.get(p.id)??null,url:link.detail(p.id)})):null,
    findings_by_kind:available?kinds:null,
    links:{evidence:link.evidence(tf),candles:link.candles(tf),structure:link.structure(tf)},
@@ -61,7 +63,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   symbol:core.symbol,price_side:core.side,grid:gridInfo(core,grid),engine:engineInfo(report.source.engine_commit),status:report.status,data_quality:report.data_quality,observations_available:available,
   generated_at:report.generated_at,as_of:report.as_of,expires_at:report.expires_at,snapshot_sha256:snapshot,
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
-  reference:nearby?.block.reference??null,atr_d1:atr,
+  reference:nearby?.block.reference??null,atr_d1:atr,approach_config:{...APPROACH_CONFIG,status:Object.values(APPROACH_CONFIG).includes(null)?'NEEDS_SPECIFICATION':'USER_APPROVED'},
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
   level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,

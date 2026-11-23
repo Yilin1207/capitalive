@@ -68,7 +68,7 @@ export const PA_BRIEF_SCHEMA='pa-brief-v1';
 export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[],maxBytes=65536):void{
  const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>maxBytes)throw Error('BRIEF_TOO_LARGE');
  assertPublishable(b,raw,secrets,'BRIEF');
- keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
+ keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 approach_config selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
  if(b.schema_version!==PA_BRIEF_SCHEMA||b.contract_revision!==PA_CONTRACT_REVISION||b.mode!=='PA_ONLY'||b.technical_only!==true||b.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(s=>s===b.symbol)||symbol&&b.symbol!==symbol||!['bid','ask'].includes(b.price_side)||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(b.status)||typeof b.observations_available!=='boolean')fail();
  if(!date(b.generated_at)||!date(b.as_of)||!date(b.expires_at)||b.as_of>b.generated_at||b.expires_at<b.generated_at||!/^[a-f0-9]{64}$/.test(b.snapshot_sha256)||obj(b.quote).used_as_closed_evidence!==false||!strings(b.warnings))fail();
  checkGrid(b.grid,b.timeframes);
@@ -80,10 +80,11 @@ export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]
  if(Object.keys(obj(b.timeframes)).sort().join(',')!=='D1,H4,MN1,W1')fail();
  const ids=new Set<string>(),tol=1e-6*Math.max(1,Math.abs(ref)||1);let omitted=0;
  for(const tf of tfs){const t=b.timeframes[tf];
-  keys(t,'timeframe grid data_quality warnings last_closed_at closed_candles last_closed_candles dealing_range levels recent_fractals findings_by_kind links');
+  keys(t,'timeframe grid data_quality warnings last_closed_at closed_candles last_closed_candles dealing_range levels approach recent_fractals findings_by_kind links');
   if(t.timeframe!==tf||!strings(t.warnings)||!Number.isInteger(t.closed_candles)||t.closed_candles<0||t.last_closed_at!==null&&(!date(t.last_closed_at)||t.last_closed_at>b.as_of)||!Array.isArray(t.last_closed_candles))fail();
   for(const c of t.last_closed_candles){keys(c,'time closed_at open high low close');if(!date(c.time)||!date(c.closed_at)||c.time>=c.closed_at||c.closed_at>b.as_of||['open','high','low','close'].some(k=>!finite(c[k])||c[k]<=0)||c.low>Math.min(c.open,c.close)||c.high<Math.max(c.open,c.close))fail();}
-  if(withheld&&(t.levels!==null||t.dealing_range!==null||t.recent_fractals!==null||t.findings_by_kind!==null))fail();
+  if(withheld&&(t.levels!==null||t.dealing_range!==null||t.recent_fractals!==null||t.findings_by_kind!==null||t.approach!=null))fail();
+  if(t.approach!=null&&!['EXPANSION_NO_CORRECTION','COMPRESSION','NONE','NOT_EVALUATED'].includes(t.approach.flag))fail();
   if(t.levels!==null){
    if(!finite(ref))fail();
    keys(t.levels,'above below at_price eligible omitted');keys(t.levels.eligible,'above below at_price');let shown=0,eligible=0;

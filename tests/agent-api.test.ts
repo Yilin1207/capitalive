@@ -67,7 +67,7 @@ test('brief: STALE withholds levels, ranges and fractals like the desk report',a
  const deps={...f.deps,getAnalysisQuote:async()=>({...f.quote,cache_hit:false,evaluated_at:f.asOf,fresh:false,provider_timestamp:'2026-11-15T13:50:00.000Z',quote_time:'2026-11-15T13:50:00.000Z'})};
  const res=await paHttp(req('/api/brief','symbol=EU50'),'brief',deps),b=await res.json();
  assert.equal(res.status,200);assert.equal(b.status,'STALE');assert.equal(b.observations_available,false);assert.equal(b.reference,null);
- for(const tf of PA_TFS){const x=b.timeframes[tf];assert.equal(x.levels,null);assert.equal(x.dealing_range,null);assert.equal(x.recent_fractals,null);assert.equal(x.findings_by_kind,null);}
+ for(const tf of PA_TFS){const x=b.timeframes[tf];assert.equal(x.levels,null);assert.equal(x.dealing_range,null);assert.equal(x.approach,null);assert.equal(x.recent_fractals,null);assert.equal(x.findings_by_kind,null);}
  assert.ok(b.freshness.stale_reasons.length>0);
 });
 

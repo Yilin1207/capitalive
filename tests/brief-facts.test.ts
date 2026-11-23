@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {atrD1,classifyKlEvent,klEvents,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
+import {approach,atrD1,classifyKlEvent,klEvents,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
+import {APPROACH_CONFIG} from '../lib/pa-engine/approach-config';
 import {buildPaEngine} from '../lib/pa-engine/core';
 import {paHttp} from '../lib/pa-engine/http';
 import {PA_TFS} from '../lib/pa-engine/report';
@@ -79,4 +80,27 @@ test('kl events: touch, rejection, acceptance and raid by closed candles only',a
   assert.ok(ev!.last.length<=3);for(const y of ev!.last){assert.ok(y.at>e.confirmed_at&&y.at<=b.as_of);assert.ok(PA_TFS.indexOf(y.tf)>=PA_TFS.indexOf(tf));}
   checked++;}
  assert.ok(checked>0);
+});
+
+test('approach: run without counter-close, move in D1 ATR, body overlap, contracting ranges; flags only with approved thresholds',async t=>{
+ // o,h,l,c per bar; last four closes rise without a counter-close, last two ranges contract.
+ const raw=[[100,104,96,98],[98,103,95,97],[97,106,96,105],[105,112,104,111],[111,116,109,115],[115,118,113,117]];
+ const ohlc=raw.map(([open,high,low,close],i)=>({index:i,time:`2026-11-1${i}T00:00:00.000Z`,end:`2026-11-1${i}T04:00:00.000Z`,open,high,low,close,segment:0}));
+ const core={frames:{H4:{ohlc}}} as unknown as Parameters<typeof approach>[0];
+ const level={id:'X:H4:bid:FVG:a',kind:'FVG',distance:3} as never;
+ const a=approach(core,'H4',10,{above:[level],below:[],at_price:[]})!;
+ assert.equal(a.closes,'RISING');assert.equal(a.bars_without_correction,4);assert.equal(a.move,20);assert.equal(a.move_atr_d1,2);
+ assert.equal(a.window_bars,6);assert.equal(a.overlapping_body_pairs,1);assert.equal(a.contracting_ranges,3);
+ assert.deepEqual(a.nearest_level_on_path,{id:'X:H4:bid:FVG:a',kind:'FVG',distance:3,at_price:false});
+ assert.equal(a.flag,'NOT_EVALUATED');assert.equal(a.thresholds,'NEEDS_SPECIFICATION');
+ const cfg={...APPROACH_CONFIG,expansion_min_bars:4,expansion_min_move_atr_d1:1.5,compression_min_overlap_pairs:4,compression_min_contracting_bars:4};
+ assert.equal(approach(core,'H4',10,null,cfg)!.flag,'EXPANSION_NO_CORRECTION');
+ assert.equal(approach(core,'H4',10,null,{...cfg,expansion_min_bars:5,compression_min_contracting_bars:2})!.flag,'COMPRESSION');
+ assert.equal(approach(core,'H4',10,null,{...cfg,expansion_min_bars:5})!.flag,'NONE');
+ // A gap boundary (new segment) ends the run.
+ const split={frames:{H4:{ohlc:ohlc.map((b,i)=>({...b,segment:i<4?0:1}))}}} as unknown as Parameters<typeof approach>[0];
+ assert.equal(approach(split,'H4',10,null)!.bars_without_correction,1);
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const b=await brief(f);assert.equal(b.approach_config.status,'NEEDS_SPECIFICATION');
+ for(const tf of PA_TFS){const x=b.timeframes[tf].approach;assert.equal(x.flag,'NOT_EVALUATED');assert.equal(x.through,b.timeframes[tf].last_closed_at);}
 });

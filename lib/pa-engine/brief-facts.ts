@@ -1,4 +1,5 @@
 import type {Bar} from '../knowledge/data';
+import {APPROACH_CONFIG} from './approach-config';
 import {PA_TFS,type NearbyLevel,type PaEngine} from './report';
 
 /** Geometric / closed-candle facts added to the brief. No significance, direction or trade field. */
@@ -63,4 +64,23 @@ export function klEvents(core:Core,level:Pick<NearbyLevel,'id'|'lower'|'upper'>,
    const type=classifyKlEvent(bars[i-1].close,x,b.lower,b.upper);if(type)events.push({tf:t,type,at:x.end});}}
  const own=events.filter(x=>x.tf===tf),counts={TOUCH:0,REJECTION:0,ACCEPTANCE:0,RAID:0};for(const x of own)counts[x.type]++;
  return {bounds_basis:'ORIGINAL' as const,own_tf_counts:counts,last:events.sort((a,c)=>c.at.localeCompare(a.at)||PA_TFS.indexOf(a.tf)-PA_TFS.indexOf(c.tf)).slice(0,last)};
+}
+
+/** Facts about the latest closed candles of a TF; flags stay NOT_EVALUATED until thresholds are approved. */
+export function approach(core:Pick<PaEngine,'frames'>,tf:Tf,atr:number|null,levels:{above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[]}|null,cfg=APPROACH_CONFIG){
+ const bars=core.frames[tf].ohlc,n=bars.length;if(n<2)return null;
+ const last=bars[n-1],sign=Math.sign(last.close-bars[n-2].close);
+ let run=0;if(sign)for(let i=n-1;i>0&&bars[i].segment===bars[i-1].segment&&Math.sign(bars[i].close-bars[i-1].close)===sign;i--)run++;
+ const move=Math.abs(last.close-bars[n-1-run].close),win=bars.slice(-cfg.window_bars);
+ let overlaps=0;for(let i=1;i<win.length;i++){const a=win[i-1],c=win[i];if(Math.max(Math.min(a.open,a.close),Math.min(c.open,c.close))<Math.min(Math.max(a.open,a.close),Math.max(c.open,c.close)))overlaps++;}
+ let contracting=0;for(let i=n-1;i>0&&n-i<cfg.window_bars&&bars[i].high-bars[i].low<bars[i-1].high-bars[i-1].low;i--)contracting++;
+ const toward=levels?(levels.at_price[0]??(sign>0?levels.above[0]:sign<0?levels.below[0]:undefined)):undefined;
+ const thresholds=[cfg.expansion_min_bars,cfg.expansion_min_move_atr_d1,cfg.compression_min_overlap_pairs,cfg.compression_min_contracting_bars];
+ const moveAtr=atr?round(move/atr):null;
+ let flag:'EXPANSION_NO_CORRECTION'|'COMPRESSION'|'NONE'|'NOT_EVALUATED'='NOT_EVALUATED';
+ if(thresholds.every(x=>x!==null)&&moveAtr!==null)flag=run>=cfg.expansion_min_bars!&&moveAtr>=cfg.expansion_min_move_atr_d1!?'EXPANSION_NO_CORRECTION':overlaps>=cfg.compression_min_overlap_pairs!||contracting>=cfg.compression_min_contracting_bars!?'COMPRESSION':'NONE';
+ return {through:last.end,closes:sign>0?'RISING' as const:sign<0?'FALLING' as const:'UNCHANGED' as const,bars_without_correction:run,move:round(move,10),move_atr_d1:moveAtr,
+  window_bars:win.length,overlapping_body_pairs:overlaps,contracting_ranges:contracting,
+  nearest_level_on_path:toward?{id:toward.id,kind:toward.kind,distance:toward.distance,at_price:levels!.at_price.includes(toward)}:null,
+  flag,thresholds:thresholds.every(x=>x!==null)?'USER_APPROVED':'NEEDS_SPECIFICATION'};
 }
