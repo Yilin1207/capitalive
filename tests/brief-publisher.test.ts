@@ -29,6 +29,8 @@ test('publisher accepts the real batch and rejects trading fields, secrets, enab
  const files=filesFor(b,'2026-11-15T14:07:00.000Z');
  assert.deepEqual(Object.keys(files).sort(),['brief/EU50.json','brief/EURUSD.json','brief/NAS100.json','brief/latest.json','brief/status.json']);
  assert.equal(files['brief/NAS100.json'].brief.symbol,'NAS100');assert.equal(files['brief/status.json'].ok,true);
+ const timed=filesFor(b,'2026-11-15T14:07:30.000Z','2026-11-15T14:07:00.000Z');
+ assert.equal(timed['brief/status.json'].requested_at,'2026-11-15T14:07:00.000Z');assert.ok(timed['brief/status.json'].published_at>=b.generated_at);
 });
 
 test('publisher keeps a failed symbol visible and never writes an older brief for it',async t=>{

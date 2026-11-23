@@ -8,7 +8,7 @@ reach `raw.githubusercontent.com` but not `capitalive.vercel.app`. Technical pri
 |---|---|
 | `brief/latest.json` | The latest batch exactly as served (`pa-brief-batch-v1`), including per-symbol errors. |
 | `brief/<SYMBOL>.json` | `{published_at, source, brief}` — updated only when that symbol succeeded. |
-| `brief/status.json` | Last publishing attempt: `ok`, `published_at`, per-symbol `results` or the `error`. |
+| `brief/status.json` | Last publishing attempt: `ok`, `requested_at` (request sent), `published_at` (response received), per-symbol `results` or the `error`. |
 
 Read `brief/status.json` first. A failed attempt never replaces data with an older success: older files keep
 their own `generated_at` / `as_of` / `expires_at`; compare them with `published_at` before use.

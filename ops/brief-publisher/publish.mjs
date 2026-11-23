@@ -24,26 +24,27 @@ export function checkBatch(batch,raw=JSON.stringify(batch)){
 }
 
 /** Files to write. latest.json = the latest attempt as served (errors stay visible); <SYMBOL>.json only for symbols that succeeded. */
-export function filesFor(batch,fetchedAt){
+export function filesFor(batch,publishedAt,requestedAt=publishedAt){
  const files={'brief/latest.json':batch};
- for(const s of batch.symbols)if(batch.results?.[s]?.snapshot_sha256)files[`brief/${s}.json`]={published_at:fetchedAt,source:batch.links?.self??null,brief:batch.briefs[s]};
- files['brief/status.json']={published_at:fetchedAt,ok:true,status:batch.status,generated_at:batch.generated_at,results:batch.results,grid:batch.grid,engine:batch.engine};
+ for(const s of batch.symbols)if(batch.results?.[s]?.snapshot_sha256)files[`brief/${s}.json`]={published_at:publishedAt,requested_at:requestedAt,source:batch.links?.self??null,brief:batch.briefs[s]};
+ files['brief/status.json']={published_at:publishedAt,requested_at:requestedAt,ok:true,status:batch.status,generated_at:batch.generated_at,results:batch.results,grid:batch.grid,engine:batch.engine};
  return files;
 }
 
 async function main(){
  const out=process.argv[2]??'.',base=(process.env.CAPITALIVE_BASE??'https://capitalive.vercel.app').replace(/\/$/,''),latest=process.env.BRIEF_LATEST??'12';
- const url=`${base}/api/brief?symbols=${SYMBOLS.join(',')}&latest=${latest}`,fetchedAt=new Date().toISOString();
+ const url=`${base}/api/brief?symbols=${SYMBOLS.join(',')}&latest=${latest}`,requestedAt=new Date().toISOString();
  await mkdir(join(out,'brief'),{recursive:true});
  let files;
  try{
   const res=await fetch(url,{headers:{accept:'application/json','user-agent':'capitalive-brief-publisher'}});
   const raw=await res.text(),batch=JSON.parse(raw);
   checkBatch(batch,raw);
-  files=filesFor(batch,fetchedAt);
+  // published_at is taken after the response, so it is never earlier than the batch generated_at.
+  files=filesFor(batch,new Date().toISOString(),requestedAt);
  }catch(error){
   // Never replace an error with an older success: record the failed attempt; earlier files keep their own timestamps.
-  files={'brief/status.json':{published_at:fetchedAt,ok:false,error:String(error?.message??error).slice(0,300),source:url}};
+  files={'brief/status.json':{published_at:new Date().toISOString(),requested_at:requestedAt,ok:false,error:String(error?.message??error).slice(0,300),source:url}};
   process.exitCode=1;
  }
  for(const [path,value] of Object.entries(files))await writeFile(join(out,path),JSON.stringify(value,null,1)+'\n');
