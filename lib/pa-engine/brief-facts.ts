@@ -1,4 +1,5 @@
-import {PA_TFS,type PaEngine} from './report';
+import type {Bar} from '../knowledge/data';
+import {PA_TFS,type NearbyLevel,type PaEngine} from './report';
 
 /** Geometric / closed-candle facts added to the brief. No significance, direction or trade field. */
 type Tf=(typeof PA_TFS)[number];
@@ -6,6 +7,7 @@ type Core=Pick<PaEngine,'frames'|'evidence'>;
 type Evidence=PaEngine['evidence'][number];
 const round=(x:number,d=4)=>Number(x.toFixed(d));
 const higherTfs=(tf:Tf)=>PA_TFS.slice(0,PA_TFS.indexOf(tf));
+const lowerOrSameTfs=(tf:Tf)=>PA_TFS.slice(PA_TFS.indexOf(tf));
 /** ATR period of the distance unit only (never a level threshold). */
 export const ATR_D1_PERIOD=14;
 
@@ -37,4 +39,28 @@ export function premiumDiscount(dr:{status:string;current:{lower:number;upper:nu
  const zone=ref>high?'ABOVE_RANGE':ref<low?'BELOW_RANGE':ref>eq?'PREMIUM':ref<eq?'DISCOUNT':'EQ';
  return {high,low,eq,price:ref,price_basis:'LAST_CLOSED_H4_CLOSE' as const,price_position_pct:pct,zone,distance_to_high:round(high-ref,10),distance_to_low:round(ref-low,10),
   dr_status:dr.status,confirmed:dr.status==='ESTABLISHED',selection:dr.explicit_range?'EXPLICIT_IDS':'AUTOMATIC_CANDIDATE',eq_band:'NEEDS_SPECIFICATION_EXACT_EQUALITY_ONLY'};
+}
+
+export type KlEventType='TOUCH'|'REJECTION'|'ACCEPTANCE'|'RAID';
+/** Classify one closed candle approaching [lower, upper] from the side of the previous close.
+ * Zone: close back beyond the near boundary = REJECTION, beyond the far boundary = ACCEPTANCE, inside = TOUCH.
+ * Point level (fractal): wick beyond and close back = RAID, close beyond = ACCEPTANCE, equality = TOUCH.
+ * Candle colour and wick proportion are never criteria. */
+export function classifyKlEvent(prevClose:number,b:Pick<Bar,'high'|'low'|'close'>,lower:number,upper:number):KlEventType|null{
+ const fromBelow=prevClose<lower,fromAbove=prevClose>upper;if(!fromBelow&&!fromAbove)return null;
+ const near=fromBelow?lower:upper,far=fromBelow?upper:lower,reached=fromBelow?b.high>=near:b.low<=near;if(!reached)return null;
+ const beyond=(x:number,edge:number)=>fromBelow?x>edge:x<edge,back=(x:number,edge:number)=>fromBelow?x<edge:x>edge;
+ if(lower===upper){const crossed=fromBelow?b.high>near:b.low<near;if(!crossed)return 'TOUCH';return beyond(b.close,far)?'ACCEPTANCE':back(b.close,near)?'RAID':'TOUCH';}
+ return beyond(b.close,far)?'ACCEPTANCE':back(b.close,near)?'REJECTION':'TOUCH';
+}
+/** Closed-candle events at a level on its own TF and lower TFs after the formation closed. */
+export function klEvents(core:Core,level:Pick<NearbyLevel,'id'|'lower'|'upper'>,last=3){
+ const e=core.evidence.find(x=>x.id===level.id);if(!e)return null;
+ const b=e.bounds??{lower:level.lower,upper:level.upper};
+ const tf=e.timeframe as Tf,events:{tf:Tf;type:KlEventType;at:string}[]=[];
+ for(const t of lowerOrSameTfs(tf)){const bars=core.frames[t].ohlc;
+  for(let i=1;i<bars.length;i++){const x=bars[i];if(x.time<e.confirmed_at||bars[i-1].segment!==x.segment)continue;
+   const type=classifyKlEvent(bars[i-1].close,x,b.lower,b.upper);if(type)events.push({tf:t,type,at:x.end});}}
+ const own=events.filter(x=>x.tf===tf),counts={TOUCH:0,REJECTION:0,ACCEPTANCE:0,RAID:0};for(const x of own)counts[x.type]++;
+ return {bounds_basis:'ORIGINAL' as const,own_tf_counts:counts,last:events.sort((a,c)=>c.at.localeCompare(a.at)||PA_TFS.indexOf(a.tf)-PA_TFS.indexOf(c.tf)).slice(0,last)};
 }

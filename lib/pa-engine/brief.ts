@@ -1,5 +1,5 @@
 import type {Grid} from '../ny-grid';
-import {atrD1,nestedIn,premiumDiscount} from './brief-facts';
+import {atrD1,klEvents,nestedIn,premiumDiscount} from './brief-facts';
 import {engineInfo,gridInfo,nearbyLevels,NEARBY_EXCLUDED_STATES,NEARBY_EXCLUDED_EXTRA,NEARBY_GROUPING,NEARBY_KINDS,PA_CONTRACT,PA_MAX_BYTES,PA_TFS,type NearbyLevel,type PaEngine,type PaReport} from './report';
 
 /** Compact, link-rich view of one desk-report snapshot for external AI clients.
@@ -37,7 +37,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
  const lifecycle=new Map(core.evidence.map(e=>[e.id,e.lifecycle?.state??null]));
  const atr=available?atrD1(core):null;
  // One detail URL per grouped evidence id, in `ids` order; distance also in D1 ATR; live higher-TF zones containing the level.
- const withUrl=(tf:(typeof PA_TFS)[number])=>(x:NearbyLevel)=>({...x,urls:x.ids.map(link.detail),distance_atr_d1:atr?Number((x.distance/atr.value).toFixed(4)):null,nested_in:nestedIn(core,tf,x)});
+ const withUrl=(tf:(typeof PA_TFS)[number])=>(x:NearbyLevel)=>({...x,urls:x.ids.map(link.detail),distance_atr_d1:atr?Number((x.distance/atr.value).toFixed(4)):null,nested_in:nestedIn(core,tf,x),kl_events:klEvents(core,x)});
  let levelsOmitted=0;
  const timeframes=Object.fromEntries(PA_TFS.map(tf=>{
   const f=core.frames[tf],n=nearby?.block.timeframes[tf]??null,dr=report.dealing_ranges.find(r=>r.timeframe===tf);
@@ -63,7 +63,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   source:report.source,quote:report.quote,freshness:report.freshness,warnings:report.warnings,
   reference:nearby?.block.reference??null,atr_d1:atr,
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
-  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',fvg_bounds:'UNFILLED_REMAINDER'},
+  level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
   omitted:{levels:levelsOmitted,levels_size_trimmed:0,findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {atrD1,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
+import {atrD1,classifyKlEvent,klEvents,nestedIn,premiumDiscount} from '../lib/pa-engine/brief-facts';
 import {buildPaEngine} from '../lib/pa-engine/core';
 import {paHttp} from '../lib/pa-engine/http';
 import {PA_TFS} from '../lib/pa-engine/report';
@@ -53,4 +53,30 @@ test('premium_discount: position of the last closed H4 close in the current DR o
   const p=d.premium_discount;assert.equal(p.high,d.current.upper);assert.equal(p.low,d.current.lower);assert.equal(p.eq,d.current.equilibrium);assert.equal(p.price,b.reference.price);
   assert.ok(Math.abs(p.price_position_pct-(b.reference.price-p.low)/(p.high-p.low)*100)<0.01);}
  assert.ok(seen>0);
+});
+
+test('kl events: touch, rejection, acceptance and raid by closed candles only',async t=>{
+ const bar=(high:number,low:number,close:number)=>({high,low,close});
+ // Zone 100..110 approached from below (previous close 95).
+ assert.equal(classifyKlEvent(95,bar(99,94,98),100,110),null);// no contact
+ assert.equal(classifyKlEvent(95,bar(104,94,103),100,110),'TOUCH');// closed inside
+ assert.equal(classifyKlEvent(95,bar(112,94,97),100,110),'REJECTION');// closed back below the near edge, even after a wick through
+ assert.equal(classifyKlEvent(95,bar(115,94,111),100,110),'ACCEPTANCE');// closed beyond the far edge
+ assert.equal(classifyKlEvent(95,bar(100,94,96),100,110),'REJECTION');// equality reaches the zone
+ // From above (previous close 115).
+ assert.equal(classifyKlEvent(115,bar(116,108,113),100,110),'REJECTION');assert.equal(classifyKlEvent(115,bar(116,95,99),100,110),'ACCEPTANCE');
+ assert.equal(classifyKlEvent(105,bar(116,95,99),100,110),null);// previous close inside: not an approach
+ // Fractal high at 100 approached from below; fractal low at 100 from above.
+ assert.equal(classifyKlEvent(95,bar(100,94,98),100,100),'TOUCH');assert.equal(classifyKlEvent(95,bar(101,94,99),100,100),'RAID');
+ assert.equal(classifyKlEvent(95,bar(103,94,101),100,100),'ACCEPTANCE');assert.equal(classifyKlEvent(105,bar(106,99,101),100,100),'RAID');
+ // Candle colour is not a criterion: same OHLC extremes, different open, same class.
+ assert.equal(classifyKlEvent(95,{...bar(112,94,97),open:96} as never,100,110),classifyKlEvent(95,{...bar(112,94,97),open:111} as never,100,110));
+ // Engine: events start after the formation closed and use closed bars of the level TF and lower TFs.
+ const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
+ const core=buildPaEngine(f.data,'bid'),b=await brief(f);let checked=0;
+ for(const tf of PA_TFS)for(const k of ['above','below','at_price'])for(const x of b.timeframes[tf].levels[k]){
+  const ev=x.kl_events,e=core.evidence.find(y=>y.id===x.id)!;assert.deepEqual(ev,klEvents(core,x));
+  assert.ok(ev!.last.length<=3);for(const y of ev!.last){assert.ok(y.at>e.confirmed_at&&y.at<=b.as_of);assert.ok(PA_TFS.indexOf(y.tf)>=PA_TFS.indexOf(tf));}
+  checked++;}
+ assert.ok(checked>0);
 });
