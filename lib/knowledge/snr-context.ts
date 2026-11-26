@@ -6,14 +6,14 @@ export const SNR_REVISION='snr-formation-context-2';
 const order=['MN1','W1','D1','H4'];
 /** Measurements stop at the FIRST closed break. Later retests never strengthen
  * the historical formation. These are author-method observations, not odds. */
-export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:Bar,breakout:Bar,level:number,bullish:boolean,context:KeyLevel[],lowerLevels:KeyLevel[],includeStrength=true){
+export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:Bar|undefined,breakout:Bar,level:number,bullish:boolean,context:KeyLevel[],lowerLevels:KeyLevel[],includeStrength=true){
   const waiting=frame.bars.filter(c=>c.segment===origin.segment&&c.index>second.index&&c.index<breakout.index&&c.end<=breakout.end);
   const tests=waiting.filter(c=>c.low<=level&&c.high>=level&&(bullish?c.close<=level:c.close>=level));
   let episodes=0,previous=-2;for(const c of tests){if(c.index!==previous+1)episodes++;previous=c.index;}
   const bodies=frame.bars.filter(c=>c.segment===origin.segment&&c.index<breakout.index).slice(-20).map(c=>Math.abs(c.close-c.open)).sort((a,b)=>a-b);
   const median=bodies.length?(bodies[Math.floor((bodies.length-1)/2)]+bodies[Math.floor(bodies.length/2)])/2:null;
   const body=Math.abs(breakout.close-breakout.open),span=breakout.high-breakout.low;
-  const start=tests.at(-1)?.end??delivery.time;
+  const start=tests.at(-1)?.end??delivery?.time??second.end;
   const leg:Bar[]=[];
   for(const c of frame.bars.filter(c=>c.segment===origin.segment&&c.index>second.index&&c.index<=breakout.index&&c.time>=start).reverse()){
     if(bullish?c.close<=c.open:c.close>=c.open)break;leg.unshift(c);
@@ -31,7 +31,7 @@ export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:B
   // strong continuation. Only overlap is defined; arbitrary "near" is not used.
   const opposing=context.map(l=>levelAt(l,breakout.time)).filter((l):l is KeyLevel=>!!l).filter(l=>admissible(l)&&order.indexOf(l.timeframe)<=order.indexOf(frame.timeframe)&&l.confirmed_at<=breakout.time&&l.role===(bullish?'resistance':'support')&&(bullish?l.lower>level:l.upper<level)&&breakout.low<=l.upper&&breakout.high>=l.lower).sort(sort)[0]??null;
   return {revision:SNR_REVISION,level_policy:'FIRST_CANDLE_CLOSE' as const,level_price:level,
-    formation_confirmed:true as const,origin_confirmed_at:second.end,delivery_at:delivery.end,breakout_at:breakout.end,
+    formation_confirmed:true as const,origin_confirmed_at:second.end,delivery_at:delivery?.end??null,breakout_at:breakout.end,
     waiting_bars:waiting.length,formation_seconds:(Date.parse(breakout.end)-Date.parse(second.end))/1000,
     failed_test_bars:tests.length,failed_test_episodes:episodes,
     failed_tests:tests.map(c=>({time:c.time,closed_at:c.end,index:c.index,kind:c.high===level||c.low===level?'TOUCH':'REJECTED_CROSS'})),

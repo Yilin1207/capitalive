@@ -4,13 +4,13 @@ import {closedFrame,type Frame,type Bar} from '../knowledge/data';
 import {TF_ORDER,detectFractals,detectFvg,detectRaids,detectRejectionBlocks,detectSnr,detectIdm,selectRange,pivotLevels,type Finding,type KeyLevel} from '../knowledge/detectors';
 import {detectDealingRange} from '../knowledge/dealing-range';
 import {assessLevel,contextualLevels,type LevelState} from '../knowledge/level-state';
-import {fvgTestTimeline,currentBounds} from '../knowledge/fvg-remaining';
+import {fvgTestTimeline} from '../knowledge/fvg-remaining';
 import {calendarDiagnostics} from '../research/calendars';
 import type {BarGrid} from '../ny-grid';
 /** Grid of the bars actually analysed; captures without metadata.grid are on the provider UTC grid. */
 export const barGrid=(d:CandleResponse):BarGrid=>d.metadata.grid??(d.timeframe==='MN1'?'utc_calendar':d.timeframe==='W1'?'utc_week':'utc');
 
-export const PA_ENGINE_REVISION='pa-only-6.0.0';
+export const PA_ENGINE_REVISION='pa-only-6.1.0';
 export type PaOptions={as_of?:string;ranges?:Partial<Record<Timeframe,{high_id:string;low_id:string}>>};
 export type PaEvidence=Finding&{
  symbol:string;price_side:PriceSide;bounds:{lower:number;upper:number}|null;remaining_bounds:{lower:number;upper:number}|null;
@@ -49,8 +49,8 @@ function observation(f:Finding):Finding{
   facts.significance='NEEDS_SPECIFICATION';
  }
  if(f.kind==='RB_TWO_CANDLE'){delete facts.relative_quality;delete facts.quality_is_probability;facts.significance='NEEDS_SPECIFICATION';}
- if(f.kind==='IDM_INSIDE_POI')return {...neutral,kind:'FRACTAL_INSIDE_POI',facts:{...facts,classification:'GEOMETRIC_OVERLAP_ONLY',idm_status:'NEEDS_SPECIFICATION'},state:'NEEDS_SPECIFICATION',specification:'NEEDS_SPECIFICATION',invalidation:'Geometric containment does not establish IDM significance.'};
- return {...neutral,facts,invalidation:f.kind==='RAID'||f.kind==='TOUCH'?'Strict crossing consumes liquidity; equality is a touch; neither proves a new support/resistance role.':f.kind==='RB_TWO_CANDLE'?'Closed two-candle formation; subsequent role and significance remain unverified.':f.kind==='SNR_CLOSED_BREAK'?'Own-TF counter-close withdraws the proposed role; no automatic role reversal.':f.invalidation};
+ if(f.kind==='IDM_INSIDE_POI')return {...neutral,kind:'FRACTAL_INSIDE_POI',facts:{...facts,classification:'GEOMETRIC_OVERLAP_ONLY',idm_status:'SEE_ACTIVE_DR'},state:'OBSERVED',invalidation:'Re-evaluate IDM against the active dealing range.'};
+ return {...neutral,facts,invalidation:f.kind==='RAID'||f.kind==='TOUCH'?'Strict crossing consumes liquidity; equality is a touch; neither proves a new support/resistance role.':['RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(f.kind)?'A strict own-timeframe close beyond the far edge breaks the formation.':f.invalidation};
 }
 
 function boundsOf(f:Finding,l?:KeyLevel){
@@ -78,35 +78,36 @@ export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSi
  if(options.as_of&&!Number.isFinite(Date.parse(options.as_of)))throw Error('INVALID_AS_OF');
  const asOf=options.as_of&&options.as_of<fetched?options.as_of:fetched;
  const frames=Object.fromEntries(TF_ORDER.map(tf=>[tf,closedFrame(data[tf],side,asOf)])) as Record<Timeframe,Frame>;
- const bases=TF_ORDER.map(tf=>{const frame=frames[tf],pivots=detectFractals(frame,3),fvg=detectFvg(frame);return {tf,frame,pivots,fvg};});
+ const bases=TF_ORDER.map(tf=>{const frame=frames[tf],pivots=detectFractals(frame,3),fvg=detectFvg(frame,'PA_ONLY');return {tf,frame,pivots,fvg};});
  const levels:KeyLevel[]=bases.flatMap(b=>[...pivotLevels(b.pivots),...b.fvg.levels].map(l=>{
   const origin=b.frame.bars.find(c=>c.end===l.confirmed_at),segment=b.frame.bars.filter(c=>c.segment===origin?.segment);
   return {...l,continuity_end:origin?.segment===b.frame.bars.at(-1)?.segment?asOf:segment.at(-1)?.end??l.confirmed_at};
  }));
- for(const l of levels)if(l.kind==='FVG')l.fvg_test_steps=fvgTestTimeline(l,Object.values(frames));
+ for(const l of levels)if(l.kind==='FVG'){
+  l.fvg_test_steps=fvgTestTimeline(l,Object.values(frames));
+  l.invalidated_at=l.fvg_test_steps.find(step=>step.fraction===1)?.at??null;
+ }else if(l.kind==='FRACTAL'){
+  const eligibleFrames=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe));
+  const crossings=eligibleFrames.flatMap(tf=>frames[tf].bars.find(b=>
+   b.time>=l.confirmed_at&&(l.role==='support'?b.low<l.lower:b.high>l.upper))?.end??[]);
+  l.liquidity_taken_at=crossings.sort()[0]??null;
+ }
  const rows=bases.map(({tf,frame,pivots,fvg})=>{
   const context=levels.filter(l=>TF_ORDER.indexOf(l.timeframe)<=TF_ORDER.indexOf(tf));
   const explicit=selectRange(frame,pivots,options.ranges?.[tf]);
   const detected=detectDealingRange(frame,pivots,context);
   const {narrative_confirmed,significance,...dr}=detected;void narrative_confirmed;void significance;
-  const findings=[...pivots,...fvg.findings,...detectRaids(frame,pivots),...detectRejectionBlocks(frame,context),...detectSnr(frame,context,levels,false),...detectIdm(frame,pivots,context),...explicit.findings].map(observation);
+  const findings=[...pivots,...fvg.findings,...detectRaids(frame,pivots),...detectRejectionBlocks(frame,context,'PA_ONLY'),...detectSnr(frame,context,levels,false,'PA_ONLY'),...detectIdm(frame,pivots,context),...explicit.findings].map(observation);
   return {tf,frame,pivots,findings,dr,explicit};
  });
  const findings=rows.flatMap(r=>r.findings),detected=[...levels,...contextualLevels(findings)],byId=new Map(detected.map(l=>[l.id,l]));
- const through=frames.H4.bars.at(-1)?.end??asOf;
- const states=new Map(detected.map(l=>{
-  const state=assessLevel(l,frames,asOf,through);
-  if(l.kind==='RB'||l.kind==='SNR'){
-   const ownBreak=frames[l.timeframe].bars.find(b=>b.time>=l.confirmed_at&&b.end<=through&&(l.role==='support'?b.close<l.lower:b.close>l.upper));
-   if(ownBreak){state.state='INVALIDATED';state.invalidated_at=ownBreak.end;state.current_role=null;state.role_status='UNVERIFIED';}
-  }
-  return [l.id,state] as const;
- }));
+ const through=TF_ORDER.flatMap(tf=>frames[tf].bars.at(-1)?.end??[]).sort().at(-1)??asOf;
+ const states=new Map(detected.map(l=>[l.id,assessLevel(l,frames,asOf,through,'PA_ONLY')] as const));
  const evidence:PaEvidence[]=findings.map(f=>{
-  const l=byId.get(f.id),raw=states.get(f.id),role=raw?.role_status==='RETEST_CONFIRMED'?raw.current_role:null;
+  const l=byId.get(f.id),raw=states.get(f.id),role=l?.kind==='SNR'||l?.kind==='RB'||raw?.role_status==='RETEST_CONFIRMED'?raw?.current_role??null:null;
   // ORIGINAL_GEOMETRY is a formation description, never proven support/resistance.
   const lifecycle=raw?{...raw,current_role:role,counterarguments:raw.counterarguments.filter(s=>!/narrative|entry|target|stop|profit|risk|trade|probability/i.test(s))}:null;
-  const bounds=boundsOf(f,l),remaining=l&&raw&&l.kind==='FVG'?raw.fill?.remaining??null:bounds;
+  const bounds=boundsOf(f,l),remaining=raw?.state==='BROKEN'?null:l?.kind==='FVG'?raw?.fill?.remaining??null:bounds;
   return {...f,symbol:data.H4.symbol,price_side:side,bounds,remaining_bounds:remaining,formation_status:f.state==='NEEDS_SPECIFICATION'?'NEEDS_SPECIFICATION':'CONFIRMED',lifecycle,role_status:raw?.role_status??'UNVERIFIED',current_role:role,formation_role:l?.role??null,evaluated_through:through,limitations:[...new Set([...f.counterarguments,...frames[f.timeframe].warnings,...(raw?.counterarguments??[])])]};
  });
  const outputFrames=Object.fromEntries(rows.map(({tf,frame,findings,explicit})=>[tf,{timeframe:tf,grid:barGrid(data[tf]),as_of:asOf,data_quality:frame.status,warnings:frame.warnings,diagnostics:frame.diagnostics??[],last_closed_at:frame.bars.at(-1)?.end??null,closed_candles:frame.bars.length,ohlc:frame.bars,evidence_ids:findings.map(f=>f.id),calendar:calendarDiagnostics(data[tf]),ohlc_validation:verifyOhlc(data[tf],side,asOf),range_selection_error:options.ranges?.[tf]?explicit.reason:null}])) as Record<Timeframe,{timeframe:Timeframe;grid:BarGrid;as_of:string;data_quality:Frame['status'];warnings:string[];diagnostics:NonNullable<Frame['diagnostics']>;last_closed_at:string|null;closed_candles:number;ohlc:Bar[];evidence_ids:string[];calendar:ReturnType<typeof calendarDiagnostics>;ohlc_validation:ReturnType<typeof verifyOhlc>;range_selection_error:string|null}>;
@@ -121,7 +122,7 @@ export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSi
  return {schema_version:'pa-engine-v6' as const,mode:'PA_ONLY' as const,revision:PA_ENGINE_REVISION,symbol:data.H4.symbol,side,as_of:asOf,evaluated_through:through,input_sha256:fingerprint,frames:outputFrames,evidence,market_structure:marketStructure,
   dealing_ranges:rows.map(({tf,dr,explicit})=>({timeframe:tf,...dr,explicit_range:explicit.range,reference:{price:frames[tf].bars.at(-1)?.close??null,at:frames[tf].bars.at(-1)?.end??null,basis:'LAST_CLOSED_OWN_TF' as const},current_h4_position:dr.status==='ESTABLISHED'&&dr.current&&frames.H4.bars.length?(frames.H4.bars.at(-1)!.close<dr.current.lower||frames.H4.bars.at(-1)!.close>dr.current.upper?'OUTSIDE':frames.H4.bars.at(-1)!.close<dr.current.equilibrium?'DISCOUNT':frames.H4.bars.at(-1)!.close>dr.current.equilibrium?'PREMIUM':'EQUILIBRIUM'):null})),
   lifecycle_events:lifecycleEvents,cross_timeframe_interactions:interactions,coverage:{evidence_total:evidence.length,closed_candles_total:TF_ORDER.reduce((n,tf)=>n+frames[tf].bars.length,0),history_complete:false,scope:'FINITE_CLOSED_PROVIDER_WINDOW',interaction_history:'SUMMARY_EVENTS; FULL_OBSERVED_CONTACTS_BY_EVIDENCE_ID'},warnings,omitted:{evidence:0,ohlc:0,interaction_history:'FULL_CONTACTS_REQUIRE_EVIDENCE_DETAIL'},data_quality:TF_ORDER.some(tf=>frames[tf].status==='UNVERIFIED')?'UNVERIFIED':'PARTIAL',
-  definitions:{fractal:'AUTHOR_FRACTAL_3_ONLY',idm:'NEEDS_SPECIFICATION',compression_lrl:'NEEDS_SPECIFICATION',approach_character:'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION',strong_high_low:'NEEDS_SPECIFICATION',internal_external_liquidity:'GEOMETRIC_POSITION_RELATIVE_TO_ESTABLISHED_DR_ONLY',significance:'NOT_EVALUATED',numerical_strength_thresholds:'DISABLED',independent_ohlc_price_validation:'NOT_AVAILABLE'},trading_enabled:false};
+  definitions:{fractal:'AUTHOR_FRACTAL_3_ONLY',idm:'FRACTAL_INSIDE_ACTIVE_DR',compression_lrl:'NEEDS_SPECIFICATION',approach_character:'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION',strong_high_low:'RULEBOOK_Q10',internal_external_liquidity:'GEOMETRIC_POSITION_RELATIVE_TO_ESTABLISHED_DR_ONLY',significance:'NOT_EVALUATED',numerical_strength_thresholds:'DISABLED',independent_ohlc_price_validation:'NOT_AVAILABLE'},trading_enabled:false};
 }
 export type PaEngine=ReturnType<typeof buildPaEngine>;
 

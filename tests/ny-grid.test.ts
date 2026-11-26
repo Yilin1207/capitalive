@@ -102,7 +102,7 @@ test('grid parameter: ny is the default, utc is explicit, invalid grid is reject
  const report=await (await paHttp(r('/api/desk-report','symbol=EU50'),'report',ny)).json();
  assert.equal(report.grid.requested,'ny');assert.equal(report.frames.D1.grid,'ny');assert.ok(report.frames.H4.ohlc_path.includes('grid=ny'));
  const page=await (await paHttp(r('/api/pa-candles','symbol=EU50&timeframe=H4&latest=2'),'candles',ny)).json();
- assert.equal(page.grid.by_tf.H4,'ny');assert.equal(page.last_closed_at_by_tf.H4,page.last_closed_at);assert.equal(page.engine.revision,'pa-only-6.0.0');
+ assert.equal(page.grid.by_tf.H4,'ny');assert.equal(page.last_closed_at_by_tf.H4,page.last_closed_at);assert.equal(page.engine.revision,'pa-only-6.1.0');
  asked.length=0;
  const utc=await (await paHttp(r('/api/brief','symbol=EU50&grid=utc'),'brief',grid(undefined))).json();
  assert.deepEqual(asked,['MN1:utc','W1:utc','D1:utc','H4:utc']);assert.equal(utc.grid.requested,'utc');assert.equal(utc.grid.by_tf.H4,'utc');
