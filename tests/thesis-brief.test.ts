@@ -1,9 +1,16 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {paHttp} from '../lib/pa-engine/http';
+import {snapshotHash} from '../lib/pa-engine/report';
+import {buildPaEngine} from '../lib/pa-engine/core';
 import {validatePaBrief} from '../lib/pa-engine/contract';
 import {syntheticMarket} from './fixtures/jp225-synthetic';
 import type {Timeframe} from '../lib/candle-data';
+
+test('an evidence page pin cannot cross deployments with different PA rules',()=>{
+  const f=syntheticMarket('EURUSD'), core=buildPaEngine(f.data,'bid');
+  assert.notEqual(snapshotHash(core,'a'.repeat(40)),snapshotHash(core,'b'.repeat(40)));
+});
 
 for (const symbol of ['NAS100','EU50','EURUSD']) {
   test(`public brief exposes closed thesis inputs for ${symbol}`, async t => {

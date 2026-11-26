@@ -17,7 +17,7 @@ export function engineCommit(env:Record<string,string|undefined>=process.env):st
 }
 export const PA_TFS=['MN1','W1','D1','H4'] as const;
 export type PaEngine=ReturnType<typeof buildPaEngine>;
-export function snapshotHash(core:PaEngine){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,engine_revision:core.revision,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,grid:core.frames[tf].grid,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
+export function snapshotHash(core:PaEngine,commit:string|null=engineCommit()){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,engine_revision:core.revision,engine_commit:commit,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,grid:core.frames[tf].grid,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
 /** Grid fields shared by every PA response: requested grid and the grid each TF was actually built on. */
 export function gridInfo(core:Pick<PaEngine,'frames'>,requested:Grid){return {requested,by_tf:Object.fromEntries(PA_TFS.map(tf=>[tf,core.frames[tf].grid])) as Record<(typeof PA_TFS)[number],PaEngine['frames']['H4']['grid']>};}
 export function engineInfo(commit:string|null){return {contract:PA_CONTRACT,revision:PA_ENGINE_REVISION,commit};}
@@ -93,7 +93,7 @@ export function buildPaReport(core:PaEngine,data:Record<Timeframe,CandleResponse
  const h4=core.frames.H4.last_closed_at,expected=bucketStart(clock,'H4',core.frames.H4.grid==='ny'?'ny':'utc'),delay=h4&&Date.parse(h4)<expected?(clock-Date.parse(h4)-14400000)/1000:0;
  if(!h4||delay>policy.h4_delay_seconds&&!closedRegularInterval(core.symbol,Date.parse(h4),expected))reasons.push('H4_CLOSED_CANDLE_DELAY');
  const status=PA_TFS.some(tf=>!core.frames[tf].closed_candles)?'ERROR':reasons.length?'STALE':core.data_quality;
- const available=!['ERROR','STALE'].includes(status),snapshot=snapshotHash(core);
+ const available=!['ERROR','STALE'].includes(status),snapshot=snapshotHash(core,commit??engineCommit());
  const frames=Object.fromEntries(PA_TFS.map(tf=>{const f=core.frames[tf];return [tf,{timeframe:tf,grid:f.grid,data_quality:f.data_quality,warnings:f.warnings,last_closed_at:f.last_closed_at,closed_candles:f.closed_candles,as_of:f.as_of,fetched_at:data[tf].fetched_at,ohlc_validation:f.ohlc_validation,calendar:f.calendar,ohlc_path:`/api/pa-candles?symbol=${core.symbol}&side=${core.side}&timeframe=${tf}${g}&snapshot_sha256=${snapshot}`}];}));
  // Recency and rotating TF categories are display policies, never significance or direction scores.
  const groups=PA_TFS.flatMap(tf=>[...new Set(core.evidence.filter(e=>e.timeframe===tf).map(e=>e.kind))].map(kind=>core.evidence.filter(e=>e.timeframe===tf&&e.kind===kind).sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))));
