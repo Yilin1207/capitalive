@@ -8,7 +8,7 @@ export default function Home() {
     <main>
       <div className="eyebrow">MARKET DATA · READ ONLY</div>
       <h1>Capitalive 2.1</h1>
-      <p className="intro">Свечи Capital.com: MN1 · W1 · D1 · H4. Фракталы, диапазоны и FVG для {ACTIVE_RESEARCH_SYMBOLS.join(', ')}.</p>
+      <p className="intro">Свечи Capital.com: MN1 · W1 · D1 · H4 · H1. Фракталы, диапазоны и FVG для {ACTIVE_RESEARCH_SYMBOLS.join(', ')}.</p>
       <CandleChart instruments={ACTIVE_RESEARCH_SYMBOLS.map(symbol => ({ symbol, name: VERIFIED_MARKETS[symbol].name }))} />
       <nav className="api-links" aria-label="Public API">
         <a href="/knowledge">Knowledge Base · THE EDGE</a>

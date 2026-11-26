@@ -1,6 +1,6 @@
 import {remainingBounds,FVG_LIFECYCLE_REVISION} from './fvg-remaining';
 import type {Frame,Bar} from './data';
-import {TF_ORDER,type KeyLevel,type Finding,type LevelMethod} from './detectors';
+import {DETAIL_TFS,type KeyLevel,type Finding,type LevelMethod} from './detectors';
 import type {Timeframe} from '../candle-data';
 import {provenance} from './rules';
 import {closedRegularInterval} from '../research/calendars';
@@ -26,10 +26,10 @@ export function intervalCoverage(frames:Frame[],from:string,to:string){
 }
 export type FvgFill={state:'UNKNOWN'|'UNTOUCHED'|'TOUCHED'|'PARTIAL'|'FILLED';max_observed_fraction:number;first_test_at:string|null;last_test_at:string|null;revision?:typeof FVG_LIFECYCLE_REVISION;remaining?:{lower:number;upper:number}|null;fully_tested_at?:string|null};
 export function assessLevel(l:KeyLevel,all:Record<Timeframe,Frame>,asOf:string,through:string,method:LevelMethod='LEGACY'):LevelState & {fill:FvgFill|null}{
- const rank=TF_ORDER.indexOf(l.timeframe),eligible=TF_ORDER.slice(rank).map(tf=>all[tf]).filter(f=>f.side===l.side&&f.symbol===all[l.timeframe].symbol);
+ const rank=DETAIL_TFS.indexOf(l.timeframe),eligible=DETAIL_TFS.slice(rank).map(tf=>all[tf]).filter(f=>f && f.side===l.side&&f.symbol===all[l.timeframe].symbol);
  const frames=eligible.map(f=>({...f,bars:f.bars.filter(b=>b.time>=l.confirmed_at&&b.end<=f.as_of&&b.end<=asOf&&b.end<=through)}));
  const coverage=intervalCoverage(frames,l.confirmed_at,through);
- const observed=frames.flatMap(f=>f.bars.map(b=>({tf:f.timeframe,b}))).sort((a,b)=>a.b.end.localeCompare(b.b.end)||TF_ORDER.indexOf(a.tf)-TF_ORDER.indexOf(b.tf));
+ const observed=frames.flatMap(f=>f.bars.map(b=>({tf:f.timeframe,b}))).sort((a,b)=>a.b.end.localeCompare(b.b.end)||DETAIL_TFS.indexOf(a.tf)-DETAIL_TFS.indexOf(b.tf));
  const isFractal=l.kind==='FRACTAL',isFvg=l.kind==='FVG';
  const rulebookZone=method==='PA_ONLY'&&(l.kind==='SNR'||l.kind==='RB');
  const ownBreak=observed.find(({tf,b})=>tf===l.timeframe&&broken(b,l,l.role));
@@ -54,7 +54,7 @@ export function assessLevel(l:KeyLevel,all:Record<Timeframe,Frame>,asOf:string,t
   if(method==='PA_ONLY'&&terminal&&b.end>terminal.b.end)break;
   const hit=intersects(b,l);
   if(hit&&!inside){tests++;if(!lastTest||b.end>lastTest.confirmed_at)lastTest=proof('TEST_EPISODE',f.timeframe,b);}inside=hit;
-  if(TF_ORDER.indexOf(f.timeframe)<=rank+1&&hit&&(l.role==='support'?b.open>=l.upper&&b.close>l.upper:b.open<=l.lower&&b.close<l.lower)&&(!reaction||b.end>reaction.confirmed_at)&&continuousAt(b.end))reaction=proof('CLOSED_REJECTION',f.timeframe,b);
+  if(DETAIL_TFS.indexOf(f.timeframe)<=rank+1&&hit&&(l.role==='support'?b.open>=l.upper&&b.close>l.upper:b.open<=l.lower&&b.close<l.lower)&&(!reaction||b.end>reaction.confirmed_at)&&continuousAt(b.end))reaction=proof('CLOSED_REJECTION',f.timeframe,b);
  }}
  const invalidated=!!terminal;
  const fillRows=isFvg?observations.filter(({b})=>(!terminal||b.end<=terminal.b.end)&&intersects(b,l)):[];

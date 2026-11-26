@@ -82,6 +82,14 @@ test("real route handlers and shared Capital transport (mock upstream only)", as
       }
       assert.equal(historyCalls, before);
     });
+    await t.test("opt-in H1 structure reads native HOUR bars", async () => {
+      const res = await structure(request("symbol=NAS100&h1=1"));
+      assert.equal(res.status, 200);
+      const body = await res.json();
+      assert.equal(historyUrls.at(-1)!.searchParams.get("resolution"), "HOUR");
+      assert.equal(body.metadata.H1.requested, 1);
+      assert.deepEqual(body.H1[0].close, { bid: 105, ask: 108 });
+    });
     await t.test("bad requests never contact upstream", async () => {
       const before = historyCalls;
       for (const query of ["symbol=INVALID", "symbol=__proto__", "timeframe=M1", "limit=1001", "limit=0", "limit=2.2"]) assert.equal((await candles(request(query))).status, 400);
@@ -90,7 +98,7 @@ test("real route handlers and shared Capital transport (mock upstream only)", as
     });
     await t.test("unsupported and empty timeframes return explicit errors, never H4", async () => {
       const before = historyCalls;
-      for (const timeframe of ["", "UNKNOWN", "MONTH", "M1", "H1", "MN2"]) {
+      for (const timeframe of ["", "UNKNOWN", "MONTH", "M1", "H2", "MN2"]) {
         const response = await candles(request(`timeframe=${timeframe}`));
         assert.equal(response.status, 400);
         const body = await response.json();

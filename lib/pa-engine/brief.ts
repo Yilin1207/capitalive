@@ -24,6 +24,7 @@ export function paLinks(origin:string,symbol:string,side:string,snapshot:string,
   brief:url('/api/brief',{}),
   desk_report:url('/api/desk-report',{}),
   market_context:url('/api/desk-report',{view:'market-context'}),
+  hourly:(path:string,asOf:string)=>url(path,{timeframe:'H1',as_of:asOf}),
   evidence:(tf?:string)=>url('/api/pa-evidence',{...(tf?{timeframe:tf}:{}),limit:'50',snapshot_sha256:snapshot}),
   candles:(tf:string)=>url('/api/pa-candles',{timeframe:tf,limit:'200',snapshot_sha256:snapshot}),
   thesis:(tf:string,section:string)=>url('/api/pa-evidence',{view:'thesis',timeframe:tf,section,snapshot_sha256:snapshot}),
@@ -76,7 +77,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},
   omitted:{levels:levelsOmitted,levels_size_trimmed:0,fact_details_size_trimmed:[] as string[],findings_not_listed:'ALL_FINDINGS_PAGINATED_VIA_LINKS'},
   definitions:core.definitions,
-  links:{self:link.brief,desk_report:link.desk_report,market_context:link.market_context,evidence_all:link.evidence(),...Object.fromEntries(PA_TFS.map(tf=>['thesis_idm_'+tf.toLowerCase(),link.thesis(tf,'idm')])),thesis_events_d1:link.thesis('D1','kl_events'),thesis_events_w1:link.thesis('W1','kl_events'),docs:link.docs},
+  links:{candles_h1:link.hourly('/api/pa-candles',core.as_of),evidence_h1:link.hourly('/api/pa-evidence',core.as_of),self:link.brief,desk_report:link.desk_report,market_context:link.market_context,evidence_all:link.evidence(),...Object.fromEntries(PA_TFS.map(tf=>['thesis_idm_'+tf.toLowerCase(),link.thesis(tf,'idm')])),thesis_events_d1:link.thesis('D1','kl_events'),thesis_events_w1:link.thesis('W1','kl_events'),docs:link.docs},
   trading_enabled:false as const,
  };
  // Size fallback 1: fact details yield before levels (counts and totals stay; listed in omitted).

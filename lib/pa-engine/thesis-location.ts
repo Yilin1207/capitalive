@@ -12,8 +12,8 @@ const round = (n:number) => Number(n.toFixed(10));
 const laterFirst = (a:{confirmed_at:string; id:string}, b:{confirmed_at:string; id:string}) =>
   b.confirmed_at.localeCompare(a.confirmed_at) || a.id.localeCompare(b.id);
 
-function byTf<T>(f:(tf:Timeframe) => T):Record<Timeframe,T> {
-  return Object.fromEntries(TF_ORDER.map(tf => [tf,f(tf)])) as Record<Timeframe,T>;
+function byTf<T>(f:(tf:Timeframe) => T, order:Timeframe[]=TF_ORDER):Record<Timeframe,T> {
+  return Object.fromEntries(order.map(tf => [tf,f(tf)])) as Record<Timeframe,T>;
 }
 
 function segmentAt(core:PaEngine, tf:Timeframe, at:string) {
@@ -64,13 +64,14 @@ export function thesisRanges(core:PaEngine) {
 }
 
 function currentLevels(core:PaEngine, at:string) {
-  const segments = byTf(tf => segmentAt(core,tf,at));
-  const confirmations = byTf(tf => new Set(core.frames[tf].ohlc.filter(b => b.segment === segments[tf] && b.end <= at).map(b => b.end)));
+  const order = Object.values(core.frames).map(frame => frame.timeframe);
+  const segments = byTf(tf => segmentAt(core,tf,at),order);
+  const confirmations = byTf(tf => new Set(core.frames[tf].ohlc.filter(b => b.segment === segments[tf] && b.end <= at).map(b => b.end)),order);
   const levels:Level[] = [];
   for (const e of core.evidence) {
     const s = e.lifecycle;
     if (!['FRACTAL','FVG','SNR_CLOSED_BREAK','RB_TWO_CANDLE'].includes(e.kind) || !s ||
-        e.formation_status !== 'CONFIRMED' || !confirmations[e.timeframe].has(e.confirmed_at) ||
+        e.formation_status !== 'CONFIRMED' || !confirmations[e.timeframe]?.has(e.confirmed_at) ||
         s.evaluated_through !== at || s.coverage !== 'COMPLETE_OBSERVED_INTERVAL' ||
         s.liquidity_consumed || s.invalidated_at || (e.current_role && e.current_role !== e.formation_role)) continue;
     // A test leaves an RB or SNR eligible until a strict own-timeframe close breaks it.
@@ -115,7 +116,8 @@ function relatedLevels(levels:Level[], test:(level:Level) => boolean) {
 }
 
 function idm(core:PaEngine, tf:Timeframe, at:string|null, range:ReturnType<typeof activeThesisRange>, levels:Level[], evidence:Map<string,PaEvidence>) {
-  const child = TF_ORDER[TF_ORDER.indexOf(tf)+1];
+  const order = Object.values(core.frames).map(frame => frame.timeframe);
+  const child = order[order.indexOf(tf)+1];
   const zones = levels.filter(l => l.e.timeframe === tf && l.upper > l.lower && l.e.kind !== 'FRACTAL');
   const members = [];
   for (const source of child ? [tf,child] : [tf]) {
@@ -135,7 +137,7 @@ function idm(core:PaEngine, tf:Timeframe, at:string|null, range:ReturnType<typeo
 
 /** Unabridged rows for the same TF and immediate child reported in execution.idm[tf]. */
 export function idmItems(core:PaEngine,tf:Timeframe) {
-  const ref = core.frames.H4.ohlc.findLast(b => b.end <= core.as_of);
+  const ref = (tf==='H1'?core.frames.H1:core.frames.H4).ohlc.findLast(b => b.end <= core.as_of);
   if (!ref) return [];
   const at = core.evaluated_through;
   const range = activeThesisRange(core,tf,at,ref.close);

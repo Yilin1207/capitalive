@@ -17,7 +17,7 @@ export function engineCommit(env:Record<string,string|undefined>=process.env):st
 }
 export const PA_TFS=['MN1','W1','D1','H4'] as const;
 export type PaEngine=ReturnType<typeof buildPaEngine>;
-export function snapshotHash(core:PaEngine,commit:string|null=engineCommit()){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,engine_revision:core.revision,engine_commit:commit,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,grid:core.frames[tf].grid,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
+export function snapshotHash(core:PaEngine,commit:string|null=engineCommit()){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,engine_revision:core.revision,engine_commit:commit,symbol:core.symbol,side:core.side,frames:Object.values(core.frames).map(f=>({tf:f.timeframe,grid:f.grid,ohlc:f.ohlc,warnings:f.warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
 /** Grid fields shared by every PA response: requested grid and the grid each TF was actually built on. */
 export function gridInfo(core:Pick<PaEngine,'frames'>,requested:Grid){return {requested,by_tf:Object.fromEntries(PA_TFS.map(tf=>[tf,core.frames[tf].grid])) as Record<(typeof PA_TFS)[number],PaEngine['frames']['H4']['grid']>};}
 export function engineInfo(commit:string|null){return {contract:PA_CONTRACT,revision:PA_ENGINE_REVISION,commit};}

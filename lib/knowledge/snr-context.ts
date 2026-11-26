@@ -3,7 +3,7 @@ import type {Bar,Frame} from './data';
 import type {KeyLevel} from './detectors';
 
 export const SNR_REVISION='snr-formation-context-2';
-const order=['MN1','W1','D1','H4'];
+const order=['MN1','W1','D1','H4','H1'];
 /** Measurements stop at the FIRST closed break. Later retests never strengthen
  * the historical formation. These are author-method observations, not odds. */
 export function snrFormationContext(frame:Frame,origin:Bar,second:Bar,delivery:Bar|undefined,breakout:Bar,level:number,bullish:boolean,context:KeyLevel[],lowerLevels:KeyLevel[],includeStrength=true){

@@ -6,7 +6,7 @@ import type {PaEngine, PaEvidence} from './core';
 import {activeThesisRange} from './thesis-location';
 import {THESIS_OBSERVATION_CONFIG} from './thesis-observation-config';
 
-const TIMEFRAMES = ['MN1','W1','D1','H4'] as const;
+const TIMEFRAMES:readonly Timeframe[] = ['MN1','W1','D1','H4'];
 type ObservedTf = 'D1' | 'W1';
 export type ThesisEventSection = 'kl_events'|'new_rb'|'new_snr'|'new_fractal3'|'strong_near_price';
 const ITEM_LIMIT = 3;

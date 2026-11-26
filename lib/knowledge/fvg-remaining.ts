@@ -2,7 +2,7 @@ import type {KeyLevel} from './detectors';
 import type {Frame} from './data';
 export const FVG_LIFECYCLE_REVISION='fvg-unfilled-1';
 export type FvgTestStep={at:string;fraction:number};
-const order=['MN1','W1','D1','H4'];
+const order=['MN1','W1','D1','H4','H1'];
 export function remainingBounds(l:Pick<KeyLevel,'lower'|'upper'|'role'>,fraction:number){
   if(fraction>=1)return null;
   return l.role==='support'?{lower:l.lower,upper:l.upper-(l.upper-l.lower)*fraction}:{lower:l.lower+(l.upper-l.lower)*fraction,upper:l.upper};

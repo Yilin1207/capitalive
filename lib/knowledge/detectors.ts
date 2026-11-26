@@ -5,6 +5,7 @@ import type { Timeframe } from "../candle-data";
 import { provenance } from "./rules";
 import {snrFormationContext} from "./snr-context";
 export const TF_ORDER: Timeframe[] = ["MN1", "W1", "D1", "H4"];
+export const DETAIL_TFS: Timeframe[] = [...TF_ORDER, "H1"];
 export type LevelMethod = 'LEGACY' | 'PA_ONLY';
 export type Finding = {
   id: string;
@@ -293,7 +294,7 @@ export function knownLevel(level: KeyLevel, b: Bar, frame: Frame) {
     level.confirmed_at <= b.time &&
     (!level.invalidated_at || level.invalidated_at > b.time) &&
     (!level.continuity_end || b.end <= level.continuity_end) &&
-    TF_ORDER.indexOf(level.timeframe) <= TF_ORDER.indexOf(frame.timeframe)
+    DETAIL_TFS.indexOf(level.timeframe) <= DETAIL_TFS.indexOf(frame.timeframe)
   );
 }
 const hit = (b: Bar, l: KeyLevel) => b.high >= l.lower && b.low <= l.upper;
@@ -323,7 +324,7 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[], method:
       const reclaimed=up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower;
       return raid&&reclaimed&&(kl.kind==='FVG'||unsweptAt(kl,a,frame));
     })
-      .sort((x,y)=>TF_ORDER.indexOf(x.timeframe)-TF_ORDER.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
+      .sort((x,y)=>DETAIL_TFS.indexOf(x.timeframe)-DETAIL_TFS.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
     // A strict, reclaimed liquidity raid is stronger than an FVG-only interaction (both need body closes beyond the KL).
     const raid=eligible.find(l=>l.kind==='FRACTAL'),fvg=eligible.find(l=>l.kind==='FVG');
     for (const kl of eligible) {
@@ -400,7 +401,7 @@ export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLev
       const available=context.map(l=>levelAt(l,candidate.time))
         .filter((l):l is KeyLevel=>!!l&&eligible(l,candidate));
       if(!available.length)continue;
-      kl=available.sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
+      kl=available.sort((a,b)=>DETAIL_TFS.indexOf(a.timeframe)-DETAIL_TFS.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
       delivery=candidate;
       break;
     }
@@ -423,7 +424,7 @@ export function detectIdm(frame: Frame, pivots: Pivot[], pois: KeyLevel[]) {
     for (const sourcePoi of pois) {
       const poi=levelAt(sourcePoi,p.candle_evidence[0]?.time??p.origin);if(!poi)continue;
       const gap =
-        TF_ORDER.indexOf(frame.timeframe) - TF_ORDER.indexOf(poi.timeframe);
+        DETAIL_TFS.indexOf(frame.timeframe) - DETAIL_TFS.indexOf(poi.timeframe);
       if (
         !poi.qualified ||
         !Number.isFinite(poi.lower) ||

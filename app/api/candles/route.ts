@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     const symbol = historySymbol(params);
     const timeframe = (params.get("timeframe") ?? "H4").toUpperCase() as Timeframe;
-    if (!TIMEFRAMES.includes(timeframe)) throw new HistoryError("INVALID_TIMEFRAME", "Supported timeframes: MN1, W1, D1, H4", 400);
+    if (!TIMEFRAMES.includes(timeframe)) throw new HistoryError("INVALID_TIMEFRAME", "Supported timeframes: MN1, W1, D1, H4, H1", 400);
     let limit: number;
     try { limit = parseLimit(params.get("limit"), HISTORY[timeframe].limit); }
     catch { throw new HistoryError("INVALID_LIMIT", "limit must be an integer from 1 to 1000", 400); }

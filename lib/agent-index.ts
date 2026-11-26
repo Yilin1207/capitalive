@@ -10,15 +10,18 @@ export function agentIndex(origin:string){
   market_context:q('/api/desk-report',{symbol,view:'market-context'}),
   evidence_h4:q('/api/pa-evidence',{symbol,timeframe:'H4',limit:'50'}),
   evidence_d1:q('/api/pa-evidence',{symbol,timeframe:'D1',limit:'50'}),
+  candles_h1:q('/api/pa-candles',{symbol,timeframe:'H1',latest:'20'}),
+  evidence_h1:q('/api/pa-evidence',{symbol,timeframe:'H1'}),
+  structure_h1:q('/api/pa-evidence',{symbol,timeframe:'H1',view:'structure'}),
   candles_h4:q('/api/pa-candles',{symbol,timeframe:'H4',limit:'200'}),
   candles_d1:q('/api/pa-candles',{symbol,timeframe:'D1',limit:'200'}),
   structure_h4:q('/api/pa-evidence',{symbol,view:'structure',timeframe:'H4'}),
  }]));
  return {
   service:'Capitalive',schema_version:'agent-index-v1',mode:'PA_ONLY',trading_enabled:false,
-  description:'Technical Price Action evidence (THE EDGE rules) from Capital.com Bid/Ask CFD candles on closed MN1/W1/D1/H4 bars. No narrative, direction, entries, stops, targets, probabilities or scores.',
+  description:'Technical Price Action evidence (THE EDGE rules) from Capital.com Bid/Ask CFD candles on closed MN1/W1/D1/H4 bars with on-demand H1 execution detail. No narrative, direction, entries, stops, targets, probabilities or scores.',
   start_here:'Fetch markets.<SYMBOL>.brief first. It has the quote, freshness, per-timeframe last closed candles, dealing range, nearest active levels and recent fractals, each with absolute drill-down URLs.',
-  symbols:[...ACTIVE_RESEARCH_SYMBOLS],timeframes:['MN1','W1','D1','H4'],price_sides:['bid','ask'],
+  symbols:[...ACTIVE_RESEARCH_SYMBOLS],timeframes:['MN1','W1','D1','H4','H1'],price_sides:['bid','ask'],
   markets,
   docs:`${origin}/llms.txt`,
   rules:[
@@ -38,6 +41,9 @@ export function llmsText(origin:string){
 - Brief, Ask side: ${m.brief_ask}
 - Full desk report (≤64 KB): ${m.desk_report}
 - Market context (VIX CFD, client sentiment, realized volatility): ${m.market_context}
+- H1 execution detail (native Capital.com HOUR, UTC): ${m.candles_h1}
+- H1 PA evidence: ${m.evidence_h1}
+- H1 structure: ${m.structure_h1}
 - All H4 findings: ${m.evidence_h4}
 - All D1 findings: ${m.evidence_d1}
 - H4 closed candles: ${m.candles_h4}
@@ -70,7 +76,7 @@ ${index.symbols.map(market).join('\n\n')}
 ## Parameters
 - symbol: ${index.symbols.join(' | ')}
 - side: bid (default) | ask
-- timeframe: MN1 | W1 | D1 | H4
+- timeframe: MN1 | W1 | D1 | H4 | H1. H1 detail pages have their own snapshot. Follow links.next or retain timeframe=H1 with the H1 snapshot for lookup by id.
 - grid: ny (default; H4 and D1 close at 17:00 America/New_York, DST-aware, built from Capital.com HOUR bars; Sunday 17:00 ET opens Monday's D1) | utc (provider UTC grid: H4 00/04/08..., D1 00:00 UTC). W1 = Sunday-open to Friday-close week, MN1 = UTC calendar month on both grids. "grid.by_tf" in every response states the grid actually used per timeframe.
 - pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, BROKEN, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions|thesis; use the brief links thesis_events_d1/w1 or thesis_idm_<tf> and follow links.next. Thesis sections: idm, kl_events, new_rb, new_snr, new_fractal3, strong_near_price
 - brief: latest=N (last N closed candles per TF, 1-50, default 5); symbols=NAS100,EU50,EURUSD returns all briefs in one response ("briefs".<SYMBOL>, "results".<SYMBOL>.http_status/snapshot_sha256, "batch_sha256"), loaded one after another on the server - use it instead of parallel requests. A failed symbol stays visible as its error; status = worst symbol status.

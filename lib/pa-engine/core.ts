@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import type {CandleResponse,PriceSide,Timeframe} from '../candle-data';
 import {closedFrame,type Frame,type Bar} from '../knowledge/data';
-import {TF_ORDER,detectFractals,detectFvg,detectRaids,detectRejectionBlocks,detectSnr,detectIdm,selectRange,pivotLevels,type Finding,type KeyLevel} from '../knowledge/detectors';
+import {TF_ORDER,DETAIL_TFS,detectFractals,detectFvg,detectRaids,detectRejectionBlocks,detectSnr,detectIdm,selectRange,pivotLevels,type Finding,type KeyLevel} from '../knowledge/detectors';
 import {detectDealingRange} from '../knowledge/dealing-range';
 import {assessLevel,contextualLevels,type LevelState} from '../knowledge/level-state';
 import {fvgTestTimeline} from '../knowledge/fvg-remaining';
@@ -25,7 +25,7 @@ const finite=(x:unknown):x is number=>typeof x==='number'&&Number.isFinite(x);
 export function verifyOhlc(data:CandleResponse,side:PriceSide,asOf:string){
  const failures:{time:string;reason:string}[]=[];
  const rows=data.candles;let previous=-Infinity;
- for(const c of rows){const t=Date.parse(c.time),date=new Date(t),end=data.timeframe==='MN1'?Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,1):t+({W1:604800,D1:86400,H4:14400}[data.timeframe])*1000;
+ for(const c of rows){const t=Date.parse(c.time),date=new Date(t),end=data.timeframe==='MN1'?Date.UTC(date.getUTCFullYear(),date.getUTCMonth()+1,1):t+({W1:604800,D1:86400,H4:14400,H1:3600}[data.timeframe])*1000;
   const o=c.open[side],h=c.high[side],l=c.low[side],v=c.close[side];
   if(!Number.isFinite(t)||t<=previous)failures.push({time:c.time,reason:'NON_INCREASING_OR_INVALID_TIME'});
   if(![o,h,l,v].every(x=>finite(x)&&x>0)||l!>Math.min(o!,v!)||h!<Math.max(o!,v!))failures.push({time:c.time,reason:'INVALID_OHLC_GEOMETRY'});
@@ -73,12 +73,13 @@ function swingSequence(pivots:ReturnType<typeof detectFractals>){
 
 /** All active PA analysis is composed here, without importing interpretation engines. */
 export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSide,options:PaOptions={}){
- if(!['bid','ask'].includes(side)||TF_ORDER.some(tf=>!data[tf]||data[tf].timeframe!==tf||data[tf].provider!=='Capital.com'||!Number.isFinite(Date.parse(data[tf].fetched_at)))||new Set(TF_ORDER.map(tf=>data[tf].symbol)).size!==1||new Set(TF_ORDER.map(tf=>data[tf].environment)).size!==1)throw Error('INVALID_DATASET_IDENTITY');
- const fetched=TF_ORDER.map(tf=>data[tf].fetched_at).sort()[0];
+ const order=data.H1?DETAIL_TFS:TF_ORDER;
+ if(!['bid','ask'].includes(side)||order.some(tf=>!data[tf]||data[tf].timeframe!==tf||data[tf].provider!=='Capital.com'||!Number.isFinite(Date.parse(data[tf].fetched_at)))||new Set(order.map(tf=>data[tf].symbol)).size!==1||new Set(order.map(tf=>data[tf].environment)).size!==1)throw Error('INVALID_DATASET_IDENTITY');
+ const fetched=order.map(tf=>data[tf].fetched_at).sort()[0];
  if(options.as_of&&!Number.isFinite(Date.parse(options.as_of)))throw Error('INVALID_AS_OF');
  const asOf=options.as_of&&options.as_of<fetched?options.as_of:fetched;
- const frames=Object.fromEntries(TF_ORDER.map(tf=>[tf,closedFrame(data[tf],side,asOf)])) as Record<Timeframe,Frame>;
- const bases=TF_ORDER.map(tf=>{const frame=frames[tf],pivots=detectFractals(frame,3),fvg=detectFvg(frame,'PA_ONLY');return {tf,frame,pivots,fvg};});
+ const frames=Object.fromEntries(order.map(tf=>[tf,closedFrame(data[tf],side,asOf)])) as Record<Timeframe,Frame>;
+ const bases=order.map(tf=>{const frame=frames[tf],pivots=detectFractals(frame,3),fvg=detectFvg(frame,'PA_ONLY');return {tf,frame,pivots,fvg};});
  const levels:KeyLevel[]=bases.flatMap(b=>[...pivotLevels(b.pivots),...b.fvg.levels].map(l=>{
   const origin=b.frame.bars.find(c=>c.end===l.confirmed_at),segment=b.frame.bars.filter(c=>c.segment===origin?.segment);
   return {...l,continuity_end:origin?.segment===b.frame.bars.at(-1)?.segment?asOf:segment.at(-1)?.end??l.confirmed_at};
@@ -87,13 +88,13 @@ export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSi
   l.fvg_test_steps=fvgTestTimeline(l,Object.values(frames));
   l.invalidated_at=l.fvg_test_steps.find(step=>step.fraction===1)?.at??null;
  }else if(l.kind==='FRACTAL'){
-  const eligibleFrames=TF_ORDER.slice(TF_ORDER.indexOf(l.timeframe));
+  const eligibleFrames=order.slice(order.indexOf(l.timeframe));
   const crossings=eligibleFrames.flatMap(tf=>frames[tf].bars.find(b=>
    b.time>=l.confirmed_at&&(l.role==='support'?b.low<l.lower:b.high>l.upper))?.end??[]);
   l.liquidity_taken_at=crossings.sort()[0]??null;
  }
  const rows=bases.map(({tf,frame,pivots,fvg})=>{
-  const context=levels.filter(l=>TF_ORDER.indexOf(l.timeframe)<=TF_ORDER.indexOf(tf));
+  const context=levels.filter(l=>order.indexOf(l.timeframe)<=order.indexOf(tf));
   const explicit=selectRange(frame,pivots,options.ranges?.[tf]);
   const detected=detectDealingRange(frame,pivots,context);
   const {narrative_confirmed,significance,...dr}=detected;void narrative_confirmed;void significance;
@@ -101,7 +102,7 @@ export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSi
   return {tf,frame,pivots,findings,dr,explicit};
  });
  const findings=rows.flatMap(r=>r.findings),detected=[...levels,...contextualLevels(findings)],byId=new Map(detected.map(l=>[l.id,l]));
- const through=TF_ORDER.flatMap(tf=>frames[tf].bars.at(-1)?.end??[]).sort().at(-1)??asOf;
+ const through=order.flatMap(tf=>frames[tf].bars.at(-1)?.end??[]).sort().at(-1)??asOf;
  const states=new Map(detected.map(l=>[l.id,assessLevel(l,frames,asOf,through,'PA_ONLY')] as const));
  const evidence:PaEvidence[]=findings.map(f=>{
   const l=byId.get(f.id),raw=states.get(f.id),role=l?.kind==='SNR'||l?.kind==='RB'||raw?.role_status==='RETEST_CONFIRMED'?raw?.current_role??null:null;
@@ -117,11 +118,11 @@ export function buildPaEngine(data:Record<Timeframe,CandleResponse>,side:PriceSi
   const id=f.facts[key];const target=typeof id==='string'?byId.get(id):null;
   return target&&target.timeframe!==f.timeframe?[{evidence_id:f.id,related_id:target.id,relationship:key,timeframe:f.timeframe,related_timeframe:target.timeframe,confirmed_at:f.confirmed_at}]:[];
  }));
- const warnings=[...new Set(TF_ORDER.flatMap(tf=>frames[tf].warnings))];
+ const warnings=[...new Set(order.flatMap(tf=>frames[tf].warnings))];
  const fingerprint=createHash('sha256').update(JSON.stringify({revision:PA_ENGINE_REVISION,side,as_of:asOf,frames:outputFrames,ranges:options.ranges??{}})).digest('hex');
  return {schema_version:'pa-engine-v6' as const,mode:'PA_ONLY' as const,revision:PA_ENGINE_REVISION,symbol:data.H4.symbol,side,as_of:asOf,evaluated_through:through,input_sha256:fingerprint,frames:outputFrames,evidence,market_structure:marketStructure,
   dealing_ranges:rows.map(({tf,dr,explicit})=>({timeframe:tf,...dr,explicit_range:explicit.range,reference:{price:frames[tf].bars.at(-1)?.close??null,at:frames[tf].bars.at(-1)?.end??null,basis:'LAST_CLOSED_OWN_TF' as const},current_h4_position:dr.status==='ESTABLISHED'&&dr.current&&frames.H4.bars.length?(frames.H4.bars.at(-1)!.close<dr.current.lower||frames.H4.bars.at(-1)!.close>dr.current.upper?'OUTSIDE':frames.H4.bars.at(-1)!.close<dr.current.equilibrium?'DISCOUNT':frames.H4.bars.at(-1)!.close>dr.current.equilibrium?'PREMIUM':'EQUILIBRIUM'):null})),
-  lifecycle_events:lifecycleEvents,cross_timeframe_interactions:interactions,coverage:{evidence_total:evidence.length,closed_candles_total:TF_ORDER.reduce((n,tf)=>n+frames[tf].bars.length,0),history_complete:false,scope:'FINITE_CLOSED_PROVIDER_WINDOW',interaction_history:'SUMMARY_EVENTS; FULL_OBSERVED_CONTACTS_BY_EVIDENCE_ID'},warnings,omitted:{evidence:0,ohlc:0,interaction_history:'FULL_CONTACTS_REQUIRE_EVIDENCE_DETAIL'},data_quality:TF_ORDER.some(tf=>frames[tf].status==='UNVERIFIED')?'UNVERIFIED':'PARTIAL',
+  lifecycle_events:lifecycleEvents,cross_timeframe_interactions:interactions,coverage:{evidence_total:evidence.length,closed_candles_total:order.reduce((n,tf)=>n+frames[tf].bars.length,0),history_complete:false,scope:'FINITE_CLOSED_PROVIDER_WINDOW',interaction_history:'SUMMARY_EVENTS; FULL_OBSERVED_CONTACTS_BY_EVIDENCE_ID'},warnings,omitted:{evidence:0,ohlc:0,interaction_history:'FULL_CONTACTS_REQUIRE_EVIDENCE_DETAIL'},data_quality:order.some(tf=>frames[tf].status==='UNVERIFIED')?'UNVERIFIED':'PARTIAL',
   definitions:{fractal:'AUTHOR_FRACTAL_3_ONLY',idm:'FRACTAL_INSIDE_ACTIVE_DR',compression_lrl:'NEEDS_SPECIFICATION',approach_character:'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION',strong_high_low:'RULEBOOK_Q10',internal_external_liquidity:'GEOMETRIC_POSITION_RELATIVE_TO_ESTABLISHED_DR_ONLY',significance:'NOT_EVALUATED',numerical_strength_thresholds:'DISABLED',independent_ohlc_price_validation:'NOT_AVAILABLE'},trading_enabled:false};
 }
 export type PaEngine=ReturnType<typeof buildPaEngine>;
@@ -132,5 +133,6 @@ export function interactionsForEvidence(engine:PaEngine,id:string){
  const {lower,upper}=evidence.bounds;
  const beyond=(b:Bar)=>evidence.formation_role==='support'?b.low<lower:evidence.formation_role==='resistance'?b.high>upper:false;
  const closedBeyond=(b:Bar)=>evidence.formation_role==='support'?b.close<lower:evidence.formation_role==='resistance'?b.close>upper:false;
- return TF_ORDER.slice(TF_ORDER.indexOf(evidence.timeframe)).flatMap(tf=>engine.frames[tf].ohlc.filter(b=>b.time>=evidence.confirmed_at&&b.end<=engine.evaluated_through&&(b.high>=lower&&b.low<=upper||beyond(b))).map(b=>({evidence_id:id,timeframe:tf,time:b.time,confirmed_at:b.end,kind:beyond(b)?'STRICT_CROSSING':'CONTACT',own_timeframe:tf===evidence.timeframe,own_tf_close_breach:tf===evidence.timeframe&&closedBeyond(b),candle:{open:b.open,high:b.high,low:b.low,close:b.close},close_position:b.close<lower?'BELOW':b.close>upper?'ABOVE':'WITHIN',role_reversal_confirmed:false}))).sort((a,b)=>a.confirmed_at.localeCompare(b.confirmed_at)||TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe));
+ const order=engine.frames.H1?DETAIL_TFS:TF_ORDER;
+ return order.slice(order.indexOf(evidence.timeframe)).flatMap(tf=>engine.frames[tf].ohlc.filter(b=>b.time>=evidence.confirmed_at&&b.end<=engine.evaluated_through&&(b.high>=lower&&b.low<=upper||beyond(b))).map(b=>({evidence_id:id,timeframe:tf,time:b.time,confirmed_at:b.end,kind:beyond(b)?'STRICT_CROSSING':'CONTACT',own_timeframe:tf===evidence.timeframe,own_tf_close_breach:tf===evidence.timeframe&&closedBeyond(b),candle:{open:b.open,high:b.high,low:b.low,close:b.close},close_position:b.close<lower?'BELOW':b.close>upper?'ABOVE':'WITHIN',role_reversal_confirmed:false}))).sort((a,b)=>a.confirmed_at.localeCompare(b.confirmed_at)||order.indexOf(a.timeframe)-order.indexOf(b.timeframe));
 }
