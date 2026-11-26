@@ -22,7 +22,7 @@ function checkLevel(x:Record<string,any>,c:{symbol:string;side:string;tf:string;
  keys(x,'id ids kind lower upper bounds_basis state formation_status fill distance contexts'+(c.extra?' '+c.extra:''));
  const prefix=`${c.symbol}:${c.tf}:${c.side}:`;
  if(typeof x.id!=='string'||c.ids.has(x.id)||!x.id.startsWith(prefix)||!LEVEL_KINDS.includes(x.kind)||!finite(x.lower)||!finite(x.upper)||x.lower>x.upper||!finite(x.distance)||x.distance<0||x.distance<c.previous)fail();
- if(typeof x.state!=='string'||(x.state==='INVALIDATED'||x.state==='CONSUMED'&&x.kind!=='FRACTAL')||!['FVG_REMAINING','ORIGINAL'].includes(x.bounds_basis))fail();
+ if(typeof x.state!=='string'||(['BROKEN','INVALIDATED'].includes(x.state)||x.state==='CONSUMED'&&x.kind!=='FRACTAL')||!['FVG_REMAINING','ORIGINAL'].includes(x.bounds_basis))fail();
  if(x.kind==='FVG'?typeof x.fill!=='string'||x.fill==='FILLED':x.fill!==null||x.bounds_basis!=='ORIGINAL')fail();
  if(x.formation_status!==undefined&&!['CONFIRMED','NEEDS_SPECIFICATION'].includes(x.formation_status))fail();
  const members:string[]=x.ids===undefined?[x.id]:x.ids;
@@ -68,12 +68,42 @@ export const PA_BRIEF_SCHEMA='pa-brief-v1';
 export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[],maxBytes=65536):void{
  const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>maxBytes)throw Error('BRIEF_TOO_LARGE');
  assertPublishable(b,raw,secrets,'BRIEF');
- keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 approach_config selection_policy level_rules timeframes coverage omitted definitions links trading_enabled');
+ keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 approach_config selection_policy level_rules timeframes thesis_inputs coverage omitted definitions links trading_enabled');
  if(b.schema_version!==PA_BRIEF_SCHEMA||b.contract_revision!==PA_CONTRACT_REVISION||b.mode!=='PA_ONLY'||b.technical_only!==true||b.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(s=>s===b.symbol)||symbol&&b.symbol!==symbol||!['bid','ask'].includes(b.price_side)||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(b.status)||typeof b.observations_available!=='boolean')fail();
  if(!date(b.generated_at)||!date(b.as_of)||!date(b.expires_at)||b.as_of>b.generated_at||b.expires_at<b.generated_at||!/^[a-f0-9]{64}$/.test(b.snapshot_sha256)||obj(b.quote).used_as_closed_evidence!==false||!strings(b.warnings))fail();
  checkGrid(b.grid,b.timeframes);
  const withheld=['STALE','ERROR'].includes(b.status);
  if(withheld&&(b.observations_available||b.reference!==null))fail();
+ // Archived pa-brief-v1 snapshots may predate thesis_inputs.
+ if(b.thesis_inputs!==undefined){
+  const x=b.thesis_inputs;
+  if(!b.observations_available){if(x!==null)fail();}
+  else {
+   keys(x,'as_of location strength opposite_side execution');
+   if(x.as_of!==b.as_of||['location','strength','opposite_side','execution'].some(k=>!Object.keys(obj(x[k])).length))fail();
+   if(!Number.isInteger(x.strength.window_bars)||x.strength.window_bars<1||x.strength.thresholds!=='NEEDS_SPECIFICATION')fail();
+   for(const tf of ['D1','W1'])if(!Object.keys(obj(x.strength[tf])).length||!Object.keys(obj(x.opposite_side[tf])).length)fail();
+   const ranges=obj(x.location.active_dr);
+   if(Object.keys(ranges).sort().join(',')!=='D1,H4,MN1,W1')fail();
+   const priority=tfs.find(tf=>ranges[tf]!==null)??null;
+   if(priority!==x.location.priority_tf)fail();
+   for(const tf of tfs){
+    const d=ranges[tf];
+    if(d===null)continue;
+    if(!d||d.timeframe!==tf||d.htf_priority!==(tf===priority)||!finite(d.low)||!finite(d.high)||d.low>=d.high||!finite(d.eq)||Math.abs(d.eq-(d.low+d.high)/2)>1e-8||!['PREMIUM','DISCOUNT','EQ'].includes(d.zone)||!finite(d.price_position_pct)||d.price_position_pct<0||d.price_position_pct>100)fail();
+   }
+   for(const tf of ['D1','W1']){
+    const s=x.strength[tf], ratio=s.overlap_ratio;
+    if(!Number.isInteger(s.bars)||s.bars<0||s.bars>x.strength.window_bars||ratio!==null&&(!finite(ratio)||ratio<0||ratio>1))fail();
+   }
+   function checkFacts(v:unknown):void{
+    if(typeof v==='number'&&!finite(v))fail();
+    if(typeof v==='string'&&/^\d{4}-\d\d-\d\dT/.test(v)&&(!date(v)||v>b.as_of))fail();
+    if(v&&typeof v==='object')Object.values(v).forEach(checkFacts);
+   }
+   checkFacts(x);
+  }
+ }
  const limit=obj(b.level_rules).per_side_limit;if(!Number.isInteger(limit)||limit<1)fail();
  let ref=NaN;
  if(b.reference!==null){keys(b.reference,'price at basis');ref=b.reference.price;if(!finite(ref)||ref<=0||!date(b.reference.at)||b.reference.at>b.as_of||b.reference.basis!=='LAST_CLOSED_H4_CLOSE')fail();}
@@ -85,7 +115,7 @@ export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]
   for(const c of t.last_closed_candles){keys(c,'time closed_at open high low close');if(!date(c.time)||!date(c.closed_at)||c.time>=c.closed_at||c.closed_at>b.as_of||['open','high','low','close'].some(k=>!finite(c[k])||c[k]<=0)||c.low>Math.min(c.open,c.close)||c.high<Math.max(c.open,c.close))fail();}
   if(withheld&&(t.levels!==null||t.dealing_range!==null||t.recent_fractals!==null||t.findings_by_kind!==null||t.approach!=null||t.strong_fractals!=null||t.fractals_inside_kl!=null))fail();
   if(t.strong_fractals!=null&&(!Array.isArray(t.strong_fractals.items)||t.strong_fractals.items.some((x:Record<string,any>)=>!strings(x.flags)||!x.flags.length||x.flags.some((f:string)=>!['VC_AT_FRACTAL','RAIDED_PRIOR_FRACTAL'].includes(f))||typeof x.id!=='string'||!x.id.startsWith(`${b.symbol}:${tf}:${b.price_side}:FRACTAL:`))))fail();
-  if(t.fractals_inside_kl!=null&&(t.fractals_inside_kl.idm_status!=='NEEDS_SPECIFICATION'||!Array.isArray(t.fractals_inside_kl.items)))fail();
+  if(t.fractals_inside_kl!=null&&(!['SEE_ACTIVE_DR','NEEDS_SPECIFICATION'].includes(t.fractals_inside_kl.idm_status)||!Array.isArray(t.fractals_inside_kl.items)))fail();
   if(t.approach!=null&&!['EXPANSION_NO_CORRECTION','COMPRESSION','NONE','NOT_EVALUATED'].includes(t.approach.flag))fail();
   if(t.levels!==null){
    if(!finite(ref))fail();

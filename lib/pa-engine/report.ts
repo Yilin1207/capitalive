@@ -1,3 +1,4 @@
+import {thesisRanges} from './thesis-location';
 import {createHash} from 'node:crypto';
 import type {CandleResponse,Timeframe} from '../candle-data';
 import type {MarketQuote} from '../quote-normalization';
@@ -16,13 +17,13 @@ export function engineCommit(env:Record<string,string|undefined>=process.env):st
 }
 export const PA_TFS=['MN1','W1','D1','H4'] as const;
 export type PaEngine=ReturnType<typeof buildPaEngine>;
-export function snapshotHash(core:PaEngine){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,grid:core.frames[tf].grid,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
+export function snapshotHash(core:PaEngine){return createHash('sha256').update(JSON.stringify({revision:PA_CONTRACT,engine_revision:core.revision,symbol:core.symbol,side:core.side,frames:PA_TFS.map(tf=>({tf,grid:core.frames[tf].grid,ohlc:core.frames[tf].ohlc,warnings:core.frames[tf].warnings})),definitions:core.definitions,ranges:core.dealing_ranges.map(r=>({timeframe:r.timeframe,current:r.current,status:r.status,explicit:r.explicit_range}))})).digest('hex');}
 /** Grid fields shared by every PA response: requested grid and the grid each TF was actually built on. */
 export function gridInfo(core:Pick<PaEngine,'frames'>,requested:Grid){return {requested,by_tf:Object.fromEntries(PA_TFS.map(tf=>[tf,core.frames[tf].grid])) as Record<(typeof PA_TFS)[number],PaEngine['frames']['H4']['grid']>};}
 export function engineInfo(commit:string|null){return {contract:PA_CONTRACT,revision:PA_ENGINE_REVISION,commit};}
 export const NEARBY_PER_SIDE=3;
 export const NEARBY_KINDS=['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'] as const;
-export const NEARBY_EXCLUDED_STATES=['INVALIDATED'] as const;
+export const NEARBY_EXCLUDED_STATES=['INVALIDATED','BROKEN'] as const;
 /** Notion «Fractal Raid»: a raided fractal keeps its supply/demand zone; only its liquidity is consumed. Other consumed levels stay excluded. */
 export const NEARBY_EXCLUDED_EXTRA=['FVG_FILLED','CONSUMED_NON_FRACTAL'] as const;
 /** Evidence facts that name the known KL / POI a formation was observed at. */
@@ -98,12 +99,13 @@ export function buildPaReport(core:PaEngine,data:Record<Timeframe,CandleResponse
  const groups=PA_TFS.flatMap(tf=>[...new Set(core.evidence.filter(e=>e.timeframe===tf).map(e=>e.kind))].map(kind=>core.evidence.filter(e=>e.timeframe===tf&&e.kind===kind).sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))));
  const selected=available?groups.flatMap(g=>g.slice(0,1)):[];
  const nearby=nearbyLevels(core),nearbyBlock=available&&nearby?nearby.block:null,nearbyEligible=nearby?.eligible??0;
+ const q9=available?thesisRanges(core):null;
  const result={schema_version:'pa-engine-v6',contract_revision:PA_CONTRACT,mode:'PA_ONLY',technical_only:true,symbol:core.symbol,price_side:core.side,grid:gridInfo(core,grid),engine:engineInfo(commit),status,data_quality:core.data_quality,generated_at:now,as_of:core.as_of,published_at:null,expires_at:new Date(fresh?Math.min(clock+policy.delivery_seconds*1000,Date.parse(qt!)+policy.quote_seconds*1000):clock+policy.delivery_seconds*1000).toISOString(),error:status==='ERROR'?'UPSTREAM_UNAVAILABLE':null,
  source:{provider:'Capital.com',environment:data.H4.environment,analysis_schema:'pa-engine-v6',price_side:core.side,engine_commit:commit,evidence_sha256:snapshot,demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},snapshot_sha256:snapshot,
  quote:{bid:valid?quote.bid:null,ask:valid?quote.ask:null,spread:valid?quote.ask!-quote.bid!:null,provider_timestamp:qt,retrieved_at:qr,source_type:quote.source_type,market_status:quote.market_status,provider_age_seconds:age,fresh,used_as_closed_evidence:false},
  freshness:{quote_status:closed?'MARKET_CLOSED':fresh?'FRESH':'STALE',quote_retrieved_at:qr,data_quality:core.data_quality,stale_reasons:reasons,quote_max_seconds:policy.quote_seconds,h4_max_delay_seconds:policy.h4_delay_seconds,h4_delay_seconds:delay,source_age_seconds:sourceAge,delivery_max_seconds:policy.delivery_seconds},
  frames,evidence:selected,market_structure:available?Object.fromEntries(PA_TFS.map(tf=>[tf,{details_path:`/api/pa-evidence?view=structure&symbol=${core.symbol}&side=${core.side}&timeframe=${tf}${g}&snapshot_sha256=${snapshot}`}])):{},
- dealing_ranges:available?core.dealing_ranges.map(r=>({timeframe:r.timeframe,status:r.status,current:r.current?{lower:r.current.lower,upper:r.current.upper,equilibrium:r.current.equilibrium,confirmed_at:r.current.confirmed_at,high_id:r.current.high_id,low_id:r.current.low_id}:null,current_h4_position:r.current_h4_position,reference:r.reference,details_path:`/api/pa-evidence?view=structure&symbol=${core.symbol}&side=${core.side}&timeframe=${r.timeframe}${g}&snapshot_sha256=${snapshot}`})):[],lifecycle_events:[],cross_timeframe_interactions:[],nearby_levels:nearbyBlock,definitions:core.definitions,
+ dealing_ranges:available?core.dealing_ranges.map(r=>({timeframe:r.timeframe,active_dr:q9?.active_dr[r.timeframe]??null,htf_priority:q9?.priority_tf===r.timeframe,status:r.status,current:r.current?{lower:r.current.lower,upper:r.current.upper,equilibrium:r.current.equilibrium,confirmed_at:r.current.confirmed_at,high_id:r.current.high_id,low_id:r.current.low_id}:null,current_h4_position:r.current_h4_position,reference:r.reference,details_path:`/api/pa-evidence?view=structure&symbol=${core.symbol}&side=${core.side}&timeframe=${r.timeframe}${g}&snapshot_sha256=${snapshot}`})):[],lifecycle_events:[],cross_timeframe_interactions:[],nearby_levels:nearbyBlock,definitions:core.definitions,
  coverage:{...core.coverage,findings_total:core.evidence.length,findings_included:selected.length,findings_omitted:core.evidence.length-selected.length,all_findings_included:selected.length===core.evidence.length,selection_policy:'RECENT_PER_TF_TYPE_NOT_SIGNIFICANCE',observations_available:available,raw_ohlc_included:false},
  warnings:[...core.warnings,...reasons],omitted:{evidence:core.evidence.length-selected.length,ohlc:PA_TFS.reduce((n,tf)=>n+core.frames[tf].closed_candles,0),lifecycle_events:core.lifecycle_events.length,cross_timeframe_interactions:core.cross_timeframe_interactions.length,market_structure:true,range_history:true,nearby_levels:nearbyEligible-nearbyCount(nearbyBlock)},
  details:{market_context:`/api/desk-report?symbol=${core.symbol}&side=${core.side}&view=market-context${g}`,evidence:'/api/pa-evidence',ohlc:'/api/pa-candles',snapshot_sha256:snapshot},trading_enabled:false};

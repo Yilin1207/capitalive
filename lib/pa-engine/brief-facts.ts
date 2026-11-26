@@ -21,7 +21,7 @@ export function atrD1(core:Pick<PaEngine,'frames'>,period=ATR_D1_PERIOD){
 
 /** Live zones usable as containers: RB/SNR/FVG(unfilled remainder) that are not invalidated or consumed. */
 function liveZone(e:Evidence){
- const s=e.lifecycle;if(!s||!['FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(e.kind)||s.state==='INVALIDATED'||s.state==='CONSUMED')return null;
+ const s=e.lifecycle;if(!s||!['FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK'].includes(e.kind)||['INVALIDATED','BROKEN','CONSUMED'].includes(s.state))return null;
  const b=e.kind==='FVG'?e.remaining_bounds:e.bounds;
  if(!b||!(b.upper>b.lower)||e.kind==='FVG'&&(!s.fill||s.fill.state==='FILLED'||s.fill.max_observed_fraction>=1))return null;
  return b;
@@ -113,5 +113,5 @@ export function strongFractals(core:Core,tf:Tf,cap=3){
 export function fractalsInsideKl(core:Core,tf:Tf,cap=3){
  const rows=core.evidence.filter(e=>e.timeframe===tf&&e.kind==='FRACTAL_INSIDE_POI').map(e=>({id:String(e.facts.pivot_id),kl_id:String(e.facts.poi_id),tf_relation:String(e.facts.tf_relation),price:Number(e.facts.price),confirmed_at:e.confirmed_at}))
   .sort((a,b)=>b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id));
- return {total:rows.length,items:rows.slice(0,cap),idm_status:'NEEDS_SPECIFICATION' as const};
+ return {total:rows.length,items:rows.slice(0,cap),idm_status:'SEE_ACTIVE_DR' as const};
 }
