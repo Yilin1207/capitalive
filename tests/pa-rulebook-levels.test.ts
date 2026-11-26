@@ -13,6 +13,10 @@ function frame(rows:number[][],timeframe:Timeframe='H4',symbol='EURUSD'):Frame {
 }
 function snrs(f:Frame,context:KeyLevel[]=[]){return detectSnr(f,context,[],false,'PA_ONLY');}
 function rbs(f:Frame,context:KeyLevel[]){return detectRejectionBlocks(f,context,'PA_ONLY');}
+test('a bullish candle entirely beyond an earlier wrong-colour gap is not the SNR breakout',()=>{
+ const f=frame([[100,112,99,110],[110,111,103,104],[118,119,114,115],[115,120,114,119]]);
+ assert.ok(!snrs(f).some(x=>x.origin===f.bars[0].time));
+});
 function state(l:KeyLevel,f:Frame,through=f.as_of,lower?:Frame){
  const frames=Object.fromEntries(TF_ORDER.map(tf=>[tf,tf===f.timeframe?f:tf===lower?.timeframe?lower:{...f,timeframe:tf,bars:[]}])) as Record<Timeframe,Frame>;
  return assessLevel(l,frames,through,through,'PA_ONLY');

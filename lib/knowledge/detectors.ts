@@ -383,7 +383,13 @@ export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLev
     const near=a.close,far=rulebook?a.open:a.close;
     const lower=Math.min(near,far),upper=Math.max(near,far);
     const later=frame.bars.slice(i+1).filter(x=>x.segment===a.segment&&x.end<=frame.as_of);
-    const breakout=later.find(x=>bullish?x.close>near&&(!rulebook||x.close>x.open):x.close<near&&(!rulebook||x.close<x.open));
+    const breakout=later.find((x,j)=>{
+      if(!rulebook)return bullish?x.close>near:x.close<near;
+      const previousClose=j===0?b.close:later[j-1].close;
+      return bullish
+        ? x.close>x.open&&x.close>near&&Math.min(previousClose,x.open)<=near
+        : x.close<x.open&&x.close<near&&Math.max(previousClose,x.open)>=near;
+    });
     if(!breakout)continue;
     const eligible=(kl:KeyLevel,x:Bar)=>['FRACTAL','FVG'].includes(kl.kind)&&knownLevel(kl,x,frame)&&
       (rulebook||(!kl.invalidated_at||kl.invalidated_at>breakout.end)&&knownLevel(kl,breakout,frame))&&
