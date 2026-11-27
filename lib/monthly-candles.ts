@@ -23,10 +23,15 @@ export function aggregateMonths(daily: Candle[], fetchedAt: number, rejectedTime
       history_completeness: rejectedTimes.some(time => time === null || (Date.parse(time) >= start && Date.parse(time) < end))
         ? "partial_validation" : "unknown_sessions_not_verified",
     };
+    const sharedCompleteness=candle.history_completeness!;
+    const reconstructed=bars.filter(b=>b.source==='Capital.com HOUR_4'||b.source==='Capital.com HOUR').map(b=>b.time);
+    if(reconstructed.length){candle.source=bars.some(b=>b.source==='Capital.com HOUR')?'Capital.com DAY + intraday':'Capital.com DAY + HOUR_4';candle.reconstructed_daily_times=reconstructed;}
+    candle.history_completeness_by_side={bid:sharedCompleteness,ask:sharedCompleteness};
     for (const side of ["bid", "ask"] as PriceSide[]) {
       // A missing side anywhere makes that monthly side incomplete; never silently skip it.
       if (bars.some(bar => [bar.open, bar.high, bar.low, bar.close].some(price => price[side] === null))) {
         candle.history_completeness = "partial_validation";
+        candle.history_completeness_by_side![side]='partial_validation';
         continue;
       }
       candle.open[side] = bars[0].open[side];

@@ -1,0 +1,137 @@
+{
+  "preview": "https://capitalive-iklgm3vye-yilin1207s-projects.vercel.app",
+  "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+  "checks": [
+    {
+      "approach_levels": 9,
+      "approach_paths_checked": true,
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "bytes": 818742,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:25:50.793Z",
+      "snapshot": "3a77c392901ac6a1bc2ae49c422c2a01317c4bf1703d855c574a5dedc743674b",
+      "total": 232,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 11,
+      "closed_only": true
+    },
+    {
+      "approach_levels": 9,
+      "approach_paths_checked": true,
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "bytes": 842273,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:25:50.793Z",
+      "snapshot": "6268637398e57e20234c1cdef7270e58b29a72667576274b93b48f4450ce5026",
+      "total": 234,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 13,
+      "closed_only": true
+    },
+    {
+      "approach_levels": 9,
+      "approach_paths_checked": true,
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "bytes": 166458,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:25:55.939Z",
+      "snapshot": "34c465c21767151f585b6da01bd3ddbd21749ff3d9865a5cca83f4c881e50997",
+      "total": 211,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 13,
+      "closed_only": true
+    },
+    {
+      "approach_levels": 9,
+      "approach_paths_checked": true,
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "bytes": 166446,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:25:55.939Z",
+      "snapshot": "5edf7a2e4172821a8a08d44e6e41d5b180849c5f42600430c111b4f3f9928b14",
+      "total": 211,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 13,
+      "closed_only": true
+    },
+    {
+      "approach_levels": 10,
+      "approach_paths_checked": true,
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "bytes": 119931,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:25:58.275Z",
+      "snapshot": "0f6c43f77fe6058a5dc269d3524ff88aaaf467fc07772e07a1134098ff465caa",
+      "total": 152,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 10,
+      "closed_only": true
+    },
+    {
+      "approach_levels": 10,
+      "approach_paths_checked": true,
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "bytes": 119931,
+      "content_type": "application/json",
+      "as_of": "2026-11-16T19:27:06.479Z",
+      "snapshot": "1efcb200d8204e2a1bd67ee99c9e28e6ce62cacd92a290fd9919ea9c76b6c54a",
+      "total": 152,
+      "returned": 10,
+      "next_offset": 10,
+      "ohlc_windows": 10,
+      "closed_only": true
+    }
+  ],
+  "throttles": [
+    {
+      "http": 429,
+      "attempt": 0,
+      "delay_ms": 2000
+    }
+  ],
+  "wrong_hash_http": 409,
+  "missing_hash_http": 400,
+  "full": [
+    {
+      "symbol": "EURUSD",
+      "http": 200,
+      "bytes": 3554683,
+      "wire": "evidence-dictionary-2",
+      "findings": 1205,
+      "context_levels": 725
+    },
+    {
+      "symbol": "NAS100",
+      "http": 200,
+      "bytes": 2719405,
+      "wire": "evidence-dictionary-2",
+      "findings": 1123,
+      "context_levels": 638
+    },
+    {
+      "symbol": "JP225",
+      "http": 200,
+      "bytes": 2581465,
+      "wire": "evidence-dictionary-2",
+      "findings": 1084,
+      "context_levels": 619
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "checked_at": "2026-11-17T10:46:42.835Z",
+  "authorization": "User explicitly requested public site and API access without Vercel approval/login",
+  "before_sso": {
+    "deploymentType": "all_except_custom_domains"
+  },
+  "after_sso": null,
+  "production_before": "dpl_FJ8LtsSMBeYeX1NztGrV2o3aowCi",
+  "production_after": "dpl_FJ8LtsSMBeYeX1NztGrV2o3aowCi",
+  "production_unchanged": true,
+  "code_promoted": false,
+  "github_visibility_changed": false,
+  "web_retrieval": "INTERNAL_ERROR_NOT_VERIFIED",
+  "user_agent_probes": {
+    "page_http": 200,
+    "challenge": null,
+    "does_not_verify_openai_origin": true
+  }
+}

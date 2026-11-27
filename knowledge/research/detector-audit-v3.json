@@ -1,0 +1,43 @@
+{
+  "review_date": "2026-11-15",
+  "independence": "Code and source review by implementation agent; NOT independent expert adjudication",
+  "status_model": "basis DOCUMENTED/PROJECT_HYPOTHESIS is orthogonal to software TESTED; no rule is empirically VALIDATED",
+  "visual_evidence": "visual-review-v3.json: 23 original images inspected, in addition to 22 RB/SNR images in V2; remaining catalog images not claimed reviewed",
+  "sources": {
+    "fractal": "https://app.notion.com/p/419e05dadd18817692d6efb4d9a1db5d",
+    "fvg": "https://app.notion.com/p/419e05dadd18817abc57e446cd074bdc",
+    "rb": "https://app.notion.com/p/419e05dadd1881f68a6bd60a2e1d2cff",
+    "snr": "https://app.notion.com/p/419e05dadd1881c6a539fe10cf3ea892",
+    "raid": "https://app.notion.com/p/418e05dadd18811ba86bc816d4f1d2dc",
+    "dr": "https://app.notion.com/p/418e05dadd188105b1afc1a536f434e2",
+    "irl": "https://app.notion.com/p/418e05dadd1881a3965bfba58563ff9d",
+    "compression": "https://app.notion.com/p/418e05dadd188135bf68eb2f9066b094",
+    "narrative": "https://app.notion.com/p/418e05dadd18812aa4e7c5f3fbe3cebe",
+    "execution": "https://app.notion.com/p/418e05dadd18810a8ae7ef1c01be7232",
+    "personal_execution": "https://app.notion.com/p/a6ce05dadd1883deb64901c8937779e6",
+    "personal_order_flow": "https://app.notion.com/p/ccae05dadd18835cafe1013971d6dc56"
+  },
+  "detectors": [
+    {"concept":"Fractal 3","source":"fractal","basis":"DOCUMENTED","confirmation":"Third candle closed; strict middle extremum; equality excluded by project convention","test":"tests/knowledge-detectors.test.ts","limits":"No implication of strength or reversal"},
+    {"concept":"Fractal 5","source":"fractal","basis":"PROJECT_HYPOTHESIS","confirmation":"Fifth candle closed; never conflated with author 3-bar variant","test":"tests/knowledge-detectors.test.ts","limits":"Kept for compatibility; not attributed to THE EDGE"},
+    {"concept":"FVG/iFVG","source":"fvg,raid","basis":"DOCUMENTED","confirmation":"Outer wick non-overlap, middle directional body spanning interval; breach only after own-TF close beyond far boundary","test":"tests/knowledge-detectors.test.ts; tests/knowledge-v2.test.ts","limits":"Visual el03_03/04 supports geometry; el03_05/06 shows context-dependent roles. Breach does not prove inverse trading role or actual volume."},
+    {"concept":"RB","source":"rb","basis":"PROJECT_HYPOTHESIS","confirmation":"Two opposite candles at known KL; body junction outside KL","test":"tests/knowledge-detectors.test.ts","limits":"V2 images establish junction, not executable zone tolerance; candidate only"},
+    {"concept":"SNR","source":"snr","basis":"PROJECT_HYPOTHESIS","confirmation":"Origin then delivery into known KL then closed break; V3 rechecks KL still known at breakout","test":"tests/knowledge-detectors.test.ts","limits":"Unequal body junction band is project convention; no inferred successful retest"},
+    {"concept":"BOS/CHOCH","source":"fractal","basis":"PROJECT_HYPOTHESIS","confirmation":"First closed break of latest confirmed pivot, same segment","test":"tests/knowledge-detectors.test.ts","limits":"Project state machine, not fully specified author SOF"},
+    {"concept":"Liquidity Raid","source":"raid","basis":"DOCUMENTED","confirmation":"Strict wick crossing of previously confirmed fractal","test":"tests/knowledge-v2.test.ts","limits":"Equality is touch; wick raid does not establish role reversal or cancel HTF narrative"},
+    {"concept":"IDM","source":"fractal","basis":"PROJECT_HYPOTHESIS","confirmation":"Confirmed fractal inside already known X/X-1 POI","test":"tests/knowledge-detectors.test.ts","limits":"Near-zone distance undefined; no automatic entry"},
+    {"concept":"Strong High/Low","source":"fractal","basis":"PROJECT_HYPOTHESIS","confirmation":"Raid and matching directional RB/SNR involving pivot; V3 fixes opposite-polarity and opposite-direction false linkage","test":"tests/knowledge-detectors.test.ts","limits":"el04_07-10 depicts range to RB/SNR, not a guessed point stop. Zone bounds still unqualified."},
+    {"concept":"Dealing Range","source":"dr","basis":"DOCUMENTED","confirmation":"Explicit same-variant high/low IDs; EQ midpoint","test":"tests/knowledge-v3.test.ts; tests/browser/knowledge.spec.ts","limits":"V3 separates formation from current state: closed breakout stays invalid after return; new gap segment unverified"},
+    {"concept":"IRL","source":"irl","basis":"PROJECT_HYPOTHESIS","confirmation":"Internal confirmed pivots only after range and pivot both known","test":"tests/knowledge-detectors.test.ts","limits":"Geometry does not prove continuation; consumed state considered separately in level engine"},
+    {"concept":"Compression/LRL","source":"compression","basis":"PROJECT_HYPOTHESIS","confirmation":"Sequence observations only; classification NEEDS_SPECIFICATION","test":"tests/knowledge-detectors.test.ts","limits":"No invented minimum count, speed, contraction threshold or reversal signal"},
+    {"concept":"Displacement","source":"compression","basis":"PROJECT_HYPOTHESIS","confirmation":"Closed body/range measurements only","test":"tests/knowledge-detectors.test.ts","limits":"No invented ATR threshold; not independent confirmation of narrative"}
+  ],
+  "narrative_image_findings": [
+    "narrative_01-03 depicts A-to-B and Bullish/Bearish/Neutral with Monthly/Weekly structure.",
+    "narrative_04 does not mandate a fixed number of variables or all timeframes aligning; common examples are not numerical prerequisites.",
+    "narrative_05 asks location, A, B and additional evidence; no universal extra VC requirement.",
+    "narrative_06 discusses HTF, premium/discount, delivery and nested levels qualitatively.",
+    "narrative_07 identifies X/X-1 FVG/fractal targets; selection cannot be reduced to nearest distance."
+  ],
+  "unresolved": ["Historical reference labels pending user freeze; no Precision/Recall claimed", "Author SOF numerical criteria absent in reviewed personal Order Flow page", "Execution stop bounds for Strong/RB/SNR still require author specification", "Macroeconomic inputs not supplied; Macro Bias stays NOT_PROVIDED"]
+}

@@ -1,0 +1,12 @@
+.research-form { min-width: 0; overflow-wrap: anywhere; }
+.research-form fieldset { min-inline-size: 0; border: 1px solid #34445b; border-radius: 8px; padding: 16px; margin: 20px 0; }
+.research-form label { display: block; margin: 12px 0; }
+.research-form select, .research-form textarea, .research-form input { max-width: 100%; box-sizing: border-box; }
+.research-form select { display: block; width: 100%; min-width: 0; margin-top: 6px; }
+.research-form textarea { display: block; width: 100%; min-height: 80px; margin-top: 6px; background: #111a29; color: #e1e9f6; border: 1px solid #34445b; border-radius: 6px; padding: 10px; }
+.research-form input:not([type=checkbox]):not([type=file]) { display: block; width: 100%; max-width: 460px; margin-top: 6px; padding: 8px; background: #111a29; color: #e1e9f6; border: 1px solid #34445b; border-radius: 6px; }
+.research-form input[type=checkbox] { width: auto; margin-right: 8px; }
+.research-form button { margin: 6px 8px 6px 0; white-space: normal; }
+.research-form table { border-collapse: collapse; width: 100%; }
+.research-form th, .research-form td { padding: 6px 10px; text-align: left; border-bottom: 1px solid #34445b; }
+.research-form pre { max-width: 100%; white-space: pre-wrap; }

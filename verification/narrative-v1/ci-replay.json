@@ -1,0 +1,498 @@
+{
+  "run": 44133156953,
+  "closed_prefixes": 7290,
+  "rows": [
+    {
+      "set": "archive",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+      "as_of": "2026-11-12T09:53:10.052Z",
+      "closed_prefixes": 606,
+      "findings": 1044,
+      "report_bytes": 64115,
+      "report_sha256": "f88bf750272fc49dfd950ba1794b30a8d6057a3d76bf33f1a82871b9e96aee96",
+      "budget_tier": 3,
+      "wire_bytes": 3285838,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 2
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 1
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5826
+    },
+    {
+      "set": "archive",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+      "as_of": "2026-11-12T09:53:10.052Z",
+      "closed_prefixes": 606,
+      "findings": 1047,
+      "report_bytes": 63924,
+      "report_sha256": "dd220217b661d45b7c5505c2d8c2ef9290a22cd9813f34e6b9348aae80480d48",
+      "budget_tier": 3,
+      "wire_bytes": 3281973,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 2
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 1
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5140
+    },
+    {
+      "set": "archive",
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+      "as_of": "2026-11-12T09:53:06.051Z",
+      "closed_prefixes": 607,
+      "findings": 1080,
+      "report_bytes": 61323,
+      "report_sha256": "739410bae984d0fbe5a017262e614cf918637ad9ef63e522d3da4b4738ef60e1",
+      "budget_tier": 5,
+      "wire_bytes": 3262472,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 0
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 1
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5770
+    },
+    {
+      "set": "archive",
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+      "as_of": "2026-11-12T09:53:06.051Z",
+      "closed_prefixes": 607,
+      "findings": 1080,
+      "report_bytes": 61263,
+      "report_sha256": "aa725dacedd45e863f1834723ceffadd61e336ddc19d6e7634659e142ae95919",
+      "budget_tier": 5,
+      "wire_bytes": 3262363,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 0
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 1
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5491
+    },
+    {
+      "set": "archive",
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+      "as_of": "2026-11-12T09:53:12.708Z",
+      "closed_prefixes": 608,
+      "findings": 1075,
+      "report_bytes": 65226,
+      "report_sha256": "aa421b25542465bbf0d3aa2641f306ca2649328784c6474109d5476b3a338262",
+      "budget_tier": 4,
+      "wire_bytes": 3921071,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 1
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 6369
+    },
+    {
+      "set": "archive",
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+      "as_of": "2026-11-12T09:53:12.708Z",
+      "closed_prefixes": 608,
+      "findings": 1070,
+      "report_bytes": 63294,
+      "report_sha256": "a169e1ff88d51a85b51ff7bf90feae51de4b795a04b135e583baecf9abdd3fa5",
+      "budget_tier": 5,
+      "wire_bytes": 3902144,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 1
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 6169
+    },
+    {
+      "set": "control",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "closed_prefixes": 607,
+      "findings": 1052,
+      "report_bytes": 61743,
+      "report_sha256": "a55168474ad3206f8578db259fe5aec3b235512bd1d5d96e56aca12646f8ef24",
+      "budget_tier": 5,
+      "wire_bytes": 3852433,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 2
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5292
+    },
+    {
+      "set": "control",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "closed_prefixes": 607,
+      "findings": 1058,
+      "report_bytes": 61710,
+      "report_sha256": "0050fe1b97de80f38ff1f4dcc16e79a9b2cdde938f8add80a3d7b9591ed1dc53",
+      "budget_tier": 5,
+      "wire_bytes": 3865833,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 2
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5441
+    },
+    {
+      "set": "control",
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "closed_prefixes": 608,
+      "findings": 1092,
+      "report_bytes": 62127,
+      "report_sha256": "2e10ec4bc2b39258e707d1eb82090882a76fb994572f1a0a242923859fbe261c",
+      "budget_tier": 5,
+      "wire_bytes": 3441912,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 0
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 2
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5598
+    },
+    {
+      "set": "control",
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "closed_prefixes": 608,
+      "findings": 1092,
+      "report_bytes": 62101,
+      "report_sha256": "4cd7c4005ede6ffc9edcdc1463d332aa902a2435eaa0ecd43570fa1f5b22cbbe",
+      "budget_tier": 5,
+      "wire_bytes": 3441946,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 0
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 2
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5586
+    },
+    {
+      "set": "control",
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "closed_prefixes": 609,
+      "findings": 1078,
+      "report_bytes": 54620,
+      "report_sha256": "8cb5fcc4579a8a9aea1206b0d38249226997513090e63bbd653444f48b8b2d6c",
+      "budget_tier": 6,
+      "wire_bytes": 3934324,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 1
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 2
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 6255
+    },
+    {
+      "set": "control",
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "closed_prefixes": 609,
+      "findings": 1075,
+      "report_bytes": 55109,
+      "report_sha256": "b1f4c3b397054509ad4699630b7dc13a3da55d1a78820db2aee604da89ac78c8",
+      "budget_tier": 6,
+      "wire_bytes": 3926159,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 1
+        },
+        {
+          "tf": "W1",
+          "total": 1
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 2
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 6054
+    }
+  ]
+}

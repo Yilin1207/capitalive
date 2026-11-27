@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-11-16T07:49:21.893Z",
+  "source_main": "d7d1ec5ddebdbce2c90bd7f8c86657d00b9ba1c2",
+  "source_feature": "b26cdbc5d73a575a147bcf4379951e673b09f31e",
+  "pr2": {
+    "state": "open",
+    "merged": false
+  },
+  "bridge_base_url": "https://capitalive-ogpymvyfo-yilin1207s-projects.vercel.app",
+  "private_main": "bfe798e6f56b972ac174e4645550190144f53886"
+}

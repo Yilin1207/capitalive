@@ -1,0 +1,1 @@
+{"origin":"https://capitalive-foomifcsp-yilin1207s-projects.vercel.app","checks":47,"public_access":{"status":302,"content_type":"text/plain"},"production_target":"capitalive-2rnu3zimh-yilin1207s-projects.vercel.app","png_decoded":true,"all_blind_cutoffs_checked":true}

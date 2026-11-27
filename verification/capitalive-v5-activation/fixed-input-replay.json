@@ -1,0 +1,90 @@
+[
+  {
+    "symbol": "EURUSD",
+    "side": "bid",
+    "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+    "as_of": "2026-11-16T07:17:56.301Z",
+    "findings": 1204,
+    "fractals": 251,
+    "bytes": 47044,
+    "sha256": "4dc211773a935efcd4422da161ec45c02f7b6e2419e0bd704c97538cd2e31d99",
+    "controls": []
+  },
+  {
+    "symbol": "EURUSD",
+    "side": "ask",
+    "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+    "as_of": "2026-11-16T07:17:56.301Z",
+    "findings": 1210,
+    "fractals": 254,
+    "bytes": 46931,
+    "sha256": "c8ff1f03cff469250c1505242467f498c8217a79d3596046c97a3fed41ba67e4",
+    "controls": []
+  },
+  {
+    "symbol": "NAS100",
+    "side": "bid",
+    "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+    "as_of": "2026-11-16T07:17:59.382Z",
+    "findings": 1129,
+    "fractals": 243,
+    "bytes": 45453,
+    "sha256": "e4ba1fe22dfd71cf54d341bdd37be9901676e57308c8d889f023d648c6a37ea8",
+    "controls": [
+      {
+        "id": "NAS100:D1:bid:FVG:2026-11-10T00:00:00.000Z:",
+        "lower": 27097.8,
+        "upper": 27419.3,
+        "confirmed_at": "2026-11-11T00:00:00.000Z",
+        "state": "ACTIVE",
+        "coverage": "COMPLETE_OBSERVED_INTERVAL",
+        "coverage_gaps": [],
+        "coverage_closures": [
+          {
+            "from": "2026-11-14T00:00:00.000Z",
+            "to": "2026-11-15T00:00:00.000Z"
+          }
+        ],
+        "fill": {
+          "state": "UNTOUCHED",
+          "max_observed_fraction": 0,
+          "first_test_at": null,
+          "last_test_at": null
+        }
+      }
+    ]
+  },
+  {
+    "symbol": "NAS100",
+    "side": "ask",
+    "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+    "as_of": "2026-11-16T07:17:59.382Z",
+    "findings": 1129,
+    "fractals": 243,
+    "bytes": 45433,
+    "sha256": "42228b85fb38877aa8e3ae588443f68a8e35c7404f00c79d9c7ec292ee7858ab",
+    "controls": []
+  },
+  {
+    "symbol": "JP225",
+    "side": "bid",
+    "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+    "as_of": "2026-11-16T08:06:37.110Z",
+    "findings": 1085,
+    "fractals": 250,
+    "bytes": 37755,
+    "sha256": "d8f10dc9eb7bd6f8e4daa5ef4830e80d837bbf010a47a287391643fe47afb856",
+    "controls": []
+  },
+  {
+    "symbol": "JP225",
+    "side": "ask",
+    "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+    "as_of": "2026-11-16T08:06:37.110Z",
+    "findings": 1086,
+    "fractals": 250,
+    "bytes": 37755,
+    "sha256": "c211ef6d472d39497c6edc527c4a1348ca9127d18c55393e0ca6425eb3c581bf",
+    "controls": []
+  }
+]

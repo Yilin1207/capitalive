@@ -1,0 +1,33 @@
+✔ author three-bar and project five-bar pivots are distinct; ties and missing right bar reject (2.887ms)
+✔ FVG golden geometry requires three closed contiguous bars and body coverage; touching wicks are not gaps (1.1544ms)
+✔ iFVG closed breach is a candidate, not an invented confirmed opposite role (0.3749ms)
+✔ raid preserves equal touch separately; close beyond level does not require reclaim (0.3547ms)
+✔ RB textual golden: two opposite candles with rejection at already-known KL; lone rejection and future KL reject (0.5348ms)
+✔ SNR origin, KL delivery and closed breakout are independent of FVG (0.6125ms)
+✔ IDM inside only: correct X/X-1, not arbitrary near or future POI (0.4144ms)
+✔ strong pivot needs both raid and contextual two-candle VC, ordinary fractal is not strong (0.684ms)
+✔ BOS/CHOCH uses only pivots confirmed before break; repeated crossing consumed once (0.6089ms)
+✔ opposite closed break changes project BOS to CHOCH without inventing a narrative reversal (0.6125ms)
+✔ DR requires explicit IDs, EQ is midpoint, IRL remains internal geometry (0.9659ms)
+✔ Compression/LRL and Displacement expose measurements, never invented thresholds or reversal signals (0.7236ms)
+✔ Session Gap requires verified calendar and exact boundaries for spot/CFD/futures; wrong timezone rejects (23.8405ms)
+✔ Weekly and Monthly Open are provider-specific closed-period facts (0.2933ms)
+✔ data gate rejects incomplete/crossed OHLC, forming/future closure and preserves gap barriers (3.593ms)
+✔ prefix invariance: appending future bars cannot alter prior confirmed fractals/FVG/break events (0.4812ms)
+✔ V3 reviewed Bullish/Bearish scenario can confirm without extra VC or forced SOF alignment (15.6606ms)
+✔ V3 containment alone remains Candidate; human review cannot bypass missing data, target, C, range or stale hash (0.7288ms)
+✔ V3 neutral review stays separate from unconfirmed neutral fallback (0.5028ms)
+✔ V3 invalid geometric distractor does not suppress unique eligible target; explicit invalid target never falls back (0.4644ms)
+✔ V3 range returning inside after closed breakout is still invalid; unknown later segment cannot restore it (0.2291ms)
+✔ Blind pack: 18 cases, all closed before as_of, deterministic hashes, no algorithm outputs (98.5208ms)
+✔ Freeze validates human completion, immutable deep copy, case identity and no future annotation (2.2775ms)
+✔ Capital CFD schedule handles NY DST, shortened break, Sunday partial bucket and unknown historical maintenance (7.8291ms)
+✔ History overfetch stays bounded; monthly partial Ask does not discard independently valid Bid (1.2419ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 400.7253

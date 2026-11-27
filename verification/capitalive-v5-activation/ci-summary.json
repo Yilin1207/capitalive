@@ -1,0 +1,14 @@
+{
+  "commit": "83da1268ea0d250eebbdf076ecac8ccaf89619b7",
+  "run": "https://github.com/Yilin1207/capitalive/actions/runs/43929613425",
+  "conclusion": "success",
+  "unit_integration": 209,
+  "native_publisher": 12,
+  "playwright": 9,
+  "recorded_http": 23,
+  "snapshot_pages": 2,
+  "png_decoded": 2,
+  "v4_replay_cases": 12,
+  "closed_prefixes": 7290,
+  "fixed_current_markets_bid_ask": 6
+}

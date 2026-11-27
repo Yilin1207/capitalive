@@ -16,23 +16,34 @@ export function evaluateQuote(quote: MarketQuote, now = Date.now()): MarketQuote
     quote_quality: quote.bid === null || quote.ask === null ? "unavailable" : quoteQuality(quote.source_type, age !== null, fresh) };
 }
 
-export async function getAnalysisQuote(symbol: AnalysisSymbol) {
+export async function getAnalysisQuote(symbol: AnalysisSymbol, sources={getMarketSnapshot,getMarketSummaries,liveQuotes}, refresh = false) {
   const environment = capitalEnvironment();
   const scope = createHash("sha256").update([process.env.CAPITAL_API_BASE_URL, process.env.CAPITAL_IDENTIFIER, process.env.CAPITAL_API_KEY, process.env.CAPITAL_API_PASSWORD].join("\n")).digest("hex");
   const { value, hit } = await cache.get(`${scope}:${symbol}`, async () => {
     const context = createCapitalRequestContext(), epic = VERIFIED_MARKETS[symbol].epic;
     const [snapshot, summaries, streaming] = await Promise.allSettled([
-      getMarketSnapshot(epic, context).then(value => ({ value, receivedAt: new Date().toISOString() })),
-      getMarketSummaries([epic], context), liveQuotes([epic], context),
+      sources.getMarketSnapshot(epic, context).then(value => ({ value, receivedAt: new Date().toISOString() })),
+      sources.getMarketSummaries([epic], context), sources.liveQuotes([epic], context),
     ]);
     const now = Date.now(), retrieved = new Date(now).toISOString();
+    if(summaries.status==='rejected')console.warn(JSON.stringify({event:'analysis_quote_optional_failure',stage:'provider',code:'MARKETS_BATCH_UNAVAILABLE',critical:false}));
     const rest = snapshot.status === "fulfilled" ? normalizeQuote(symbol, epic, snapshot.value.value,
       summaries.status === "fulfilled" ? summaries.value[epic] : undefined, snapshot.value.receivedAt, now) : null;
     const tick = streaming.status === "fulfilled" ? streaming.value.quotes[epic] : undefined;
     const ws = tick ? normalizeStreamingQuote(symbol, tick, rest, now) : null;
-    const quote = ws ?? rest ?? unavailable(symbol, epic);
+    const row = summaries.status === "fulfilled" ? summaries.value[epic] : undefined;
+    const catalogue = row?.epic === epic ? normalizeQuote(symbol, epic, {
+      instrument: {epic, name: row.instrumentName}, snapshot: row,
+    }, row, retrieved, now) : null;
+    // Prices and provider time always come from the same observation.
+    const candidates = [ws, catalogue, rest].filter((q): q is MarketQuote =>
+      !!q && q.epic === epic && q.bid !== null && q.bid > 0 && q.ask !== null &&
+      (!q.quote_time || Date.parse(q.quote_time) <= now));
+    candidates.sort((a,b) => Number(b.fresh) - Number(a.fresh) ||
+      (Date.parse(b.quote_time ?? '') || 0) - (Date.parse(a.quote_time ?? '') || 0));
+    const quote = candidates[0] ?? unavailable(symbol, epic);
     return { ...quote, provider_timestamp: quote.quote_time, environment, fetched_at_utc: retrieved,
-      rest_fallback_reason: ws ? null : "no_valid_stream_tick_for_analysis" };
-  });
+      rest_fallback_reason: quote.source_type === "WEBSOCKET" ? null : "no_valid_stream_tick_for_analysis" };
+  }, Date.now(), refresh);
   return { ...evaluateQuote(value), cache_hit: hit, evaluated_at: new Date().toISOString() };
 }

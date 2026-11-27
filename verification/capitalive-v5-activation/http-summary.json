@@ -1,0 +1,548 @@
+{
+  "preview": "https://capitalive-iyzyi4yo2-yilin1207s-projects.vercel.app",
+  "engine_commit": "a78e5d89ef2c6666ec7cbdb9332918ddd320cbe1",
+  "checked_at": "2026-11-16T18:26:48.081Z",
+  "production_changed": false,
+  "sso_unauthenticated_http": 302,
+  "sso_setting": "all_except_custom_domains",
+  "chart": {
+    "http": 200,
+    "content_type": "image/png",
+    "bytes": 113788,
+    "png_signature_verified": true
+  },
+  "checks": [
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:25:58 GMT",
+      "received_at": "2026-11-16T18:26:39.175Z",
+      "requested_at": "2026-11-16T18:26:31.642Z",
+      "bid": 1.09929,
+      "ask": 1.09936,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 3,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": null,
+      "quote_retrieved_at": "2026-11-16T18:25:56.531Z",
+      "provider_age_seconds": null,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:25:56.531Z",
+        "quote_status": "STALE",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 4.396,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 48201,
+      "sha256": "802749873f51170e5f4278bf3a6dab0894089d69e14951bd5e2295e97448dfde",
+      "status": "STALE",
+      "as_of": "2026-11-16T18:25:55.595Z",
+      "generated_at": "2026-11-16T18:25:59.991Z",
+      "expires_at": "2026-11-16T18:27:59.991Z",
+      "environment": "demo",
+      "evidence_count": 40,
+      "findings_total": 1205,
+      "findings_omitted": 1165,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 7536
+    },
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:26:00 GMT",
+      "received_at": "2026-11-16T18:26:39.967Z",
+      "requested_at": "2026-11-16T18:26:39.178Z",
+      "bid": 1.09929,
+      "ask": 1.09936,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 3,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": null,
+      "quote_retrieved_at": "2026-11-16T18:25:56.531Z",
+      "provider_age_seconds": null,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:25:56.531Z",
+        "quote_status": "STALE",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 5.362,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 48088,
+      "sha256": "d5c5262da0a956e4961d00ec5852bd979f58c05f799eb801420f79d27b42e22d",
+      "status": "STALE",
+      "as_of": "2026-11-16T18:25:55.595Z",
+      "generated_at": "2026-11-16T18:26:00.957Z",
+      "expires_at": "2026-11-16T18:28:00.957Z",
+      "environment": "demo",
+      "evidence_count": 40,
+      "findings_total": 1211,
+      "findings_omitted": 1171,
+      "budget_tier": 0,
+      "path_completeness": [
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL"
+      ],
+      "duration_ms": 789
+    },
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:26:03 GMT",
+      "received_at": "2026-11-16T18:26:43.045Z",
+      "requested_at": "2026-11-16T18:26:39.967Z",
+      "bid": 27277.7,
+      "ask": 27279.5,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-16T18:25:56.599Z",
+      "quote_retrieved_at": "2026-11-16T18:26:03.271Z",
+      "provider_age_seconds": 7.413,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:26:03.271Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.74,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "NAS100",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 36911,
+      "sha256": "76da504cea59db3eb5f78b7ba7d063d2044fb4064647342e5c5a2f67546fbce1",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T18:26:02.272Z",
+      "generated_at": "2026-11-16T18:26:04.012Z",
+      "expires_at": "2026-11-16T18:27:56.599Z",
+      "environment": "demo",
+      "evidence_count": 30,
+      "findings_total": 1123,
+      "findings_omitted": 1093,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 3078
+    },
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:26:04 GMT",
+      "received_at": "2026-11-16T18:26:43.698Z",
+      "requested_at": "2026-11-16T18:26:43.046Z",
+      "bid": 27277.7,
+      "ask": 27279.5,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-16T18:25:56.599Z",
+      "quote_retrieved_at": "2026-11-16T18:26:03.271Z",
+      "provider_age_seconds": 8.071,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:26:03.271Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 2.398,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "NAS100",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 36890,
+      "sha256": "3464acce929715af4f7d4ff0febd2ae9f973ae1b6f8df3b103052fd4808ba167",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T18:26:02.272Z",
+      "generated_at": "2026-11-16T18:26:04.670Z",
+      "expires_at": "2026-11-16T18:27:56.599Z",
+      "environment": "demo",
+      "evidence_count": 30,
+      "findings_total": 1123,
+      "findings_omitted": 1093,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 652
+    },
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:26:06 GMT",
+      "received_at": "2026-11-16T18:26:46.197Z",
+      "requested_at": "2026-11-16T18:26:43.698Z",
+      "bid": 59496.6,
+      "ask": 59506.6,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 240,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-16T18:26:00.369Z",
+      "quote_retrieved_at": "2026-11-16T18:26:06.865Z",
+      "provider_age_seconds": 6.819,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:26:06.865Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.685,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "JP225",
+      "side": "bid",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 37540,
+      "sha256": "6c458398157bb1070ad7c21691d1b3c441bd790dbcd30e9dcb709ac3a5786301",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T18:26:05.503Z",
+      "generated_at": "2026-11-16T18:26:07.188Z",
+      "expires_at": "2026-11-16T18:28:00.369Z",
+      "environment": "demo",
+      "evidence_count": 30,
+      "findings_total": 1085,
+      "findings_omitted": 1055,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 2499
+    },
+    {
+      "attempts": [],
+      "server_date": "Mon, 16 Nov 2026 18:26:07 GMT",
+      "received_at": "2026-11-16T18:26:46.795Z",
+      "requested_at": "2026-11-16T18:26:46.197Z",
+      "bid": 59496.6,
+      "ask": 59506.6,
+      "market_status": "TRADEABLE",
+      "last_closed_by_tf": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "data_status": "PARTIAL",
+          "discarded_rows": 0,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 240,
+          "data_status": "PARTIAL",
+          "discarded_rows": 1,
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        }
+      ],
+      "provider_timestamp": "2026-11-16T18:26:00.369Z",
+      "quote_retrieved_at": "2026-11-16T18:26:06.865Z",
+      "provider_age_seconds": 7.421,
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T18:26:06.865Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 2.287,
+        "delivery_max_seconds": 120
+      },
+      "last_closed_h4": "2026-11-16T16:00:00.000Z",
+      "symbol": "JP225",
+      "side": "ask",
+      "http": 200,
+      "content_type": "application/json",
+      "bytes": 37540,
+      "sha256": "1fb679982a614ccbff98b46c16d742f0aaa6b6c99a5abb082aaab23ec5ddc540",
+      "status": "PARTIAL",
+      "as_of": "2026-11-16T18:26:05.503Z",
+      "generated_at": "2026-11-16T18:26:07.790Z",
+      "expires_at": "2026-11-16T18:28:00.369Z",
+      "environment": "demo",
+      "evidence_count": 30,
+      "findings_total": 1086,
+      "findings_omitted": 1056,
+      "budget_tier": 0,
+      "path_completeness": [],
+      "duration_ms": 598
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+{
+  "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+  "scope": "JP225_PRIVATE_CAPTURE_REPLAY_NOT_INDEPENDENT_ACCURACY_VALIDATION",
+  "results": [
+    {
+      "side": "bid",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "closed_prefixes": 616,
+      "detectors": {
+        "FRACTAL_3": 250,
+        "FRACTAL_5": 122,
+        "FVG": 115,
+        "FVG_CLOSED_BREACH": 49,
+        "RAID": 139,
+        "RB_TWO_CANDLE": 120,
+        "SNR_CLOSED_BREAK": 136,
+        "IDM_INSIDE_POI": 54,
+        "STRONG_PIVOT_CANDIDATE": 36,
+        "BOS": 47,
+        "COMPRESSION_UNSPECIFIED": 4,
+        "DISPLACEMENT_UNSPECIFIED": 4,
+        "PERIOD_OPEN": 178,
+        "CHOCH": 20
+      },
+      "frames": [
+        {
+          "tf": "MN1",
+          "closed": 59,
+          "status": "PARTIAL",
+          "range_candidates": 12
+        },
+        {
+          "tf": "W1",
+          "closed": 119,
+          "status": "PARTIAL",
+          "range_candidates": 41
+        },
+        {
+          "tf": "D1",
+          "closed": 199,
+          "status": "PARTIAL",
+          "range_candidates": 0
+        },
+        {
+          "tf": "H4",
+          "closed": 239,
+          "status": "PARTIAL",
+          "range_candidates": 0
+        }
+      ],
+      "report_status": "PARTIAL",
+      "report_bytes": 49835,
+      "report_sha256": "67289457eb0ef6a73c4032cd6424a9720b19886497dd3bfde3822b00c31eb6dd",
+      "wire_bytes": 2557476,
+      "findings_total": 1274,
+      "findings_omitted": 1227,
+      "selected_evidence_complete": true,
+      "result": "PASS"
+    },
+    {
+      "side": "ask",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "closed_prefixes": 616,
+      "detectors": {
+        "FRACTAL_3": 250,
+        "FRACTAL_5": 122,
+        "FVG": 116,
+        "FVG_CLOSED_BREACH": 49,
+        "RAID": 139,
+        "RB_TWO_CANDLE": 120,
+        "SNR_CLOSED_BREAK": 136,
+        "IDM_INSIDE_POI": 54,
+        "STRONG_PIVOT_CANDIDATE": 36,
+        "BOS": 47,
+        "COMPRESSION_UNSPECIFIED": 4,
+        "DISPLACEMENT_UNSPECIFIED": 4,
+        "PERIOD_OPEN": 178,
+        "CHOCH": 20
+      },
+      "frames": [
+        {
+          "tf": "MN1",
+          "closed": 59,
+          "status": "PARTIAL",
+          "range_candidates": 12
+        },
+        {
+          "tf": "W1",
+          "closed": 119,
+          "status": "PARTIAL",
+          "range_candidates": 41
+        },
+        {
+          "tf": "D1",
+          "closed": 199,
+          "status": "PARTIAL",
+          "range_candidates": 0
+        },
+        {
+          "tf": "H4",
+          "closed": 239,
+          "status": "PARTIAL",
+          "range_candidates": 0
+        }
+      ],
+      "report_status": "PARTIAL",
+      "report_bytes": 49835,
+      "report_sha256": "2b8fcee76331a2dbea7a53492a128cb96c87f535214a97fbe515f5807355069f",
+      "wire_bytes": 2559254,
+      "findings_total": 1275,
+      "findings_omitted": 1228,
+      "selected_evidence_complete": true,
+      "result": "PASS"
+    }
+  ]
+}

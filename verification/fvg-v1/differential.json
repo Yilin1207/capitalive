@@ -1,0 +1,170 @@
+[
+  {
+    "symbol": "EURUSD",
+    "side": "bid",
+    "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+    "as_of": "2026-11-16T07:17:56.301Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 69,
+      "SNR_CLOSED_BREAK": 1,
+      "IDM_INSIDE_POI": 21,
+      "STRONG_PIVOT_CANDIDATE": 2
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 1
+    },
+    "fvg_states": {
+      "INVALIDATED": 86,
+      "ACTIVE": 31,
+      "TESTED": 4
+    },
+    "previous_filled_active": 4,
+    "report_bytes": 63832,
+    "wire_bytes": 2801445,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  },
+  {
+    "symbol": "EURUSD",
+    "side": "ask",
+    "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+    "as_of": "2026-11-16T07:17:56.301Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 72,
+      "SNR_CLOSED_BREAK": 1,
+      "IDM_INSIDE_POI": 22,
+      "STRONG_PIVOT_CANDIDATE": 2
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 1
+    },
+    "fvg_states": {
+      "INVALIDATED": 84,
+      "ACTIVE": 31,
+      "TESTED": 4
+    },
+    "previous_filled_active": 4,
+    "report_bytes": 55103,
+    "wire_bytes": 2803230,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  },
+  {
+    "symbol": "NAS100",
+    "side": "bid",
+    "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+    "as_of": "2026-11-16T07:17:59.382Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 75,
+      "SNR_CLOSED_BREAK": 16,
+      "IDM_INSIDE_POI": 14,
+      "STRONG_PIVOT_CANDIDATE": 4
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 12,
+      "STRONG_PIVOT_CANDIDATE": 2
+    },
+    "fvg_states": {
+      "INVALIDATED": 94,
+      "UNVERIFIED": 3,
+      "TESTED": 7,
+      "ACTIVE": 27
+    },
+    "previous_filled_active": 5,
+    "report_bytes": 61248,
+    "wire_bytes": 2739110,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  },
+  {
+    "symbol": "NAS100",
+    "side": "ask",
+    "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+    "as_of": "2026-11-16T07:17:59.382Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 75,
+      "SNR_CLOSED_BREAK": 16,
+      "IDM_INSIDE_POI": 14,
+      "STRONG_PIVOT_CANDIDATE": 4
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 12,
+      "STRONG_PIVOT_CANDIDATE": 2
+    },
+    "fvg_states": {
+      "INVALIDATED": 94,
+      "UNVERIFIED": 3,
+      "TESTED": 7,
+      "ACTIVE": 27
+    },
+    "previous_filled_active": 5,
+    "report_bytes": 61223,
+    "wire_bytes": 2739160,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  },
+  {
+    "symbol": "JP225",
+    "side": "bid",
+    "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+    "as_of": "2026-11-16T08:06:37.110Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 66,
+      "SNR_CLOSED_BREAK": 22,
+      "IDM_INSIDE_POI": 18,
+      "STRONG_PIVOT_CANDIDATE": 1
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 12
+    },
+    "fvg_states": {
+      "ACTIVE": 13,
+      "INVALIDATED": 76,
+      "TESTED": 11,
+      "UNVERIFIED": 15
+    },
+    "previous_filled_active": 7,
+    "report_bytes": 62135,
+    "wire_bytes": 2564782,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  },
+  {
+    "symbol": "JP225",
+    "side": "ask",
+    "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+    "as_of": "2026-11-16T08:06:37.110Z",
+    "baseline_commit": "e5064c7956d7529cc6bfc8476b3fb4d859cc6f36",
+    "formation_fractal_raid_ifvg_unchanged": true,
+    "removed": {
+      "RB_TWO_CANDLE": 66,
+      "SNR_CLOSED_BREAK": 22,
+      "IDM_INSIDE_POI": 18,
+      "STRONG_PIVOT_CANDIDATE": 1
+    },
+    "added": {
+      "SNR_CLOSED_BREAK": 12
+    },
+    "fvg_states": {
+      "ACTIVE": 13,
+      "INVALIDATED": 76,
+      "TESTED": 11,
+      "UNVERIFIED": 16
+    },
+    "previous_filled_active": 7,
+    "report_bytes": 62135,
+    "wire_bytes": 2567959,
+    "evidence_causality": "PASS",
+    "result": "PASS"
+  }
+]

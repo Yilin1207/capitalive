@@ -1,0 +1,115 @@
+{
+  "mode": "LOCAL_NATIVE_PUBLISHER_IDENTICAL_TO_PRIVATE_PR_COMMIT",
+  "publisher_commit": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+  "engine_commit": "1ee93b5c13406d8b5d2fd911e90b5366b01213a7",
+  "branch": "verification/v5-1-context",
+  "preview": "https://capitalive-j6tpuixj6-yilin1207s-projects.vercel.app",
+  "published_commit": "ff2aea2d3e9e72215a2e98c0172ba7f78a6b3058",
+  "manifest": {
+    "schema_version": "desk-report-manifest-v2",
+    "contract_revision": "desk-report-v2.1",
+    "generated_at": "2026-11-16T19:21:54.638Z",
+    "published_at": "2026-11-16T19:21:54.638Z",
+    "publication_branch": "verification/v5-1-context",
+    "publisher_commit": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+    "timestamp_semantics": "published_at_is_commit_preparation_time; verify_ref_and_commit_readback",
+    "reports": [
+      {
+        "symbol": "EURUSD",
+        "path": "reports/latest/EURUSD.json",
+        "status": "PARTIAL",
+        "as_of": "2026-11-16T19:13:44.912Z",
+        "generated_at": "2026-11-16T19:21:49.651Z",
+        "expires_at": "2026-11-16T19:23:49.165Z",
+        "bytes": 59066,
+        "sha256": "31b5c70006a9ed080e6ff431ac600769290ccdfd1cabfebc87b3a462aa01c871"
+      },
+      {
+        "symbol": "NAS100",
+        "path": "reports/latest/NAS100.json",
+        "status": "PARTIAL",
+        "as_of": "2026-11-16T19:14:04.250Z",
+        "generated_at": "2026-11-16T19:21:51.746Z",
+        "expires_at": "2026-11-16T19:23:51.060Z",
+        "bytes": 56325,
+        "sha256": "0e0e9843fa2c85ad8ee73dc06a85c86ab30150c8b058b5edcb42ba651b380edf"
+      },
+      {
+        "symbol": "JP225",
+        "path": "reports/latest/JP225.json",
+        "status": "PARTIAL",
+        "as_of": "2026-11-16T19:18:02.016Z",
+        "generated_at": "2026-11-16T19:21:54.207Z",
+        "expires_at": "2026-11-16T19:23:52.984Z",
+        "bytes": 60185,
+        "sha256": "92f10f427a547c7c2cac177d830e39d180db75116196fe67e36942b2a76743b1"
+      }
+    ],
+    "privacy": "PRIVATE_REPOSITORY_ONLY",
+    "no_raw_ohlc": true,
+    "trading_enabled": false
+  },
+  "verified": {
+    "commit": "ff2aea2d3e9e72215a2e98c0172ba7f78a6b3058",
+    "readback_at": "2026-11-16T19:22:00.733Z",
+    "published_at": "2026-11-16T19:21:54.638Z",
+    "reports": [
+      {
+        "symbol": "EURUSD",
+        "bytes": 59066,
+        "sha256": "31b5c70006a9ed080e6ff431ac600769290ccdfd1cabfebc87b3a462aa01c871",
+        "status": "PARTIAL",
+        "read_status": "PARTIAL",
+        "expired_at_read": false,
+        "delivery": {
+          "age_seconds": 10.191,
+          "status": "FRESH",
+          "reason": null
+        },
+        "provider_age_seconds_at_read": 10.677,
+        "provider_timestamp": "2026-11-16T19:21:49.165Z",
+        "last_closed_h4": "2026-11-16T16:00:00.000Z",
+        "engine_commit": "1ee93b5c13406d8b5d2fd911e90b5366b01213a7"
+      },
+      {
+        "symbol": "NAS100",
+        "bytes": 56325,
+        "sha256": "0e0e9843fa2c85ad8ee73dc06a85c86ab30150c8b058b5edcb42ba651b380edf",
+        "status": "PARTIAL",
+        "read_status": "PARTIAL",
+        "expired_at_read": false,
+        "delivery": {
+          "age_seconds": 8.624,
+          "status": "FRESH",
+          "reason": null
+        },
+        "provider_age_seconds_at_read": 9.31,
+        "provider_timestamp": "2026-11-16T19:21:51.060Z",
+        "last_closed_h4": "2026-11-16T16:00:00.000Z",
+        "engine_commit": "1ee93b5c13406d8b5d2fd911e90b5366b01213a7"
+      },
+      {
+        "symbol": "JP225",
+        "bytes": 60185,
+        "sha256": "92f10f427a547c7c2cac177d830e39d180db75116196fe67e36942b2a76743b1",
+        "status": "PARTIAL",
+        "read_status": "PARTIAL",
+        "expired_at_read": false,
+        "delivery": {
+          "age_seconds": 6.526,
+          "status": "FRESH",
+          "reason": null
+        },
+        "provider_age_seconds_at_read": 7.749,
+        "provider_timestamp": "2026-11-16T19:21:52.984Z",
+        "last_closed_h4": "2026-11-16T16:00:00.000Z",
+        "engine_commit": "1ee93b5c13406d8b5d2fd911e90b5366b01213a7"
+      }
+    ]
+  },
+  "diagnostics": [],
+  "main_before": "9b4f037f357cf258d497e45fef75aae7c5fe1dcc",
+  "main_after": "9b4f037f357cf258d497e45fef75aae7c5fe1dcc",
+  "variable_unchanged": true,
+  "clock_basis": "GitHub HTTP Date plus monotonic elapsed wall time"
+}

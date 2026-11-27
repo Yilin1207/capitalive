@@ -1,0 +1,474 @@
+{
+  "audit": "V5_VS_V5_1_SAME_OHLC_NO_FXCM_OR_EXPERT_ORACLE",
+  "rows": [
+    {
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+      "as_of": "2026-11-16T07:17:56.301Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "7b2e2aa29916645fa88bf57ea7db0b9d7d73db8270c20006844803c9a771d357",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1204,
+      "report_bytes": 56163,
+      "report_sha256": "d2cc53e113723aa53e805b8fb9c9688f79b100fc7759cad1ef5cfbcb83187e5e",
+      "wire_bytes": 3553538,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 5,
+      "evidence_included": 39,
+      "budget_tier": 1,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 36,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "W1",
+          "total": 72,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "28da168472f5ec0ef96f67200ddc8085a5fc55443312f8dbfc072ea58ae18bdb",
+      "as_of": "2026-11-16T07:17:56.301Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "e4a2730997fe356c4aa775aaff25bdf769a8ec92a1fa12ba49acf148fccbc4e8",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1210,
+      "report_bytes": 56165,
+      "report_sha256": "d54130906c0caed2d09f997b8633231b8618771e3852c5382c7a93e3d22798f3",
+      "wire_bytes": 3558908,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "UP",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 5,
+      "evidence_included": 39,
+      "budget_tier": 1,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 36,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "W1",
+          "total": 72,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+      "as_of": "2026-11-16T07:17:59.382Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "dfab46b053af5305fbed7651c38ebc66647490c7e52f3ab954e2fb9a23451e51",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1129,
+      "report_bytes": 63655,
+      "report_sha256": "77578bbd0be7f39df361c29df1610e5a13f6bfdbc60195941b9640da807fbe87",
+      "wire_bytes": 2879145,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": "UP",
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 7,
+      "evidence_included": 40,
+      "budget_tier": 2,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 5,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "total": 51,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [
+        {
+          "id": "NAS100:MN1:bid:FVG:2026-06-01T00:00:00.000Z:",
+          "timeframe": "MN1",
+          "confirmed_at": "2026-07-01T00:00:00.000Z",
+          "arithmetic": {
+            "lower": 27530.4,
+            "upper": 28184.7
+          },
+          "h4_closed_observations": 239,
+          "h4_intersections": 42,
+          "h4_first_interaction": "2026-10-30T20:00:00.000Z",
+          "own_tf_break": null,
+          "lifecycle": "ACTIVE",
+          "fill": {
+            "state": "FILLED",
+            "max_observed_fraction": 1,
+            "first_test_at": "2026-07-25T00:00:00.000Z",
+            "last_test_at": "2026-11-16T04:00:00.000Z"
+          },
+          "current_role_v5": "support",
+          "current_role_v51": null,
+          "independent_arithmetic": "MATCH",
+          "fxcm_visual": "INSUFFICIENT_EVIDENCE"
+        },
+        {
+          "id": "NAS100:D1:bid:FVG:2026-11-10T00:00:00.000Z:",
+          "timeframe": "D1",
+          "confirmed_at": "2026-11-11T00:00:00.000Z",
+          "arithmetic": {
+            "lower": 27097.8,
+            "upper": 27419.3
+          },
+          "h4_closed_observations": 20,
+          "h4_intersections": 0,
+          "h4_first_interaction": null,
+          "own_tf_break": null,
+          "lifecycle": "ACTIVE",
+          "fill": {
+            "state": "UNTOUCHED",
+            "max_observed_fraction": 0,
+            "first_test_at": null,
+            "last_test_at": null
+          },
+          "current_role_v5": "support",
+          "current_role_v51": null,
+          "independent_arithmetic": "MATCH",
+          "fxcm_visual": "INSUFFICIENT_EVIDENCE"
+        }
+      ],
+      "result": "PASS"
+    },
+    {
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "efd85cf036af96e2da8d816b8590088943cf0f2824a5008122dad8d9b2386ccc",
+      "as_of": "2026-11-16T07:17:59.382Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "e1540d7a9ace1ed10373f0bc5714e147e62e2a644b083fb7b0b4861dd6cf6ee1",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1129,
+      "report_bytes": 63645,
+      "report_sha256": "f31a48204152c48564146381dcc03a8451d5db232e5805b13ad711527984dfbc",
+      "wire_bytes": 2879370,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": "UP",
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 7,
+      "evidence_included": 40,
+      "budget_tier": 2,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 5,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "W1",
+          "total": 51,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "side": "bid",
+      "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "78867d6d942de6c48b2ae0bc041f4848af32e4773680b233ffbc149c3c72f445",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1085,
+      "report_bytes": 56810,
+      "report_sha256": "14f8d533594fa087244d8464629b26c4525d4cbbbaf33600dfc4df4e0e593f94",
+      "wire_bytes": 2585133,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 6,
+      "evidence_included": 40,
+      "budget_tier": 0,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 12,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "W1",
+          "total": 41,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    },
+    {
+      "symbol": "JP225",
+      "side": "ask",
+      "input_sha256": "c68f8b2904ad569fb3d3234637a4dec7b18992a7e549d4cd7757aa4a11585645",
+      "as_of": "2026-11-16T08:06:37.110Z",
+      "environment": "demo",
+      "baseline": "V5_FIXED_INPUT_EXPORT",
+      "detector_sha256": "19ab3b25541a6bef35f361816ec559e068f05a5869a9f5ba3038e1064dfcb98d",
+      "detectors_unchanged": true,
+      "lifecycle_unchanged": true,
+      "narrative_unchanged": true,
+      "findings": 1086,
+      "report_bytes": 56810,
+      "report_sha256": "db1d7d463300406c33efee868afa0de5b0509f0b75e2e35cd5ffaad695966e0f",
+      "wire_bytes": 2588344,
+      "wire_lossless": true,
+      "observed": [
+        {
+          "timeframe": "MN1",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "W1",
+          "last_leg": "DOWN",
+          "close_change": "UP",
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "D1",
+          "last_leg": null,
+          "close_change": null,
+          "significance": "NOT_ASSESSED"
+        },
+        {
+          "timeframe": "H4",
+          "last_leg": "DOWN",
+          "close_change": "DOWN",
+          "significance": "NOT_ASSESSED"
+        }
+      ],
+      "selected_levels": 6,
+      "evidence_included": 40,
+      "budget_tier": 0,
+      "ranges": [
+        {
+          "timeframe": "MN1",
+          "total": 12,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "W1",
+          "total": 41,
+          "displayed_suitable": true
+        },
+        {
+          "timeframe": "D1",
+          "total": 0,
+          "displayed_suitable": false
+        },
+        {
+          "timeframe": "H4",
+          "total": 0,
+          "displayed_suitable": false
+        }
+      ],
+      "controls": [],
+      "result": "PASS"
+    }
+  ]
+}

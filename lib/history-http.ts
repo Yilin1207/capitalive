@@ -14,13 +14,15 @@ export function historyJson(body: unknown, status = 200, retryAfter = 0) {
   return Response.json(body, { status, headers: { ...HISTORY_HEADERS, ...(retryAfter ? { "Retry-After": String(retryAfter) } : {}) } });
 }
 
-export function checkHistoryRequest(request: Request) {
-  const globalWait = requests.take("all");
+const pageClients = new WindowLimit(300, 60_000);
+const pageRequests = new WindowLimit(900, 60_000);
+export function checkHistoryRequest(request: Request, pinnedPage = false) {
+  const globalWait = (pinnedPage ? pageRequests : requests).take("all");
   if (globalWait) throw new HistoryError("RATE_LIMIT", "Too many history requests", 429, globalWait);
   // Vercel overwrites x-vercel-forwarded-for. Never trust a client-supplied x-forwarded-for.
   const address = process.env.VERCEL ? request.headers.get("x-vercel-forwarded-for") ?? "unknown" : "local";
   const key = createHash("sha256").update(address).digest("hex");
-  const wait = clients.take(key);
+  const wait = (pinnedPage ? pageClients : clients).take(key);
   if (wait) throw new HistoryError("RATE_LIMIT", "Too many history requests", 429, wait);
 }
 

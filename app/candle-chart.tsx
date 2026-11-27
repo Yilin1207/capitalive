@@ -88,7 +88,7 @@ export default function CandleChart({ instruments }: { instruments: { symbol: st
       rows.current.set(time, candle);
       return [{ time, open, high, low, close, ...(!candle.is_closed ? { color: "#eebc61", wickColor: "#eebc61", borderColor: "#eebc61" } : {}) }];
     });
-    series.current.applyOptions({ priceFormat: { type: "price", precision: /USDJPY/.test(symbol) ? 3 : /EURUSD|GBPUSD/.test(symbol) ? 5 : /XAGUSD/.test(symbol) ? 3 : 2, minMove: /EURUSD|GBPUSD/.test(symbol) ? 0.00001 : /USDJPY|XAGUSD/.test(symbol) ? 0.001 : 0.01 } });
+    series.current.applyOptions({ priceFormat: { type: "price", precision: symbol==='JP225'?1:/USDJPY/.test(symbol) ? 3 : /EURUSD|GBPUSD/.test(symbol) ? 5 : /XAGUSD/.test(symbol) ? 3 : 2, minMove: symbol==='JP225'?0.1:/EURUSD|GBPUSD/.test(symbol) ? 0.00001 : /USDJPY|XAGUSD/.test(symbol) ? 0.001 : 0.01 } });
     series.current.setData(plotted);
     setSelected(null);
     const identity = `${symbol}:${timeframe}:${side}`;

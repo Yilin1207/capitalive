@@ -158,7 +158,7 @@ test("health is degraded only when both Capital.com transports fail", () => {
 
 test("context does not expose unavailable futures or fake yield spreads", () => {
   assert.deepEqual(Object.keys(CONTEXT_MARKETS), ["VIX"]);
-  assert.equal(CONTEXT_MARKETS.VIX.representation, "volatility_index");
+  assert.equal(CONTEXT_MARKETS.VIX.representation, "volatility_cfd");
   assert.equal(DERIVED.yield_spreads.available, false);
 });
 
@@ -170,4 +170,15 @@ test("unconfirmed requested tenors stay explicitly unavailable", () => {
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.UK10Y);
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP2Y);
   assert.ok(UNAVAILABLE_CONTEXT_MARKETS.JP10Y);
+});
+
+test("session throttling can recover after three simultaneous retry collisions",async()=>{
+ let calls=0;const waits:number[]=[];
+ const response=await fetchWithTimeoutRetry("https://local/session",{},{
+  timeoutMs:50,maxAttempts:3,respectRetryAfter:true,maxRetryDelayMs:8500,rateLimitBackoffMs:[1100,2100,3500,5000],
+  sleepImpl:async delay=>{waits.push(delay);},
+  fetchImpl:async()=>new Response("{}",{status:++calls<5?429:200}),
+ });
+ assert.equal(response.status,200);assert.equal(waits.length,4);
+ assert.ok(waits.every((delay,i)=>delay>=[1100,2100,3500,5000][i]&&delay<[1100,2100,3500,5000][i]+1500));
 });

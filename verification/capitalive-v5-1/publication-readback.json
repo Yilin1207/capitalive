@@ -1,0 +1,314 @@
+{
+  "commit": "adcb4505fb9e700343f242630bb525aa87855f94",
+  "branch": "verification/v5-1-context",
+  "private": true,
+  "readback_at_client": "2026-11-16T19:27:06.573Z",
+  "git_commit_at": "2026-11-16T19:26:01Z",
+  "publisher_commit": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+  "atomic_changed_files": [
+    "reports/latest/EURUSD.json",
+    "reports/latest/JP225.json",
+    "reports/latest/NAS100.json",
+    "reports/latest/manifest.json"
+  ],
+  "manifest": {
+    "bytes": 1578,
+    "sha256": "eb2e92160ac00c34d8b9c79d9b73ff9c28a4a09705c3f083cf7a89c48587864b",
+    "generated_at": "2026-11-16T19:25:59.587Z",
+    "published_at": "2026-11-16T19:25:59.587Z",
+    "contract": "desk-report-v2.1"
+  },
+  "reports": [
+    {
+      "symbol": "EURUSD",
+      "bytes": 59095,
+      "sha256": "20c4d53a176fd1dfe9eb109c4e08a9620b6755137e50a91f0ebb318c3934b32c",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 1.10038,
+      "ask": 1.10045,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": null,
+      "quote_retrieved_at": "2026-11-16T19:25:51.815Z",
+      "generated_at": "2026-11-16T19:25:55.192Z",
+      "as_of": "2026-11-16T19:25:50.793Z",
+      "published_at": "2026-11-16T19:25:59.587Z",
+      "expires_at": "2026-11-16T19:27:55.192Z",
+      "read_server_date": "Mon, 16 Nov 2026 19:26:25 GMT",
+      "provider_age_seconds_upper_bound": null,
+      "expired_at_read": false,
+      "quote_fresh_at_read": false,
+      "status": "STALE",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T19:25:51.815Z",
+        "quote_status": "STALE",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 4.399,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 42,
+      "coverage": {
+        "budget_tier": 1,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1205,
+        "findings_included": 42,
+        "findings_omitted": 1163,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [
+          "QUOTE_PROVIDER_TIME_UNKNOWN"
+        ],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "discarded_rows": 3,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    },
+    {
+      "symbol": "NAS100",
+      "bytes": 56326,
+      "sha256": "145f6dbec7576c9b7f153cf3114d89fa52160a3311c7fae88a082b8038b980b8",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 27271.3,
+      "ask": 27273.1,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": "2026-11-16T19:25:54.742Z",
+      "quote_retrieved_at": "2026-11-16T19:25:56.887Z",
+      "generated_at": "2026-11-16T19:25:57.644Z",
+      "as_of": "2026-11-16T19:25:55.939Z",
+      "published_at": "2026-11-16T19:25:59.587Z",
+      "expires_at": "2026-11-16T19:27:54.742Z",
+      "read_server_date": "Mon, 16 Nov 2026 19:26:26 GMT",
+      "provider_age_seconds_upper_bound": 32.257,
+      "expired_at_read": false,
+      "quote_fresh_at_read": true,
+      "status": "PARTIAL",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T19:25:56.887Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.705,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 38,
+      "coverage": {
+        "budget_tier": 0,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1123,
+        "findings_included": 38,
+        "findings_omitted": 1085,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 58,
+          "discarded_rows": 1,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "PARTIAL_AGGREGATION",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING",
+            "PROVIDER_VALIDATION_LOSS"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    },
+    {
+      "symbol": "JP225",
+      "bytes": 60131,
+      "sha256": "855c628a1241c1cfd671917bc2d3c6b89b3f0172e23453030ac91cc296415e08",
+      "git_blob_verified": true,
+      "schema_version": "desk-report-v2",
+      "engine": "edge-knowledge-5",
+      "engine_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+      "context_revision": "context-5.1",
+      "side": "bid",
+      "environment": "demo",
+      "bid": 59491.6,
+      "ask": 59501.6,
+      "market_status": "TRADEABLE",
+      "provider_timestamp": "2026-11-16T19:25:56.814Z",
+      "quote_retrieved_at": "2026-11-16T19:25:59.043Z",
+      "generated_at": "2026-11-16T19:25:59.447Z",
+      "as_of": "2026-11-16T19:25:58.275Z",
+      "published_at": "2026-11-16T19:25:59.587Z",
+      "expires_at": "2026-11-16T19:27:56.814Z",
+      "read_server_date": "Mon, 16 Nov 2026 19:26:26 GMT",
+      "provider_age_seconds_upper_bound": 30.185,
+      "expired_at_read": false,
+      "quote_fresh_at_read": true,
+      "status": "PARTIAL",
+      "freshness": {
+        "quote_retrieved_at": "2026-11-16T19:25:59.043Z",
+        "quote_status": "FRESH",
+        "data_quality": "PARTIAL",
+        "stale_reasons": [],
+        "quote_max_seconds": 120,
+        "h4_max_delay_seconds": 600,
+        "h4_delay_seconds": 0,
+        "source_age_seconds": 1.172,
+        "delivery_max_seconds": 120
+      },
+      "evidence_included": 41,
+      "coverage": {
+        "budget_tier": 0,
+        "selection_policy": "RECENT_PER_CATEGORY_PLUS_ENGINE_SCENARIO_AND_REFERENCED_DEPENDENCIES",
+        "findings_total": 1084,
+        "findings_included": 41,
+        "findings_omitted": 1043,
+        "selected_evidence_complete": true,
+        "all_findings_included": false,
+        "stale_reasons": [],
+        "raw_ohlc_included": false
+      },
+      "frames": [
+        {
+          "timeframe": "MN1",
+          "last_closed_at": "2026-11-01T00:00:00.000Z",
+          "closed_candles": 59,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "W1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 119,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED"
+          ]
+        },
+        {
+          "timeframe": "D1",
+          "last_closed_at": "2026-11-16T00:00:00.000Z",
+          "closed_candles": 199,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        },
+        {
+          "timeframe": "H4",
+          "last_closed_at": "2026-11-16T16:00:00.000Z",
+          "closed_candles": 239,
+          "discarded_rows": 0,
+          "data_status": "PARTIAL",
+          "warnings": [
+            "SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED",
+            "GAP_BOUNDARY_NO_PATTERN_STITCHING"
+          ]
+        }
+      ],
+      "confirmed_narrative": null
+    }
+  ],
+  "all_fresh": false
+}

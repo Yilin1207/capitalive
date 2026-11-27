@@ -1,0 +1,82 @@
+{
+  "checked_at": "2026-11-16T19:28:27.464Z",
+  "runtime_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+  "checked_ci_commit": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+  "runtime_diff": "No runtime changes after audited commit; subsequent changes are audit documents and safe metadata",
+  "counts": {
+    "unit_tests": 223,
+    "browser_tests": 10,
+    "native_publisher_tests": 13,
+    "archive_inputs": 6,
+    "recorded_http": 23,
+    "live_compact": 6,
+    "live_detail": 6,
+    "live_inspection": 6,
+    "live_full": 3
+  },
+  "runs": [
+    {
+      "repo": "capitalive",
+      "id": 43938935091,
+      "url": "https://github.com/Yilin1207/capitalive/actions/runs/43938935091",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "0d55355ff5ef3e3b5e003b8318dc62e8d439ff8d",
+      "updated_at": "2026-11-16T19:26:31Z"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "id": 43936465070,
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43936465070",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+      "updated_at": "2026-11-16T19:10:21Z"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "id": 43939087277,
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43939087277",
+      "status": "completed",
+      "conclusion": "success",
+      "head": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+      "updated_at": "2026-11-16T19:26:07Z"
+    },
+    {
+      "repo": "capitalive-research-bridge",
+      "id": 43937230773,
+      "url": "https://github.com/Yilin1207/capitalive-research-bridge/actions/runs/43937230773",
+      "status": "queued",
+      "conclusion": null,
+      "head": "c77898266c67ee25ddb7012f94bd2c1bb22d460c",
+      "updated_at": "2026-11-16T19:14:22Z"
+    }
+  ],
+  "publication": {
+    "mode": "GITHUB_ACTIONS",
+    "run": 43939087277,
+    "commit": "adcb4505fb9e700343f242630bb525aa87855f94",
+    "branch": "verification/v5-1-context",
+    "main_unchanged": true,
+    "sha_bytes_pinned_readback": true,
+    "all_three_unexpired_at_read": true,
+    "all_three_fresh_at_read": false,
+    "statuses": [
+      {
+        "symbol": "EURUSD",
+        "status": "STALE",
+        "quote_fresh_at_read": false
+      },
+      {
+        "symbol": "NAS100",
+        "status": "PARTIAL",
+        "quote_fresh_at_read": true
+      },
+      {
+        "symbol": "JP225",
+        "status": "PARTIAL",
+        "quote_fresh_at_read": true
+      }
+    ]
+  }
+}

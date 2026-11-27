@@ -1,0 +1,125 @@
+{
+  "captured_kind": "NEW_CONTROL_SAMPLE_NOT_ORIGINAL_122545_AUDIT",
+  "files": [
+    {
+      "path": "tests/fixtures/edge-v2/EURUSD.json",
+      "bytes": 148629,
+      "sha256": "9e455affd6a064775c4713e989de67fc310afe0f82e60375e5d71f286a1820e2",
+      "as_of": "2026-11-15T12:37:00.242Z",
+      "price_side": "bid_ask",
+      "kind": "NORMALIZED_OHLC_AND_QUOTE"
+    },
+    {
+      "path": "verification/the-edge-v2/source-EURUSD.json",
+      "bytes": 528738,
+      "sha256": "0a9b1620c429aabca0b37311669771d29b4754aba9bad5784f7b158ce416297c",
+      "as_of": "2026-11-15T12:37:00.242Z",
+      "price_side": "bid",
+      "kind": "FULL_MARKET_AUDIT_WITH_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/preview-before-EURUSD.json",
+      "bytes": 2045288,
+      "sha256": "fdb2fcb1f5e2f07a96346e06d49ef1ea5c460a991cb4ae1ff2e43971fa48a8a2",
+      "as_of": "2026-11-15T12:36:25.012Z",
+      "price_side": "bid",
+      "kind": "FULL_V1_INTELLIGENCE_RESPONSE"
+    },
+    {
+      "path": "tests/fixtures/edge-v2/NAS100.json",
+      "bytes": 147751,
+      "sha256": "5b385c8f9bffe3b11a137d79ddf5acaa113f09470f5d8e4c02a5d3ae71e3c3c6",
+      "as_of": "2026-11-15T12:37:00.700Z",
+      "price_side": "bid_ask",
+      "kind": "NORMALIZED_OHLC_AND_QUOTE"
+    },
+    {
+      "path": "verification/the-edge-v2/source-NAS100.json",
+      "bytes": 583553,
+      "sha256": "f274ac96a65e35102ea0365e32642955652523453b1ac2bab7a20f628aa5622c",
+      "as_of": "2026-11-15T12:37:00.700Z",
+      "price_side": "bid",
+      "kind": "FULL_MARKET_AUDIT_WITH_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/preview-before-NAS100.json",
+      "bytes": 2054683,
+      "sha256": "0f5bdad554b8b3e2b792fd17b1db0968025569dea1f1d119c2de8beb9b8fd44b",
+      "as_of": "2026-11-15T12:37:05.884Z",
+      "price_side": "bid",
+      "kind": "FULL_V1_INTELLIGENCE_RESPONSE"
+    },
+    {
+      "path": "tests/fixtures/edge-v2/EU50.json",
+      "bytes": 142750,
+      "sha256": "3a6570fd15a4479d6b9db938d249332c11bd839f4ba347aa0c542370b84d80ee",
+      "as_of": "2026-11-15T12:37:01.300Z",
+      "price_side": "bid_ask",
+      "kind": "NORMALIZED_OHLC_AND_QUOTE"
+    },
+    {
+      "path": "verification/the-edge-v2/source-EU50.json",
+      "bytes": 552605,
+      "sha256": "f9cce48fef41f43a7455948a8683d2ead678b84b4a207ea165f5478050fa713f",
+      "as_of": "2026-11-15T12:37:01.300Z",
+      "price_side": "bid",
+      "kind": "FULL_MARKET_AUDIT_WITH_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/preview-before-EU50.json",
+      "bytes": 2058669,
+      "sha256": "a73d6c79194e7820853b67f16110ea8e6476c0e1220700b370ecfdc63eb8be12",
+      "as_of": "2026-11-15T12:37:23.250Z",
+      "price_side": "bid",
+      "kind": "FULL_V1_INTELLIGENCE_RESPONSE"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-EURUSD-bid.json",
+      "bytes": 3742785,
+      "sha256": "130f38c813cfcaa614d631cd631460dbb745dd7f88b0b0eeb9561b47fe94a52b",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "price_side": "bid",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-EURUSD-ask.json",
+      "bytes": 3756862,
+      "sha256": "7e88efc9bb252b9b561221a72a52e83a2c805acccbed0d2a75f11c95ba7e0bbd",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "price_side": "ask",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-NAS100-bid.json",
+      "bytes": 3539448,
+      "sha256": "0e5bcfb33dac5af7de18817a8ddc154b8faa7202f428b0b1f5bba52c0b10e7f4",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "price_side": "bid",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-NAS100-ask.json",
+      "bytes": 3539114,
+      "sha256": "1dd30790e31a5888eb550a0eec8c6b8a2d5a538e519e8779ab28d9013b348f65",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "price_side": "ask",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-EU50-bid.json",
+      "bytes": 3600497,
+      "sha256": "b2469e350ee24af42ca189427c4f4b92f3e3369008a8a70bb02274346bda82b4",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "price_side": "bid",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    },
+    {
+      "path": "verification/the-edge-v2/control-response-EU50-ask.json",
+      "bytes": 3607487,
+      "sha256": "9e13783a3ec5275c2f24ac6fb4c0c02c5b33dc093358e776316cbac1ff13f6e9",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "price_side": "ask",
+      "kind": "FULL_V2_INTELLIGENCE_ON_FIXED_CONTROL_OHLC"
+    }
+  ]
+}

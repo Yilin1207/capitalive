@@ -1,0 +1,497 @@
+{
+  "note": "Current V5 engine against frozen historical V4 inputs; no expert accuracy claim; old baseline metadata is not a V5 differential.",
+  "rows": [
+    {
+      "set": "archive",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+      "as_of": "2026-11-12T09:53:10.052Z",
+      "closed_prefixes": 606,
+      "findings": 1148,
+      "report_bytes": 40507,
+      "report_sha256": "02b4e9d7ee617241e416b43044ffef8d254d14f982a1b949a7b51c868cb12983",
+      "budget_tier": 0,
+      "wire_bytes": 2655430,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 8
+        },
+        {
+          "tf": "W1",
+          "total": 114
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 4
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3259
+    },
+    {
+      "set": "archive",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "7ea734d9a22acaea7ed377ea470a4126c01c1355c7670092b846a1c881810791",
+      "as_of": "2026-11-12T09:53:10.052Z",
+      "closed_prefixes": 606,
+      "findings": 1152,
+      "report_bytes": 41622,
+      "report_sha256": "2e655bad555980f7105c42d130d446e0be0e276d5f8627167d53c2c608393836",
+      "budget_tier": 0,
+      "wire_bytes": 2654725,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 8
+        },
+        {
+          "tf": "W1",
+          "total": 114
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 4
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3190
+    },
+    {
+      "set": "archive",
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+      "as_of": "2026-11-12T09:53:06.051Z",
+      "closed_prefixes": 607,
+      "findings": 1107,
+      "report_bytes": 45627,
+      "report_sha256": "c4eee172364778f9d0e4f2303f2ba82e7bf7812c15d37eb46a4195b4b2d8fa4b",
+      "budget_tier": 0,
+      "wire_bytes": 2478723,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 5
+        },
+        {
+          "tf": "W1",
+          "total": 46
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 5
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3414
+    },
+    {
+      "set": "archive",
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "c4d2f92cf637be53faad6e83ea204d9d66016a62edbb1d7905bd41699968d3d6",
+      "as_of": "2026-11-12T09:53:06.051Z",
+      "closed_prefixes": 607,
+      "findings": 1107,
+      "report_bytes": 45605,
+      "report_sha256": "006822eb0bc030b33bd7984466d165ea4af93964f5db5bf8ae9e508857b8673f",
+      "budget_tier": 0,
+      "wire_bytes": 2477889,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 5
+        },
+        {
+          "tf": "W1",
+          "total": 46
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 5
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3010
+    },
+    {
+      "set": "archive",
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+      "as_of": "2026-11-12T09:53:12.708Z",
+      "closed_prefixes": 608,
+      "findings": 1166,
+      "report_bytes": 39681,
+      "report_sha256": "b0e4d7bf9584eb835b6e8d8c1fcf614177458e58716abf3cd12e4ee15a0eb5e1",
+      "budget_tier": 0,
+      "wire_bytes": 2629285,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 13
+        },
+        {
+          "tf": "W1",
+          "total": 54
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3686
+    },
+    {
+      "set": "archive",
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "8b710e786fd67a686111b5659d4bb1bd80976f4fb509b2a7233772e5491d6596",
+      "as_of": "2026-11-12T09:53:12.708Z",
+      "closed_prefixes": 608,
+      "findings": 1166,
+      "report_bytes": 39970,
+      "report_sha256": "24df10b52133789c4abec33d4550533e1f02382835d577dc74bedbf063d5da23",
+      "budget_tier": 0,
+      "wire_bytes": 2627546,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 13
+        },
+        {
+          "tf": "W1",
+          "total": 54
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3303
+    },
+    {
+      "set": "control",
+      "symbol": "EURUSD",
+      "side": "bid",
+      "input_sha256": "6ed370edcd83a11aa8273eae738a859b36351a707b63f4560dbb406d4acd7421",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "closed_prefixes": 607,
+      "findings": 1157,
+      "report_bytes": 51155,
+      "report_sha256": "9e0d9961ff0be89b7eb705083e2fd22e8d9251835dfb8817bd25f27359fcb2aa",
+      "budget_tier": 0,
+      "wire_bytes": 2882091,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 8
+        },
+        {
+          "tf": "W1",
+          "total": 114
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3345
+    },
+    {
+      "set": "control",
+      "symbol": "EURUSD",
+      "side": "ask",
+      "input_sha256": "6ed370edcd83a11aa8273eae738a859b36351a707b63f4560dbb406d4acd7421",
+      "as_of": "2026-11-15T12:36:56.840Z",
+      "closed_prefixes": 607,
+      "findings": 1164,
+      "report_bytes": 50981,
+      "report_sha256": "2d5e547fbed38d0d2b97ec134c47d6970efbc9f74782c44800b35c0fd3ece542",
+      "budget_tier": 0,
+      "wire_bytes": 2889607,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 8
+        },
+        {
+          "tf": "W1",
+          "total": 114
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 0
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3521
+    },
+    {
+      "set": "control",
+      "symbol": "NAS100",
+      "side": "bid",
+      "input_sha256": "7acae3d4b60889e618248e316d5653541eb53b1886e02b131846bdbdd133258a",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "closed_prefixes": 608,
+      "findings": 1129,
+      "report_bytes": 47193,
+      "report_sha256": "8f96d2509c789ae7195582e195862f5b4820ede393d42e385b9e8f2352509afe",
+      "budget_tier": 0,
+      "wire_bytes": 2532321,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 5
+        },
+        {
+          "tf": "W1",
+          "total": 46
+        },
+        {
+          "tf": "D1",
+          "total": 1
+        },
+        {
+          "tf": "H4",
+          "total": 12
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 5934
+    },
+    {
+      "set": "control",
+      "symbol": "NAS100",
+      "side": "ask",
+      "input_sha256": "7acae3d4b60889e618248e316d5653541eb53b1886e02b131846bdbdd133258a",
+      "as_of": "2026-11-15T12:36:56.861Z",
+      "closed_prefixes": 608,
+      "findings": 1129,
+      "report_bytes": 47189,
+      "report_sha256": "f826d8e85a2d3838996f28ab1e79bcdebed66249b495d61537ec260973b82f4c",
+      "budget_tier": 0,
+      "wire_bytes": 2532117,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 5
+        },
+        {
+          "tf": "W1",
+          "total": 46
+        },
+        {
+          "tf": "D1",
+          "total": 1
+        },
+        {
+          "tf": "H4",
+          "total": 12
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 4667
+    },
+    {
+      "set": "control",
+      "symbol": "EU50",
+      "side": "bid",
+      "input_sha256": "52dc2063d156fe52a7adc4e854349a6381e84fa49ae6cd82eb2c6af44ad6ebc5",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "closed_prefixes": 609,
+      "findings": 1176,
+      "report_bytes": 41797,
+      "report_sha256": "f611a3b784fee7f5c762bc5838f29c4482a7a0e9b139a0a7b306bb7d854dc70a",
+      "budget_tier": 0,
+      "wire_bytes": 2652076,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 13
+        },
+        {
+          "tf": "W1",
+          "total": 54
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 14
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3433
+    },
+    {
+      "set": "control",
+      "symbol": "EU50",
+      "side": "ask",
+      "input_sha256": "52dc2063d156fe52a7adc4e854349a6381e84fa49ae6cd82eb2c6af44ad6ebc5",
+      "as_of": "2026-11-15T12:36:57.919Z",
+      "closed_prefixes": 609,
+      "findings": 1178,
+      "report_bytes": 39924,
+      "report_sha256": "866afb471e029453282c2420066835a776068d380ddb6586c16887434e0998e4",
+      "budget_tier": 0,
+      "wire_bytes": 2654618,
+      "range_candidates": [
+        {
+          "tf": "MN1",
+          "total": 13
+        },
+        {
+          "tf": "W1",
+          "total": 54
+        },
+        {
+          "tf": "D1",
+          "total": 0
+        },
+        {
+          "tf": "H4",
+          "total": 14
+        }
+      ],
+      "differential": {
+        "status": "BASELINE_NOT_SUPPLIED",
+        "removed": {},
+        "added": {},
+        "changed_findings": 0,
+        "changed_states": {},
+        "unexplained": 0
+      },
+      "result": "PASS",
+      "duration_ms": 3362
+    }
+  ]
+}

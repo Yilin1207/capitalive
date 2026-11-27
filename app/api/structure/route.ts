@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     const symbol = historySymbol(params);
     // Opt-in preserves the latency, availability and JSON contract of older callers.
-    const timeframes = TIMEFRAMES.filter(timeframe => timeframe !== "MN1" || params.has("mn1"));
+    const timeframes = TIMEFRAMES.filter(timeframe => (timeframe !== "MN1" || params.has("mn1")) && (timeframe !== "H1" || params.has("h1")));
     const limits = {} as Record<Timeframe, number>;
     for (const timeframe of timeframes) {
       try { limits[timeframe] = parseLimit(params.get(timeframe.toLowerCase()), HISTORY[timeframe].limit); }
@@ -28,6 +28,7 @@ export async function GET(request: Request) {
       ok: true, symbol, epic, provider, environment, price_side,
       fetched_at: Object.values(series).map(value => value.fetched_at).sort().at(-1),
       W1: series.W1.candles, D1: series.D1.candles, H4: series.H4.candles,
+      ...(series.H1 ? { H1: series.H1.candles } : {}),
       ...(series.MN1 ? { MN1: series.MN1.candles } : {}),
       metadata: Object.fromEntries(timeframes.map(timeframe => [timeframe, {
         ...series[timeframe].metadata, fetched_at: series[timeframe].fetched_at,
