@@ -35,3 +35,24 @@ test('raided pivots cannot displace an untouched IDM even when more than twelve 
  assert.ok(idm.consumed_total>12);
  assert.equal(idm.total,idm.items.length+idm.omitted);
 });
+
+for(const polarity of ['high','low'] as const)test('current pullback after the H4 '+polarity+' uses the actual pivot hour',()=>{
+ const data=market(),high=polarity==='high';
+ data.H4.candles[18]=candle(8,high?90:75,high?125:110);
+ const hours=Array.from({length:12},(_,i)=>{
+  const ago=12-i;
+  return candle(ago,high?(ago===10?91:ago===6?94:95):(ago===7?75:95),
+   high?(ago===7?125:105):(ago===10?109:ago===6?106:105));
+ });
+ const h=evaluate(data,hours);
+ assert.equal(h.idm_in_h4.pullback_extreme?.polarity,polarity);
+ assert.equal(h.idm_in_h4.pullback_extreme?.after_from,iso(6));
+ assert.equal(h.idm_in_h4.items.some(p=>p.pivot_at===iso(10)),false);
+ assert.ok(h.idm_in_h4.items.some(p=>p.pivot_at===iso(6)&&p.formed_after_dr_extreme));
+ assert.equal(h.fractals.find(p=>p.pivot_at===iso(10))?.formed_after_dr_extreme,false);
+ // A close outside the range supplies no side for the current pullback.
+ hours[11]=high?candle(1,95,130,128):candle(1,69,105,70);
+ const ambiguous=evaluate(data,hours);
+ assert.equal(ambiguous.idm_in_h4.pullback_side_known,false);
+ assert.ok(ambiguous.idm_in_h4.items.some(p=>p.pivot_at===iso(10)&&!p.formed_after_dr_extreme));
+});
