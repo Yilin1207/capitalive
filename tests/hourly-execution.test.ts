@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type {Candle,CandleResponse} from '../lib/candle-data';
 import {buildPaEngine} from '../lib/pa-engine/core';
-import {hourlyExecution} from '../lib/pa-engine/hourly-execution';
+import {freshHourlyStatus,hourlyExecution} from '../lib/pa-engine/hourly-execution';
 import {syntheticMarket} from './fixtures/jp225-synthetic';
 
 const hour=3600000;
@@ -55,4 +55,14 @@ for(const polarity of ['high','low'] as const)test('current pullback after the H
  const ambiguous=evaluate(data,hours);
  assert.equal(ambiguous.idm_in_h4.pullback_side_known,false);
  assert.ok(ambiguous.idm_in_h4.items.some(p=>p.pivot_at===iso(10)&&!p.formed_after_dr_extreme));
+});
+
+test('closed hourly data distinguishes warnings, clean observations, delay and no data',()=>{
+ assert.equal(freshHourlyStatus([]),'OK');
+ assert.equal(freshHourlyStatus(['SESSION_COVERAGE_NOT_INDEPENDENTLY_VERIFIED']),'PARTIAL');
+ const data=market(),core=buildPaEngine(data,'bid');
+ const run=(candles:Candle[])=>hourlyExecution({...data.H4,timeframe:'H1',candles},core);
+ assert.equal(run([candle(1,95,105)]).status,'PARTIAL');
+ assert.equal(run([candle(4,95,105)]).status,'STALE');
+ assert.equal(run([]).status,'UNAVAILABLE');
 });

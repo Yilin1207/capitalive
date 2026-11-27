@@ -11,6 +11,10 @@ import type {PaEngine} from './core';
 const WINDOW=12;
 const round=(v:number)=>Number(v.toFixed(10));
 
+export function freshHourlyStatus(warnings:readonly string[]){
+ return warnings.length?'PARTIAL' as const:'OK' as const;
+}
+
 // H4 identifies the two boundary candles. Within the later candle the extreme's
 // hour is knowable only when the complete hourly sequence agrees with its price.
 function pullbackExtreme(core:PaEngine,range:ReturnType<typeof thesisRanges>['active_dr']['H4'],bars:Bar[]){
@@ -64,7 +68,7 @@ export function hourlyExecution(data:CandleResponse,core:PaEngine){
  const approach=approachBars(sameSegment,atrD1(core)?.value??null,null);
  const approachWindow=approach?sameSegment.slice(-approach.window_bars):[];
  const body=(b:typeof latest)=>Math.abs(b.close-b.open);
- const facts={status:'PARTIAL' as const,as_of:core.as_of,symbol:core.symbol,price_side:core.side,timeframe:'H1' as const,
+ const facts={status:freshHourlyStatus(frame.warnings),as_of:core.as_of,symbol:core.symbol,price_side:core.side,timeframe:'H1' as const,
   provider:'Capital.com',grid:'utc' as const,last_closed_at:latest.end,warnings:frame.warnings,window_start:first.time,
   last_closed_candles:tail.map(b=>({time:b.time,closed_at:b.end,open:b.open,high:b.high,low:b.low,close:b.close,segment:b.segment})),
   fractals,fvg,new_fvg_count:{bullish:fvg.filter(f=>f.polarity==='bullish').length,bearish:fvg.filter(f=>f.polarity==='bearish').length},

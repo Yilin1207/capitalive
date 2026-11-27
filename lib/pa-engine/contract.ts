@@ -77,8 +77,9 @@ export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[]
  if(b.h1_execution!==undefined){
   const h=b.h1_execution;
   if(!b.observations_available){if(h!==null)fail();}
-  else if(!h||h.as_of!==b.as_of||!['PARTIAL','STALE','UNAVAILABLE'].includes(h.status))fail();
-  else if(h.status==='PARTIAL'){
+  else if(!h||h.as_of!==b.as_of||!['OK','PARTIAL','STALE','UNAVAILABLE'].includes(h.status))fail();
+  else if(h.status==='OK'||h.status==='PARTIAL'){
+   if(!strings(h.warnings)||h.status!==(h.warnings.length?'PARTIAL':'OK'))fail();
    if(h.symbol!==b.symbol||h.price_side!==b.price_side||h.timeframe!=='H1'||!date(h.last_closed_at)||h.last_closed_at>b.as_of||
     !/^[a-f0-9]{64}$/.test(h.snapshot_sha256)||!Array.isArray(h.last_closed_candles)||h.last_closed_candles.length<1||
     h.last_closed_candles.length>12||h.last_closed_candles.at(-1).closed_at!==h.last_closed_at)fail();
