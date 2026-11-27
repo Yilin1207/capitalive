@@ -52,8 +52,9 @@ export function checkHourlyBatch(batch,raw=JSON.stringify(batch)){
   if(!Object.hasOwn(b,'h1_execution'))throw Error('H1_MISSING '+s);
   const h=b.h1_execution;
   if(!b.observations_available){if(h!==null)throw Error('H1_WITHHELD '+s);continue;}
-  if(!h||h.as_of!==b.as_of||!['PARTIAL','STALE','UNAVAILABLE'].includes(h.status))throw Error('H1_STATUS '+s);
-  if(h.status!=='PARTIAL')continue;
+  if(!h||h.as_of!==b.as_of||!['OK','PARTIAL','STALE','UNAVAILABLE'].includes(h.status))throw Error('H1_STATUS '+s);
+  if(!['OK','PARTIAL'].includes(h.status))continue;
+  if(!Array.isArray(h.warnings)||h.status!==(h.warnings.length?'PARTIAL':'OK'))throw Error('H1_WARNINGS '+s);
   if(h.symbol!==s||h.price_side!==b.price_side||h.timeframe!=='H1'||!Array.isArray(h.last_closed_candles)||
    !h.last_closed_candles.length||h.last_closed_candles.length>12||h.last_closed_candles.at(-1).closed_at!==h.last_closed_at||
    !Array.isArray(h.fractals)||!Array.isArray(h.fvg)||!h.new_fvg_count||!Object.hasOwn(h,'approach')||
@@ -76,7 +77,7 @@ async function main(){
   files=filesFor(batch,new Date().toISOString(),requestedAt);
   const status=files['brief/status.json'];
   status.h1_by_symbol=Object.fromEntries(SYMBOLS.map(s=>[s,batch.briefs[s]?.h1_execution?.status??batch.results[s]?.status??'UNAVAILABLE']));
-  status.ok=SYMBOLS.every(s=>batch.results[s]?.http_status===200&&batch.briefs[s]?.observations_available&&status.h1_by_symbol[s]==='PARTIAL');
+  status.ok=SYMBOLS.every(s=>batch.results[s]?.http_status===200&&batch.briefs[s]?.observations_available&&['OK','PARTIAL'].includes(status.h1_by_symbol[s]));
   if(!status.ok)process.exitCode=1;
  }catch(error){
   // Never replace an error with an older success: record the failed attempt; earlier files keep their own timestamps.
