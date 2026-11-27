@@ -15,7 +15,17 @@ const norm=k=>k.replace(/[^a-z0-9]/gi,'').toLowerCase();
 export function checkBatch(batch,raw=JSON.stringify(batch)){
  if(!batch||batch.schema_version!=='pa-brief-batch-v1'||batch.mode!=='PA_ONLY'||batch.trading_enabled!==false)throw Error('NOT_A_PA_BRIEF_BATCH');
  if(SECRET_PATTERNS.some(r=>r.test(raw)))throw Error('SECRET_PATTERN_IN_PAYLOAD');
- const walk=(v,path)=>{if(Array.isArray(v))v.forEach((x,i)=>walk(x,path+'['+i+']'));else if(v&&typeof v==='object')for(const[k,x]of Object.entries(v)){if(FORBIDDEN.has(norm(k)))throw Error('FORBIDDEN_KEY '+path+'.'+k);walk(x,path+'.'+k);}};
+ const walk=(v,path)=>{
+  if(Array.isArray(v))return v.forEach((x,i)=>walk(x,path+'['+i+']'));
+  if(!v||typeof v!=='object')return;
+  for(const [k,x] of Object.entries(v)){
+   // A confirmed two-candle RB's polarity is an observed property of its formation.
+   const rbPolarity=k==='direction'&&['bullish','bearish'].includes(x)&&['FVG','FRACTAL'].includes(v.rb_type)&&
+    /^\$\.briefs\.(?:NAS100|EU50|EURUSD)\.thesis_inputs\.opposite_side\.(?:W1|D1)\.new_rb\.items\[\d+\]$/.test(path);
+   if(FORBIDDEN.has(norm(k))&&!rbPolarity)throw Error('FORBIDDEN_KEY '+path+'.'+k);
+   walk(x,path+'.'+k);
+  }
+ };
  walk(batch,'$');
  if(!Array.isArray(batch.symbols)||batch.symbols.length!==SYMBOLS.length||!SYMBOLS.every(s=>batch.symbols.includes(s)))throw Error('INCOMPLETE_SYMBOL_SET');
  for(const s of batch.symbols){
@@ -33,8 +43,8 @@ export function filesFor(batch,publishedAt,requestedAt=publishedAt){
  return files;
 }
 
-export function checkHourlyBatch(batch){
- checkBatch(batch);
+export function checkHourlyBatch(batch,raw=JSON.stringify(batch)){
+ checkBatch(batch,raw);
  for(const s of SYMBOLS){
   const b=batch.briefs[s],result=batch.results?.[s];
   if(!result)throw Error('MISSING_RESULT '+s);
@@ -61,8 +71,7 @@ async function main(){
  try{
   const res=await fetch(url,{headers:{accept:'application/json','user-agent':'capitalive-brief-publisher'}});
   const raw=await res.text(),batch=JSON.parse(raw);
-  checkBatch(batch,raw);
-  checkHourlyBatch(batch);
+  checkHourlyBatch(batch,raw);
   // published_at is taken after the response, so it is never earlier than the batch generated_at.
   files=filesFor(batch,new Date().toISOString(),requestedAt);
   const status=files['brief/status.json'];

@@ -15,7 +15,13 @@ async function batch(failing?:string){
 test('publisher accepts the real batch and rejects trading fields, secrets, enabled trading and oversize assets',async t=>{
  t.mock.timers.enable({apis:['Date'],now:Date.parse(syntheticMarket('NAS100').asOf)});
  const b=await batch();checkBatch(b);
+ const rbCase=structuredClone(b);
+ rbCase.briefs.NAS100.thesis_inputs.opposite_side.W1.new_rb.items=[{rb_type:'FRACTAL',direction:'bearish'}];
+ checkBatch(rbCase);
+ rbCase.briefs.NAS100.thesis_inputs.opposite_side.W1.new_rb.items[0].direction='SHORT';
+ assert.throws(()=>checkBatch(rbCase),/FORBIDDEN_KEY/);
  const bad:[string,(x:any)=>void,RegExp][]=[
+  ['strategy direction',x=>{x.briefs.NAS100.direction='bullish';},/FORBIDDEN_KEY/],
   ['schema',x=>{x.schema_version='pa-brief-v1';},/NOT_A_PA_BRIEF_BATCH/],
   ['trading',x=>{x.trading_enabled=true;},/NOT_A_PA_BRIEF_BATCH/],
   ['asset trading',x=>{x.briefs.EU50.trading_enabled=true;},/TRADING_ENABLED/],
