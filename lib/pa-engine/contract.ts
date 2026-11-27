@@ -68,12 +68,24 @@ export const PA_BRIEF_SCHEMA='pa-brief-v1';
 export function validatePaBrief(value:unknown,symbol?:string,secrets:string[]=[],maxBytes=65536):void{
  const b=obj(value),raw=JSON.stringify(value);if(!raw||Buffer.byteLength(raw)+1>maxBytes)throw Error('BRIEF_TOO_LARGE');
  assertPublishable(b,raw,secrets,'BRIEF');
- keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 approach_config selection_policy level_rules timeframes thesis_inputs coverage omitted definitions links trading_enabled');
+ keys(b,'schema_version contract_revision mode technical_only symbol price_side grid engine status data_quality observations_available generated_at as_of expires_at snapshot_sha256 source quote freshness warnings reference atr_d1 approach_config selection_policy level_rules timeframes thesis_inputs h1_execution coverage omitted definitions links trading_enabled');
  if(b.schema_version!==PA_BRIEF_SCHEMA||b.contract_revision!==PA_CONTRACT_REVISION||b.mode!=='PA_ONLY'||b.technical_only!==true||b.trading_enabled!==false||!ACTIVE_RESEARCH_SYMBOLS.some(s=>s===b.symbol)||symbol&&b.symbol!==symbol||!['bid','ask'].includes(b.price_side)||!['ERROR','STALE','PARTIAL','UNVERIFIED'].includes(b.status)||typeof b.observations_available!=='boolean')fail();
  if(!date(b.generated_at)||!date(b.as_of)||!date(b.expires_at)||b.as_of>b.generated_at||b.expires_at<b.generated_at||!/^[a-f0-9]{64}$/.test(b.snapshot_sha256)||obj(b.quote).used_as_closed_evidence!==false||!strings(b.warnings))fail();
  checkGrid(b.grid,b.timeframes);
  const withheld=['STALE','ERROR'].includes(b.status);
  if(withheld&&(b.observations_available||b.reference!==null))fail();
+ if(b.h1_execution!==undefined){
+  const h=b.h1_execution;
+  if(!b.observations_available){if(h!==null)fail();}
+  else if(!h||h.as_of!==b.as_of||!['PARTIAL','STALE','UNAVAILABLE'].includes(h.status))fail();
+  else if(h.status==='PARTIAL'){
+   if(h.symbol!==b.symbol||h.price_side!==b.price_side||h.timeframe!=='H1'||!date(h.last_closed_at)||h.last_closed_at>b.as_of||
+    !/^[a-f0-9]{64}$/.test(h.snapshot_sha256)||!Array.isArray(h.last_closed_candles)||h.last_closed_candles.length<1||
+    h.last_closed_candles.length>12||h.last_closed_candles.at(-1).closed_at!==h.last_closed_at)fail();
+   for(const c of h.last_closed_candles)if(!date(c.time)||!date(c.closed_at)||Date.parse(c.closed_at)-Date.parse(c.time)!==3600000||
+    c.closed_at>b.as_of||![c.open,c.high,c.low,c.close].every(finite)||c.low>Math.min(c.open,c.close)||c.high<Math.max(c.open,c.close))fail();
+  }
+ }
  // Archived pa-brief-v1 snapshots may predate thesis_inputs.
  if(b.thesis_inputs!==undefined){
   const x=b.thesis_inputs;

@@ -4,7 +4,7 @@ import {paHttp} from '../lib/pa-engine/http';
 import {syntheticMarket} from './fixtures/jp225-synthetic';
 import type {Timeframe} from '../lib/candle-data';
 // @ts-expect-error plain ESM script shipped to the public snapshot repository
-import {checkBatch,filesFor,SYMBOLS} from '../ops/brief-publisher/publish.mjs';
+import {checkBatch,checkHourlyBatch,filesFor,SYMBOLS} from '../ops/brief-publisher/publish.mjs';
 
 async function batch(failing?:string){
  const per=Object.fromEntries(['NAS100','EU50','EURUSD'].map(s=>[s,syntheticMarket(s)]));
@@ -26,6 +26,7 @@ test('publisher accepts the real batch and rejects trading fields, secrets, enab
   ['size',x=>{x.briefs.EURUSD.warnings.push('X'.repeat(200_001));},/ASSET_TOO_LARGE/],
  ];
  for(const [name,mutate,err] of bad){const x=structuredClone(b);mutate(x);assert.throws(()=>checkBatch(x),err,name);}
+ assert.throws(()=>checkHourlyBatch(b),/H1_MISSING/);
  const files=filesFor(b,'2026-11-15T14:07:00.000Z');
  assert.deepEqual(Object.keys(files).sort(),['brief/EU50.json','brief/EURUSD.json','brief/NAS100.json','brief/latest.json','brief/status.json']);
  assert.equal(files['brief/NAS100.json'].brief.symbol,'NAS100');assert.equal(files['brief/status.json'].ok,true);

@@ -1,4 +1,5 @@
 import {DETAIL_TFS} from '../knowledge/detectors';
+import {hourlyExecution} from './hourly-execution';
 import {eventItems} from './thesis-observations';
 import {activeThesisRange,idmItems,thesisRanges} from './thesis-location';
 import 'server-only';
@@ -65,9 +66,11 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  if(view==='brief'&&!batch&&new URL(request.url).searchParams.has('symbols'))return paBatch(request,deps);
  const requestUrl=new URL(request.url),origin=requestUrl.origin,p=requestUrl.searchParams,symbol=(p.get('symbol')??'EURUSD').toUpperCase(),side=(p.get('side')??'bid').toLowerCase();
  const desk=view==='report'||view==='brief';
+ const includeH1=p.get('include_h1')==='1';
  const json=(body:unknown,status=200,retry=0)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*',...(retry?{'Retry-After':String(retry)}:{})}});
  const docs=`${origin}/llms.txt`;
  const fail=(code:string,status=400,message=HINTS[code]??code,retry=0)=>json({...paError(symbol,code),diagnostic:{message,docs}},status,retry);
+ if(p.has('include_h1')&&(view!=='brief'||!['0','1'].includes(p.get('include_h1')!)))return fail('INVALID_REQUEST',400,'include_h1 is 0 or 1 on /api/brief.');
  if(!ACTIVE_RESEARCH_SYMBOLS.includes(symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number]))return fail('INVALID_REQUEST',400,'symbol must be one of '+ACTIVE_RESEARCH_SYMBOLS.join(', ')+'.');
  if(!['bid','ask'].includes(side))return fail('INVALID_REQUEST',400,'side must be bid or ask.');
  if(request.method!=='GET'&&request.method!=='POST')return fail('METHOD_NOT_ALLOWED',405);
@@ -133,7 +136,17 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
    const report=buildPaReport(core,data,quote,new Date().toISOString(),commit,grid);
    validatePaReport(report,symbol);
-   if(view==='brief'){const maxBytes=batch?BATCH_BRIEF_MAX_BYTES:undefined,brief=buildPaBrief(report,core,origin,grid,{...(latest!==null?{candles:latest}:{}),maxBytes,selection:Object.fromEntries([...p].filter(([key])=>key==='as_of'||/^(?:(?:mn1|w1|d1)_)?(?:high|low)_id$/.test(key)))});validatePaBrief(brief,symbol,[],maxBytes);return json(brief,report.status==='ERROR'?503:200);}
+   if(view==='brief'){
+    let hourly;
+    if(includeH1){
+     hourly=null;
+     if(report.coverage.observations_available){
+      const hours=await deps.getCandles(market,'H1',HISTORY.H1.limit,refresh,grid);
+      if(hours.environment!==data.H4.environment||hours.epic!==data.H4.epic)throw Error('INVALID_HOURLY_SOURCE');
+      hourly=hourlyExecution(hours,core);
+     }
+    }
+    const maxBytes=batch?BATCH_BRIEF_MAX_BYTES:undefined,brief=buildPaBrief(report,core,origin,grid,{hourly,...(latest!==null?{candles:latest}:{}),maxBytes,selection:Object.fromEntries([...p].filter(([key])=>key==='as_of'||/^(?:(?:mn1|w1|d1)_)?(?:high|low)_id$/.test(key)))});validatePaBrief(brief,symbol,[],maxBytes);return json(brief,report.status==='ERROR'?503:200);}
    return json(report,report.status==='ERROR'?503:200);
   }
   if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
@@ -196,7 +209,7 @@ async function paBatch(request:Request,deps:Dependencies):Promise<Response>{
  const body={schema_version:BATCH_SCHEMA,contract_revision:PA_CONTRACT,mode:'PA_ONLY',technical_only:true,symbols:list,
   grid:(first.grid as {requested?:string}|undefined)?.requested??p.get('grid')??'ny',engine:engineInfo(engineCommit()),status,
   generated_at:new Date().toISOString(),
-  batch_sha256:ok.length===list.length?createHash('sha256').update(JSON.stringify(list.map(s=>[s,results[s].snapshot_sha256]))).digest('hex'):null,
+  batch_sha256:ok.length===list.length?createHash('sha256').update(JSON.stringify(list.map(s=>p.get('include_h1')==='1'?[s,results[s].snapshot_sha256,(briefs[s] as {h1_execution?:{snapshot_sha256?:string}|null}).h1_execution?.snapshot_sha256??null]:[s,results[s].snapshot_sha256]))).digest('hex'):null,
   results,briefs,omitted:{symbols_failed:list.filter(s=>!results[s].snapshot_sha256)},
   limits:{per_asset_max_bytes:BATCH_BRIEF_MAX_BYTES,last_closed_candles_per_tf:Number(p.get('latest')??5)},
   links:{self:url.toString(),docs},trading_enabled:false as const};

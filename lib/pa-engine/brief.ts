@@ -1,3 +1,4 @@
+import type {HourlyExecution} from './hourly-execution';
 import {thesisLocation} from './thesis-location';
 import {thesisObservations} from './thesis-observations';
 import type {Grid} from '../ny-grid';
@@ -34,7 +35,7 @@ export function paLinks(origin:string,symbol:string,side:string,snapshot:string,
  };
 }
 
-export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Grid='ny',options:{candles?:number;maxBytes?:number;selection?:Record<string,string>}={}){
+export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Grid='ny',options:{hourly?:HourlyExecution|null;candles?:number;maxBytes?:number;selection?:Record<string,string>}={}){
  const candles=options.candles??BRIEF_CANDLES,maxBytes=options.maxBytes??PA_MAX_BYTES;
  const available=report.coverage.observations_available,snapshot=report.snapshot_sha256;
  const link=paLinks(origin,core.symbol,core.side,snapshot,grid,options.selection);
@@ -72,6 +73,7 @@ export function buildPaBrief(report:PaReport,core:PaEngine,origin:string,grid:Gr
   reference:nearby?.block.reference??null,atr_d1:atr,approach_config:{...APPROACH_CONFIG,status:Object.values(APPROACH_CONFIG).includes(null)?'NEEDS_SPECIFICATION':'USER_APPROVED'},
   selection_policy:{levels:'NEAREST_BY_DISTANCE_NOT_SIGNIFICANCE',recent_fractals:'MOST_RECENT_CONFIRMED_NOT_SIGNIFICANCE',last_closed_candles:'LAST_CLOSED_BARS',last_closed_candles_per_tf:candles},
   level_rules:{kinds:[...NEARBY_KINDS],grouping:NEARBY_GROUPING,limit_applies_to:'GROUPED_LEVELS',excluded_states:[...NEARBY_EXCLUDED_STATES,...NEARBY_EXCLUDED_EXTRA],state_field:'lifecycle.state',per_side_limit:BRIEF_LEVELS_PER_SIDE,distance_unit:'PRICE',distance_atr_d1:'distance / atr_d1.value (unit only)',nested_in:'LIVE_HIGHER_TF_RB_SNR_FVG_CONTAINS_LEVEL_GEOMETRY_ONLY',strong_fractals:'THE EDGE Strong High/Low (HRL) facts as two separate flags: VC_AT_FRACTAL = RB/SNR of the same TF formed on one of the fractal candles; RAIDED_PRIOR_FRACTAL = a fractal candle was the first strict crossing of an earlier same-polarity fractal; component observations only; Q10 classifications are in thesis_inputs.opposite_side',fractals_inside_kl:'Fractals of this TF inside a live KL of the same or next higher TF (X-1 trigger geometry); see thesis_inputs.execution for confirmed Fractals inside the active DR',kl_events:'CLOSED_CANDLES_OWN_AND_LOWER_TF_AFTER_FORMATION: TOUCH inside / REJECTION close back beyond near edge / ACCEPTANCE close beyond far edge / RAID fractal wick beyond, close back; colour and wick share are not criteria',fvg_bounds:'UNFILLED_REMAINDER'},
+  ...(options.hourly!==undefined?{h1_execution:options.hourly}:{}),
   thesis_inputs:available?{as_of:core.as_of,...thesisLocation(core),...thesisObservations(core)}:null,
   timeframes,
   coverage:{findings_total:core.evidence.length,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',all_findings_via:'links.evidence_all'},

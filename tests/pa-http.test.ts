@@ -121,3 +121,25 @@ test('H1 pages share an hourly snapshot and exclude the forming hour', async t=>
  const changed=await paHttp(new Request(url(path+'&refresh=1&snapshot_sha256='+page.snapshot_sha256),{method:'POST'}),'candles',deps);
  assert.equal(changed.status,409);
 });
+
+test('opt-in brief embeds bounded hourly EMT facts using the H4 range and closed candles only',async t=>{
+ const f=fixture(),end=Date.parse(f.asOf);
+ t.mock.timers.enable({apis:['Date'],now:end});
+ const hourly={...f.data.H4,timeframe:'H1' as const,candles:f.data.H4.candles.map((b,i)=>({...b,time:new Date(end-(19-i)*3600000).toISOString(),is_closed:i<19}))};
+ const deps={...f.deps,getCandles:async(s:string,tf:Timeframe)=>tf==='H1'?hourly:f.deps.getCandles(s,tf)};
+ const res=await paHttp(url('symbol=EU50&include_h1=1'),'brief',deps),b=await res.json();
+ assert.equal(res.status,200);
+ const h=b.h1_execution;
+ assert.equal(h.last_closed_candles.length,12);
+ assert.equal(h.last_closed_at,f.asOf);
+ assert.equal(h.approach.flag,'NOT_EVALUATED');
+ assert.ok(h.fractals.length>0);
+ assert.ok(h.fractals.every((p:{confirmed_at:string})=>p.confirmed_at<=b.as_of));
+ assert.deepEqual(h.h4_range,b.timeframes.H4.dealing_range.active_dr);
+ assert.equal(h.fvg.length,h.new_fvg_count.bullish+h.new_fvg_count.bearish);
+ for(const p of h.idm_in_h4.items){
+  assert.ok(p.price>h.h4_range.low&&p.price<h.h4_range.high);
+  assert.ok(Math.abs(p.distance_to_eq-Math.abs(p.price-h.h4_range.eq))<1e-8);
+ }
+ assert.ok(Buffer.byteLength(JSON.stringify(b))<=65536);
+});

@@ -68,7 +68,11 @@ export function klEvents(core:Core,level:Pick<NearbyLevel,'id'|'lower'|'upper'>,
 
 /** Facts about the latest closed candles of a TF; flags stay NOT_EVALUATED until thresholds are approved. */
 export function approach(core:Pick<PaEngine,'frames'>,tf:Tf,atr:number|null,levels:{above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[]}|null,cfg=APPROACH_CONFIG){
- const bars=core.frames[tf].ohlc,n=bars.length;if(n<2)return null;
+ return approachBars(core.frames[tf].ohlc,atr,levels,cfg);
+}
+
+export function approachBars(bars:Bar[],atr:number|null,levels:{above:NearbyLevel[];below:NearbyLevel[];at_price:NearbyLevel[]}|null,cfg=APPROACH_CONFIG){
+ const n=bars.length;if(n<2)return null;
  const last=bars[n-1],sign=Math.sign(last.close-bars[n-2].close);
  let run=0;if(sign)for(let i=n-1;i>0&&bars[i].segment===bars[i-1].segment&&Math.sign(bars[i].close-bars[i-1].close)===sign;i--)run++;
  const move=Math.abs(last.close-bars[n-1-run].close),win=bars.slice(-cfg.window_bars);
