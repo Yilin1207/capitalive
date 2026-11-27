@@ -33,7 +33,9 @@ export function hourlyExecution(data:CandleResponse,core:PaEngine){
    observed_fill_fraction:depth,remaining:remainingBounds(l,depth)};
  });
  const h4=thesisRanges(core).active_dr.H4;
- const inside=h4?pivots.filter(p=>p.price>h4.low&&p.price<h4.high).map(p=>({
+ const inRange=h4?pivots.filter(p=>p.price>h4.low&&p.price<h4.high):[];
+ const consumedTotal=inRange.filter(p=>p.first_observed_raid_at!==null).length;
+ const inside=h4?inRange.filter(p=>p.first_observed_raid_at===null).map(p=>({
   ...p,same_h1_segment_as_latest:p.segment===latest.segment,distance_to_eq:round(Math.abs(p.price-h4.eq)),position_pct:round(100*(p.price-h4.low)/(h4.high-h4.low)),
   known_together_at:p.confirmed_at>h4.confirmed_at?p.confirmed_at:h4.confirmed_at
  })).sort((a,b)=>a.distance_to_eq-b.distance_to_eq||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id)):[];
@@ -46,7 +48,7 @@ export function hourlyExecution(data:CandleResponse,core:PaEngine){
   fractals,fvg,new_fvg_count:{bullish:fvg.filter(f=>f.polarity==='bullish').length,bearish:fvg.filter(f=>f.polarity==='bearish').length},
   approach:approach?{...approach,window_start:approachWindow[0].time,mean_body:round(approachWindow.reduce((n,b)=>n+body(b),0)/approachWindow.length),
    last_body:round(body(latest)),new_fvg_count:fvg.filter(f=>f.confirmed_at>=approachWindow[0].end).length}:null,
-  h4_range:h4,idm_in_h4:{range_available:!!h4,selection:'CONFIRMED_H1_IN_AVAILABLE_WINDOW_INSIDE_ACTIVE_H4_SORTED_BY_DISTANCE_TO_EQ',
+  h4_range:h4,idm_in_h4:{range_available:!!h4,consumed_total:consumedTotal,selection:'UNRAIDED_H1_INSIDE_ACTIVE_H4_SORTED_BY_DISTANCE_TO_EQ',
    items:inside.slice(0,WINDOW),total:inside.length,omitted:Math.max(0,inside.length-WINDOW)}};
  return {...facts,snapshot_sha256:createHash('sha256').update(JSON.stringify(facts)).digest('hex')};
 }
