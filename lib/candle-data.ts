@@ -1,10 +1,11 @@
 // Public data types and pure validation; no credentials or server imports.
-export const TIMEFRAMES = ["W1", "D1", "H4", "MN1"] as const;
+export const TIMEFRAMES = ["W1", "D1", "H4", "MN1", "H1"] as const;
 export type Timeframe = (typeof TIMEFRAMES)[number];
 export type PriceSide = "bid" | "ask";
 export const HISTORY = {
   W1: { resolution: "WEEK", limit: 120, seconds: 7 * 86400 },
   D1: { resolution: "DAY", limit: 200, seconds: 86400 },
+  H1: { resolution: "HOUR", limit: 240, seconds: 3600 },
   H4: { resolution: "HOUR_4", limit: 240, seconds: 4 * 3600 },
   MN1: { resolution: "DAY", limit: 60, seconds: 0 }, // Calendar arithmetic only; never a fixed 30-day month.
 } as const;

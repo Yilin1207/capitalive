@@ -20,7 +20,7 @@ export async function chartResponse(request: Request, dependencies = { getCandle
     checkHistoryRequest(request);
     const params = new URL(request.url).searchParams, { symbol, side, settings, selection } = analysisParams(params);
     const timeframe = (params.get("timeframe") ?? "H4").toUpperCase() as Timeframe;
-    if (!TIMEFRAMES.includes(timeframe)) throw new HistoryError("INVALID_TIMEFRAME", "Supported timeframes: MN1, W1, D1, H4", 400);
+    if (!TIMEFRAMES.includes(timeframe)) throw new HistoryError("INVALID_TIMEFRAME", "Supported timeframes: MN1, W1, D1, H4, H1", 400);
     if (selection && timeframe !== "H4") throw new HistoryError("INVALID_RANGE_SELECTION", "Explicit range selection is supported only for H4", 400);
     const barsRaw = params.get("bars") ?? "120";
     if (!/^\d+$/.test(barsRaw) || Number(barsRaw) < 20 || Number(barsRaw) > 240) throw new HistoryError("INVALID_BARS", "bars must be an integer from 20 to 240", 400);

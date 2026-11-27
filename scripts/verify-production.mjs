@@ -16,7 +16,7 @@ async function get(path, expected = 200) {
 }
 const save = async (name, body) => writeFile(`verification/${name}.json`, JSON.stringify(body, null, 2) + "\n");
 try {
-  for (const timeframe of ["UNKNOWN", "MONTH", "M1", "H1", ""]) {
+  for (const timeframe of ["UNKNOWN", "MONTH", "M1", "H2", ""]) {
     const body = await get(`/api/candles?symbol=BRENT&timeframe=${timeframe}`, 400);
     assert.equal(body.error.code, "INVALID_TIMEFRAME");
     assert.equal(body.timeframe, undefined);

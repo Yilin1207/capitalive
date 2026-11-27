@@ -2,7 +2,7 @@ import { ANALYSIS_TIMEFRAMES, type SeriesAnalysis } from './technical-analysis';
 import type { Timeframe } from './candle-data';
 import type { SNRAudit, SNRZone } from './htf-snr';
 
-export const SNR_COLORS: Record<Timeframe, string> = { MN1: '#c8a5ff', W1: '#66c8ff', D1: '#f1c76b', H4: '#57dab2' };
+export const SNR_COLORS: Record<Timeframe, string> = { MN1: '#c8a5ff', W1: '#66c8ff', D1: '#f1c76b', H4: '#57dab2', H1: '#7db6ee' };
 export type PriorityZone = Pick<SNRZone, 'id' | 'timeframe' | 'lower' | 'upper' | 'role' | 'provisional_role' | 'status' | 'current_state' | 'break_status' | 'retest_status' | 'origin' | 'confirmed_at'> & {
   position: 'above' | 'below' | 'inside' | 'unknown'; distance_atr: number | null; score: number;
   components: { timeframe: number; evidence: number; reaction: number; proximity: number; recency: number; confluence: number; penalty: number };

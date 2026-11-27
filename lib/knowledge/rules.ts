@@ -391,6 +391,23 @@ export function sourceCurrent(id: string) {
   );
 }
 RULES.push({...RULES.find(r=>r.id==='EDGE.LEVEL_STATE.v2')!,id:'EDGE.LEVEL_STATE.v3',version:3,definition:'FVG retains only the untested residual; full wick-depth fill is TESTED and never ACTIVE. Own-TF close invalidation remains separate.',unresolved:['Closed OHLC wick-depth is not tick-volume coverage. Missing history cannot prove an untouched residual. Full fill does not prove IFVG or a new role.']});
+for(const [parent,definition,formation,invalidation] of [
+  ['EDGE.SNR.v2','SNR uses the first candle body as a zone. Prior KL delivery is optional.',
+    'Confirm an opposing pair on the first later directional close strictly beyond the first close.',
+    'A strict own-timeframe close beyond the first open breaks the zone.'],
+  ['EDGE.RB.v2','Two opposing candles confirm RB at the first close.',
+    'The first candle raids and reclaims fresh fractal liquidity and the second closes on the reclaimed side, or the first closes inside an active FVG residual.',
+    'A strict own-timeframe counter-close beyond the first close breaks the level.'],
+  ['EDGE.LEVEL_STATE.v3','A full-depth fill invalidates FVG. SNR and RB break on a strict own-timeframe close beyond the far edge.',
+    'Observe tests only after formation. Partial FVG fills leave the untested residual active.',
+    'A broken level or fully filled FVG has no subsequent role.']
+] as const){
+  const base=rule(parent),version=base.version+1;
+  RULES.push({...base,id:parent.replace(/v\d+$/,'v'+version),version,definition,formation:[formation],confirmation:[formation],
+    invalidation:[invalidation],unresolved:['The supplied closed history bounds the observed interactions.'],
+    implementation:'PA_ONLY rulebook Q2–Q6',specification:'EXECUTABLE',
+    validation:{...base.validation,unit:'tests/pa-rulebook-levels.test.ts',golden:'Closed OHLC regressions for both sides of the formation.'}});
+}
 export function provenance(id: string) {
   const r = rule(id),
     current = r.source_ids.every(sourceCurrent);

@@ -10,15 +10,18 @@ export function agentIndex(origin:string){
   market_context:q('/api/desk-report',{symbol,view:'market-context'}),
   evidence_h4:q('/api/pa-evidence',{symbol,timeframe:'H4',limit:'50'}),
   evidence_d1:q('/api/pa-evidence',{symbol,timeframe:'D1',limit:'50'}),
+  candles_h1:q('/api/pa-candles',{symbol,timeframe:'H1',latest:'20'}),
+  evidence_h1:q('/api/pa-evidence',{symbol,timeframe:'H1'}),
+  structure_h1:q('/api/pa-evidence',{symbol,timeframe:'H1',view:'structure'}),
   candles_h4:q('/api/pa-candles',{symbol,timeframe:'H4',limit:'200'}),
   candles_d1:q('/api/pa-candles',{symbol,timeframe:'D1',limit:'200'}),
   structure_h4:q('/api/pa-evidence',{symbol,view:'structure',timeframe:'H4'}),
  }]));
  return {
   service:'Capitalive',schema_version:'agent-index-v1',mode:'PA_ONLY',trading_enabled:false,
-  description:'Technical Price Action evidence (THE EDGE rules) from Capital.com Bid/Ask CFD candles on closed MN1/W1/D1/H4 bars. No narrative, direction, entries, stops, targets, probabilities or scores.',
+  description:'Technical Price Action evidence (THE EDGE rules) from Capital.com Bid/Ask CFD candles on closed MN1/W1/D1/H4 bars with on-demand H1 execution detail. No narrative, direction, entries, stops, targets, probabilities or scores.',
   start_here:'Fetch markets.<SYMBOL>.brief first. It has the quote, freshness, per-timeframe last closed candles, dealing range, nearest active levels and recent fractals, each with absolute drill-down URLs.',
-  symbols:[...ACTIVE_RESEARCH_SYMBOLS],timeframes:['MN1','W1','D1','H4'],price_sides:['bid','ask'],
+  symbols:[...ACTIVE_RESEARCH_SYMBOLS],timeframes:['MN1','W1','D1','H4','H1'],price_sides:['bid','ask'],
   markets,
   docs:`${origin}/llms.txt`,
   rules:[
@@ -38,6 +41,9 @@ export function llmsText(origin:string){
 - Brief, Ask side: ${m.brief_ask}
 - Full desk report (≤64 KB): ${m.desk_report}
 - Market context (VIX CFD, client sentiment, realized volatility): ${m.market_context}
+- H1 execution detail (native Capital.com HOUR, UTC): ${m.candles_h1}
+- H1 PA evidence: ${m.evidence_h1}
+- H1 structure: ${m.structure_h1}
 - All H4 findings: ${m.evidence_h4}
 - All D1 findings: ${m.evidence_d1}
 - H4 closed candles: ${m.candles_h4}
@@ -55,8 +61,9 @@ Public, read-only, no login. JSON over HTTPS GET. CORS open.
 3. "quote" is a live Bid/Ask price and is never closed-candle evidence. Evidence uses only fully closed candles.
 4. "timeframes.<TF>.levels" lists the nearest non-invalidated levels above/below the last closed H4 close (FRACTAL — a raided fractal stays listed with state CONSUMED: its liquidity is taken but the zone remains, per Notion "Fractal Raid"; FVG unfilled remainder; RB; SNR). Order = distance only, not significance. One formation (same kind, timeframe, formation candles and bounds) observed at several known key levels is one row: "ids" = all its evidence ids, "contexts" = the key levels it was observed at, "formation_status" = CONFIRMED or NEEDS_SPECIFICATION. The 5-per-side limit counts these grouped rows.
 4a. Per level: "distance_atr_d1" (distance / "atr_d1".value, a unit only), "nested_in" (live higher-TF RB/SNR/FVG zones that contain the level), "kl_events" (closed candles of the level TF and lower TFs after formation: TOUCH closed inside, REJECTION closed back beyond the near edge, ACCEPTANCE closed beyond the far edge, RAID fractal wick beyond with close back; "own_tf_counts" + "last").
-4b. Per timeframe: "dealing_range.premium_discount" (high, low, eq, price_position_pct 0=low 100=high, zone PREMIUM/DISCOUNT/EQ/ABOVE_RANGE/BELOW_RANGE, confirmed, selection AUTOMATIC_CANDIDATE or EXPLICIT_IDS); "approach" (bars_without_correction, move_atr_d1, overlapping_body_pairs, contracting_ranges, nearest_level_on_path; flag stays NOT_EVALUATED until thresholds are approved); "strong_fractals" (THE EDGE Strong High/Low facts, flags VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL); "fractals_inside_kl" (X-1 trigger geometry; IDM NEEDS_SPECIFICATION).
-4c. A single brief stays under 64 KiB: "omitted.fact_details_size_trimmed" names trimmed details; the symbols= batch keeps them (200 000 bytes per asset).
+4b. Per timeframe: "dealing_range.premium_discount" (high, low, eq, price_position_pct 0=low 100=high, zone PREMIUM/DISCOUNT/EQ/ABOVE_RANGE/BELOW_RANGE, confirmed, selection AUTOMATIC_CANDIDATE or EXPLICIT_IDS); "approach" (bars_without_correction, move_atr_d1, overlapping_body_pairs, contracting_ranges, nearest_level_on_path; flag stays NOT_EVALUATED until thresholds are approved); "strong_fractals" (THE EDGE Strong High/Low facts, flags VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL); "fractals_inside_kl" (geometric containment in a KL; see thesis_inputs.execution for IDM in an active DR).
+4c. "thesis_inputs" groups closed facts into location, strength (D1/W1), opposite_side (dated KL events and formations), and execution (internal fractals, movement origins, obstacles on both sides). Check the as_of timestamp. The highest applicable range has HTF priority. A tested SNR keeps its formation side until a close beyond the far edge; fully filled FVG has no active remainder.
+4d. A single brief stays under 64 KiB: "omitted.fact_details_size_trimmed" names trimmed details; the symbols= batch keeps them (200 000 bytes per asset).
 5. Drill down only by following URLs from responses: level "urls" (one per evidence id in "ids"; full evidence + interaction history), fractal "url", "links.evidence" / "links.candles" / "links.structure", and "links.next" for the next page.
 6. Pages are pinned to "snapshot_sha256". HTTP 409 SNAPSHOT_CHANGED = new closed candles arrived; refetch the brief.
 7. Any error JSON has "error" (code) and "diagnostic.message" (what to fix). HTTP 429 = wait "Retry-After" seconds.
@@ -69,9 +76,10 @@ ${index.symbols.map(market).join('\n\n')}
 ## Parameters
 - symbol: ${index.symbols.join(' | ')}
 - side: bid (default) | ask
-- timeframe: MN1 | W1 | D1 | H4
+- timeframe: MN1 | W1 | D1 | H4 | H1. H1 detail pages have their own snapshot. Follow links.next or retain timeframe=H1 with the H1 snapshot for lookup by id.
 - grid: ny (default; H4 and D1 close at 17:00 America/New_York, DST-aware, built from Capital.com HOUR bars; Sunday 17:00 ET opens Monday's D1) | utc (provider UTC grid: H4 00/04/08..., D1 00:00 UTC). W1 = Sunday-open to Friday-close week, MN1 = UTC calendar month on both grids. "grid.by_tf" in every response states the grid actually used per timeframe.
-- pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions
+- pa-evidence filters: kind (FRACTAL, FVG, RAID, TOUCH, RB_TWO_CANDLE, SNR_CLOSED_BREAK, FRACTAL_INSIDE_POI, DEALING_RANGE, PREMIUM_DISCOUNT), lifecycle (ACTIVE, CONSUMED, TESTED, BROKEN, INVALIDATED, UNVERIFIED, CANDIDATE, FILLED, PARTIALLY_FILLED), min_price, max_price, from, to, id, limit (1-50), view=structure|interactions|thesis; use the brief links thesis_events_d1/w1 or thesis_idm_<tf> and follow links.next. Thesis sections: idm, kl_events, new_rb, new_snr, new_fractal3, strong_near_price
+- brief: include_h1=1 embeds h1_execution: 12 closed H1 OHLC, confirmed fractals and FVG in that window, raw approach measurements and H1 fractals inside the active H4 range sorted by distance to equilibrium. A separate hash identifies the hourly facts. STALE or UNAVAILABLE means current H1 facts are unavailable.
 - brief: latest=N (last N closed candles per TF, 1-50, default 5); symbols=NAS100,EU50,EURUSD returns all briefs in one response ("briefs".<SYMBOL>, "results".<SYMBOL>.http_status/snapshot_sha256, "batch_sha256"), loaded one after another on the server - use it instead of parallel requests. A failed symbol stays visible as its error; status = worst symbol status.
 - pa-candles: timeframe, from, to, limit (1-200), latest=N (last N closed candles, 1-200, without offset/limit)
 - Contract specifications (Capital.com Demo, read-only, no account data): ${origin}/api/research-source?symbol=NAS100&mode=market - instrument.lotSize, instrument.marginFactor + marginFactorUnit, instrument.currency, dealingRules.minDealSize / minSizeIncrement / maxDealSize. Point value is not a separate provider field.

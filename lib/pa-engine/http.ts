@@ -1,3 +1,7 @@
+import {DETAIL_TFS} from '../knowledge/detectors';
+import {hourlyExecution} from './hourly-execution';
+import {eventItems} from './thesis-observations';
+import {activeThesisRange,idmItems,thesisRanges} from './thesis-location';
 import 'server-only';
 import {reconcileOhlc} from './coverage';
 import {HistoryCache} from '../history-cache';
@@ -7,7 +11,7 @@ import {getAnalysisQuote} from '../analysis-quote';
 import {HISTORY,type CandleResponse,type Timeframe,type PriceSide} from '../candle-data';
 import {checkHistoryRequest} from '../history-http';
 import {buildPaEngine,interactionsForEvidence} from './core';
-import {buildPaReport,engineCommit,engineInfo,gridInfo,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
+import {buildPaReport,engineCommit,engineInfo,paError,PA_CONTRACT,PA_TFS,snapshotHash,type PaEngine} from './report';
 import {bucketStart,GRIDS,type Grid} from '../ny-grid';
 import {ACTIVE_RESEARCH_SYMBOLS} from '../active-research-markets';
 import {validatePaBrief,validatePaReport} from './contract';
@@ -15,21 +19,22 @@ import {buildPaBrief,BATCH_BRIEF_MAX_BYTES,BRIEF_MAX_CANDLES} from './brief';
 import {createHash} from 'node:crypto';
 
 const KINDS=['FRACTAL','FVG','FVG_CLOSED_BREACH','RAID','TOUCH','RB_TWO_CANDLE','SNR_CLOSED_BREAK','FRACTAL_INSIDE_POI','DEALING_RANGE','PREMIUM_DISCOUNT'];
-const LIFECYCLES=['ACTIVE','CONSUMED','TESTED','INVALIDATED','UNVERIFIED','CANDIDATE','FILLED','PARTIALLY_FILLED'];
+const eventSections=['kl_events','new_rb','new_snr','new_fractal3','strong_near_price'] as const;
+const LIFECYCLES=['ACTIVE','CONSUMED','TESTED','BROKEN','INVALIDATED','UNVERIFIED','CANDIDATE','FILLED','PARTIALLY_FILLED'];
 /** Human-readable hints for API clients (including AI agents); the error code stays authoritative. */
 const HINTS:Record<string,string>={
  METHOD_NOT_ALLOWED:'Use GET (POST only for refresh=1 from the site itself).',
  INTERPRETATION_DISABLED:'anchor_id/target_id and request bodies are not accepted: Capitalive returns technical PA evidence only.',
  REFRESH_REQUIRES_POST:'refresh=1 requires POST; plain GET already returns the current snapshot.',
  ORIGIN_REJECTED:'Cross-origin POST is rejected; use GET.',
- INVALID_TIMEFRAME:'timeframe must be one of MN1, W1, D1, H4.',
+ INVALID_TIMEFRAME:'timeframe must be one of MN1, W1, D1, H4, H1 (H1 detail via pa-candles or pa-evidence).',
  INVALID_GRID:'grid must be ny (default: H4/D1 close at 17:00 America/New_York) or utc (provider UTC grid).',
  INVALID_PAGE:'offset must be an integer >= 0; limit 1..50 for evidence or 1..200 for candles; latest=1..200 (pa-candles only, without offset/limit).',
  INVALID_TIME:'from/to/as_of must be UTC ISO-8601 (2026-11-01, 2026-11-01T00:00:00Z or 2026-11-01T00:00:00.000Z); from <= to; as_of not in the future.',
  INVALID_PRICE_RANGE:'min_price/max_price must be positive numbers with min_price <= max_price.',
  INVALID_KIND:'kind must be one of '+KINDS.join(', ')+'.',
  SNAPSHOT_REQUIRED:'offset > 0 requires snapshot_sha256 from the first page; follow links.next instead of building the URL.',
- INVALID_VIEW:'view must be structure or interactions (pa-evidence) or market-context (desk-report).',
+ INVALID_VIEW:'view must be structure, interactions or thesis (pa-evidence) or market-context (desk-report).',
  INVALID_LIFECYCLE:'lifecycle must be one of '+LIFECYCLES.join(', ')+'.',
  INVALID_RANGE_SELECTION:'high_id and low_id (or <tf>_high_id/<tf>_low_id) must be given together and name confirmed fractal IDs of that timeframe.',
  SNAPSHOT_CHANGED:'Closed candles changed since this snapshot. Refetch /api/brief or the first page and follow the new links.',
@@ -61,9 +66,11 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  if(view==='brief'&&!batch&&new URL(request.url).searchParams.has('symbols'))return paBatch(request,deps);
  const requestUrl=new URL(request.url),origin=requestUrl.origin,p=requestUrl.searchParams,symbol=(p.get('symbol')??'EURUSD').toUpperCase(),side=(p.get('side')??'bid').toLowerCase();
  const desk=view==='report'||view==='brief';
+ const includeH1=p.get('include_h1')==='1';
  const json=(body:unknown,status=200,retry=0)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store','X-Desk-Contract':PA_CONTRACT,'X-Content-Type-Options':'nosniff','Access-Control-Allow-Origin':'*',...(retry?{'Retry-After':String(retry)}:{})}});
  const docs=`${origin}/llms.txt`;
  const fail=(code:string,status=400,message=HINTS[code]??code,retry=0)=>json({...paError(symbol,code),diagnostic:{message,docs}},status,retry);
+ if(p.has('include_h1')&&(view!=='brief'||!['0','1'].includes(p.get('include_h1')!)))return fail('INVALID_REQUEST',400,'include_h1 is 0 or 1 on /api/brief.');
  if(!ACTIVE_RESEARCH_SYMBOLS.includes(symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number]))return fail('INVALID_REQUEST',400,'symbol must be one of '+ACTIVE_RESEARCH_SYMBOLS.join(', ')+'.');
  if(!['bid','ask'].includes(side))return fail('INVALID_REQUEST',400,'side must be bid or ask.');
  if(request.method!=='GET'&&request.method!=='POST')return fail('METHOD_NOT_ALLOWED',405);
@@ -72,7 +79,9 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  if(request.method==='POST'&&request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return fail('ORIGIN_REJECTED',403);
  if(request.method==='POST'&&request.body){const reader=request.body.getReader();try{const first=await reader.read();if(!first.done&&first.value.length)return fail('INTERPRETATION_DISABLED');}catch{return fail('INVALID_REQUEST');}finally{await reader.cancel().catch(()=>{});}}
  const grid=(p.get('grid')??'ny').toLowerCase() as Grid;if(!GRIDS.includes(grid))return fail('INVALID_GRID');
- const tf=p.get('timeframe')??'H4';if(!PA_TFS.includes(tf as Timeframe))return fail('INVALID_TIMEFRAME');
+ const tf=p.get('timeframe')??'H4';const hourly=tf==='H1'&&!desk;
+ const requestedFrames=hourly?DETAIL_TFS:PA_TFS;
+ if(!requestedFrames.some(t=>t===tf))return fail('INVALID_TIMEFRAME');
  const offset=Number(p.get('offset')??0),limit=Number(p.get('limit')??(view==='candles'?50:8));if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>(view==='candles'?200:50))return fail('INVALID_PAGE');
  // latest=N: the last N closed candles (after from/to); a tail window, so it never combines with offset/limit.
  const latest=p.has('latest')?Number(p.get('latest')):null,latestMax=view==='candles'?200:BRIEF_MAX_CANDLES;if(latest!==null&&(!['candles','brief'].includes(view)||!/^\d+$/.test(p.get('latest')!)||latest<1||latest>latestMax||p.has('offset')||p.has('limit')))return fail('INVALID_PAGE');
@@ -81,36 +90,39 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
  const id=p.get('id')??p.get('level_id'),pin=p.get('snapshot_sha256');if(id&&id.length>1500)return fail('INVALID_REQUEST',400,'id is too long.');if(pin&&!/^[a-f0-9]{64}$/.test(pin))return fail('INVALID_REQUEST',400,'snapshot_sha256 must be 64 lowercase hex characters.');
  if(p.has('kind')&&!KINDS.includes(p.get('kind')!))return fail('INVALID_KIND');
  if(offset>0&&!pin)return fail('SNAPSHOT_REQUIRED');
- if(p.has('view')&&!['structure','interactions'].includes(p.get('view')!))return fail('INVALID_VIEW');
+ if(p.has('view')&&!['structure','interactions','thesis'].includes(p.get('view')!))return fail('INVALID_VIEW');
+ const section=p.get('section')??'kl_events';
+ if(p.get('view')==='thesis'&&(view!=='evidence'||(section!=='idm'&&(!eventSections.some(s=>s===section)||!['D1','W1'].includes(tf)))))return fail('INVALID_REQUEST',400,'Use section=idm on any timeframe, or a D1/W1 event section.');
  if(p.has('lifecycle')&&!LIFECYCLES.includes(p.get('lifecycle')!))return fail('INVALID_LIFECYCLE');
  try{
   const market=symbol as typeof ACTIVE_RESEARCH_SYMBOLS[number];
   const ranges:Partial<Record<Timeframe,{high_id:string;low_id:string}>>={};
-  for(const t of PA_TFS){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
+  for(const t of requestedFrames){const hi=p.get(t==='H4'?'high_id':t.toLowerCase()+'_high_id'),lo=p.get(t==='H4'?'low_id':t.toLowerCase()+'_low_id');if(hi||lo){if(!hi||!lo)return fail('INVALID_RANGE_SELECTION');ranges[t]={high_id:hi,low_id:lo};}}
   let store=stores.get(deps);if(!store){store=snapshotCache();stores.set(deps,store);}
-  const scope=JSON.stringify([market,side,ranges,asof,grid]);
+  const scope=JSON.stringify([market,side,ranges,asof,grid,hourly]);
   let saved=store.recent.get(scope);
   const policy=freshnessPolicy(process.env);
   // A pinned detail page can continue reading its immutable closed bars.
   const pinned=pin && !desk && !refresh && saved?.hash===pin;
   const currentMs=Date.now(), captured=saved?Date.parse(saved.core.as_of):NaN;
+  const bucket=(ms:number)=>hourly?Math.floor(ms/3600000):bucketStart(ms,'H4',grid);
   const reusableHistory=!desk && !refresh && !pin && !asof &&
-    currentMs>=captured && currentMs-captured<300_000 && bucketStart(currentMs,'H4',grid)===bucketStart(captured,'H4',grid);
+    currentMs>=captured && currentMs-captured<300_000 && bucket(currentMs)===bucket(captured);
   checkHistoryRequest(request,Boolean(pinned || reusableHistory));
   if(!pinned && !reusableHistory){
    const now=Date.now(), window=Math.min(60,policy.delivery_seconds)*1000;
-   const key=market+':'+grid+':'+Math.floor(now/window)+':'+bucketStart(now,'H4',grid);
+   const key=market+':'+grid+':'+Math.floor(now/window)+':'+bucket(now)+':'+hourly;
    // A desk refresh always requests a quote. Closed bars can share the current
    // bounded window across Bid/Ask, including concurrent desk refreshes.
    const forceFrames=refresh && !desk;
    const {value:data}=await store.frames.get(key,async()=>{
     const frames={} as Frames;
-    for(const t of PA_TFS)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh,grid);
+    for(const t of requestedFrames)frames[t]=await deps.getCandles(market,t,HISTORY[t].limit,refresh,grid);
     return frames;
    },now,forceFrames);
    if(forceFrames || !saved || saved.data!==data){
     const core=buildPaEngine(data,side as PriceSide,{...(asof?{as_of:asof}:{}),ranges});
-    if(PA_TFS.some(t=>ranges[t]&&core.frames[t].range_selection_error))return fail('INVALID_RANGE_SELECTION');
+    if(requestedFrames.some(t=>ranges[t]&&core.frames[t].range_selection_error))return fail('INVALID_RANGE_SELECTION');
     saved={core,data,hash:snapshotHash(core)};
     if(store.recent.size>=12&&!store.recent.has(scope))store.recent.delete(store.recent.keys().next().value!);
     store.recent.set(scope,saved);
@@ -124,23 +136,38 @@ export async function paHttp(request:Request,view:'report'|'brief'|'evidence'|'c
    const quote=await deps.getAnalysisQuote(market,undefined,refresh);
    const report=buildPaReport(core,data,quote,new Date().toISOString(),commit,grid);
    validatePaReport(report,symbol);
-   if(view==='brief'){const maxBytes=batch?BATCH_BRIEF_MAX_BYTES:undefined,brief=buildPaBrief(report,core,origin,grid,{...(latest!==null?{candles:latest}:{}),maxBytes});validatePaBrief(brief,symbol,[],maxBytes);return json(brief,report.status==='ERROR'?503:200);}
+   if(view==='brief'){
+    let hourly;
+    if(includeH1){
+     hourly=null;
+     if(report.coverage.observations_available){
+      const hours=await deps.getCandles(market,'H1',HISTORY.H1.limit,refresh,grid);
+      if(hours.environment!==data.H4.environment||hours.epic!==data.H4.epic)throw Error('INVALID_HOURLY_SOURCE');
+      hourly=hourlyExecution(hours,core);
+     }
+    }
+    const maxBytes=batch?BATCH_BRIEF_MAX_BYTES:undefined,brief=buildPaBrief(report,core,origin,grid,{hourly,...(latest!==null?{candles:latest}:{}),maxBytes,selection:Object.fromEntries([...p].filter(([key])=>key==='as_of'||/^(?:(?:mn1|w1|d1)_)?(?:high|low)_id$/.test(key)))});validatePaBrief(brief,symbol,[],maxBytes);return json(brief,report.status==='ERROR'?503:200);}
    return json(report,report.status==='ERROR'?503:200);
   }
   if(!core.frames[tf as Timeframe].closed_candles && (view==='candles'||p.has('timeframe')))return fail('NO_CLOSED_BARS',503);
-  if(!PA_TFS.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);
-  const base={mode:'PA_ONLY',symbol,price_side:side,grid:gridInfo(core,grid),engine:engineInfo(commit),last_closed_at_by_tf:Object.fromEntries(PA_TFS.map(t=>[t,core.frames[t].last_closed_at])),as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
+  if(!requestedFrames.some(t=>core.frames[t].closed_candles))return fail('NO_CLOSED_BARS',503);
+  const base={mode:'PA_ONLY',symbol,price_side:side,grid:{requested:grid,by_tf:Object.fromEntries(requestedFrames.map(t=>[t,core.frames[t].grid]))},engine:engineInfo(commit),last_closed_at_by_tf:Object.fromEntries(requestedFrames.map(t=>[t,core.frames[t].last_closed_at])),as_of:core.as_of,snapshot_sha256:hash,generated_at:new Date().toISOString(),expires_at:new Date(Date.parse(core.as_of)+policy.delivery_seconds*1000).toISOString(),
    source:{provider:'Capital.com',environment:data.H4.environment,analysis_schema:'pa-engine-v6',price_side:side,engine_commit:commit,evidence_sha256:hash,demo_live_equivalence:'NOT_ESTABLISHED',full_ohlc_published:false},
    quote_required:false,last_closed_at:core.frames[tf as Timeframe].last_closed_at,data_quality:core.data_quality,warnings:core.warnings,history_scope:'AVAILABLE_PROVIDER_WINDOW_NOT_FULL_MARKET_HISTORY',source_type:asof?'ARCHIVE_AS_OF':pinned?'PINNED_CLOSED_HISTORY':reusableHistory?'RECENT_CLOSED_HISTORY':'CURRENT_CLOSED_HISTORY',coverage:core.coverage};
   let result:Record<string,unknown>;
   if(view==='candles'){
    const f=core.frames[tf as Timeframe],all=f.ohlc.filter(b=>(!from||b.time>=from)&&(!to||b.time<to));const start=latest!==null?Math.max(0,all.length-latest):offset,rows=all.slice(start,latest!==null?all.length:offset+limit).map(b=>({...b,is_closed:true}));
    result={...base,schema_version:'pa-candles-page-v6',timeframe:tf,...(latest!==null?{latest}:{}),candles:rows,total:all.length,offset:start,next_offset:latest===null&&offset+rows.length<all.length?offset+rows.length:null,omitted:all.length-rows.length,complete:rows.length===all.length,diagnostics:f.diagnostics,ohlc_validation:f.ohlc_validation,calendar:f.calendar,aggregation_check:reconcileOhlc(data,tf as Timeframe,side as PriceSide,core.as_of),provider_validation:{discarded_rows:data[tf as Timeframe].metadata.discarded_rows,discarded_sides:data[tf as Timeframe].metadata.discarded_sides,reasons:data[tf as Timeframe].metadata.discarded_reasons,validation_gaps:data[tf as Timeframe].metadata.validation_gaps,reconstructions:data[tf as Timeframe].metadata.aggregation?.reconstructions}};
+  }else if(p.get('view')==='thesis'){
+   const all=section==='idm'?idmItems(core,tf as Timeframe):eventItems(core,tf as 'D1'|'W1',section as typeof eventSections[number]);
+   const items=all.slice(offset,offset+limit);
+   result={...base,schema_version:'pa-thesis-page-v1',timeframe:tf,section,items,total:all.length,offset,next_offset:offset+items.length<all.length?offset+items.length:null,complete:items.length===all.length};
   }else if(p.get('view')==='structure'){
-   result={...base,schema_version:'pa-structure-v6',timeframe:tf,market_structure:core.market_structure[tf as Timeframe],dealing_ranges:core.dealing_ranges.filter(r=>r.timeframe===tf),definitions:core.definitions,omitted:0};
+   const q9=thesisRanges(core);
+   result={...base,schema_version:'pa-structure-v6',timeframe:tf,market_structure:core.market_structure[tf as Timeframe],dealing_ranges:core.dealing_ranges.filter(r=>r.timeframe===tf).map(r=>({...r,active_dr:hourly && r.reference.price!==null?activeThesisRange(core,r.timeframe,core.evaluated_through,r.reference.price):q9.active_dr[r.timeframe],htf_priority:q9.priority_tf===r.timeframe})),definitions:core.definitions,omitted:0};
   }else if(p.get('view')==='interactions'){
    if(id&&!core.evidence.some(e=>e.id===id))return fail('EVIDENCE_NOT_IN_SNAPSHOT',404);
-   const all=id?interactionsForEvidence(core,id):core.cross_timeframe_interactions,items=all.slice(offset,offset+limit);
+   const all=id?interactionsForEvidence(core,id):hourly?core.cross_timeframe_interactions.filter(i=>i.timeframe===tf):core.cross_timeframe_interactions,items=all.slice(offset,offset+limit);
    result={...base,schema_version:'pa-interactions-page-v6',interactions:items,total:all.length,offset,next_offset:offset+items.length<all.length?offset+items.length:null,omitted:all.length-items.length,complete:items.length===all.length};
   }else{
    
@@ -182,7 +209,7 @@ async function paBatch(request:Request,deps:Dependencies):Promise<Response>{
  const body={schema_version:BATCH_SCHEMA,contract_revision:PA_CONTRACT,mode:'PA_ONLY',technical_only:true,symbols:list,
   grid:(first.grid as {requested?:string}|undefined)?.requested??p.get('grid')??'ny',engine:engineInfo(engineCommit()),status,
   generated_at:new Date().toISOString(),
-  batch_sha256:ok.length===list.length?createHash('sha256').update(JSON.stringify(list.map(s=>[s,results[s].snapshot_sha256]))).digest('hex'):null,
+  batch_sha256:ok.length===list.length?createHash('sha256').update(JSON.stringify(list.map(s=>p.get('include_h1')==='1'?[s,results[s].snapshot_sha256,(briefs[s] as {h1_execution?:{snapshot_sha256?:string}|null}).h1_execution?.snapshot_sha256??null]:[s,results[s].snapshot_sha256]))).digest('hex'):null,
   results,briefs,omitted:{symbols_failed:list.filter(s=>!results[s].snapshot_sha256)},
   limits:{per_asset_max_bytes:BATCH_BRIEF_MAX_BYTES,last_closed_candles_per_tf:Number(p.get('latest')??5)},
   links:{self:url.toString(),docs},trading_enabled:false as const};

@@ -5,7 +5,7 @@ import type { ChartHtf } from './chart-htf';
 
 export type ChartLayers = { fractals: boolean; fvg: boolean; ranges: boolean; eq: boolean; snr_mn1:boolean; snr_w1:boolean; snr_d1:boolean; snr_h4:boolean; snr_events:boolean };
 export const DEFAULT_LAYERS: ChartLayers = { fractals: true, fvg: true, ranges: true, eq: true, snr_mn1:false,snr_w1:false,snr_d1:false,snr_h4:false,snr_events:false };
-export const SNR_LAYER:Record<Timeframe,keyof ChartLayers>={MN1:'snr_mn1',W1:'snr_w1',D1:'snr_d1',H4:'snr_h4'};
+export const SNR_LAYER:Record<Exclude<Timeframe,'H1'>,keyof ChartLayers>={MN1:'snr_mn1',W1:'snr_w1',D1:'snr_d1',H4:'snr_h4'};
 const escape = (text: unknown) => String(text).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" })[c]!);
 
 /** Deterministic OHLC rendering shared by browser and PNG API; no remote assets or generated prices. */
@@ -38,7 +38,7 @@ export function chartSvg(data: CandleResponse, analysis: SeriesAnalysis, symbol:
   const dateIndexes = [...new Set(Array.from({ length: Math.min(7, candles.length) }, (_, i) => Math.round(i * (candles.length - 1) / Math.max(1, Math.min(7, candles.length) - 1))))];
   for (const i of dateIndexes) svg.push(`<text x="${x(i)}" y="722" text-anchor="middle" font-size="12">${escape(candles[i].time.slice(0, 10))}</text>`);
   svg.push(`<g clip-path="url(#plot)">`);
-  const enabledZones=htf?.priority_zones.zones.filter(z=>layers[SNR_LAYER[z.timeframe]])??[];
+  const enabledZones=htf?.priority_zones.zones.filter(z=>z.timeframe!=='H1' && layers[SNR_LAYER[z.timeframe]])??[];
   const visibleZones=enabledZones.filter(z=>z.upper>=lo&&z.lower<=hi);
   const drawnZones=(['MN1','W1','D1','H4'] as const).flatMap(tf=>{
     const candidates=visibleZones.filter(z=>z.timeframe===tf);

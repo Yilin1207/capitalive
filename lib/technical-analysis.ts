@@ -3,7 +3,7 @@ import { HISTORY, type Candle, type CandleResponse, type PriceSide, type Timefra
 // JP225 remains available in the general catalogue and historical regressions.
 export const ANALYSIS_SYMBOLS = ["EURUSD", "NAS100", "JP225", "EU50"] as const;
 export type AnalysisSymbol = typeof ANALYSIS_SYMBOLS[number];
-export const ANALYSIS_TIMEFRAMES = ["MN1", "W1", "D1", "H4"] as const;
+export const ANALYSIS_TIMEFRAMES: readonly Timeframe[] = ["MN1", "W1", "D1", "H4"];
 export const INSTRUMENTS = {
   EURUSD: { unit: "pip", unit_size: 0.0001, precision: 5, min_remaining_units: 0.5 },
   NAS100: { unit: "point", unit_size: 1, precision: 2, min_remaining_units: 1 },
@@ -207,9 +207,9 @@ export function targetMap(series: SeriesAnalysis[], price: number | null) {
   const levels: Level[] = [];
   for (const s of series) {
     for (const f of s.fractals.filter(f => f.liquidity_status !== "swept")) levels.push({ source_id: f.id, timeframe: s.timeframe,
-      kind: f.kind === "high" ? "fractal_high" : "fractal_low", price: f.price, eligible_d1_plus: s.timeframe !== "H4", liquidity_status: f.liquidity_status });
+      kind: f.kind === "high" ? "fractal_high" : "fractal_low", price: f.price, eligible_d1_plus: s.timeframe !== "H4" && s.timeframe !== "H1", liquidity_status: f.liquidity_status });
     for (const g of s.fvgs.filter(g => g.material && g.status !== "filled")) {
-      for (const boundary of [g.remaining_lower!, g.remaining_upper!]) levels.push({ source_id: g.id, timeframe: s.timeframe, kind: "fvg_boundary", price: boundary, eligible_d1_plus: s.timeframe !== "H4" });
+      for (const boundary of [g.remaining_lower!, g.remaining_upper!]) levels.push({ source_id: g.id, timeframe: s.timeframe, kind: "fvg_boundary", price: boundary, eligible_d1_plus: s.timeframe !== "H4" && s.timeframe !== "H1" });
     }
   }
   const direction = (above: boolean) => {
@@ -221,7 +221,7 @@ export function targetMap(series: SeriesAnalysis[], price: number | null) {
     return { nearest, alternatives: eligible, intermediate_obstacles: nearest ? sorted.filter(l => Math.abs(l.price - price) < Math.abs(nearest.price - price)) : sorted.filter(l => !l.eligible_d1_plus) };
   };
   const currentZones = price === null ? [] : series.flatMap(s => s.fvgs.filter(g => g.material && g.remaining_lower! <= price && g.remaining_upper! >= price)
-    .map(g => ({ source_id: g.id, timeframe: s.timeframe, lower: g.remaining_lower, upper: g.remaining_upper, eligible_d1_plus: s.timeframe !== "H4" })));
+    .map(g => ({ source_id: g.id, timeframe: s.timeframe, lower: g.remaining_lower, upper: g.remaining_upper, eligible_d1_plus: s.timeframe !== "H4" && s.timeframe !== "H1" })));
   return { reference_price: price, above: direction(true), below: direction(false), current_zones: currentZones,
     facts: "PA_ONLY: legacy geometric levels only, no automatic target selection. Complete author PA evidence is available in /api/desk-report.",
     hypotheses: [], probability: null, coverage: "loaded_history_only_not_exhaustive" };

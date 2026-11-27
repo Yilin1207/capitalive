@@ -76,7 +76,7 @@ test('kl events: touch, rejection, acceptance and raid by closed candles only',a
  const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
  const core=buildPaEngine(f.data,'bid'),b=await brief(f);let checked=0;
  for(const tf of PA_TFS)for(const k of ['above','below','at_price'])for(const x of b.timeframes[tf].levels[k]){
-  const ev=x.kl_events,e=core.evidence.find(y=>y.id===x.id)!;assert.deepEqual(ev,klEvents(core,x));
+  const ev=x.kl_events,e=core.evidence.find(y=>y.id===x.id)!;const original=klEvents(core,x);assert.deepEqual(ev,b.omitted.fact_details_size_trimmed.includes('KL_EVENTS_LAST')?{...original,last:[]}:original);
   assert.ok(ev!.last.length<=3);for(const y of ev!.last){assert.ok(y.at>e.confirmed_at&&y.at<=b.as_of);assert.ok(PA_TFS.indexOf(y.tf)>=PA_TFS.indexOf(tf));}
   checked++;}
  assert.ok(checked>0);
@@ -129,7 +129,7 @@ test('strong fractals: VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL are separate flags
  assert.deepEqual(s.items.find(x=>x.id==='X:H4:bid:FRACTAL:raidonly')!.flags,['RAIDED_PRIOR_FRACTAL']);
  assert.equal(s.items[0].id,'X:H4:bid:FRACTAL:raidonly');// most recent first
  const inside=fractalsInsideKl(core,'H4');
- assert.equal(inside.idm_status,'NEEDS_SPECIFICATION');assert.deepEqual(inside.items.map(x=>[x.id,x.kl_id,x.tf_relation]),[['X:H4:bid:FRACTAL:both','X:D1:bid:FVG:z','X-1']]);
+ assert.equal(inside.idm_status,'SEE_ACTIVE_DR');assert.deepEqual(inside.items.map(x=>[x.id,x.kl_id,x.tf_relation]),[['X:H4:bid:FRACTAL:both','X:D1:bid:FVG:z','X-1']]);
  const f=fixture();t.mock.timers.enable({apis:['Date'],now:Date.parse(f.asOf)});
  const engine=buildPaEngine(f.data,'bid'),b=await brief(f);
  for(const tf of PA_TFS){assert.deepEqual(b.timeframes[tf].strong_fractals,strongFractals(engine,tf));assert.deepEqual(b.timeframes[tf].fractals_inside_kl,fractalsInsideKl(engine,tf));}
@@ -138,7 +138,7 @@ test('strong fractals: VC_AT_FRACTAL and RAIDED_PRIOR_FRACTAL are separate flags
 test('definitions: approach is facts-only; the RB-from-FVG open question is resolved (flag removed)',()=>{
  const d=buildPaEngine(fixture().data,'bid').definitions as Record<string,string>;
  assert.equal(d.rb_from_fvg_without_body_close,undefined);
- assert.equal(d.strong_high_low,'NEEDS_SPECIFICATION');assert.equal(d.idm,'NEEDS_SPECIFICATION');assert.equal(d.significance,'NOT_EVALUATED');
+ assert.equal(d.strong_high_low,'RULEBOOK_Q10');assert.equal(d.idm,'FRACTAL_INSIDE_ACTIVE_DR');assert.equal(d.significance,'NOT_EVALUATED');
  assert.equal(d.approach_character,'FACTS_ONLY_THRESHOLDS_NEEDS_SPECIFICATION');
 });
 
@@ -149,11 +149,15 @@ test('size: a single brief trims fact details before levels and lists what was t
  const core=buildPaEngine(input.data,'bid'),report=buildPaReport(core,input.data,{...input.quote,provider_timestamp:now,retrieved_at:now,fresh:true,market_status:'TRADEABLE'},now);
  const full=buildPaBrief(report,core,'https://capitalive.test','ny',{maxBytes:200_000});
  const single=buildPaBrief(report,core,'https://capitalive.test','ny');
+ const longest=buildPaBrief(report,core,'https://capitalive-preview-example-yilin1207s-projects.vercel.app','utc',{candles:50});
+ assert.ok(Buffer.byteLength(JSON.stringify(longest))+1<=65536);
+ for(const tf of PA_TFS)assert.equal(longest.timeframes[tf].last_closed_candles.length,Math.min(50,core.frames[tf].closed_candles));
  assert.ok(Buffer.byteLength(JSON.stringify(full))>65536);assert.deepEqual(full.omitted.fact_details_size_trimmed,[]);
- assert.ok(Buffer.byteLength(JSON.stringify(single))<65536);assert.equal(single.omitted.levels_size_trimmed,0);
+ assert.ok(Buffer.byteLength(JSON.stringify(single))<65536);assert.equal(single.omitted.levels_size_trimmed,single.omitted.levels-full.omitted.levels);
+ assert.deepEqual(single.thesis_inputs,full.thesis_inputs);
  assert.deepEqual(single.omitted.fact_details_size_trimmed,['KL_EVENTS_LAST','STRONG_FRACTALS_AND_INSIDE_KL_ITEMS_BEYOND_FIRST']);
  for(const tf of PA_TFS){const a=single.timeframes[tf],b=full.timeframes[tf];
-  assert.deepEqual(a.levels!.above.map(x=>x.id),b.levels!.above.map(x=>x.id));assert.deepEqual(a.levels!.below.map(x=>x.id),b.levels!.below.map(x=>x.id));
+  for(const side of ['above','below','at_price'] as const)assert.deepEqual(a.levels![side].map(x=>x.id),b.levels![side].slice(0,a.levels![side].length).map(x=>x.id));
   assert.equal(a.strong_fractals!.total,b.strong_fractals!.total);assert.ok(a.strong_fractals!.items.length<=1);
   for(const x of a.levels!.below)assert.deepEqual(x.kl_events!.own_tf_counts,b.levels!.below.find(y=>y.id===x.id)!.kl_events!.own_tf_counts);}
 });

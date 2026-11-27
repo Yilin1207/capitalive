@@ -5,6 +5,8 @@ import type { Timeframe } from "../candle-data";
 import { provenance } from "./rules";
 import {snrFormationContext} from "./snr-context";
 export const TF_ORDER: Timeframe[] = ["MN1", "W1", "D1", "H4"];
+export const DETAIL_TFS: Timeframe[] = [...TF_ORDER, "H1"];
+export type LevelMethod = 'LEGACY' | 'PA_ONLY';
 export type Finding = {
   id: string;
   kind: string;
@@ -49,6 +51,8 @@ export type KeyLevel = {
   role: "support" | "resistance";
   confirmed_at: string;
   invalidated_at?: string | null;
+  /** Earliest closed crossing observed on the fractal's timeframe or a lower one. */
+  liquidity_taken_at?: string | null;
   continuity_end?: string;
   source_finding: Finding;
   qualified: boolean;
@@ -74,8 +78,10 @@ function event(
   invalidation: string,
   state: Finding["state"] = "OBSERVED",
   suffix = "",
+  version = ['RB','SNR'].includes(name)?2:1,
 ): Finding {
   const last = bars.at(-1);
+  const source=provenance(`EDGE.${name}.v${version}`);
   return {
     id: `${frame.symbol}:${frame.timeframe}:${frame.side}:${kind}:${last?.time ?? frame.as_of}:${suffix}`,
     kind,
@@ -93,15 +99,15 @@ function event(
       low: b.low,
       close: b.close,
     })),
-    ...provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`),
+    ...source,
     counterarguments: [
-      ...provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`).counterarguments,
+      ...source.counterarguments,
       ...frame.warnings,
     ],
     invalidation,
     facts,
     state:
-      provenance(`EDGE.${name}.v${['RB','SNR'].includes(name)?2:1}`).specification === "NEEDS_SPECIFICATION"
+      source.specification === "NEEDS_SPECIFICATION"
         ? "NEEDS_SPECIFICATION"
         : state,
   };
@@ -150,7 +156,7 @@ export function detectFractals(frame: Frame, variant: 3 = 3): Pivot[] {
   }
   return out;
 }
-export function detectFvg(frame: Frame) {
+export function detectFvg(frame: Frame, method: LevelMethod = 'LEGACY') {
   const findings: Finding[] = [],
     levels: KeyLevel[] = [];
   for (let i = 2; i < frame.bars.length; i++) {
@@ -175,10 +181,11 @@ export function detectFvg(frame: Frame) {
         "FVG",
         bars,
         { lower, upper, direction: up ? "bullish" : "bearish" },
-        "Closed breach of far boundary withdraws old premise; wick fill is reported separately.",
+        method==='PA_ONLY' ? 'A full-depth wick or body fill invalidates the FVG.' :
+          "Closed breach of far boundary withdraws old premise; wick fill is reported separately.",
       );
       findings.push(e);
-      const breach = frame.bars.find(
+      const breach = method==='PA_ONLY' ? undefined : frame.bars.find(
         (x) =>
           x.segment === c.segment &&
           x.index > c.index &&
@@ -287,7 +294,7 @@ export function knownLevel(level: KeyLevel, b: Bar, frame: Frame) {
     level.confirmed_at <= b.time &&
     (!level.invalidated_at || level.invalidated_at > b.time) &&
     (!level.continuity_end || b.end <= level.continuity_end) &&
-    TF_ORDER.indexOf(level.timeframe) <= TF_ORDER.indexOf(frame.timeframe)
+    DETAIL_TFS.indexOf(level.timeframe) <= DETAIL_TFS.indexOf(frame.timeframe)
   );
 }
 const hit = (b: Bar, l: KeyLevel) => b.high >= l.lower && b.low <= l.upper;
@@ -297,7 +304,11 @@ const interaction = (b: Bar, l: KeyLevel) =>
       ? b.low < l.lower
       : b.high > l.upper
     : hit(b, l);
-export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
+function unsweptAt(level:KeyLevel, bar:Bar, frame:Frame){
+  if(level.liquidity_taken_at!==undefined)return !level.liquidity_taken_at||level.liquidity_taken_at>bar.time;
+  return !frame.bars.some(c=>c.time>=level.confirmed_at&&c.end<=bar.time&&interaction(c,level));
+}
+export function detectRejectionBlocks(frame: Frame, context: KeyLevel[], method: LevelMethod = 'LEGACY') {
   const out: Finding[] = [];
   for (let i = 1; i < frame.bars.length; i++) {
     const a = frame.bars[i - 1],
@@ -305,14 +316,15 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
     if (!contiguous([a, b]) || b.end>frame.as_of) continue;
     const up=a.close<a.open&&b.close>b.open,down=a.close>a.open&&b.close<b.open;
     if(!up&&!down)continue; // Doji and a lone rejection do not form RB.
-    const eligible=context.map(l=>levelAt(l,a.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>knownLevel(kl,a,frame)&&knownLevel(kl,b,frame)&&
-      (!kl.invalidated_at||kl.invalidated_at>b.end)&&['FRACTAL','FVG'].includes(kl.kind)&&
-      kl.role===(up?'support':'resistance')&&(interaction(a,kl)||interaction(b,kl))&&
-      // THE EDGE RB: «Свеча должна закрываться выше / ниже Key Level» — bodies of both candles close beyond the KL,
-      // for FVG as for fractals (user decision 2026-11-23). Fractal liquidity must also be fresh (first crossing).
-      (up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower)&&
-      (kl.kind==='FVG'||!frame.bars.slice(0,i-1).some(c=>c.time>=kl.confirmed_at&&interaction(c,kl))))
-      .sort((x,y)=>TF_ORDER.indexOf(x.timeframe)-TF_ORDER.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
+    const eligible=context.map(l=>levelAt(l,a.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>{
+      if(!knownLevel(kl,a,frame)||!knownLevel(kl,b,frame)||kl.invalidated_at&&kl.invalidated_at<=b.end||
+        !['FRACTAL','FVG'].includes(kl.kind)||kl.role!==(up?'support':'resistance'))return false;
+      if(method==='PA_ONLY'&&kl.kind==='FVG')return a.close>kl.lower&&a.close<kl.upper;
+      const raid=interaction(a,kl)||(method==='LEGACY'&&interaction(b,kl));
+      const reclaimed=up?a.close>kl.upper&&b.close>kl.upper:a.close<kl.lower&&b.close<kl.lower;
+      return raid&&reclaimed&&(kl.kind==='FVG'||unsweptAt(kl,a,frame));
+    })
+      .sort((x,y)=>DETAIL_TFS.indexOf(x.timeframe)-DETAIL_TFS.indexOf(y.timeframe)||y.confirmed_at.localeCompare(x.confirmed_at)||x.id.localeCompare(y.id));
     // A strict, reclaimed liquidity raid is stronger than an FVG-only interaction (both need body closes beyond the KL).
     const raid=eligible.find(l=>l.kind==='FRACTAL'),fvg=eligible.find(l=>l.kind==='FVG');
     for (const kl of eligible) {
@@ -327,7 +339,8 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
             kl_id: kl.id,
             ...(liquidity?{rb_liquidity_id:liquidity.id}:{}),
             ...(inefficiency?{rb_fvg_id:inefficiency.id}:{}),
-            revision:'rb-first-close-3',
+            revision:method==='PA_ONLY'?'rb-rulebook-q4-q5':'rb-first-close-3',
+            ...(method==='PA_ONLY'?{rb_type:liquidity?'FRACTAL':'FVG'}:{}),
             formation_confirmed:true,
             level_price:a.close,
             level_policy:'FIRST_CANDLE_CLOSE',
@@ -346,40 +359,62 @@ export function detectRejectionBlocks(frame: Frame, context: KeyLevel[]) {
               lower: a.close,
               upper: a.close,
             },
-            schematic_reference:
+            schematic_reference:method==='PA_ONLY'?'Rulebook Q4/Q5: first close inside residual FVG or first candle raids and reclaims a fractal.':
               "el01_03/el01_04; user clarification 2026-11-17: first close, either wick can raid; user decision 2026-11-23: FVG interaction also requires body closes beyond the KL",
           },
           "Formation is observed; subsequent trade validity and stop placement require review, not automatic Narrative confirmation.",
           "OBSERVED",
           kl.id,
+          method==='PA_ONLY'?3:2,
         ),
       );
     }
   }
   return out;
 }
-export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLevel[] = [], includeStrength=true) {
+export function detectSnr(frame: Frame, context: KeyLevel[], lowerLevels: KeyLevel[] = [], includeStrength=true, method: LevelMethod = 'LEGACY') {
   const out: Finding[] = [];
+  const rulebook=method==='PA_ONLY';
   for (let i=1;i<frame.bars.length;i++) {
     const a=frame.bars[i-1],b=frame.bars[i];
     if(!contiguous([a,b])||b.end>frame.as_of)continue;
-    const resistance=a.close>a.open&&b.close<b.open,support=a.close<a.open&&b.close>b.open;
-    if(!resistance&&!support)continue;
-    const lower=a.close,upper=a.close;
+    const bullish=a.close>a.open&&b.close<b.open,bearish=a.close<a.open&&b.close>b.open;
+    if(!bullish&&!bearish)continue;
+    const role=bullish?'support':'resistance';
+    const near=a.close,far=rulebook?a.open:a.close;
+    const lower=Math.min(near,far),upper=Math.max(near,far);
     const later=frame.bars.slice(i+1).filter(x=>x.segment===a.segment&&x.end<=frame.as_of);
-    const breakout=later.find(x=>resistance?x.close>upper:x.close<lower);
+    const breakout=later.find((x,j)=>{
+      if(!rulebook)return bullish?x.close>near:x.close<near;
+      const previousClose=j===0?b.close:later[j-1].close;
+      return bullish
+        ? x.close>x.open&&x.close>near&&Math.min(previousClose,x.open)<=near
+        : x.close<x.open&&x.close<near&&Math.max(previousClose,x.open)>=near;
+    });
     if(!breakout)continue;
-    const eligible=(kl:KeyLevel,x:Bar)=>['FRACTAL','FVG'].includes(kl.kind)&&knownLevel(kl,x,frame)&&(!kl.invalidated_at||kl.invalidated_at>breakout.end)&&knownLevel(kl,breakout,frame)&&interaction(x,kl)&&kl.role===(resistance?'support':'resistance');
-    const delivery=later.find(x=>x.index<=breakout.index&&context.some(l=>{const kl=levelAt(l,x.time);return kl&&eligible(kl,x);}));
-    if(!delivery)continue;
-    const kl=context.map(l=>levelAt(l,delivery.time)).filter((l):l is KeyLevel=>!!l).filter(kl=>eligible(kl,delivery)).sort((a,b)=>TF_ORDER.indexOf(a.timeframe)-TF_ORDER.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
-    const formation=snrFormationContext(frame,a,b,delivery,breakout,lower,resistance,context,lowerLevels,includeStrength);
-    out.push(event(frame,'SNR','SNR_CLOSED_BREAK',[a,b,delivery,breakout],{
-      kl_id:kl.id,lower,upper,direction:resistance?'bullish':'bearish',old_role:resistance?'resistance':'support',proposed_role:resistance?'support':'resistance',
-      fvg_required:false,bounds_policy:'FIRST_CANDLE_CLOSE',formation,
+    const eligible=(kl:KeyLevel,x:Bar)=>['FRACTAL','FVG'].includes(kl.kind)&&knownLevel(kl,x,frame)&&
+      (rulebook||(!kl.invalidated_at||kl.invalidated_at>breakout.end)&&knownLevel(kl,breakout,frame))&&
+      interaction(x,kl)&&kl.role===role&&(!rulebook||kl.kind==='FVG'||unsweptAt(kl,x,frame));
+    let delivery:Bar|undefined,kl:KeyLevel|undefined;
+    for(const candidate of (rulebook?[a,b,...later]:later)){
+      if(candidate.index>breakout.index)break;
+      const available=context.map(l=>levelAt(l,candidate.time))
+        .filter((l):l is KeyLevel=>!!l&&eligible(l,candidate));
+      if(!available.length)continue;
+      kl=available.sort((a,b)=>DETAIL_TFS.indexOf(a.timeframe)-DETAIL_TFS.indexOf(b.timeframe)||b.confirmed_at.localeCompare(a.confirmed_at)||a.id.localeCompare(b.id))[0];
+      delivery=candidate;
+      break;
+    }
+    if(!delivery&&!rulebook)continue;
+    const formation=snrFormationContext(frame,a,b,delivery,breakout,near,bullish,context,lowerLevels,includeStrength);
+    const candles=delivery?[a,b,delivery,breakout]:[a,b,breakout];
+    out.push(event(frame,'SNR','SNR_CLOSED_BREAK',rulebook?[...new Set(candles)]:candles,{
+      ...(kl?{kl_id:kl.id}:{}),lower,upper,direction:bullish?'bullish':'bearish',
+      ...(rulebook?{near,far,side:bullish?'SUPPORT':'RESISTANCE',after_kl_delivery:!!delivery}:{old_role:bullish?'resistance':'support'}),proposed_role:role,
+      fvg_required:false,bounds_policy:rulebook?'FIRST_CANDLE_BODY':'FIRST_CANDLE_CLOSE',formation,
       ...(formation.x1_fvg_id?{snr_x1_fvg_id:formation.x1_fvg_id}:{}),...(formation.opposing_kl_id?{snr_opposing_kl_id:formation.opposing_kl_id}:{}),
-      schematic_reference:'el02_01/el02_02/el02_04; user 2026-11-17: repeated failed tests, impulse and formation location matter',
-    },'Own-TF counter-close withdraws the proposed role; formation strength is contextual and does not confirm Narrative or a successful retest.','CANDIDATE',a.time+':'+kl.id));
+      schematic_reference:rulebook?'Rulebook Q2/Q3: confirm on a directional close. The first candle defines both zone edges.':'el02_01/el02_02/el02_04; user 2026-11-17: repeated failed tests, impulse and formation location matter',
+    },'Own-TF counter-close withdraws the proposed role; formation strength is contextual and does not confirm Narrative or a successful retest.',rulebook?'OBSERVED':'CANDIDATE',rulebook?a.time:a.time+':'+kl!.id,rulebook?3:2));
   }
   return out;
 }
@@ -389,7 +424,7 @@ export function detectIdm(frame: Frame, pivots: Pivot[], pois: KeyLevel[]) {
     for (const sourcePoi of pois) {
       const poi=levelAt(sourcePoi,p.candle_evidence[0]?.time??p.origin);if(!poi)continue;
       const gap =
-        TF_ORDER.indexOf(frame.timeframe) - TF_ORDER.indexOf(poi.timeframe);
+        DETAIL_TFS.indexOf(frame.timeframe) - DETAIL_TFS.indexOf(poi.timeframe);
       if (
         !poi.qualified ||
         !Number.isFinite(poi.lower) ||

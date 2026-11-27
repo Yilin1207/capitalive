@@ -12,14 +12,28 @@ const fixture=(s:string)=>JSON.parse(readFileSync(`tests/fixtures/edge-v2/${s}.j
 
 for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] as const)test(`V6 ${symbol} ${side}: archived regression preserves PA evidence, disables interpretation`,()=>{
  const input=fixture(symbol),pa=buildPaEngine(input.data,side),legacy=buildIntelligence(input.data,side,input.quote);
- const kinds=['FRACTAL','FVG','RB_TWO_CANDLE','SNR_CLOSED_BREAK','TOUCH','RAID'];
+ const kinds=['FRACTAL','FVG','TOUCH','RAID'];
  const old=legacy.frames.flatMap(f=>f.findings).filter(f=>kinds.includes(f.kind)),rows=pa.evidence.filter(f=>kinds.includes(f.kind));
  assert.deepEqual(rows.map(f=>f.id).sort(),old.map(f=>f.id).sort());
  for(const e of rows){const expected=old.find(f=>f.id===e.id)!;assert.deepEqual(e.candle_evidence,expected.candle_evidence);assert.equal(e.confirmed_at,expected.confirmed_at);assert.equal(e.current_role,null);assert.ok(e.candle_evidence.every(c=>c.closed_at<=e.confirmed_at));assert.ok(e.confirmed_at<=pa.as_of);}
+ for(const e of pa.evidence.filter(e=>e.kind==='SNR_CLOSED_BREAK'||e.kind==='RB_TWO_CANDLE')){
+  assert.ok(e.confirmed_at<=pa.as_of&&e.candle_evidence.every(c=>c.closed_at<=e.confirmed_at));
+  const first=e.candle_evidence[0],last=e.candle_evidence.at(-1)!;
+  assert.equal(e.confirmed_at,last.closed_at);
+  if(e.kind==='SNR_CLOSED_BREAK'){
+   assert.equal(e.facts.near,first.close);assert.equal(e.facts.far,first.open);
+   assert.deepEqual(e.bounds,{lower:Math.min(first.open,first.close),upper:Math.max(first.open,first.close)});
+   assert.ok(e.facts.side==='SUPPORT'?last.close>last.open&&last.close>first.close:last.close<last.open&&last.close<first.close);
+  }else{assert.ok(['FRACTAL','FVG'].includes(String(e.facts.rb_type)));assert.equal(e.bounds?.lower,first.close);}
+  assert.ok(['ACTIVE','TESTED','BROKEN'].includes(e.lifecycle!.state));
+  assert.equal(e.current_role,e.lifecycle!.state==='BROKEN'?null:e.formation_role);
+  if(e.lifecycle!.state==='BROKEN')assert.equal(e.remaining_bounds,null);
+ }
  assert.equal(pa.mode,'PA_ONLY');assert.equal(pa.trading_enabled,false);
  for(const key of ['narrative','narrative_method','scenario','A','B','C','rr','target_selection','entry','stop_loss','take_profit'])assert.ok(!(key in pa));
  assert.equal(pa.coverage.evidence_total,pa.evidence.length);assert.equal(pa.omitted.evidence,0);
  assert.ok(pa.evidence.filter(e=>e.kind==='FRACTAL').every(e=>e.facts.variant===3&&e.candle_evidence.length===3));
+ assert.ok(pa.evidence.filter(e=>e.kind==='FRACTAL_INSIDE_POI').every(e=>e.facts.idm_status==='SEE_ACTIVE_DR'));
  assert.ok(pa.evidence.filter(e=>e.kind==='SNR_CLOSED_BREAK').every(e=>!JSON.stringify(e.facts).includes('impulse_policy')&&!JSON.stringify(e.facts).includes('relative_strength')));
  assert.equal(pa.definitions.compression_lrl,'NEEDS_SPECIFICATION');assert.equal(pa.definitions.independent_ohlc_price_validation,'NOT_AVAILABLE');
  for(const dr of pa.dealing_ranges){const structure=pa.market_structure[dr.timeframe];
@@ -48,9 +62,9 @@ test('V6 complete evidence detail contacts are traceable, never claim role rever
  assert.deepEqual(interactionsForEvidence(pa,'missing'),[]);
 });
 
-test('V6 distinguishes fully filled FVG from invalidation and never treats it as an active remainder',()=>{
+test('PA fully filled FVG is invalidated at first full depth and has no active remainder',()=>{
  const pa=buildPaEngine(fixture('EURUSD').data,'bid'),filled=pa.evidence.filter(e=>e.kind==='FVG'&&e.lifecycle?.fill?.max_observed_fraction===1);assert.ok(filled.length);
- for(const e of filled){assert.ok(['TESTED','INVALIDATED'].includes(e.lifecycle!.state));assert.equal(e.remaining_bounds,null);assert.equal(e.current_role,null);}
+ for(const e of filled){assert.equal(e.lifecycle!.state,'INVALIDATED');assert.equal(e.lifecycle!.invalidated_at,e.lifecycle!.fill!.fully_tested_at);assert.equal(e.remaining_bounds,null);assert.equal(e.current_role,null);}
 });
 
 test('Independent arithmetic checker detects invalid geometry, premature closure and calendar-month boundaries without inventing verified sessions',()=>{

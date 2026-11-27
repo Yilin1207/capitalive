@@ -2,6 +2,43 @@
 // Shared by server and browser; no Node or algorithm imports.
 const fields=['sources','rule_version','rule_status','specification','basis','counterarguments'] as const;
 type JsonObject=Record<string,unknown>;
+
+// The existing provenance reference overlays a dictionary of shared fields on a record.
+// Reuse it for repeated combinations of status codes, flags and nulls on otherwise distinct rows.
+function shareStatusFields(roots:unknown[],catalog:Record<string,JsonObject>){
+ const groups=new Map<string,{fields:JsonObject;rows:JsonObject[]}>();
+ const shortestRef=JSON.stringify({provenance_ref:'p0'}).length;
+ function collect(value:unknown){
+  if(!value||typeof value!=='object')return;
+  if(Array.isArray(value)){value.forEach(collect);return;}
+  const row=value as JsonObject;
+  if(Object.hasOwn(row,'context_string_ref')||Object.hasOwn(row,'context_object_ref'))return;
+  Object.values(row).forEach(collect);
+  if(Object.hasOwn(row,'provenance_ref'))return;
+  const shared=Object.fromEntries(Object.entries(row).filter(([,v])=>
+   v===null||typeof v==='boolean'||typeof v==='string'&&/^[A-Z][A-Z_0-9]*$/.test(v)));
+  const key=JSON.stringify(shared);
+  if(key.length<=shortestRef)return;
+  const group=groups.get(key);
+  if(group)group.rows.push(row);
+  else groups.set(key,{fields:shared,rows:[row]});
+ }
+ roots.forEach(collect);
+ let next=Object.keys(catalog).length;
+ for(const [key,{fields,rows}] of groups){
+  const ref='p'+next,refSize=JSON.stringify({provenance_ref:ref}).length;
+  const entrySize=key.length+ref.length+4; // catalog key, quotes, colon and comma
+  if(rows.length*(key.length-refSize)<=entrySize)continue;
+  catalog[ref]=fields;
+  next++;
+  const sharedKeys=Object.keys(fields);
+  for(const row of rows){
+   for(const field of sharedKeys)delete row[field];
+   row.provenance_ref=ref;
+  }
+ }
+}
+
 export function encodeIntelligence(input:unknown){
  const contextStrings:string[]=[],contextIndexes=new Map<string,number>();
  function encodeContext(value:unknown):unknown{if(typeof value==='string'&&value.length>24){let i=contextIndexes.get(value);if(i===undefined){i=contextStrings.length;contextIndexes.set(value,i);contextStrings.push(value);}return {context_string_ref:i};}
@@ -17,7 +54,9 @@ export function encodeIntelligence(input:unknown){
  function count(v:unknown){if(!v||typeof v!=='object')return;const key=JSON.stringify(v);if(key.length>60)counts.set(key,(counts.get(key)??0)+1);Object.values(v).forEach(count);}count(body);
  function pack(v:unknown):unknown{if(!v||typeof v!=='object')return v;const key=JSON.stringify(v);if((counts.get(key)??0)>1){let i=objectIndexes.get(key);if(i===undefined){const value=Array.isArray(v)?v.map(pack):Object.fromEntries(Object.entries(v).map(([k,x])=>[k,pack(x)]));i=contextObjects.length;objectIndexes.set(key,i);contextObjects.push(value);}return {context_object_ref:i};}return Array.isArray(v)?v.map(pack):Object.fromEntries(Object.entries(v).map(([k,x])=>[k,pack(x)]));}
  body=pack(body) as JsonObject;
- return {...body,wire_format:'evidence-dictionary-2',provenance_catalog:catalog,path_level_catalog:levelIds,...(contextStrings.length?{context_string_catalog:contextStrings,context_object_catalog:contextObjects}:{})};
+ shareStatusFields([body,...contextObjects],catalog);
+ return {...body,wire_format:'evidence-dictionary-2',provenance_catalog:catalog,path_level_catalog:levelIds,
+  ...(contextStrings.length||contextObjects.length?{context_string_catalog:contextStrings,context_object_catalog:contextObjects}:{})};
 }
 export function decodeIntelligence<T>(input:unknown):T{
  if(!input||typeof input!=='object'||!['evidence-dictionary-1','evidence-dictionary-2'].includes(String((input as JsonObject).wire_format)))return input as T;

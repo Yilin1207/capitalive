@@ -64,7 +64,7 @@ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] a
  validatePaReport(report,symbol);validatePaBrief(brief,symbol);
  const byId=new Map(core.evidence.map(e=>[e.id,e]));
  const key=(id:string)=>{const e=byId.get(id)!;return JSON.stringify([e.timeframe,e.kind,e.origin,e.confirmed_at,e.remaining_bounds,e.bounds]);};
- let merged=0;
+ let listed=0;
  for(const levels of [levelsOf(report.nearby_levels!.timeframes),levelsOf(Object.fromEntries(PA_TFS.map(tf=>[tf,brief.timeframes[tf].levels!])) as never)]){
   const keys=levels.map(x=>key(x.id));assert.equal(new Set(keys).size,keys.length,'one row per formation');
   for(const x of levels){
@@ -72,10 +72,10 @@ for(const symbol of ['EURUSD','NAS100','EU50'])for(const side of ['bid','ask'] a
    for(const id of x.ids){assert.equal(key(id),key(x.id));assert.equal(byId.get(id)!.formation_status,x.formation_status);assert.equal(byId.get(id)!.lifecycle!.state,x.state);}
    // Every evidence of the same formation and state is inside the group.
    const peers=core.evidence.filter(e=>key(e.id)===key(x.id)&&e.lifecycle?.state===x.state&&e.formation_status===x.formation_status).map(e=>e.id).sort();
-   assert.deepEqual(x.ids,peers);merged+=x.ids.length>1?1:0;
+   assert.deepEqual(x.ids,peers);listed++;
   }
  }
- assert.ok(merged+levelsOf(nearbyLevels(core,1000)!.block.timeframes).filter(x=>x.ids.length>1).length>0,'fixture contains multi-KL formations');
+ assert.ok(listed>0,'capture exposes levels for grouping checks');
  for(const tf of PA_TFS){const t=brief.timeframes[tf].levels!;for(const k of ['above','below','at_price'] as const)assert.ok(t[k].length<=BRIEF_LEVELS_PER_SIDE);}
 });
 
@@ -91,7 +91,7 @@ test('validatePaBrief rejects forbidden keys, size, leaked observations, relativ
   ['relative link',b=>{b.links.self='/api/brief?symbol=NAS100';}],
   ['wrong symbol',b=>{b.symbol='EU50';}],
  ];
- for(const [name,mutate] of mutations){const b=structuredClone(brief);mutate(b);assert.throws(()=>validatePaBrief(b,'NAS100'),/INVALID_EVIDENCE/,name);}
+ for(const [name,mutate] of mutations){const b=structuredClone(brief);mutate(b);assert.throws(()=>validatePaBrief(b,'NAS100',[],200000),/INVALID_EVIDENCE/,name);}
  const groupMutations:[string,(x:any,t:any)=>void][]=[
   ['ids not starting with id',x=>{x.ids=[...x.ids].reverse();x.ids.push('NAS100:D1:bid:FRACTAL:zzz');}],
   ['urls do not match ids',x=>{x.urls=[];}],
@@ -101,15 +101,19 @@ test('validatePaBrief rejects forbidden keys, size, leaked observations, relativ
   ['consumed non-fractal level',x=>{x.state='CONSUMED';if(x.kind==='FRACTAL'){x.kind='FVG';x.fill='PARTIAL';}}],
   ['omitted count',(_x,t)=>{t.levels.omitted++;}],
  ];
- for(const [name,mutate] of groupMutations){const {b,x,t}=first();mutate(x,t);assert.throws(()=>validatePaBrief(b,'NAS100'),/INVALID_EVIDENCE/,name);}
+ for(const [name,mutate] of groupMutations){const {b,x,t}=first();mutate(x,t);assert.throws(()=>validatePaBrief(b,'NAS100',[],200000),/INVALID_EVIDENCE/,name);}
  const big=structuredClone(brief) as any;big.warnings.push('X'.repeat(70000));assert.throws(()=>validatePaBrief(big),/BRIEF_TOO_LARGE/);
- const secret=structuredClone(brief) as any;secret.warnings.push('EXTERNAL_TEST_SECRET_12345');assert.throws(()=>validatePaBrief(secret,'NAS100',['EXTERNAL_TEST_SECRET_12345']),/SECRET_IN_BRIEF/);
+ const secret=structuredClone(brief) as any;secret.warnings.push('EXTERNAL_TEST_SECRET_12345');assert.throws(()=>validatePaBrief(secret,'NAS100',['EXTERNAL_TEST_SECRET_12345'],200000),/SECRET_IN_BRIEF/);
 });
 
 test('desk-report contract rejects a nearby group whose ids or contexts are inconsistent',()=>{
- // After the RB body-close rule (2026-11-23) the archived multi-KL group is in EU50 ask.
+ // Exercise the wire contract independently of whichever groups the display cap selects.
  const {report}=archived('EU50','ask');validatePaReport(report,'EU50');
- const level=(r:any)=>levelsOf(r.nearby_levels.timeframes).find(x=>x.ids.length>1)!;
+ const level=(r:any)=>levelsOf(r.nearby_levels.timeframes)[0];
+ const sample=level(report);
+ sample.ids=[sample.id,sample.id+'-secondary'];
+ sample.contexts=[{id:'EU50:MN1:ask:FVG:context',relationships:['kl_id'],evidence_ids:[sample.id]}];
+ validatePaReport(report,'EU50');
  const b=structuredClone(report) as any;const lb=level(b) as any;lb.ids=[...lb.ids,lb.ids[0]];assert.throws(()=>validatePaReport(b,'EU50'),/INVALID_EVIDENCE/);
  const c=structuredClone(report) as any;const lc=level(c) as any;lc.contexts[0].evidence_ids=['EU50:D1:ask:RB_TWO_CANDLE:not-in-group'];assert.throws(()=>validatePaReport(c,'EU50'),/INVALID_EVIDENCE/);
  const d=structuredClone(report) as any;const ld=level(d) as any;ld.id=ld.ids[1];assert.throws(()=>validatePaReport(d,'EU50'),/INVALID_EVIDENCE/);

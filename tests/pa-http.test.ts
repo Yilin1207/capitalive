@@ -90,3 +90,56 @@ test('V6 upstream faults are sanitized and portable contract rejects secret/fore
  ];
  for(const mutate of mutations)assert.throws(()=>validatePaReport(mutate(),'EU50'),/INVALID_EVIDENCE|SECRET_IN_REPORT/);
 });
+
+test('H1 pages share an hourly snapshot and exclude the forming hour', async t=>{
+ const f=fixture(),hour=3600000,end=Date.parse(f.asOf);
+ t.mock.timers.enable({apis:['Date'],now:end});
+ const hourly={...f.data.H4,timeframe:'H1' as const,candles:f.data.H4.candles.map((c,i)=>({
+  ...c,time:new Date(end-(19-i)*hour).toISOString(),is_closed:i<19
+ }))};
+ const deps={...f.deps,getCandles:async(s:string,tf:Timeframe)=>tf==='H1'?hourly:f.deps.getCandles(s,tf)};
+ const path='symbol=EU50&timeframe=H1&side=ask';
+ const res=await paHttp(url(path+'&latest=5'),'candles',deps);
+ assert.equal(res.status,200);
+ const page=await res.json();
+ assert.equal(page.grid.by_tf.H1,'utc');
+ assert.equal(page.candles.length,5);
+ assert.equal(page.candles.at(-1).close,hourly.candles.at(-2)!.close.ask);
+ assert.equal(page.last_closed_at,f.asOf);
+ for(const c of page.candles)assert.equal(Date.parse(c.end)-Date.parse(c.time),hour);
+ const rows=await paHttp(url(path+'&kind=FRACTAL&snapshot_sha256='+page.snapshot_sha256),'evidence',deps);
+ assert.equal(rows.status,200);
+ const facts=await rows.json();
+ assert.ok(facts.evidence.length>0);
+ for(const e of facts.evidence){assert.equal(e.timeframe,'H1');assert.ok(e.confirmed_at<=page.as_of);}
+ const idmPage=await paHttp(url(path+'&view=thesis&section=idm&snapshot_sha256='+page.snapshot_sha256),'evidence',deps);
+ assert.equal(idmPage.status,200);
+ for(const item of (await idmPage.json()).items)assert.equal(item.tf_relation,'X');
+ // Revise a closed Ask in place without moving the range boundaries.
+ const close=hourly.candles.at(-2)!.close;
+ close.ask=close.ask!-0.01;
+ const changed=await paHttp(new Request(url(path+'&refresh=1&snapshot_sha256='+page.snapshot_sha256),{method:'POST'}),'candles',deps);
+ assert.equal(changed.status,409);
+});
+
+test('opt-in brief embeds bounded hourly EMT facts using the H4 range and closed candles only',async t=>{
+ const f=fixture(),end=Date.parse(f.asOf);
+ t.mock.timers.enable({apis:['Date'],now:end});
+ const hourly={...f.data.H4,timeframe:'H1' as const,candles:f.data.H4.candles.map((b,i)=>({...b,time:new Date(end-(19-i)*3600000).toISOString(),is_closed:i<19}))};
+ const deps={...f.deps,getCandles:async(s:string,tf:Timeframe)=>tf==='H1'?hourly:f.deps.getCandles(s,tf)};
+ const res=await paHttp(url('symbol=EU50&include_h1=1'),'brief',deps),b=await res.json();
+ assert.equal(res.status,200);
+ const h=b.h1_execution;
+ assert.equal(h.last_closed_candles.length,12);
+ assert.equal(h.last_closed_at,f.asOf);
+ assert.equal(h.approach.flag,'NOT_EVALUATED');
+ assert.ok(h.fractals.length>0);
+ assert.ok(h.fractals.every((p:{confirmed_at:string})=>p.confirmed_at<=b.as_of));
+ assert.deepEqual(h.h4_range,b.timeframes.H4.dealing_range.active_dr);
+ assert.equal(h.fvg.length,h.new_fvg_count.bullish+h.new_fvg_count.bearish);
+ for(const p of h.idm_in_h4.items){
+  assert.ok(p.price>h.h4_range.low&&p.price<h.h4_range.high);
+  assert.ok(Math.abs(p.distance_to_eq-Math.abs(p.price-h.h4_range.eq))<1e-8);
+ }
+ assert.ok(Buffer.byteLength(JSON.stringify(b))<=65536);
+});
