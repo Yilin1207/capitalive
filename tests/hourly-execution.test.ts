@@ -66,3 +66,13 @@ test('closed hourly data distinguishes warnings, clean observations, delay and n
  assert.equal(run([candle(4,95,105)]).status,'STALE');
  assert.equal(run([]).status,'UNAVAILABLE');
 });
+
+test('H1 close locates price against H4 including both boundaries, independently of the wick',()=>{
+ const data=market();
+ for(const [close,position] of [[121,'ABOVE_HIGH'],[120,'INSIDE'],[100,'INSIDE'],[80,'INSIDE'],[79,'BELOW_LOW']] as const){
+  const h=evaluate(data,[candle(1,70,130,close)]);
+  assert.equal(h.price_vs_h4_range,position);
+ }
+ data.H4.candles=[];
+ assert.equal(evaluate(data,[candle(1,90,110)]).price_vs_h4_range,null);
+});

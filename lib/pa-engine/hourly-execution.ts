@@ -38,10 +38,10 @@ export function hourlyExecution(data:CandleResponse,core:PaEngine){
  if(data.timeframe!=='H1'||data.symbol!==core.symbol||data.provider!=='Capital.com')throw Error('INVALID_HOURLY_IDENTITY');
  const frame=closedFrame(data,core.side,core.as_of);
  const bars=frame.bars,latest=bars.at(-1);
- if(!latest)return {status:'UNAVAILABLE' as const,reason:'NO_CLOSED_H1',as_of:core.as_of};
+ if(!latest)return {status:'UNAVAILABLE' as const,reason:'NO_CLOSED_H1',price_vs_h4_range:null,as_of:core.as_of};
  const closed=Date.parse(latest.end),expected=Math.floor(Date.parse(core.as_of)/3600000)*3600000;
  if(closed<expected&&!closedRegularInterval(core.symbol,closed,expected))
-  return {status:'STALE' as const,reason:'H1_CLOSED_CANDLE_DELAY',last_closed_at:latest.end,as_of:core.as_of};
+  return {status:'STALE' as const,reason:'H1_CLOSED_CANDLE_DELAY',price_vs_h4_range:null,last_closed_at:latest.end,as_of:core.as_of};
 
  const tail=bars.slice(-WINDOW),first=tail[0],sameSegment=bars.filter(b=>b.segment===latest.segment);
  const h4=thesisRanges(core).active_dr.H4;
@@ -74,6 +74,7 @@ export function hourlyExecution(data:CandleResponse,core:PaEngine){
   fractals,fvg,new_fvg_count:{bullish:fvg.filter(f=>f.polarity==='bullish').length,bearish:fvg.filter(f=>f.polarity==='bearish').length},
   approach:approach?{...approach,window_start:approachWindow[0].time,mean_body:round(approachWindow.reduce((n,b)=>n+body(b),0)/approachWindow.length),
    last_body:round(body(latest)),new_fvg_count:fvg.filter(f=>f.confirmed_at>=approachWindow[0].end).length}:null,
+  price_vs_h4_range:!h4?null:latest.close>h4.high?'ABOVE_HIGH':latest.close<h4.low?'BELOW_LOW':'INSIDE',
   h4_range:h4,idm_in_h4:{range_available:!!h4,consumed_total:consumedTotal,pullback_extreme:extreme,pullback_side_known:sideKnown,
    selection:sideKnown?'UNRAIDED_H1_AFTER_H4_EXTREME_BY_DISTANCE_TO_EQ':'UNRAIDED_H1_INSIDE_ACTIVE_H4_SORTED_BY_DISTANCE_TO_EQ',
    items:inside.slice(0,WINDOW),total:inside.length,omitted:Math.max(0,inside.length-WINDOW)}};
